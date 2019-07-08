@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "launch Run Server",
+      "program": "${workspaceFolder}/compiled-code/server/server.js",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "attach Run Server",
+      "processId": "${command:PickProcess}",
+      "restart": true,
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "GUI Tests",
+      "args": [
+        "--runInBand",
+        "--config=jest.config.gui-tests.js"
+      ],
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Automated Scenarios",
+      "args": [
+        "--runInBand",
+        "--config=jest.config.automated-scenarios.js"
+      ],
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+      "console": "integratedTerminal",
+    }
+  ]
+}
