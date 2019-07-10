@@ -1,14 +1,20 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import { Fighter } from '../../classes/game/fighter/fighter';
+import Fighter from '../../classes/game/fighter/fighter';
 import FightComponent from '../components/Connected/Game/Round/Fight/fight.component';
 import LocalMessageService from '../services/local-message.service';
 import { Component } from 'react';
-import Test from './test';
 import Fight from '../../classes/game/round/fight/fight';
+import styled from 'styled-components';
 
-class FighterSandbox extends Component{
+const FighterSandbox = styled.div`
+  margin: 0;
+  font-family: sans-serif;
+`
+
+
+class FighterSandboxComponent extends Component{
   fight: Fight
   fighters: Fighter[]
   constructor(props){
@@ -23,17 +29,13 @@ class FighterSandbox extends Component{
   
   render(){
     return (
-      <div>
-        penis
+      <FighterSandbox>
         <FightComponent messageService={new LocalMessageService(this.fight)}></FightComponent>
-        <Test></Test>
-      </div>
+      </FighterSandbox>
     )
   }  
 }
 
 ReactDOM.render(
-  <FighterSandbox/>, document.getElementById('react-rendering-div')
+  <FighterSandboxComponent/>, document.getElementById('react-rendering-div')
 )
-
-//<FightComponent messageService={new LocalMessageService(this.fight)}></FightComponent>

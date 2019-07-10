@@ -1,4 +1,4 @@
-export interface ArenaDimensions{
+export default interface ArenaDimensions{
   width: number
   height: number
   outFromLeft: number

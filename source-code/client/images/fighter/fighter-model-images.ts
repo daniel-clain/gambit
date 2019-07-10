@@ -1,15 +1,16 @@
-import FighterModelImage from "../../../../../../../interfaces/game/fighter/fighter-model-image";
+import FighterModelImage from "../../../interfaces/game/fighter/fighter-model-image";
+
 
 export const fighterModelImages: FighterModelImage[] = [
 	{
 		modelState: 'Active',
 		dimensions: { width: 58, height: 92 },
-		imageName: 'idle.png'
+		imageName: 'images/idle.png'
 	},
 	{
 		modelState: 'Idle',
 		dimensions: { width: 58, height: 92 },
-		imageName: 'idle.png'
+		imageName: 'images/idle.png'
 	},
 	{
 		modelState: 'Punching',

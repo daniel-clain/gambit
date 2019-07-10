@@ -1,4 +1,5 @@
-import { Fighter } from "./fighter";
+import Fighter from "./fighter";
+
 
 export default interface IFighterStrategy{
   fighter: Fighter
@@ -88,7 +89,7 @@ export class AttackClosestFighter extends FighterStrategy{
   
   execute(): void {
     super.execute()
-    const closestFighter: Fighter = this.fighter.getClosestFigther()
+    const closestFighter: Fighter = this.fighter.getClosestFighter()
     this.fighter.fighterTargetedForAttack = closestFighter
     if(closestFighter)
     switch(this.fighter.getFighterClosenessRating(closestFighter)){

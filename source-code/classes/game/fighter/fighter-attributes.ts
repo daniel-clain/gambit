@@ -39,6 +39,8 @@ class FighterAttribute implements IFighterAttribute{
 }
 
 
+
+
 const defaultFighterAttributes: FighterAttribute[] = [
   new FighterAttribute('Strength'),
   new FighterAttribute('Intelligence'),

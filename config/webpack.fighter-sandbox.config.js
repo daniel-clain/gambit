@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -27,19 +28,7 @@ module.exports = {
               "./source-code/client/fighter-sandbox/**/*"
             ]
         },
-      },{
-        test: /\.(gif|png|jpe?g|svg)$/i,
-        use: [
-          'file-loader',
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: true, // webpack@1.x
-              disable: true, // webpack@2.x and newer
-            },
-          },
-        ],
-      }
+      },
     ]
   },
   resolve: {
@@ -48,6 +37,15 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './source-code/client/fighter-sandbox/fighter-sandbox.html'
-    })
+    }),
+    new CopyPlugin([
+      { 
+        from: './source-code/client/images/**/*', 
+        to: './images',
+        test: /\.(jpe?g|png)$/i,     
+        flatten: true,   
+        ignore: ['*.ts']
+      },
+    ]),
   ]
 };
