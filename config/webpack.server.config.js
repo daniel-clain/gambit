@@ -18,7 +18,10 @@ module.exports = {
         test: /\.ts?$/,
         loader: 'awesome-typescript-loader',
         options: {
-            configFileName: 'config/tsconfig.json'
+            configFileName: 'config/tsconfig.json',
+            reportFiles: [ // need otherwise will compile server and node_modules
+              "./source-code/server/server.ts"
+            ]
         },
       }
     ]

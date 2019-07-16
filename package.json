@@ -7,7 +7,7 @@
     "compile.all": "npm-run-all --parallel compile.client compile.server",
     "compile.docker": "docker build -t balls .",
     "compile.fighter-sandbox": "webpack --watch --config config/webpack.fighter-sandbox.config.js",
-    "run.server": "nodemon --inspect compiled-code/server/server.js",
+    "run.server": "nodemon --inspect=0.0.0.0:1234 compiled-code/server/server.js",
     "run.gui-tests": "jest --config config/jest.config.gui-test.js",
     "run.automated-scenarios": "jest --config config/jest.config.automated-scenarios.js",
     "run.docker": "docker run --rm -p80:4444 --ip 172.17.0.1 balls",

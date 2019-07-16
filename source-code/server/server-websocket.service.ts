@@ -1,104 +1,110 @@
-import {Socket} from 'socket.io';
-import {Server} from 'socket.io';
+
 import * as socketio from 'socket.io'
 import Player from '../interfaces/player';
-import { ClientToServer } from '../interfaces/client-to-server.interface';
-import { ServerToClient } from '../interfaces/server-to-client.interface';
-import ServerPlayer from '../interfaces/server-player';
+import { Server, Socket } from 'socket.io';
+import { Subject } from 'rxjs';
+import ActionFromClient from '../interfaces/player-action';
+import IWebsocketService from '../interfaces/websocket-service.interface';
+import ActionFromPlayer from '../interfaces/player-action';
+import PlayerAction from '../interfaces/player-action';
+import { ClientAction } from '../interfaces/client-action';
+import { ClientUIState } from '../client/client';
 
-export default class ServerWebsocketService {
+export interface Action extends Function{}
+const action: Action = () => (console.log('action'))
+
+interface ConnectedClient{
+  socket: Socket
+  id?: string
+}
+
+export default class ServerWebsocketService implements IWebsocketService{
+  port = 33
   websocketServer: Server
-  connectedPlayers: ServerPlayer[] = []
-  constructor(port: number){
-    this.websocketServer = socketio.listen(port)
-    this.websocketServer.on("connection", (socket: Socket) => {
-      console.log('connection');
-      socket.on('client to server', 
-        (clientToServer) => this.event(clientToServer, socket)) 
-      socket.on('disconnect', (reason) => {
-        console.log('reason :', reason);
-        const disconnectingPlayer = this.connectedPlayers.find((player: ServerPlayer) => 
-        player.socket.id == socket.id)
-        if(disconnectingPlayer){
-          this.removePlayer(disconnectingPlayer)
-        } else {
-          console.log('now that does not make sense');
-        }
 
-      });
+  connectedClients: ConnectedClient[] = []
+
+  playerConnected: Subject<Player> = new Subject()
+  actionFromPlayer: Subject<PlayerAction> = new Subject()
+  playerJoiningGame: Subject<string> = new Subject()
+  playerDisconnected: Subject<string> = new Subject()
+
+  constructor(){
+    this.setUpWebsockets()
+  }
+
+  private setUpWebsockets(){
+    this.websocketServer = socketio.listen(this.port)
+    this.websocketServer.on("connection", (socket: Socket) => { 
+      this.addConnectedClient(socket)
+      socket.on('Action From Client', (actionFromClient: ClientAction) => this.handleActionFromClient(socket, actionFromClient)) 
+      socket.on('Action From Player', (actionFromPlayer: PlayerAction) => this.handleActionFromPlayer(actionFromPlayer)) 
+      socket.on('disconnect', (reason) => this.handleDisconnectingClient(socket, reason))
     });
+  }
+
+  private addConnectedClient(socket: Socket){    
+    if(this.connectedClients.some((connectedClient: ConnectedClient) => connectedClient.socket.id == socket.id))
+      throw 'trying to push client with existing socket id'
+    console.log('pushing client connection');
+    this.connectedClients.push({socket: socket})
+  }
+
+  private handleConnectingPlayer(socket: Socket, player: Player){
+    console.log('connecting player ', player);
+    const foundConnectedClient: ConnectedClient = this.connectedClients.find((connectedClient: ConnectedClient) => connectedClient.socket.id == socket.id)
+    
+    if(foundConnectedClient == undefined)
+      throw 'connecting client should have an existing connectedClient record'
+    if(foundConnectedClient.id != null)
+      throw 'connecting client should not already have its id set'
+
+    foundConnectedClient.id = player.id
+
+    this.playerConnected.next(player)
     
   }
 
-  event(clientToServer: ClientToServer, socket: Socket){
-    switch(clientToServer.name){
-      case 'connect' : {
-        this.handleConnect(clientToServer, socket)
-      }
+  private handleDisconnectingClient(socket: Socket, reason){
+    const disconnectingClient: ConnectedClient = this.connectedClients.find((connectedClient: ConnectedClient) => connectedClient.socket.id == socket.id)
+    if(!!disconnectingClient == false){
+      console.log('trying to disconect client that is not in the list');
+      return
     }
-  }
-
-  private removePlayer(disconnectingPlayer: ServerPlayer){
-    this.connectedPlayers = this.connectedPlayers.filter(
-      (connectedPlayer: ServerPlayer) => connectedPlayer.socket.id != disconnectingPlayer.socket.id)
-    this.broadcastUpdatedConnectedPlayers()
-  }
+    this.playerDisconnected.next(disconnectingClient.id)
+    this.connectedClients = this.connectedClients.filter((connectedClient: ConnectedClient) => connectedClient.id != disconnectingClient.id)
 
 
-  private handleConnect(clientToServer: ClientToServer, socket: Socket){
-    console.log('its bout time client connected to server');
-    let player: ServerPlayer
-    let clientPlayer: Player = clientToServer.data
-    let foundPlayer: ServerPlayer = this.connectedPlayers.find(player => player.name == clientPlayer.name)
-    if(foundPlayer){
-      foundPlayer = {...foundPlayer, name: clientPlayer.name, socket:  socket, connected: true}
-      player = foundPlayer
-    }
-    else {
-      const newPlayer: ServerPlayer = { 
-        name: clientPlayer.name, 
-        socket:  socket, 
-        connected: true, 
-        clientId: clientToServer.clientId, 
-        gameId: null
-      }
-      this.connectedPlayers.push(newPlayer)
-      player = newPlayer
-    }
-
-
-    this.sendToClient(player, {name: 'player connected', transactionId: clientToServer.transactionId})
-    this.broadcastUpdatedConnectedPlayers()
-  }
-
-  private sendToClient(player: ServerPlayer, serverToClient: ServerToClient): void {   
-    player.socket.emit('server to client', serverToClient)
-  }
-
-  broadcastUpdatedConnectedPlayers(){
-    const updateForAllClients: ServerToClient = {
-      name: 'connected players update', 
-      data: [...this.connectedPlayers].map(this.convertToClientPlayer)
-    }
-    this.updateAllClients(updateForAllClients)
-  }
-
-  updateAllClients(serverToClient: ServerToClient){
-    this.connectedPlayers.forEach((player: ServerPlayer) => {
-      player.socket.emit('server to client', serverToClient)
-    })
-  }
-
-  convertToClientPlayer(serverPlayer: ServerPlayer): Player{
-    const player: Player = {
-      name: serverPlayer.name,
-      connected: serverPlayer.connected,
-      clientId: serverPlayer.clientId,
-      gameId: serverPlayer.gameId
-    }
-    return player
   }
   
+  private handleActionFromClient(socket, actionFromClient: ClientAction){
+    console.log('action from client: ', actionFromClient);
+
+    if(actionFromClient.name == 'Connect'){
+      const {name, id} = actionFromClient.arguments
+      this.handleConnectingPlayer(socket, {name: name, id: id})
+    }
+
+    if(actionFromClient.name == 'Join Game'){
+      const {id} = actionFromClient.arguments
+      this.playerJoiningGame.next(id)
+      
+    }
+  }
+
+  private handleActionFromPlayer(actionFromPlayer: ActionFromPlayer){
+    console.log('action from player: ', actionFromPlayer);
+    this.actionFromPlayer.next(actionFromPlayer)
+  }
+
+  sendUIStateUpdate(playerIds: string[], clientUiState: ClientUIState){
+    const playerSockets: Socket[] = playerIds.map(id => 
+      this.connectedClients.find((connectedClient: ConnectedClient) => id == connectedClient.id).socket
+    )
+    playerSockets.forEach((socket: Socket) => socket.emit('UI State Update', clientUiState))
+    
+  }
 
   
+
 }

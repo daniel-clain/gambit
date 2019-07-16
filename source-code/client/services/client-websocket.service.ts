@@ -7,15 +7,57 @@ import Player from '../../interfaces/player';
 import ConnectionStates from '../../types/connection-states';
 import IMessageService from "../../interfaces/message-service.interface";
 import GameUpdates from "../../interfaces/game/fighter/game-updates";
+import GameView, { GameViewProps } from "../app-ui/views/game-view/game-view";
+import { ManagerOptionNames } from "../../types/game/managerOptionNames";
 
-export default class ClientWebsocketService implements IMessageService{
+export default class ClientWebsocketService{
   private websocketServer
-  
+  appStateUpdates: Subject<AppUIView> = new Subject()
   private serverToClientSubject: Subject<ServerToClient> = new Subject()
   
   connectedPlayersSubject: Subject<Player[]> = new Subject()
   connectedSubject: Subject<ConnectionStates> = new Subject()
   gameUpdatesSubject: Subject<GameUpdates> = new Subject()
+
+  constructor(){
+    setTimeout(() => {
+      const stateUpdate: AppUIViewState = {        
+        name: 'Game',
+        props: <GameViewProps>{
+          activeScene: {
+            name: 'Manager Options',
+            props: <ManagerOptionsSceneProps>{
+              money: 5000,
+              actionPoints: 3,
+              fightersInTheNextFight: [
+                {name: 'Bob'},
+                {name: 'Kevin'},
+                {name: 'Alan'},
+                {name: 'Steve'},
+              ],
+              yourFighters: [                
+                {name: 'Joe'},
+                {name: 'Dave'},
+                {name: 'Mike'},
+                {name: 'Trevor'},
+              ],
+              options: [                   
+                {name: 'Assasinate fighter'},
+                {name: 'Get fighter sponsored'},
+                {name: 'Give performance enhancing drugs to fighter'},
+                {name: 'Research fighter'},
+                {name: 'Send body guards to protect fighter'},
+                {name: 'Send private investigator to spy on manager'},
+                {name: 'Send thugs to assault fighter'},
+                {name: 'Train fighter'},
+              ]
+            }
+          }
+        }
+      }
+      this.appStateUpdates.next(stateUpdate)
+    })
+  }
 
   
   onReceiveGameUpdates(callback: (value: GameUpdates) => void): void{
@@ -86,6 +128,7 @@ export default class ClientWebsocketService implements IMessageService{
     this.websocketServer.on('disconnect', (error) => {
       console.log('disconnect :', error)
     })
+
     this.websocketServer.on('connection_refused', (error) => console.log('connection_refused :', error))
     this.websocketServer.on('connection_error', (error) => console.log('connection_error :', error))
     this.websocketServer.on('connect_timeout', (error) => console.log('connect_timeout :', error))

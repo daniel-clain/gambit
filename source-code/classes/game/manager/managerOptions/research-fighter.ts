@@ -1,13 +1,12 @@
-import { ManagerOption } from "../../../../models/game/managerOptions";
-import { ManagerOptionNames } from "../../../../types/game/managerOptionNames";
+import IManagerOption, { ManagerOptionNames } from "./manager-option";
 
 
-export class ResearchFighter extends ManagerOption{
+
+export class ResearchFighter implements IManagerOption{
   name: ManagerOptionNames = 'Research fighter'
   cost: number = 0
   
-  constructor(){
-    super()
+  execute() {
+    console.log('executing Research fighter');
   }
-
 }

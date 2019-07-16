@@ -1,5 +1,5 @@
-import { Fighter } from "../../fighter/fighter";
-import Player from "../../../../interfaces/player";
+import { Fighter } from "../fighter/fighter";
+import Player from "../../../interfaces/player";
 import { Subscription } from 'rxjs'
 
 export class Fight {

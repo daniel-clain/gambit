@@ -1,16 +1,22 @@
-import { Fighter } from "../fighter/fighter";
-import { Bet } from "../../../models/game/bet";
-import { ManagerOption } from "../../../models/game/managerOptions";
+import IManagerOption from "./managerOptions/manager-option";
+import Fighter from "../fighter/fighter";
+import { GetFighterSponsored } from "./managerOptions/get-fighter-sponsored";
+import { TrainFighter } from "./managerOptions/train-fighter";
+import { ResearchFighter } from "./managerOptions/research-fighter";
 
-export class Manager{  
+export default class Manager{  
+  playerId: string
   retired: boolean = false
   money: number = 500
   sponsoredFighters: Fighter[] = []
   actionPoints = 3
-  options: ManagerOption[]
-  bet: Bet
+  options: IManagerOption[] = [
+    new GetFighterSponsored(),
+    new ResearchFighter(),
+    new TrainFighter()
+  ]
 
-  constructor(managerOptions: ManagerOption[]){
-    this.options = managerOptions
+  constructor(playerId: string){
+    this.playerId = playerId
   }
 }

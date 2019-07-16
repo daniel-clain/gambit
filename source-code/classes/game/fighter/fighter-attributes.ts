@@ -1,9 +1,11 @@
+
+type FighterAttributeName = 'Strength' | 'Speed' | 'Intelligence' | 'Endurance' | 'Aggression' | 'Passion'
+
 export interface IFighterAttribute{
-  name: string
+  name: FighterAttributeName
   value: number
 }
 
-type FighterAttributeName = 'Strength' | 'Speed' | 'Intelligence' | 'Endurance' | 'Aggression'
 
 class FighterAttribute implements IFighterAttribute{
   private _name: FighterAttributeName
@@ -33,20 +35,30 @@ class FighterAttribute implements IFighterAttribute{
   get value(): number {
     return this._value
   }
-  get name(): string {
+  get name(): FighterAttributeName {
     return this._name
   }
 }
 
 
 
+export interface IFighterAttributes{
+  strength: FighterAttribute
+  intelligence: FighterAttribute
+  speed: FighterAttribute
+  endurance: FighterAttribute
+  aggression: FighterAttribute
+  passion: FighterAttribute
 
-const defaultFighterAttributes: FighterAttribute[] = [
-  new FighterAttribute('Strength'),
-  new FighterAttribute('Intelligence'),
-  new FighterAttribute('Speed'),
-  new FighterAttribute('Endurance'),
-  new FighterAttribute('Aggression')
-]
+}
+
+const defaultFighterAttributes: IFighterAttributes = {
+  strength: new FighterAttribute('Strength'),
+  intelligence: new FighterAttribute('Intelligence'),
+  speed: new FighterAttribute('Speed'),
+  endurance: new FighterAttribute('Endurance'),
+  aggression: new FighterAttribute('Aggression'),
+  passion: new FighterAttribute('Passion')
+}
 
 export default defaultFighterAttributes

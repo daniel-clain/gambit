@@ -1,9 +1,9 @@
-import Fighter from "../../fighter/fighter";
+
 import FightUpdateLoop from "./fight-update-loop";
-import ArenaDimensions from "../../../../interfaces/game/fighter/arena-dimensions";
-import { random } from "../../../../helper-functions/helper-functions";
-import FighterModelImage from "../../../../interfaces/game/fighter/fighter-model-image";
-import { fighterModelImages } from './../../../../client/images/fighter/fighter-model-images';
+import Fighter from "../fighter/fighter";
+import { random } from "../../../helper-functions/helper-functions";
+import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
+
 
 export default class Fight {
   fightUpdateLoop: FightUpdateLoop
@@ -18,7 +18,7 @@ export default class Fight {
   
   constructor(fighters: Fighter[]) {
     this.fighters = fighters
-    this.fighters.forEach((fighter: Fighter) => fighter.joinFight(this))
+    //this.fighters.forEach((fighter: Fighter) => fighter.getPutInFight(this.arenaDimensions))
     this.fightUpdateLoop = new FightUpdateLoop(this)
   }
 
@@ -29,18 +29,18 @@ export default class Fight {
   
 
   start(){
-    this.placeFighters()
+    //this.placeFighters()
     this.fightUpdateLoop.startLoop()
   }
 
-  placeFighters(){
+  /* placeFighters(){
     
     this.fighters.forEach((fighter: Fighter) => {
       const modelHeight: number = fighterModelImages.find((image: FighterModelImage) => image.modelState == 'Idle').dimensions.height
       fighter.position.x = random(this.arenaDimensions.width) + this.arenaDimensions.outFromLeft
       fighter.position.y = random(this.arenaDimensions.height - modelHeight) + this.arenaDimensions.upFromBottom + modelHeight
     })
-  }
+  } */
 
 
 }

@@ -7,65 +7,52 @@ import * as React from 'react'
 import ConnectionStates from '../../types/connection-states';
 import StyledApp from './styled/app'
 import Header from './Header/header';
+import { Subject } from 'rxjs';
 
-type AppState = {
-  connection: ConnectionStates,
-  player: Player
+
+interface PreGameState{}
+
+type UIViewName = 'Pre Game' | 'Game'
+
+interface AppUIView{
+  name: UIViewName
+  subState: any
+}
+class PreGameView implements AppUIView{
+  name: UIViewName = 'Pre Game'
+  subState: PreGameState;
+}
+class GameView implements AppUIView{
+  name: UIViewName = 'Game'
+  subState: any;
 }
 
-export default class App extends React.Component{
-  websocketService: ClientWebsocketService
-  clientService: ClientService
-  state: AppState = {
-    connection: 'Not Connected',
-    player: {
-      name: null,
-      connected: false,
-      clientId: null,
-      gameId: null
-    }
 
-  }
+interface AppUIState{
+  activeView: AppUIView
+}
+
+
+interface AppUIProps{
+  appStateUpdates: Subject<AppUIState>
+}
+
+export default class App extends React.Component<AppUIProps>{
+  appUIState
   constructor(props){
-    super(props)
-    this.websocketService = new ClientWebsocketService()
-    this.clientService = new ClientService()
+    super(props)    
+    props.appStateUpdates.subscribe(updatedAppUIState => this.appUIState = updatedAppUIState)
     
-    this.clientService.playerObservable.subscribe(
-      (player: Player) => this.setState({player: player})
-    )
-    this.websocketService.connectedSubject.subscribe(
-      (connection: ConnectionStates) => this.setState({connection: connection})
-    )
-  }
-
-  componentDidUpdate(){
-    if(this.state.player.name && this.state.connection == 'Not Connected'){
-      this.websocketService.tryToConnect(this.state.player)
-    }
   }
 
   render(){
-    const {connection, player} = this.state
-    return (
-      <StyledApp>
-        <Header connectionState={connection}></Header>
-        {connection == 'Connected' ? 
-          <Connected
-            websocketService={this.websocketService} 
-            clientService={this.clientService} 
-            player={player}
-          />
-        :
-          <NotConnected
-            websocketService={this.websocketService} 
-            clientService={this.clientService} 
-            player={player}
-            connection={connection}
-          />
-        } 
-      </StyledApp>
-    )
+    const {activeView} = this.appUIState
+    return () => {
+      switch(activeView.name){
+        case 'Pre Game' : return <pre-game {...activeView.subState}></pre-game>; break;
+        case 'Game' : return <game {...activeView.subState}></game>; break
+      }
+    }
   }
   
 }

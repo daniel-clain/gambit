@@ -16,7 +16,7 @@ module.exports = {
         options: {
             configFileName: 'config/tsconfig.json',
             reportFiles: [ // need otherwise will compile server and node_modules
-              "./source-code/client/**/*"
+              "./source-code/client/client.tsx"
             ]
         },
       }
