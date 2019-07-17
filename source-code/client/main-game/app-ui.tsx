@@ -1,14 +1,12 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import IGameFacade from '../interfaces/game-facade.interface';
-import ClientWebsocketService from './client-websocket-service';
-import UIView, { UIViewProps, GameLobbyView, ManagerOptionsView, FightEventView } from './views/view';
-import C_GameLobby from './views/game-lobby/game-lobby';
-import GameFacade from './game-facade';
-import C_ManagerOptions from './views/manager-options/manager-options';
-import C_FightEvent from './views/fight-event/fight-event';
+import { GameLobbyView, ManagerOptionsView, FightEventView } from '../views/view';
 import styled from 'styled-components';
+import ClientWebsocketService from '../client-websocket-service';
+import C_LocalGame, { LocalGameProps } from '../local-single-player/local-single-player';
+import Game from '../../classes/game/game';
+
 
 export type ClientUIState = {
   views: {
@@ -24,8 +22,7 @@ const S_UIRoot = styled.div`
 `
 
 export default class C_ClientUI extends React.Component{
-
-  private websocketService: ClientWebsocketService
+  websocketService: ClientWebsocketService
 
   private gameFacade: IGameFacade
 
@@ -47,16 +44,18 @@ export default class C_ClientUI extends React.Component{
   constructor(props){
     super(props)
     this.websocketService = new ClientWebsocketService()
-    this.gameFacade = new GameFacade(this.websocketService)
+    this.gameFacade = new RemoteGameFacade(this.websocketService)
     this.websocketService.uIStateUpdateSubject.subscribe((updatedState: ClientUIState) => {
       console.log(updatedState)
        this.setState(updatedState)
     })
   }
+  
   render(){
     const {views} = this.state
     return (
       <S_UIRoot id='root-ui'>
+        <h1>{process.env.GameLocation}</h1>
         {views.gameLobby != null && 
           <C_GameLobby {...views.gameLobby.props} websockeService={this.websocketService}></C_GameLobby>
         }
@@ -68,7 +67,7 @@ export default class C_ClientUI extends React.Component{
         }
       </S_UIRoot>
     )
-  } 
+  }
 }
 ReactDOM.render(<C_ClientUI/>, document.getElementById('react-rendering-div'))
 

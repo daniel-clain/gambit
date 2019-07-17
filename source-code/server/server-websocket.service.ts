@@ -9,6 +9,7 @@ import ActionFromPlayer from '../interfaces/player-action';
 import PlayerAction from '../interfaces/player-action';
 import { ClientAction } from '../interfaces/client-action';
 import { ClientUIState } from '../client/client';
+import { PreGameState } from '../client/pre-game';
 
 export interface Action extends Function{}
 const action: Action = () => (console.log('action'))
@@ -81,13 +82,14 @@ export default class ServerWebsocketService implements IWebsocketService{
     console.log('action from client: ', actionFromClient);
 
     if(actionFromClient.name == 'Connect'){
-      const {name, id} = actionFromClient.arguments
-      this.handleConnectingPlayer(socket, {name: name, id: id})
+      const player: Player = {...actionFromClient.arguments, id: actionFromClient.playerId}
+      
+      this.handleConnectingPlayer(socket, player)
     }
 
     if(actionFromClient.name == 'Join Game'){
-      const {id} = actionFromClient.arguments
-      this.playerJoiningGame.next(id)
+      const {playerId} = actionFromClient
+      this.playerJoiningGame.next(playerId)
       
     }
   }
@@ -97,12 +99,22 @@ export default class ServerWebsocketService implements IWebsocketService{
     this.actionFromPlayer.next(actionFromPlayer)
   }
 
-  sendUIStateUpdate(playerIds: string[], clientUiState: ClientUIState){
-    const playerSockets: Socket[] = playerIds.map(id => 
-      this.connectedClients.find((connectedClient: ConnectedClient) => id == connectedClient.id).socket
-    )
-    playerSockets.forEach((socket: Socket) => socket.emit('UI State Update', clientUiState))
-    
+  sendPreGameStateUpdate(clientId: string, preGameState: PreGameState){
+    const clientsSocket: Socket = this.getSocketClientById(clientId)
+    clientsSocket.emit('PreGame State Update', preGameState) 
+  }
+
+
+  sendGameStateUpdate(clientId: string, gameStateUpdate: ClientUIState){  
+    const clientsSocket: Socket = this.getSocketClientById(clientId)
+    clientsSocket.emit('Game State Update', gameStateUpdate) 
+  }
+
+  private getSocketClientById(clientId: string): Socket{
+    return this.connectedClients.find(
+      (connectedClient: ConnectedClient) => clientId == connectedClient.id
+    ).socket
+
   }
 
   

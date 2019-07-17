@@ -7,81 +7,79 @@ import IManagerOption from "../classes/game/manager/managerOptions/manager-optio
 import PlayerAction from "../interfaces/player-action";
 import { ClientAction } from "../interfaces/client-action";
 import { ClientUIState } from "../client/client";
+import defaultUiState from "./default-ui-state";
+import { Subject } from "rxjs";
+import UIUpdateEvent from "./ui-update-event";
 
 export default class App{
-
-  websocketService = new ServerWebsocketService()
   connectedPlayers: Player[] = []
   activeGames: Game[] = []
+  clientUIState: ClientUIState
+  uiUpdateSubjects: Subject<UIUpdateEvent>[] = []
+  
 
-  constructor(){
-    this.websocketService.playerConnected.subscribe((player: Player) => this.addNewPlayer(player))
-    this.websocketService.playerDisconnected.subscribe((clientId: string) => this.handlePlayerDisconnect(clientId))
-    this.websocketService.playerJoiningGame.subscribe((playerId: string) => this.handlePlayerJoiningGame(playerId))
-    this.websocketService.actionFromPlayer.subscribe((actionFromPlayer: PlayerAction) => this.handleActionFromPlayer(actionFromPlayer))
+
+  constructor(private websocketService: ServerWebsocketService){
+    this.clientUIState = defaultUiState
+    const {playerConnected, playerDisconnected, playerJoiningGame,
+      actionFromPlayer,
+      sendUIStateUpdate
+    } = this.websocketService
+    playerConnected.subscribe((player: Player) => this.addNewPlayer(player))
+    playerDisconnected.subscribe((clientId: string) => this.handlePlayerDisconnect(clientId))
+    playerJoiningGame.subscribe((playerId: string) => this.handlePlayerJoiningGame(playerId))
+    actionFromPlayer.subscribe((actionFromPlayer: PlayerAction) => this.handleActionFromPlayer(actionFromPlayer))
+    
   }
 
   private addNewPlayer(player: Player){
-    console.log('adding player');    
+    console.log('adding playerxx');    
     const foundPlayer: Player = this.connectedPlayers.find((connectedPlayer: Player) => connectedPlayer.id == player.id)    
     if(foundPlayer)
       throw 'added player should not already be in the players list'
     this.connectedPlayers.push(player)
     console.log(player.name + ' pushed to list of players');
 
-    const state: ClientUIState = {
-      views: {
-        gameLobby: {
-          props: {
-            isActive: true,
-            connected: true
-          }
-        },
-        managerOptions: null,
-        fightEvent: null
-      }
-    }
-    this.websocketService.sendUIStateUpdate([player.id], state)
+    const newUIState: ClientUIState = {...this.clientUIState}
+    newUIState.views.gameLobby.props.connected = true
+    this.setUiState(player.id, newUIState)    
   }
 
+  
+  setUiState(playerId, state: ClientUIState){
+    sendUIStateUpdate([playerId], state)
+    console.log('ui state update sent');
+  }
+
+
+
   private handlePlayerDisconnect(clientId: string){
-    console.log('disconnecting player');
     const foundDisconnectingPlayer: Player = this.connectedPlayers.find((player: Player) => player.id == clientId)
     if(foundDisconnectingPlayer == undefined)
       console.log('disconecting player is not in the player list')
     else{
       console.log(foundDisconnectingPlayer.name + ' has disconnected');
-      this.connectedPlayers = this.connectedPlayers.filter((player: Player) => player.id == clientId)
+      this.connectedPlayers = this.connectedPlayers.filter((player: Player) => player.id != clientId)
     }
-
   }
 
-  handlePlayerJoiningGame(id: string){
-    console.log('action from client!');
-    
-    this.activeGames.push(new Game('my game id', [id]))
-    
-    const state: ClientUIState = {
-      views: {
-        gameLobby: {
-          props: {
-            isActive: false,
-            connected: true
-          }
-        },
-        managerOptions: {
-          props: {
-            isActive: true,
-            money: 50000,
-            actionPoints: 5
-          }
-        },
-        fightEvent: null
+
+  handlePlayerJoiningGame(playerId: string){
+    console.log('action from client!');    
+    this.activeGames.push(new Game('my game id', [playerId]))    
+    const newUIState: ClientUIState = {...this.clientUIState}
+    newUIState.views.gameLobby.props.isActive = false
+    newUIState.views.managerOptions = {
+      props: {
+        isActive: true,
+        money: 50000,
+        actionPoints: 5
       }
     }
-    this.websocketService.sendUIStateUpdate([id], state)
-      
+    this.setUiState(playerId, newUIState)          
   }
+
+
 
   handleActionFromPlayer(action: PlayerAction){
     let managerOption: IManagerOption
