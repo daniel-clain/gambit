@@ -3,14 +3,12 @@ import FightScheduler from "./fight-scheduler/fight-scheduler";
 import Manager from "./manager/manager";
 import gameConfiguration, { GameConfiguration } from "./game-configuration";
 import Fighter from "./fighter/fighter";
-import { Subject } from "rxjs";
 import IGameFacade from "../game-facade/game-facade";
-import { GameUIProps } from "../../client/components/game-ui";
-import { PreGameUIState } from "../../client/main-game/pre-game";
+import { Subject } from 'rxjs';
+import { GameUIState } from '../../client/components/game-ui';
 
 export default class Game implements IGameFacade {
-  preGameStateUpdates: Subject<PreGameUIState>;
-  gameStateUpdates: Subject<GameUIProps>;
+  gameStateUpdates: Subject<GameUIState>
   
   private fighters: Fighter[]
   private managers: Manager[]

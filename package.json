@@ -2,27 +2,21 @@
   "name": "gambit",
   "version": "1.0.0",
   "scripts": {
-
     "local-single-player": "run-p compile.local-single-player run.local-single-player",
     "fighter-sandbox": "run-s compile.fighter-sandbox run.fighter-sandbox",
     "main-game": "run-s compile.main-game run.main-game",
-    
     "run.local-single-player": "webpack-dev-server --open --config config/webpack.local-single-player.config.js",
     "run.fighter-sandbox": "webpack-dev-server --open --config config/webpack.fighter-sandbox.config.js",
     "run.main-game": "nodemon --inspect=0.0.0.0:1234 compiled-code/server/server.js",
-    
     "compile.local-single-player": "webpack --watch --config config/webpack.local-single-player.config.js",
     "compile.fighter-sandbox": "webpack --watch --config config/webpack.fighter-sandbox.config.js",
     "compile.main-game": "run-p compile.client.main-game compile.server.main-game",
-
     "compile.client.main-game": "webpack --watch --config config/webpack.client.main-game.config.js",
     "compile.server.main-game": "webpack --watch --config config/webpack.server.main-game.config.js",
-    
     "compile.docker": "docker build -t balls .",
     "run.gui-tests": "jest --config config/jest.config.gui-test.js",
     "run.automated-scenarios": "jest --config config/jest.config.automated-scenarios.js",
     "run.docker": "docker run --rm -p80:4444 --ip 172.17.0.1 balls"
-
   },
   "dependencies": {
     "express": "^4.17.1",

@@ -1,13 +1,10 @@
 
 import { Subject } from "rxjs";
-import { GameUIProps } from "../../client/components/game-ui";
-import { PreGameUIState } from "../../client/main-game/pre-game";
-
+import { GameUIState } from "../../client/components/game-ui";
 
 
 export default interface IGameFacade{  
-  preGameStateUpdates: Subject<PreGameUIState>
-  gameStateUpdates: Subject<GameUIProps>
+  gameStateUpdates: Subject<GameUIState>
 }
 /* 
 export default interface IGameFacade{  

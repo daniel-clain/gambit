@@ -1,21 +1,48 @@
+import {Socket} from 'socket.io';
 
-import ServerWebsocketService, { Action } from "./server-websocket.service";
+import ServerWebsocketService from "./server-websocket.service";
 import Player from "../interfaces/player";
 import Game from "../classes/game/game";
 import Manager from "../classes/game/manager/manager";
 import IManagerOption from "../classes/game/manager/managerOptions/manager-option";
 import PlayerAction from "../interfaces/player-action";
-import { ClientAction } from "../interfaces/client-action";
-import { ClientUIState } from "../client/client";
 import defaultUiState from "./default-ui-state";
-import { Subject } from "rxjs";
-import UIUpdateEvent from "./ui-update-event";
+import { UIState } from '../client/main-game/main-game';
 
-export default class App{
-  connectedPlayers: Player[] = []
-  activeGames: Game[] = []
-  clientUIState: ClientUIState
-  uiUpdateSubjects: Subject<UIUpdateEvent>[] = []
+
+class GameLobby{
+
+}
+class ConnectedPlayer{
+  private _uiState: UIState
+  name: string
+  constructor(private socket: Socket, private _id: string){
+    this.socket.on('Action From Client', this.handleActionFromClient)
+  }
+  set uiState(uiState){
+    this._uiState = uiState
+    this.socket.emit('UI State Update', uiState)
+  }
+  get uiState(): UIState{
+    return this._uiState
+  }
+  get id(): string{
+    return this._id
+  }
+  private handleActionFromClient(actionFromClient){
+    switch(actionFromClient.name){
+      case ''
+    }
+  }
+
+}
+
+export default class GameHost{
+  private connectedPlayers: ConnectedPlayer[] = []
+  private activeGames: Game[] = []
+  private gameLobby: GameLobby
+
+
   
 
 
@@ -25,11 +52,20 @@ export default class App{
       actionFromPlayer,
       sendUIStateUpdate
     } = this.websocketService
-    playerConnected.subscribe((player: Player) => this.addNewPlayer(player))
+    playerConnected.subscribe(this.handleConnectingPlayer)
     playerDisconnected.subscribe((clientId: string) => this.handlePlayerDisconnect(clientId))
     playerJoiningGame.subscribe((playerId: string) => this.handlePlayerJoiningGame(playerId))
     actionFromPlayer.subscribe((actionFromPlayer: PlayerAction) => this.handleActionFromPlayer(actionFromPlayer))
     
+  }
+
+  private handleConnectingPlayer(socket: Socket, id: string){
+    if(this.connectedPlayers.some((player: ConnectedPlayer) => player.id == id)){
+      console.log('error: connecting player id already exists');
+      return
+    }
+    const player: ConnectedPlayer = new ConnectedPlayer(socket, id)
+    this.connectedPlayers.push(player)
   }
 
   private addNewPlayer(player: Player){
