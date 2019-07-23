@@ -1,29 +1,31 @@
 
 import * as React from 'react';
-import C_FightUI, { FightUIProps } from "./manager-ui";
-import C_ManagerUI, { ManagerUIProps } from "./fight-ui";
-import IGameFacade from '../../classes/game-facade/game-facade';
+import C_FightUI from "./manager-ui";
+import C_ManagerUI from "./fight-ui";
+import { GameState } from '../../interfaces/client-ui-state.interface';
 
-export interface GameUIProps{
-  gameFacade: IGameFacade
-}
-export interface GameUIState{
-  fightEventActive: boolean
-  managerUiProps: ManagerUIProps
-  fightUiProps: FightUIProps
-}
 
-export default class C_GameUI extends React.Component<GameUIProps>{
-  state: GameUIState
-  constructor(props){
-    super(props)
-    this.props.gameFacade.gameStateUpdates.subscribe(this.setState)
-  }
+
+export default class C_GameUI extends React.Component<GameState>{
+
   render(){
-    const {fightEventActive, fightUiProps, managerUiProps} = this.state
-    return fightEventActive ? 
-      <C_FightUI {...fightUiProps}/> : 
-      <C_ManagerUI {...managerUiProps}/>
+
+    /* players: [
+      {
+        name: null,
+        id: null
+      }
+    ],
+    gameChat: [],
+    fightActive: false,
+    timeTillNextFight: null,
+    fightEvent: FightEventState,
+    managerOptions: ManagerOptionsState */
+    const {fightActive, fightEvent, managerOptions} = this.props
+    if(fightActive)
+      return <C_FightUI {...fightEvent}/>
+    else
+      return <C_ManagerUI {...managerOptions}/>
   }
 
 }

@@ -1,23 +1,30 @@
 
 import * as React from 'react';
-import ClientWebsocketService from './client-websocket-service';
-import C_GameLobby, { GameLobbyUIProps } from './game-lobby';
-import C_EnterYourName from './enter-your-name';
-import C_ConnectionError from './connection-error';
-
-
 export interface PreGameUIProps{
-  isConnected: boolean
-  hasPlayerAccessedApp: boolean
-  gameLobbyProps: GameLobbyUIProps
+  tryToConnectToGameHost
 }
 
-export default class C_PreGame extends React.Component<PreGameUIProps>{
-  
+export default class C_PreGame extends React.Component<PreGameUIProps>{ 
 
   render(){
-    const {hasPlayerAccessedApp, isConnected, gameLobbyProps} = this.props
-    return !isConnected ? <C_ConnectionError/> : !hasPlayerAccessedApp ? <C_EnterYourName/> : <C_GameLobby {...gameLobbyProps}/>
+    const {tryToConnectToGameHost} = this.props
+    let inputName
+    const updateName = (e) => {
+      inputName = e.target.value
+    }
+    const submitName = () => {
+      if(inputName != ''){
+        localStorage.setItem('name', inputName)
+        tryToConnectToGameHost()
+      }
+    }
+    return (
+        <div>
+          <p>You must set your player name before you can connect.</p>
+          <input id="name-input" placeholder="name" onInput={e => updateName(e)}/>
+          <button id="submit-name-button" onClick={() => submitName()}>Submit</button>
+        </div>
+    )
   }
 }
 

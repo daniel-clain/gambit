@@ -8,7 +8,7 @@ import C_LocalGame, { LocalGameProps } from '../local-single-player/local-single
 import Game from '../../classes/game/game';
 
 
-export type ClientUIState = {
+export type xClientUIState = {
   views: {
     gameLobby: GameLobbyView
     managerOptions: ManagerOptionsView
@@ -26,7 +26,7 @@ export default class C_ClientUI extends React.Component{
 
   private gameFacade: IGameFacade
 
-  state: ClientUIState = {    
+  state: xClientUIState = {    
     views: {
       gameLobby: {
         props: {

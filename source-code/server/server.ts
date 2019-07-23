@@ -1,6 +1,6 @@
 import * as express from 'express';
-import App from './app';
 import ServerWebsocketService from './server-websocket.service';
+import GameHost from './game-host';
 
 console.clear()
 
@@ -10,5 +10,5 @@ const serverPort = 3302
 server.listen(serverPort, () => console.log('server listening on port ' + serverPort))
 
 
-new App(new ServerWebsocketService())
+new GameHost(new ServerWebsocketService())
 

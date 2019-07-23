@@ -4,7 +4,7 @@ import IGameFacade from '../../../interfaces/game-facade.interface';
 import * as React from 'react'
 import ClientWebsocketService from '../../client-websocket-service';
 
-export interface GameLobbyProps extends UIViewProps {
+export interface GameLobbyUIProps extends UIViewProps {
   isActive: boolean
   connected: boolean
   websockeService?: ClientWebsocketService

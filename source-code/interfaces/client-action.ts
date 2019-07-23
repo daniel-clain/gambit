@@ -1,8 +1,7 @@
 
-type ClientActionNames = 'Connect' | 'Join Game'
+type ClientActionNames = 'Connect' | 'Join Game' | 'Create Game' | 'Cancel Game' | 'Leave Game' | 'Start Game' | 'Ready To Start Game' | 'Submit Global Chat'
 
-export interface ClientAction{
-  playerId?: string
+export default interface ClientAction{
   name: ClientActionNames
-  arguments?: any
+  data?: any
 }
