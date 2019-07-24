@@ -18,7 +18,7 @@ export default class Player{
   }
   
   constructor(private _id: ClientId, private _name: ClientName, private game: Game){
-    
+    this.sendGameUIStateToClient()
   }
 
 

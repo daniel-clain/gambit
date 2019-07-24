@@ -1,5 +1,6 @@
+import {Fight} from './fight/fight-original';
 import GameImplementationCode from "./game-implementation-code";
-import FightScheduler from "./fight-scheduler/fight-scheduler";
+import FightScheduler, { FightSchedule } from "./fight-scheduler/fight-scheduler";
 import Manager from "./manager/manager";
 import gameConfiguration, { GameConfiguration } from "./game-configuration";
 import Fighter from "./fighter/fighter";
@@ -8,6 +9,7 @@ import { Subject } from 'rxjs';
 import { GameState, GameStateGeneral } from '../../interfaces/client-ui-state.interface';
 import Player from './player';
 import PlayerNameAndId from '../../interfaces/player-name-and-id';
+import ChatMessage from '../../interfaces/chat-message.interface';
 
 
 export default class Game{
@@ -18,6 +20,7 @@ export default class Game{
   private i: GameImplementationCode = new GameImplementationCode()
   private fightScheduler: FightScheduler
   private gameConfiguration: GameConfiguration
+  private gameChat: ChatMessage[]
 
 
 	constructor(playerNameAndIds: PlayerNameAndId[]) {
@@ -30,7 +33,16 @@ export default class Game{
       const player: Player = new Player(id, name, this)
       return player
     })
-    setTimeout(() => this.gameUpdate(), 10)
+    const {numberOfFighters, numberOfFightersPerFight, fighterNames} = this.gameConfiguration
+    this.fighters = this.i.getFightersWithRandomNames(numberOfFighters, fighterNames)
+
+    this.fightScheduler = new FightScheduler(this.fighters, numberOfFightersPerFight)
+    this.fightScheduler.fightScheduleSubject.subscribe(() => {
+      this.gameUpdate()
+    })
+
+
+
   }
   get players(){
     return this._players
@@ -44,9 +56,9 @@ export default class Game{
 
       const gameStateGeneral: GameStateGeneral = {
         players,
-        gameChat: [],
-        fightActive: false,
-        timeTillNextFight: null
+        gameChat: this.gameChat,
+        fightActive: this.fightScheduler.fightSchedule.fightActive,
+        timeTillNextFight: this.fightScheduler.fightSchedule.timeUntilNextFight
       }
 
       player.gameGeneralUiUpdate(gameStateGeneral)

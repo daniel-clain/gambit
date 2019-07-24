@@ -50,19 +50,19 @@ export interface ManagerOptionsState{
   money: null,
   actionPoints: null,
   clientFighters: [],
-  fighterInNextFight: [
-    {
-      name: null,
-      numberOfFights: null,
-      numberOfWins: null,
-      strength: null,
-      speed: null
-    }
-  ],
+  fightersInNextFight: FighterInfo[],
   activeBet: {
     fighterName: null,
     betAmount: null,
   },
   actionLog: []
+}
+
+export interface FighterInfo{
+  name: ClientName,
+  numberOfFights: number,
+  numberOfWins: number,
+  strength: number,
+  speed: number
 }
 

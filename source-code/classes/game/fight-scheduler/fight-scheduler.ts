@@ -1,33 +1,68 @@
-import { Observable } from "rxjs";
+
 import Fight from "../fight/fight";
 import Fighter from "../fighter/fighter";
 import { shuffle } from "../../../helper-functions/helper-functions";
+import { Subject } from 'rxjs';
 
-interface FightSchedule{
+export interface FightSchedule{
+  timeUntilNextFight: number
   fights: Fight[]
+  fightActive: boolean
 }
 
 export default class FightScheduler{
-  private fightSchedule: Fight[] = []
-  private fightScheduleInterval
-  private numberOfFightersPerFight = 2
-  fightScheduleSubject: Observable<FightSchedule> = new Observable((subscriber) => {
+  fightSchedule: FightSchedule = {
+    timeUntilNextFight: null,
+    fights: [],
+    fightActive: false
+  }
 
-  })
-  constructor(private allFighters: Fighter[]){
-    this.startSchedulingFights()
+  fightScheduleSubject: Subject<void> = new Subject()
+
+  constructor(private allFighters: Fighter[], private numberOfFightersPerFight: number){
+    this.addNewFightToSchedule()
+    this.startCountdownUntilNextFight()
+  }  
+
+  private startCountdownUntilNextFight(){
+    const timeUntilNextFight = 40
+    this.fightSchedule.timeUntilNextFight = timeUntilNextFight
+    const nextFightCountdown = setInterval(() => {
+      this.fightSchedule.timeUntilNextFight --  
+      this.fightScheduleSubject.next()
+    }, 1000)
+    setTimeout(() => {
+      clearInterval(nextFightCountdown)
+      this.startFight()
+    }, timeUntilNextFight * 1000)
+  }
+
+  private startFight(){
+    const nextFight: Fight = this.fightSchedule.fights[0]
+    nextFight.start()
+    this.fightSchedule.fightActive = true
+    nextFight.fightFinishedSubject.subscribe(() => {
+      this.fightFinished()
+    })
+  }
+
+  private fightFinished(){
+    this.fightSchedule.fightActive = false
+    this.fightSchedule.fights.shift()
+    this.addNewFightToSchedule()
+    this.startCountdownUntilNextFight()
   }
   
-  addFighterToFight(righterRef: Fighter){
-    this.fightSchedule[0].fighters.push(righterRef)
-  }
-  private startSchedulingFights(){
-    this.fightScheduleInterval = setInterval(this.addNewFightToSchedule())
-  }
   private addNewFightToSchedule(){
-    this.fightSchedule.push(new Fight(this.selectFightFighters()))
+    this.fightSchedule.fights.push(new Fight(this.selectFightFighters()))
   }
-  selectFightFighters(): Fighter[]{
-    return shuffle(this.allFighters)
+  private selectFightFighters(): Fighter[]{
+    const selectedFighters: Fighter[] = []
+    const shuffledFighters: Fighter[] = shuffle(this.allFighters)
+    for(let i = 0; i < this.numberOfFightersPerFight; i++){
+      selectedFighters.push(shuffledFighters[i])
+    }
+    return selectedFighters
   }
+
 }

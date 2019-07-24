@@ -36,7 +36,7 @@ export function getDirectionOfPosition2FromPosition1(pos1: Position, pos2: Posit
 
   return directionOfPosition2FromPosition1
 }
-export function shuffle(array: T): T[] {
+export function shuffle<T>(array: T[]): T[] {
   var currentIndex = array.length, temporaryValue, randomIndex;
 
   // While there remain elements to shuffle...

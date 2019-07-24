@@ -1,3 +1,4 @@
+import {Subject} from 'rxjs';
 
 import FightUpdateLoop from "./fight-update-loop";
 import Fighter from "../fighter/fighter";
@@ -6,8 +7,10 @@ import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
 
 
 export default class Fight {
-  fightUpdateLoop: FightUpdateLoop
+  private fightUpdateLoop: FightUpdateLoop
   fighters: Fighter[]
+
+  fightFinishedSubject: Subject<void> = new Subject()
   
   arenaDimensions: ArenaDimensions = {
     width: 600,
@@ -30,7 +33,8 @@ export default class Fight {
 
   start(){
     //this.placeFighters()
-    this.fightUpdateLoop.startLoop()
+    console.log('fight started');
+    //this.fightUpdateLoop.startLoop()
   }
 
   /* placeFighters(){
