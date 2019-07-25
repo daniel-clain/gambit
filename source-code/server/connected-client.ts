@@ -1,24 +1,27 @@
 import { Socket } from 'socket.io';
 import ClientName from '../types/client-name.type';
 import ClientId from '../types/client-id.type';
-import ClientUIState, { GameHostState, GameState } from '../interfaces/client-ui-state.interface';
+import ClientUIState, { GameHostUiState, GameUiState } from '../interfaces/client-ui-state.interface';
 import ClientAction from '../interfaces/client-action';
 import GameHost from './game-host';
 import GameLobbyClient from '../interfaces/game-lobby-client.interface';
-import GameLobby from './game-lobby';
+import GameLobby from '../interfaces/game-lobby.interface';
+import Game from '../classes/game/game';
+import Player from '../classes/game/player';
+import { Subscription } from 'rxjs';
 
 export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Update'
 
 
 export default class ConnectedClient{
-
+  private gameUiUpdateSubscription: Subscription 
   private clientUiState: ClientUIState = {
-    gameHost: {
+    gameHostUiState: {
       connectedPlayers: [],
       gameLobbies: [],
       globalChat: []
     },
-    game: null
+    gameUiState: null
   }
 
 
@@ -87,13 +90,25 @@ export default class ConnectedClient{
     this.gameHost.clientSubmittedGlobalMessage(this, message)
   }
 
-  gameHostUiUpdate(gameHostState: GameHostState){ 
-    this.clientUiState.gameHost = gameHostState
+  receiveGamePlayerReference(player: Player){    
+    this.gameUiUpdateSubscription = player.gameUiStateUpdateSubject.subscribe(
+      (gameUiState: GameUiState) => this.gameUiUpdate(gameUiState)
+    )
+  }
+
+  gameFinished(){
+    this.gameUiUpdateSubscription.unsubscribe()
+    this.gameUiUpdate(null)
+    
+  }
+
+  gameHostUiUpdate(gameHostState: GameHostUiState){ 
+    this.clientUiState.gameHostUiState = gameHostState
     this.sendUIStateToClient()
   }
 
-  gameUiUpdate(gameState: GameState){ 
-    this.clientUiState.game = gameState
+  gameUiUpdate(gameState: GameUiState){ 
+    this.clientUiState.gameUiState = gameState
     this.sendUIStateToClient()
   }
 

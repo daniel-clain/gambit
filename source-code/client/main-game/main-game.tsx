@@ -14,8 +14,8 @@ interface MainGameProps{
 
 export default class C_MainGame extends React.Component<MainGameProps>{
   state: ClientUIState = {
-    gameHost: null,
-    game: null
+    gameHostUiState: null,
+    gameUiState: null
   }
   
   constructor(props){
@@ -43,12 +43,14 @@ export default class C_MainGame extends React.Component<MainGameProps>{
   }
 
   render(){
-    const {gameHost, game} = this.state
-    if(game !== null)
-      return <C_GameUI {...game}/> 
+    const {gameHostUiState, gameUiState} = this.state
+    if(gameUiState !== null)
+      return <C_GameUI {...gameUiState}/> 
     
-    if(gameHost !== null)
-      return <C_GameHost gameHostState={gameHost} websocketService={this.props.websocketService}/>
+    if(gameHostUiState !== null)
+      return <C_GameHost 
+        gameHostUiState={gameHostUiState} 
+        websocketService={this.props.websocketService}/>
     
     return <C_PreGame tryToConnectToGameHost={this.tryToConnectToGameHost.bind(this)}/>
   }

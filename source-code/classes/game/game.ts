@@ -1,3 +1,4 @@
+import {ManagerUiState} from './../../interfaces/client-ui-state.interface';
 import {Fight} from './fight/fight-original';
 import GameImplementationCode from "./game-implementation-code";
 import FightScheduler, { FightSchedule } from "./fight-scheduler/fight-scheduler";
@@ -6,7 +7,7 @@ import gameConfiguration, { GameConfiguration } from "./game-configuration";
 import Fighter from "./fighter/fighter";
 import IGameFacade from "../game-facade/game-facade";
 import { Subject } from 'rxjs';
-import { GameState, GameStateGeneral } from '../../interfaces/client-ui-state.interface';
+import { GameUiState } from '../../interfaces/client-ui-state.interface';
 import Player from './player';
 import PlayerNameAndId from '../../interfaces/player-name-and-id';
 import ChatMessage from '../../interfaces/chat-message.interface';
@@ -21,6 +22,8 @@ export default class Game{
   private fightScheduler: FightScheduler
   private gameConfiguration: GameConfiguration
   private gameChat: ChatMessage[]
+
+  gameFinishedSubject: Subject<void> = new Subject()
 
 
 	constructor(playerNameAndIds: PlayerNameAndId[]) {
@@ -37,9 +40,7 @@ export default class Game{
     this.fighters = this.i.getFightersWithRandomNames(numberOfFighters, fighterNames)
 
     this.fightScheduler = new FightScheduler(this.fighters, numberOfFightersPerFight)
-    this.fightScheduler.fightScheduleSubject.subscribe(() => {
-      this.gameUpdate()
-    })
+    
 
 
 
@@ -48,22 +49,5 @@ export default class Game{
     return this._players
   }
 
-  gameUpdate(){
-    this.players.forEach((player: Player) => {
-      const players: PlayerNameAndId[] = this.players.map(
-        (player: Player) => ({name: player.name, id: player.id})
-      )
-
-      const gameStateGeneral: GameStateGeneral = {
-        players,
-        gameChat: this.gameChat,
-        fightActive: this.fightScheduler.fightSchedule.fightActive,
-        timeTillNextFight: this.fightScheduler.fightSchedule.timeUntilNextFight
-      }
-
-      player.gameGeneralUiUpdate(gameStateGeneral)
-    })
-  }
-  
   
 }

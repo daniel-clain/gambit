@@ -1,14 +1,16 @@
-import {GameHostState, GameState} from './../interfaces/client-ui-state.interface';
+import { GameHostUiState } from './../interfaces/client-ui-state.interface';
 import ServerWebsocketService from "./server-websocket.service";
 import ConnectedClient from './connected-client';
 import ConnectingClientData from '../interfaces/connecting-client-data';
-import GameLobby from './game-lobby';
 import GameLobbyClient from '../interfaces/game-lobby-client.interface';
 import ClientNameAndId from '../interfaces/client-name-and-id.interface';
 import Game from '../classes/game/game';
 import PlayerNameAndId from '../interfaces/player-name-and-id';
 import ChatMessage from '../interfaces/chat-message.interface';
 import Player from '../classes/game/player';
+import GameLobby from '../interfaces/game-lobby.interface';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators'
 
 
 export default class GameHost{
@@ -39,7 +41,7 @@ export default class GameHost{
     this.connectedClients.push(connectingClient)
     console.log(`${connectingClient.name} has connected to the game host`);
 
-    this.gameHostUpdate()   
+    this.sendGameHostUiUpdateToClients()   
   }
 
   clientDisconnected(disconnectingClient: ConnectedClient, reason){
@@ -50,7 +52,7 @@ export default class GameHost{
       this.cancelAnyGamesCreatedByClient(disconnectingClient)
       this.leaveAnyGamesClientIsIn(disconnectingClient)
 
-      this.gameHostUpdate()
+      this.sendGameHostUiUpdateToClients()
   }
 
 
@@ -63,7 +65,7 @@ export default class GameHost{
 
     this.gameLobbies.push(createdGameLobby)
     console.log(`${createdGameLobby.creator.name} created a game lobby`);
-    this.gameHostUpdate()
+    this.sendGameHostUiUpdateToClients()
   }
 
   clientJoinedGameLobby(joiningClient: ConnectedClient, gameLobbyId){
@@ -86,7 +88,7 @@ export default class GameHost{
     gameLobby.clients.push(joiningClientInfo)
 
     console.log(`${joiningClient.name} joined ${gameLobby.creator.name}'s game`);
-    this.gameHostUpdate()
+    this.sendGameHostUiUpdateToClients()
   }
 
   clientLeftGameLobby(leavingClient: ConnectedClient, gameLobbyId){    
@@ -97,7 +99,7 @@ export default class GameHost{
     gameLobby.clients.splice(leavingClientIndex, 1)
 
     console.log(`${leavingClient.name} has left ${gameLobby.creator.name}'s game lobby`);
-    this.gameHostUpdate()
+    this.sendGameHostUiUpdateToClients()
   }
 
 
@@ -114,7 +116,7 @@ export default class GameHost{
 
     this.gameLobbies.splice(cancledGameLobbyIndex, 1)
 
-    this.gameHostUpdate()
+    this.sendGameHostUiUpdateToClients()
   }
 
   clientToggledReadyInGameLobby(togglingClient: ConnectedClient, gameLobbyId, readyValue: boolean){  
@@ -127,7 +129,7 @@ export default class GameHost{
     gameLobby.clients[clientIndex].ready = readyValue
     
     console.log(`${togglingClient.name} set his ready state to ${readyValue} for ${gameLobby.creator.name}'s game lobby`);
-    this.gameHostUpdate()
+    this.sendGameHostUiUpdateToClients()
   }
 
   
@@ -143,17 +145,35 @@ export default class GameHost{
         return playerNameAndId
       }
     )
-    console.log(`${startedGameLobby.creator.name} has started his game lobby`);
+    console.log(`${startedGameLobby.creator.name} has started his game lobby!`);
     const newGame: Game = new Game(playerNameAndIds)
+
     newGame.players.forEach((player: Player) => {
-      const playersConnectedClient: ConnectedClient = this.connectedClients.find(
-        (connectedClient: ConnectedClient) => connectedClient.id == player.id
-      )
-      player.gameUiStateSubject.subscribe((gameState: GameState) => {
-        playersConnectedClient.gameUiUpdate(gameState)
+      const playersClient: ConnectedClient = this.getPlayersClient(player)
+      playersClient.receiveGamePlayerReference(player)
+    })
+
+    newGame.gameFinishedSubject.pipe(take(1)).subscribe(() => {
+      newGame.players.forEach((player: Player) => {
+        const playersClient: ConnectedClient = this.getPlayersClient(player)
+        playersClient.gameFinished()
       })
     })
+
     this.activeGames.push(newGame)
+    this.removeGameLobby(startedGameLobby)
+  }
+
+  private getPlayersClient(player: Player): ConnectedClient{
+    return this.connectedClients.find(
+      (client: ConnectedClient) => client.id == player.id
+    )
+  }
+
+
+  private removeGameLobby(removedGameLobby: GameLobby){
+    const startedGameLobbyIndex = this.gameLobbies.findIndex((gameLobby: GameLobby) => gameLobby.id == removedGameLobby.id)
+    this.gameLobbies.splice(startedGameLobbyIndex, 1)
   }
 
   clientSubmittedGlobalMessage(client: ConnectedClient, message: string){
@@ -162,7 +182,7 @@ export default class GameHost{
       message
     }
     this.globalChat.push(chatMessage)
-    this.gameHostUpdate()
+    this.sendGameHostUiUpdateToClients()
   }
 
 
@@ -184,17 +204,16 @@ export default class GameHost{
   }
 
 
-  private gameHostUpdate(){
+  private sendGameHostUiUpdateToClients(){
     const clientNameAndIds: ClientNameAndId[] = this.connectedClients.map(client => ({name: client.name, id: client.id}))
 
-    const gameHostStateUpdate: GameHostState = {
+    const gameHostStateUpdate: GameHostUiState = {
       connectedPlayers: clientNameAndIds,
       gameLobbies: this.gameLobbies,
       globalChat: this.globalChat
     }
     this.connectedClients.forEach((connectedClient: ConnectedClient) => connectedClient.gameHostUiUpdate(gameHostStateUpdate))
   }
-
 
 
 }

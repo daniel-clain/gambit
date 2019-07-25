@@ -1,15 +1,15 @@
 
 import * as React from 'react';
-import { GameHostState } from '../../interfaces/client-ui-state.interface';
+import { GameHostUiState } from '../../interfaces/client-ui-state.interface';
 import ClientWebsocketService from './client-websocket-service';
 import ClientAction from '../../interfaces/client-action';
-import GameLobby from '../../server/game-lobby';
+import GameLobby from '../../interfaces/game-lobby.interface';
 import ClientId from '../../types/client-id.type';
 import GameLobbyClient from '../../interfaces/game-lobby-client.interface';
 import ChatMessage from '../../interfaces/chat-message.interface';
 
 export interface GameHostProps{
-  gameHostState: GameHostState
+  gameHostUiState: GameHostUiState
   websocketService: ClientWebsocketService
 }
 export default class C_GameHost extends React.Component<GameHostProps>{
@@ -73,7 +73,7 @@ export default class C_GameHost extends React.Component<GameHostProps>{
   }
 
   render(){
-    const {connectedPlayers, gameLobbies, globalChat} = this.props.gameHostState
+    const {connectedPlayers, gameLobbies, globalChat} = this.props.gameHostUiState
     const thisClientId: ClientId = localStorage.getItem('clientId')
 
     const inGameLobby: GameLobby = gameLobbies.find((gameLobby: GameLobby) => 

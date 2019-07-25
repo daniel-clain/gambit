@@ -1,0 +1,32 @@
+//@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+html{
+  height: 100vh;
+  font-size: 12px;
+  font-family: 'Nunito', sans-serif;
+}
+body{
+  height: 100%;
+  margin: 0;
+}
+
+button{
+  outline: none;
+}
+
+#react-rendering-div{
+  max-width: 820px;
+  height: 100%;
+}
+
+@media all and (orientation: landscape) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+}

@@ -13,6 +13,7 @@ import FighterState, { IFighterState } from "./fighter-state-manager";
 import FighterStateManager from "./fighter-state-manager";
 import FighterStatus from "./fighter-status";
 import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
+import FighterAttributes from './fighter-attributes';
 
 interface FighterFighterInterface{
   getAttacked(attack: FighterAttack, enemyFighterName: FighterName ): AttackResults
@@ -28,8 +29,10 @@ type FighterName = string
 export default class Fighter {
 
   private _name: FighterName
+  private _numberOfFights: number
+  private _numberOfWins: number
   private stateManager: FighterStateManager
-  private attributes: IFighterAttributes
+  attributes: FighterAttributes
   private strategies: IFighterStrategy[] = [
     new RunAwayAndRecover(this)
   ]
@@ -40,7 +43,7 @@ export default class Fighter {
 
   constructor(name: string){
     this._name = name
-    this.attributes = defaultFighterAttributes
+    this.attributes = new FighterAttributes()
     this.setupInitialState()
   }
 
@@ -58,6 +61,14 @@ export default class Fighter {
 
   get name(): FighterName{
     return this._name
+  }
+
+  get numberOfWins(): number{
+    return this._numberOfWins
+  }
+
+  get numberOfFights(): number{
+    return this._numberOfFights
   }
 
   tryToHitFighter(targetFighter: Fighter) {

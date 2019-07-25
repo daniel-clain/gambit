@@ -1,38 +1,29 @@
 
 import ClientName from '../types/client-name.type';
 import ClientId from '../types/client-id.type';
-import CreatedGame from '../server/game-lobby';
+import CreatedGame from './game-lobby.interface';
 import PlayerNameAndId from './player-name-and-id';
-import GameLobby from '../server/game-lobby';
+import GameLobby from './game-lobby.interface';
 import ChatMessage from './chat-message.interface';
+import Fighter from '../classes/game/fighter/fighter';
 export default interface ClientUIState{
-  gameHost: GameHostState
-  game: GameState
+  gameHostUiState: GameHostUiState
+  gameUiState: GameUiState
 }
 
-export interface GameHostState{
+export interface GameHostUiState{
   connectedPlayers: PlayerNameAndId[],
   gameLobbies: GameLobby[],
   globalChat: ChatMessage[],
 }
 
-export interface GameStateGeneral{
-  players: PlayerNameAndId[],
-  gameChat: ChatMessage[],
-  fightActive: boolean,
-  timeTillNextFight: number,
+
+export interface GameUiState{
+  fightUiState: FightUiState,
+  managerUiState: ManagerUiState
 }
 
-export interface GameState{
-  players: PlayerNameAndId[],
-  gameChat: ChatMessage[],
-  fightActive: boolean,
-  timeTillNextFight: number,
-  fightEvent: FightEventState,
-  managerOptions: ManagerOptionsState
-}
-
-export interface FightEventState{
+export interface FightUiState{
   startCountdown: null,
   timeRemaining: null,
   fighters: [
@@ -46,17 +37,16 @@ export interface FightEventState{
   ]
 }
 
-export interface ManagerOptionsState{
-  money: null,
-  actionPoints: null,
-  clientFighters: [],
+export interface ManagerUiState{
+  timeUntilNextFight: number,
+  money: number,
+  actionPoints: number,
+  clientFighters: FighterInfo[],
   fightersInNextFight: FighterInfo[],
-  activeBet: {
-    fighterName: null,
-    betAmount: null,
-  },
-  actionLog: []
+  actionLog: string[]
 }
+
+
 
 export interface FighterInfo{
   name: ClientName,

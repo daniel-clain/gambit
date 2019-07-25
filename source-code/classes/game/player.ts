@@ -1,24 +1,20 @@
 import {Subject} from 'rxjs';
-import {GameState, FightEventState, ManagerOptionsState, GameStateGeneral} from './../../interfaces/client-ui-state.interface';
+import {GameUiState, FightUiState, ManagerUiState} from './../../interfaces/client-ui-state.interface';
 import ClientId from '../../types/client-id.type';
 import ClientName from '../../types/client-name.type';
 import Game from './game';
 
 export default class Player{
 
-  gameUiStateSubject: Subject<GameState> = new Subject()
+  gameUiStateUpdateSubject: Subject<GameUiState> = new Subject()
   
-  private gameUiState: GameState = {
-    players: [],
-    gameChat: [],
-    fightActive: false,
-    fightEvent: null,
-    managerOptions: null,
-    timeTillNextFight: null
+  private gameUiState: GameUiState = {
+    fightUiState: null,
+    managerUiState: null,
   }
   
   constructor(private _id: ClientId, private _name: ClientName, private game: Game){
-    this.sendGameUIStateToClient()
+    this.emitGameUIStateUpdate()
   }
 
 
@@ -29,26 +25,17 @@ export default class Player{
     return this._name
   }
 
-  gameGeneralUiUpdate(gameStateGeneral: GameStateGeneral){ 
-    this.gameUiState.players = gameStateGeneral.players
-    this.gameUiState.gameChat = gameStateGeneral.gameChat
-    this.gameUiState.fightActive = gameStateGeneral.fightActive
-    this.gameUiState.timeTillNextFight = gameStateGeneral.timeTillNextFight
-
-    this.sendGameUIStateToClient()
+  fightUiUpdate(fightEventState: FightUiState){ 
+    this.gameUiState.fightUiState = fightEventState
+    this.emitGameUIStateUpdate()
   }
 
-  fightUiUpdate(fightEventState: FightEventState){ 
-    this.gameUiState.fightEvent = fightEventState
-    this.sendGameUIStateToClient()
+  managerUiUpdate(managerOptionsState: ManagerUiState){ 
+    this.gameUiState.managerUiState = managerOptionsState
+    this.emitGameUIStateUpdate()
   }
 
-  managerUiUpdate(managerOptionsState: ManagerOptionsState){ 
-    this.gameUiState.managerOptions = managerOptionsState
-    this.sendGameUIStateToClient()
-  }
-
-  private sendGameUIStateToClient(){
-    this.gameUiStateSubject.next(this.gameUiState)
+  private emitGameUIStateUpdate(){
+    this.gameUiStateUpdateSubject.next(this.gameUiState)
   }
 }
