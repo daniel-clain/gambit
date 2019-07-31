@@ -1,10 +1,14 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+
+var sourceDir = `${__dirname}/../source-code/client/main-game`
+var compiledDir = `${__dirname}/../compiled-code/client/main-game`
 
 module.exports = {
   mode: 'development',
-  entry: './source-code/client/main-game/main-game.tsx',
+  entry: `${sourceDir}/main-game.tsx`,
   output:{
-    path: __dirname + "./../compiled-code/client/main-game",
+    path: compiledDir,
     filename: "main-game.js"
   },
   devtool: 'source-map',
@@ -13,12 +17,23 @@ module.exports = {
       {
         test: /\.ts|tsx?$/,
         loader: 'awesome-typescript-loader',
+        exclude: /node_modules/,
         options: {
             configFileName: 'config/tsconfig.json',
-            reportFiles: [ // need otherwise will compile server and node_modules
-              "./source-code/client/main-game/main-game.tsx"
+            reportFiles: [ `${sourceDir}/**/*`
             ]
         },
+      },
+      {
+        test: /\.scss$/,
+        use: ['style-loader', 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.png$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]'
+        }
       }
     ]
   },
@@ -28,6 +43,15 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './source-code/client/base.html'
-    })
+    }),
+    new CopyPlugin([
+      { 
+        from: './source-code/client/images/**/*', 
+        to: './../images',
+        test: /\.(jpe?g|png)$/i,     
+        flatten: true,   
+        ignore: ['*.ts']
+      },
+    ])
   ]
 };

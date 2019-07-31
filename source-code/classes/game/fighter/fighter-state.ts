@@ -2,6 +2,7 @@ import FacingDirection from "../../../types/figher/facing-direction";
 import FighterModelState from "../../../types/figher/fighter-model-states";
 import { Observable, Subject } from "rxjs";
 import { random } from "../../../helper-functions/helper-functions";
+import OneToFive from '../../../types/game/one-to-five.type';
 
 export interface IFighterUIState{
   position: Position
@@ -9,15 +10,20 @@ export interface IFighterUIState{
   modelState: FighterModelState
 }
 
-export default class FighterStateManager implements IFighterUIState{
+export default class FighterState implements IFighterUIState{
   private _position: Position
 	private _facingDirection: FacingDirection
   private _modelState: FighterModelState = 'Idle'
   private _stamina: number
   private _spirit: number
-  private _maxStamina: number
-  private _maxSpirit: number
-  knockedOut = false 
+  maxStamina: number
+  maxSpirit: number
+  private _injured: boolean
+  private _healthRating: OneToFive
+  private _doping: boolean
+  private _happieness: OneToFive
+  private _knockedOut: boolean 
+  private _publicityRating: OneToFive
 
   updateSubject: Subject<IFighterUIState> = new Subject()
 
@@ -25,9 +31,9 @@ export default class FighterStateManager implements IFighterUIState{
     this._facingDirection = !!random(2) ? 'left' : 'right'
   }
 
-  set position(v: Position){
-    if(v !== this._position){
-      this._position = v
+  set position(val: Position){
+    if(val !== this._position){
+      this._position = val
       this.triggerUiStateUpdate()
     }
   }
@@ -35,9 +41,9 @@ export default class FighterStateManager implements IFighterUIState{
     return this._position
   }
 
-  set facingDirection(v: FacingDirection){
-    if(v !== this._facingDirection){
-      this._facingDirection = v
+  set facingDirection(val: FacingDirection){
+    if(val !== this._facingDirection){
+      this._facingDirection = val
       this.triggerUiStateUpdate()
     }
   }
@@ -45,9 +51,9 @@ export default class FighterStateManager implements IFighterUIState{
     return this._facingDirection
   }
 
-  set modelState(v: FighterModelState){
-    if(v !== this._modelState){
-      this._modelState = v
+  set modelState(val: FighterModelState){
+    if(val !== this._modelState){
+      this._modelState = val
       this.triggerUiStateUpdate()
     }
   }
@@ -63,52 +69,68 @@ export default class FighterStateManager implements IFighterUIState{
     })
   }
 
-  set spirit(v: number){
-    if(v == this._spirit){
+  set spirit(val: number){
+    if(val == this._spirit){
       throw 'should not have set spirit to same value'
     }
-    if(v > 10){
+    if(val > 10){
       throw 'should not have set spirit to larger than max spirit: ' + this.maxSpirit
     }
-    if(v < 0){
+    if(val < 0){
       throw 'should not have set spirit to less than 0'
     }
-    this._spirit = v
+    this._spirit = val
   }
   get spirit(): number{
     return this._spirit
   }
   
-  set stamina(v: number){
-    if(v == this._stamina){
+  set stamina(val: number){
+    if(val == this._stamina){
       throw 'should not have set stamina to same value'
     }
-    if(v > this.maxStamina){
+    if(val > this.maxStamina){
       throw 'should not have set stamina to larger than max stamina: ' + this.maxStamina
     }
-    if(v < 0){
+    if(val < 0){
       throw 'should not have set stamina to less than 0'
     }
-    this._stamina = v
+    this._stamina = val
   }
   get stamina(): number{
     return this._stamina
   }
 
 
-  set maxStamina(v: number){
-    this._maxStamina = v
-  }
-  get maxStamina(): number{
-    return this._maxStamina
-  }
-  
-  set maxSpirit(v: number){
-    this._maxSpirit = v
-  }
-  get maxSpirit(): number{
-    return this._maxSpirit
+  get healthRating(){
+    return this._healthRating
   }
 
-
+  get injured(){
+    return this._injured
+  }
+  set doping(val){
+    this._doping = val
+  }
+  set happieness(val){
+    this._happieness = val
+  }
+  set knockedOut(val){
+    this._knockedOut = val
+  }
+  set publicityRating(val){
+    this._publicityRating = val
+  }
+  get doping(){
+    return this._doping
+  }
+  get happieness(){
+    return this._happieness
+  }
+  get knockedOut(){
+    return this._knockedOut
+  }
+  get publicityRating(){
+    return this._publicityRating
+  }
 }

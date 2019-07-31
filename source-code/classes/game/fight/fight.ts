@@ -4,6 +4,7 @@ import FightUpdateLoop from "./fight-update-loop";
 import Fighter from "../fighter/fighter";
 import { random } from "../../../helper-functions/helper-functions";
 import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
+import { FightUiState } from '../../../interfaces/game-ui-state.interface';
 
 
 export default class Fight {
@@ -11,6 +12,7 @@ export default class Fight {
   fighters: Fighter[]
 
   fightFinishedSubject: Subject<void> = new Subject()
+  uiStateSubject: Subject<FightUiState>
   
   arenaDimensions: ArenaDimensions = {
     width: 600,

@@ -4,7 +4,7 @@ export interface PreGameUIProps{
   tryToConnectToGameHost
 }
 
-export default class C_PreGame extends React.Component<PreGameUIProps>{ 
+export default class PreGame extends React.Component<PreGameUIProps>{ 
 
   render(){
     const {tryToConnectToGameHost} = this.props

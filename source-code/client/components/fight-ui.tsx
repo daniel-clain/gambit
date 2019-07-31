@@ -1,12 +1,12 @@
 
 import * as React from 'react';
-import { FightUiState } from '../../interfaces/client-ui-state.interface';
+import { FightUiState } from '../../interfaces/game-ui-state.interface';
 
-export interface FightUIProps{
+export interface FightUiProps{
   fightUiState: FightUiState
 }
 
-export default class C_FightUI extends React.Component<FightUIProps>{
+export default class FightUi extends React.Component<FightUiProps>{
   render(){
     return <div>fight ui</div>
   }

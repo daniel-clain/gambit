@@ -1,6 +1,7 @@
 import * as express from 'express';
 import ServerWebsocketService from './server-websocket.service';
 import GameHost from './game-host';
+require('source-map-support').install();
 
 console.clear()
 

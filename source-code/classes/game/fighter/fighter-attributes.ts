@@ -13,7 +13,8 @@ export default class FighterAttributes{
   private _speed: number
   private _endurance: number
   private _aggression: number
-  private _passion: number
+  private _numberOfFights: number
+  private _numberOfWins: number
 
   private maxVal: 10
   private minVal: 0
@@ -33,8 +34,11 @@ export default class FighterAttributes{
   get aggression(){
     return this._aggression
   }
-  get passion(){
-    return this._passion
+  get numberOfFights(){
+    return this._numberOfFights
+  }
+  get numberOfWins(){
+    return this._numberOfWins
   }
 
 
@@ -58,9 +62,11 @@ export default class FighterAttributes{
     if(this.validateAttribute(val))
       this._aggression = val
   }
-  set passion(val){
-    if(this.validateAttribute(val))
-      this._passion = val
+  set numberOfFights(val){
+    this._numberOfFights = val
+  }
+  set numberOfWins(val){
+    this._numberOfWins = val
   }
 
   private validateAttribute(attributeValue: number): boolean{

@@ -1,33 +1,30 @@
+import {PlayerInfo} from './../interfaces/player-info.interface';
 import { Socket } from 'socket.io';
 import ClientName from '../types/client-name.type';
 import ClientId from '../types/client-id.type';
-import ClientUIState, { GameHostUiState, GameUiState } from '../interfaces/client-ui-state.interface';
+import { GameHostUiState } from '../interfaces/game-ui-state.interface';
 import ClientAction from '../interfaces/client-action';
 import GameHost from './game-host';
 import GameLobbyClient from '../interfaces/game-lobby-client.interface';
 import GameLobby from '../interfaces/game-lobby.interface';
-import Game from '../classes/game/game';
-import Player from '../classes/game/player';
-import { Subscription } from 'rxjs';
+import ChatMessage from '../interfaces/chat-message.interface';
+import ClientNameAndId from '../interfaces/client-name-and-id.interface';
 
 export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Update'
 
 
 export default class ConnectedClient{
-  private gameUiUpdateSubscription: Subscription 
-  private clientUiState: ClientUIState = {
-    gameHostUiState: {
-      connectedPlayers: [],
-      gameLobbies: [],
-      globalChat: []
-    },
-    gameUiState: null
+  private gameHostUiState: GameHostUiState = {
+    inGame: false,
+    connectedPlayers: [],
+    gameLobbies: [],
+    globalChat: []
   }
 
 
-  constructor(private _socket: Socket, private _id: ClientId, private _name: ClientName, private gameHost: GameHost){
-    this._socket.on('Action From Client', (actionFromClient: ClientAction) => this.handleActionFromClient(actionFromClient))
-    this._socket.on('disconnect', (reason) => gameHost.clientDisconnected(this, reason))
+  constructor(private socket: Socket, private _id: ClientId, private _name: ClientName, private gameHost: GameHost){
+    this.socket.on('Action From Client', (actionFromClient: ClientAction) => this.handleActionFromClient(actionFromClient))
+    this.socket.on('disconnect', (reason) => gameHost.clientDisconnected(this, reason))
   }
 
   get id(){
@@ -38,15 +35,16 @@ export default class ConnectedClient{
   }
 
 
+
   private handleActionFromClient(action: ClientAction){
     switch(action.name){
       case 'Create Game' : this.createGame(); break
-      case 'Cancel Game' : this.cancelGame(action.data.gameId); break
-      case 'Start Game' : this.startGame(action.data.gameId); break
-      case 'Join Game' : this.joinGame(action.data.gameId); break
-      case 'Ready To Start Game' : this.readyToStartGameToggled(action.data.gameId, action.data.readyValue); break
-      case 'Leave Game' : this.leaveGame(action.data.gameId); break 
-      case 'Submit Global Chat' : this.submitGlobalMessage(action.data.message); break 
+      case 'Cancel Game' : this.cancelGame(action.args.gameId); break
+      case 'Start Game' : this.startGame(action.args.gameId); break
+      case 'Join Game' : this.joinGame(action.args.gameId); break
+      case 'Ready To Start Game' : this.readyToStartGameToggled(action.args.gameId, action.args.readyValue); break
+      case 'Leave Game' : this.leaveGame(action.args.gameId); break 
+      case 'Submit Global Chat' : this.submitGlobalMessage(action.args.message); break 
     }
   }
   private createGame(){
@@ -90,30 +88,33 @@ export default class ConnectedClient{
     this.gameHost.clientSubmittedGlobalMessage(this, message)
   }
 
-  receiveGamePlayerReference(player: Player){    
-    this.gameUiUpdateSubscription = player.gameUiStateUpdateSubject.subscribe(
-      (gameUiState: GameUiState) => this.gameUiUpdate(gameUiState)
-    )
+
+  private sendGameHostUiStateToClient(){
+    this.socket.emit('Game Host UI State Update', this.gameHostUiState)
+  }
+
+  gameHostUiUpdate(connectedClients: ClientNameAndId[], gameLobbies: GameLobby[], globalChat: ChatMessage[]){
+    this.gameHostUiState.connectedPlayers = connectedClients  
+    this.gameHostUiState.gameLobbies = gameLobbies  
+    this.gameHostUiState.globalChat = globalChat    
+    this.sendGameHostUiStateToClient()
+  }
+
+  getPlayerInfo(): PlayerInfo{
+    return {
+      socket: this.socket,
+      name: this.name,
+      id: this.id
+    }
+  }
+  gameStarted(){
+    this.gameHostUiState.inGame = true     
+    this.sendGameHostUiStateToClient()
   }
 
   gameFinished(){
-    this.gameUiUpdateSubscription.unsubscribe()
-    this.gameUiUpdate(null)
-    
-  }
-
-  gameHostUiUpdate(gameHostState: GameHostUiState){ 
-    this.clientUiState.gameHostUiState = gameHostState
-    this.sendUIStateToClient()
-  }
-
-  gameUiUpdate(gameState: GameUiState){ 
-    this.clientUiState.gameUiState = gameState
-    this.sendUIStateToClient()
-  }
-
-  private sendUIStateToClient(){
-    this._socket.emit('UI State Update', this.clientUiState)
+    this.gameHostUiState.inGame = false    
+    this.sendGameHostUiStateToClient()
   }
 
 }

@@ -2,7 +2,7 @@ import { Fighter } from "../fighter/fighter";
 import Player from "../../../interfaces/player";
 import { Subscription } from 'rxjs'
 
-export class Fight {
+export class xFight {
   winner: Fighter
   private fightFinished
   private timeBeforeStartFighting = 5

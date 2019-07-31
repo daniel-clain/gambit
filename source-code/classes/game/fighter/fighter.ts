@@ -1,22 +1,18 @@
-import defaultFighterAttributes, { IFighterAttribute, IFighterAttributes } from "./fighter-attributes";
+
 import IFighterStrategy, { RunAwayAndRecover } from "./fighter-strategies";
 import Direction360 from "../../../types/figher/direction-360";
-import { getDistanceBetweenTwoPositions, getDirectionOfPosition2FromPosition1, random } from "../../../helper-functions/helper-functions";
-import ClosenessRating from "../../../types/figher/closeness-rating";
-import Position from '../../../interfaces/game/fighter/position'
+
 import FighterSkeleton from "../../../interfaces/game/fighter/fighter-skeleton";
-import FacingDirection from "../../../types/figher/facing-direction";
-import FighterModelState from "../../../types/figher/fighter-model-states";
-import Fight from "../fight/fight";
-import { Subject, Observable } from "rxjs";
-import FighterState, { IFighterState } from "./fighter-state-manager";
-import FighterStateManager from "./fighter-state-manager";
-import FighterStatus from "./fighter-status";
+
+import FighterState from "./fighter-state";
+
 import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
 import FighterAttributes from './fighter-attributes';
+import { FighterInfo } from '../../../interfaces/game-ui-state.interface';
+import Manager from '../manager/manager';
 
 interface FighterFighterInterface{
-  getAttacked(attack: FighterAttack, enemyFighterName: FighterName ): AttackResults
+  //getAttacked(attack: FighterAttack, enemyFighterName: FighterName ): AttackResults
 }
 
 interface FightFighterInterface{
@@ -31,29 +27,46 @@ export default class Fighter {
   private _name: FighterName
   private _numberOfFights: number
   private _numberOfWins: number
-  private stateManager: FighterStateManager
+  manager: Manager
+  state: FighterState
   attributes: FighterAttributes
   private strategies: IFighterStrategy[] = [
     new RunAwayAndRecover(this)
   ]
 
-  stateUpdateSubject: Subject<IFighterState> = new Subject()
 
   movingDirection: Direction360
 
   constructor(name: string){
     this._name = name
     this.attributes = new FighterAttributes()
-    this.setupInitialState()
+    this.state = new FighterState()
   }
 
-  private setupInitialState(){
-    this.stateManager = new FighterStateManager()
-    this.stateUpdateSubject = this.stateManager.updateSubject
-    this.stateManager.maxStamina = this.attributes.endurance.value
-    this.stateManager.maxSpirit = this.attributes.passion.value
+  getInfo(): FighterInfo{
+    return {
+      lastUpdated: parseInt(new Date().getTime().toString()),
+      name: this.name, 
+
+      strength: this.attributes.strength,
+      speed: this.attributes.speed,
+      intelligence: this.attributes.intelligence,
+      aggression: this.attributes.aggression,
+      endurance: this.attributes.endurance,
+      numberOfFights: this.attributes.numberOfFights,
+      numberOfWins: this.attributes.numberOfWins,
+
+      manager: this.manager && this.manager.name,
+
+      injured: this.state.injured,
+      healthRating: this.state.healthRating,
+      doping: this.state.doping,
+      happyness: this.state.happieness,
+      publicityRating: this.state.publicityRating,
+
+    }
   }
-  
+
 
   moveTowardFighter(fighter: Fighter){
     this.movingDirection = this.getDirectionOfFighter(fighter)
@@ -72,8 +85,7 @@ export default class Fighter {
   }
 
   tryToHitFighter(targetFighter: Fighter) {
-    targetFighter.
-    console.log(`${this.name} is trying to hit ${fighter.name}`);
+    console.log(`${this.name} is trying to hit ${targetFighter.name}`);
     this.takeHit()
   }
 

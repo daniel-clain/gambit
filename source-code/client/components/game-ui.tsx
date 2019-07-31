@@ -1,17 +1,31 @@
 
 import * as React from 'react';
-import C_FightUI from "./fight-ui";
-import C_ManagerUI from "./manager-ui";
-import { GameUiState } from '../../interfaces/client-ui-state.interface';
+import FightUi from "./fight-ui";
+import { GameUiState } from '../../interfaces/game-ui-state.interface';
+import { ManagerUi } from './manager-ui';
+import ClientWebsocketService from '../main-game/client-websocket-service';
 
-export default class C_GameUI extends React.Component<GameUiState>{
+interface GameUiProps{
+  websocketService: ClientWebsocketService
+}
+
+export default class GameUi extends React.Component<GameUiProps>{
+  state: GameUiState
+  constructor(props){
+    super(props)
+    this.props.websocketService.gameUiStateUpdate.subscribe(
+      (gameUiState: GameUiState) => this.setState(gameUiState)
+    )
+  }
 
   render(){
-    const {managerUiState, fightUiState} = this.props
-    if(fightUiState != null)
-      return <C_FightUI fightUiState={fightUiState}/>
+    if(!this.state)
+      return <span>loading....</span>
+    const {fightUiState, managerUiState} = this.state
+    if(fightUiState)
+      return <FightUi fightUiState={fightUiState}/>
     else
-      return <C_ManagerUI managerUiState={managerUiState}/>
+      return <ManagerUi managerUiState={managerUiState} sendPlayerAction={this.props.websocketService.sendPlayerAction} />
   }
 
 }

@@ -1,4 +1,4 @@
-import { GameHostUiState } from './../interfaces/client-ui-state.interface';
+import { GameHostUiState } from '../interfaces/game-ui-state.interface';
 import ServerWebsocketService from "./server-websocket.service";
 import ConnectedClient from './connected-client';
 import ConnectingClientData from '../interfaces/connecting-client-data';
@@ -11,6 +11,8 @@ import Player from '../classes/game/player';
 import GameLobby from '../interfaces/game-lobby.interface';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators'
+import ClientId from '../types/client-id.type';
+import { PlayerInfo } from '../interfaces/player-info.interface';
 
 
 export default class GameHost{
@@ -54,6 +56,7 @@ export default class GameHost{
 
       this.sendGameHostUiUpdateToClients()
   }
+  
 
 
   clientCreatedGameLobby(createdGameLobby: GameLobby){    
@@ -136,37 +139,22 @@ export default class GameHost{
 
   clientStartedGameLobby(gameLobbyId){  
     const startedGameLobby: GameLobby = this.gameLobbies.find((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
-    const playerNameAndIds: PlayerNameAndId[] = startedGameLobby.clients.map(
-      (client: GameLobbyClient) => {
-        const playerNameAndId: PlayerNameAndId = {
-          name: client.name,
-          id: client.id
-        }
-        return playerNameAndId
-      }
-    )
+    const connectedClients: ConnectedClient[] = startedGameLobby.clients.map(client => this.getClientById(client.id))
+    connectedClients.forEach((connectedClient: ConnectedClient) => {
+      connectedClient.gameStarted()
+    })
+      
+    const playerInfos: PlayerInfo[] = connectedClients.map(client => client.getPlayerInfo())
     console.log(`${startedGameLobby.creator.name} has started his game lobby!`);
-    const newGame: Game = new Game(playerNameAndIds)
-
-    newGame.players.forEach((player: Player) => {
-      const playersClient: ConnectedClient = this.getPlayersClient(player)
-      playersClient.receiveGamePlayerReference(player)
-    })
-
-    newGame.gameFinishedSubject.pipe(take(1)).subscribe(() => {
-      newGame.players.forEach((player: Player) => {
-        const playersClient: ConnectedClient = this.getPlayersClient(player)
-        playersClient.gameFinished()
-      })
-    })
+    const newGame: Game = new Game(playerInfos)
 
     this.activeGames.push(newGame)
     this.removeGameLobby(startedGameLobby)
   }
 
-  private getPlayersClient(player: Player): ConnectedClient{
+  private getClientById(id: ClientId): ConnectedClient{
     return this.connectedClients.find(
-      (client: ConnectedClient) => client.id == player.id
+      (client: ConnectedClient) => client.id == id
     )
   }
 
@@ -207,12 +195,9 @@ export default class GameHost{
   private sendGameHostUiUpdateToClients(){
     const clientNameAndIds: ClientNameAndId[] = this.connectedClients.map(client => ({name: client.name, id: client.id}))
 
-    const gameHostStateUpdate: GameHostUiState = {
-      connectedPlayers: clientNameAndIds,
-      gameLobbies: this.gameLobbies,
-      globalChat: this.globalChat
-    }
-    this.connectedClients.forEach((connectedClient: ConnectedClient) => connectedClient.gameHostUiUpdate(gameHostStateUpdate))
+    this.connectedClients.forEach(client => {
+      client.gameHostUiUpdate(clientNameAndIds, this.gameLobbies, this.globalChat)
+    })
   }
 
 

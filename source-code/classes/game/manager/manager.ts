@@ -1,65 +1,156 @@
+
+import {Bet} from './../../../interfaces/game/bet';
+import {ICost} from './../../../interfaces/game/cost.interface';
 import {Subject} from 'rxjs';
-import {ManagerUiState, FighterInfo} from './../../../interfaces/client-ui-state.interface';
-import IManagerOption from "./managerOptions/manager-option";
+import {ManagerUiState, FighterInfo, LoanSharkData, Employee} from '../../../interfaces/game-ui-state.interface';
 import Fighter from "../fighter/fighter";
-import { GetFighterSponsored } from "./managerOptions/get-fighter-sponsored";
-import { TrainFighter } from "./managerOptions/train-fighter";
-import { ResearchFighter } from "./managerOptions/research-fighter";
-import FightScheduler from '../fight-scheduler/fight-scheduler';
 import Player from '../player';
+import { Contract } from '../../../interfaces/game/contract.interface';
+import BetSize from '../../../types/bet-size.type';
+import managerOptions, { IManagerOption } from './manager-options/manager-option';
+import { IManagerAction } from './manager-action';
+import { RoundController } from '../round-controller';
 
 export default class Manager{  
-
-  retired: boolean = false
+  name = 'fag'
+  retired: boolean
   money: number = 500
   clientFighters: Fighter[] = []
   actionPoints = 3
-  options: IManagerOption[] = [
-    new GetFighterSponsored(),
-    new ResearchFighter(),
-    new TrainFighter()
-  ]
+  options: IManagerOption[]
+  knownFighters: FighterInfo[] = []
+  nextFightBet: Bet
+  loanSharkData: LoanSharkData
+  employees: Employee[] = []
+  ready: boolean
+  actions: IManagerAction[] = []
 
   uiStateSubject: Subject<ManagerUiState> = new Subject()
 
-  constructor(private player: Player, private fightScheduler: FightScheduler){
-    this.fightScheduler.fightScheduleSubject.subscribe(() => this.onFightScheduleUpdate())
+  constructor(private roundController: RoundController){
+    this.options = managerOptions
+    this.roundController.timeUntilNextFightSubject.subscribe(this.onNextFightTimerUpdate.bind(this))
   }
 
-  getUiState(): ManagerUiState{
-    const {timeUntilNextFight, fights} = this.fightScheduler.fightSchedule
-    const fightersInNextFight: FighterInfo[] = fights[0].fighters.map(
-      (fighter: Fighter): FighterInfo => ({
-        name: fighter.name,
-        numberOfFights: fighter.numberOfFights,
-        numberOfWins: fighter.numberOfWins,
-        speed: fighter.attributes.speed,
-        strength: fighter.attributes.strength
-      })
-    )
+  private getUiState(): ManagerUiState{
 
+    const {timeUntilNextFight} = this.roundController
 
-    const clientFighters: FighterInfo[] = this.clientFighters.map(
-      (fighter: Fighter): FighterInfo => ({
-        name: fighter.name,
-        numberOfFights: fighter.numberOfFights,
-        numberOfWins: fighter.numberOfWins,
-        speed: fighter.attributes.speed,
-        strength: fighter.attributes.strength
-      })
-    )
+    const nextFightFighters = this.roundController.fight.fighters.map((fighter: Fighter) => fighter.getInfo())
+
     const managerUiState: ManagerUiState = {
       timeUntilNextFight,
       money: this.money,
       actionPoints: this.actionPoints,
-      clientFighters,
-      fightersInNextFight,
-      actionLog: []
+      nextFightFighters,
+      knownFighters: this.knownFighters,
+      nextFightBet: this.nextFightBet,
+      yourEmployees: this.employees,
+      jobSeekers: this.roundController.jobSeekers,
+      loanSharkData: this.loanSharkData,
+      ready: this.ready,
+      actions: this.actions
     }
     return managerUiState
   }
 
-  onFightScheduleUpdate(){
-    this.player.managerUiUpdate(this.getUiState())
+  addAction(action: IManagerAction){
+    const {source, name} = action
+
+    const managerOption: IManagerOption = this.options.find(
+      (managerOption: IManagerOption) => managerOption.name == action.name)
+
+    let cost: ICost = managerOption.getCost(source.type)
+    if(name == 'Offer contract'){
+      const contract: Contract = action.args.contract
+      cost.money -= contract.initialCost
+    }
+
+    if(cost.money < this.money){
+      console.log(`error, trying to add action but does not have enough money`);
+      return
+    }
+    if(cost.actionPoints < this.actionPoints){
+      console.log(`error, trying to add action but not enought action points`);
+      return
+    }
+
+    this.actionPoints = this.actionPoints - cost.actionPoints
+    this.money = this.money - cost.money
+    this.actions.push(action)
+    this.managerUiStateUpdated()
   }
+
+  onNextFightTimerUpdate(){
+    this.managerUiStateUpdated()
+  }
+
+  managerUiStateUpdated(){
+    this.uiStateSubject.next(this.getUiState())
+  }
+  
+/*removeAction(name: ManagerOptionNames, sourceName){
+    const actionIndex = this.actions.findIndex((action: IMangerAction) => action.name == name && action.source.name == sourceName)
+    if(actionIndex == -1){
+      console.log(`error, tried to remove action (${name}) but didnt exist in list`);
+      return
+    }
+
+    const action: IMangerAction = this.actions[actionIndex]
+    const {source} = action
+
+    const managerOption: ManagerOption = this.options.find(
+      (managerOption: ManagerOption) => managerOption.name == action.name)
+
+    let cost: ICost = managerOption.getCost(source.type)
+
+
+    if(name == 'Offer contract'){
+      const contract: Contract = action.args.contract
+      cost.money += contract.initialCost
+    }
+
+    if(name == 'Bet on fighter'){
+      const contract: Contract = action.args.contract
+      cost.money += contract.initialCost
+    }
+
+    this.money += cost.money
+    this.actionPoints += cost.actionPoints
+
+    this.actions.splice(actionIndex, 1)
+    
+  } */
+
+  betOnFigher(fighterName, betSize: BetSize){
+    const fighter: Fighter = this.roundController.fight.fighters.find(
+      (fighter: Fighter) => fighter.name == fighterName)
+
+    if(fighter == undefined){
+      console.log('error, tried to bet on fight that could not be found in the fight');
+      return
+    }
+    this.nextFightBet = {
+      fighterName: fighterName,
+      size: betSize
+    }
+    this.managerUiStateUpdated()
+
+  }
+
+  borrowMoney(amount){
+    this.loanSharkData.debt += amount
+    this.managerUiStateUpdated()
+  }
+  paybackMoney(amount){
+    this.loanSharkData.debt -= amount
+    this.managerUiStateUpdated()
+
+  }
+
+  toggleReady(ready){
+    this.ready = ready
+    this.managerUiStateUpdated()
+  }
+  
 }

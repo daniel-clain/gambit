@@ -3,5 +3,5 @@ type ClientActionNames = 'Connect' | 'Join Game' | 'Create Game' | 'Cancel Game'
 
 export default interface ClientAction{
   name: ClientActionNames
-  data?: any
+  args: any
 }

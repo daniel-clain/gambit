@@ -1,6 +1,7 @@
-import { FighterSkeleton } from "../fighter/fighter-skeleton";
+
+import BetSize from '../../types/bet-size.type';
 
 export interface Bet{
-  fighter: FighterSkeleton,
-  amount: number
+  fighterName: string,
+  size: BetSize
 }

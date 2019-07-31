@@ -1,16 +1,19 @@
 
 const nodeExternals = require('webpack-node-externals');
 
+var sourceDir = `${__dirname}/../source-code/server`
+var compiledDir = `${__dirname}/../compiled-code/server`
+
 module.exports = {
   mode: "development",
   entry: [
-    './source-code/server/server.ts'
+    `${sourceDir}/server.ts`
   ],
   output: {
-    path: __dirname + "./../compiled-code/server",
+    path: compiledDir,
     filename: 'server.js'
   },
-  devtool: "source-map-loader",
+  devtool: 'source-map',
   target: 'node',
   module: {
     rules: [
@@ -19,8 +22,7 @@ module.exports = {
         loader: 'awesome-typescript-loader',
         options: {
             configFileName: 'config/tsconfig.json',
-            reportFiles: [ // need otherwise will compile server and node_modules
-              "./source-code/server/server.ts"
+            reportFiles: [ `${sourceDir}/server.ts`
             ]
         },
       }

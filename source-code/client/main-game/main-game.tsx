@@ -2,26 +2,24 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import ClientWebsocketService from './client-websocket-service';
-import C_GameUI from '../components/game-ui';
-import C_PreGame from './pre-game';
-import ClientUIState from '../../interfaces/client-ui-state.interface';
-import C_GameHost from './game-host';
+import PreGame from './pre-game';
+import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
+import GameHost from './game-host';
 import ClientAction from '../../interfaces/client-action';
+import GameUi from '../components/game-ui';
+import './global.scss'
 
 interface MainGameProps{
   websocketService: ClientWebsocketService
 }
 
-export default class C_MainGame extends React.Component<MainGameProps>{
-  state: ClientUIState = {
-    gameHostUiState: null,
-    gameUiState: null
-  }
+export default class MainGame extends React.Component<MainGameProps>{
+  state: GameHostUiState
   
   constructor(props){
     super(props)
-    this.props.websocketService.cientUIStateUpdate.subscribe(
-      (clientUIState: ClientUIState) => this.setState(clientUIState))
+    this.props.websocketService.gameHostUiStateUpdate.subscribe(
+      (state: GameHostUiState) => this.setState(state))
     this.tryToConnectToGameHost()
   }
 
@@ -37,23 +35,26 @@ export default class C_MainGame extends React.Component<MainGameProps>{
     }
     const connectAction: ClientAction = {      
       name: 'Connect',
-      data: {name, clientId}    
+      args: {name, clientId}    
     }    
     this.props.websocketService.sendClientAction(connectAction)
   }
 
   render(){
-    const {gameHostUiState, gameUiState} = this.state
-    if(gameUiState !== null)
-      return <C_GameUI {...gameUiState}/> 
+    if(this.state == undefined)
+      return <PreGame tryToConnectToGameHost={this.tryToConnectToGameHost.bind(this)}/>
+
+
+    const {inGame} = this.state
+    if(inGame)
+      return <GameUi websocketService={this.props.websocketService}/> 
     
-    if(gameHostUiState !== null)
-      return <C_GameHost 
-        gameHostUiState={gameHostUiState} 
-        websocketService={this.props.websocketService}/>
+    if(inGame == false)
+      return <GameHost 
+        gameHostUiState={this.state}
+        sendClientAction={this.props.websocketService.sendClientAction.bind(this.props.websocketService)}/>
     
-    return <C_PreGame tryToConnectToGameHost={this.tryToConnectToGameHost.bind(this)}/>
   }
 }
-ReactDOM.render(<C_MainGame websocketService={new ClientWebsocketService()}/>, document.getElementById('react-rendering-div'))
+ReactDOM.render(<MainGame websocketService={new ClientWebsocketService()}/>, document.getElementById('react-rendering-div'))
 

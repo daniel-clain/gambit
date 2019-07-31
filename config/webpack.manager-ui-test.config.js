@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
-
 var sourceDir = `${__dirname}/../source-code/client/manager-ui-test`
 var compiledDir = `${__dirname}/../compiled-code/client/manager-ui-test`
 

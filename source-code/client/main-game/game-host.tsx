@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { GameHostUiState } from '../../interfaces/client-ui-state.interface';
+import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
 import ClientWebsocketService from './client-websocket-service';
 import ClientAction from '../../interfaces/client-action';
 import GameLobby from '../../interfaces/game-lobby.interface';
@@ -10,46 +10,48 @@ import ChatMessage from '../../interfaces/chat-message.interface';
 
 export interface GameHostProps{
   gameHostUiState: GameHostUiState
-  websocketService: ClientWebsocketService
+  sendClientAction(clientAction: ClientAction): void
 }
-export default class C_GameHost extends React.Component<GameHostProps>{
+export default class GameHost extends React.Component<GameHostProps>{
+  
 
   handleCreateGame(){
     const clientAction: ClientAction = {
-      name: 'Create Game'
+      name: 'Create Game',
+      args: null
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
   }
   handleJoinGame(id){
     const clientAction: ClientAction = {
       name: 'Join Game',
-      data: {gameId: id}
+      args: {gameId: id}
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
   }
 
   handleLeaveGame(id){
     const clientAction: ClientAction = {
       name: 'Leave Game',
-      data: {gameId: id}
+      args: {gameId: id}
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
   }
 
   handleCancelGame(id){
     const clientAction: ClientAction = {
       name: 'Cancel Game',
-      data: {gameId: id}
+      args: {gameId: id}
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
   }
 
   handleStartGame(id){
     const clientAction: ClientAction = {
       name: 'Start Game',
-      data: {gameId: id}
+      args: {gameId: id}
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
   }
 
   handleReadyToggle(e, id){
@@ -58,17 +60,17 @@ export default class C_GameHost extends React.Component<GameHostProps>{
 
     const clientAction: ClientAction = {
       name: 'Ready To Start Game',
-      data: {gameId: id, readyValue: readyValue}
+      args: {gameId: id, readyValue: readyValue}
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
   }
   submitGlobalChat(e){
     const message = e.target.value
     const clientAction: ClientAction = {
       name: 'Submit Global Chat',
-      data: {message}
+      args: {message}
     }
-    this.props.websocketService.sendClientAction(clientAction)
+    this.props.sendClientAction(clientAction)
     e.target.value = ''
   }
 

@@ -21,9 +21,9 @@ export default class ServerWebsocketService implements IWebsocketService{
     this.websocketServer.on("connection", (socket: Socket) => { 
       socket.on('Action From Client', (actionFromClient: ClientAction) => {
         if(actionFromClient.name == 'Connect'){
-          const {data} = actionFromClient      
+          const {args} = actionFromClient      
           const connectingClientData: ConnectingClientData = {
-            socket, id: data.clientId, name: data.name
+            socket, id: args.clientId, name: args.name
           }
           this.clientConnected.next(connectingClientData)
         }

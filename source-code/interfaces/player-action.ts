@@ -1,7 +1,8 @@
-import { ManagerOptionNames } from "../classes/game/manager/managerOptions/manager-option";
+
 
 export default interface PlayerAction{
-  playerId: string
-  name: ManagerOptionNames
-  arguments: any[]
+  name: PlayerActionNames
+  args: any
 }
+
+type PlayerActionNames = 'Add Manager Action' | 'Bet On Fighter' | 'Borrow Money' | 'Payback Money' | 'Toggle Ready'
