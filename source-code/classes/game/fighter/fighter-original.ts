@@ -9,7 +9,7 @@ import ClosenessRating from "../../../types/figher/closeness-rating";
 
 
 
-export class Fighter {
+export class xFighter {
 
 
 

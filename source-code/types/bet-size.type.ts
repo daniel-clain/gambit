@@ -1,2 +1,2 @@
-type BetSize = 'Small' | 'Medium' | 'Large'
+type BetSize = 'small' | 'medium' | 'large'
 export default BetSize

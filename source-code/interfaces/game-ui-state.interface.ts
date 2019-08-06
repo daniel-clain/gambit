@@ -1,14 +1,14 @@
-import {Bet} from './game/bet';
 
-import ClientName from '../types/client-name.type';
-import ClientId from '../types/client-id.type';
-import CreatedGame from './game-lobby.interface';
+import {Bet} from './game/bet';
 import PlayerNameAndId from './player-name-and-id';
 import GameLobby from './game-lobby.interface';
 import ChatMessage from './chat-message.interface';
-import Fighter from '../classes/game/fighter/fighter';
 import SkillLevel from '../types/skill-level.type';
-import { IManagerAction } from '../classes/game/manager/manager-action';
+import { ManagerAction } from '../classes/game/manager/manager-action';
+import { FightReport } from '../classes/game/fight/fight';
+import FighterFightStateInfo from './game/fighter-fight-state-info';
+import { OptionNames } from '../classes/game/manager/manager-options/manager-option';
+import { ActiveContract, Contract } from './game/contract.interface';
 
 export interface GameHostUiState{
   inGame: boolean
@@ -16,53 +16,47 @@ export interface GameHostUiState{
   gameLobbies: GameLobby[]
   globalChat: ChatMessage[]
 }
-
-
 export interface GameUiState{
   fightUiState: FightUiState,
   managerUiState: ManagerUiState
 }
-
 export interface FightUiState{
-  startCountdown: null,
-  timeRemaining: null,
-  fighters: [
-    {
-      knockedOut: false,
-      name: null,
-      position: null,
-      facingDirection: null,
-      action: null
-    }
-  ]
+  preFightNews: string[]
+  postFightReport: FightReport
+  startCountdown: number
+  timeRemaining: number
+  fighters: FighterFightStateInfo[]
 }
-
-export interface LoanSharkData{
+export interface Loan{
   debt: number
   weeksOverdue: number
 }
 
-
 export type EmployeeTypes = 'Lawyer' | 'Heavy' | 'Talent Scout' | 'Private Investigator' | 'Hitman' | 'Promoter' | 'Fitness Trainer' | 'Combat Tactics Trainer'
+
 export interface Employee{
   name: string
   type: EmployeeTypes
   skillLevel: SkillLevel
   actionPoints: number
-  contract: {
-    costPerWeek: number
-    weeksRemaining: number
-  }
+  options: OptionNames[]
+  contract: ActiveContract
 }
 
 export interface JobSeeker{
   name: string
-  type: string
-  skillRating: number
-  offeredTerms: {
-    weeks: number
-    costPerWeek: number
-  }
+  type: EmployeeTypes
+  skillLevel: SkillLevel
+  options: OptionNames[]
+  offeredContract: Contract
+}
+
+export interface ManagerInfo{
+  name: string
+  money: number
+  actionPoints: number
+  options: OptionNames[]
+
 }
 export interface FighterInfo{
   lastUpdated: number
@@ -85,16 +79,18 @@ export interface FighterInfo{
 }
 
 export interface ManagerUiState{
-  money: number
-  actionPoints: number
-  timeUntilNextFight: number
+  managerInfo: ManagerInfo
   nextFightBet: Bet
-  nextFightFighters: FighterInfo[]
+  managersFighters: FighterInfo[]
   knownFighters: FighterInfo[]
-  yourEmployees: Employee[]
+  employees: Employee[]
+  loan: Loan
+  readyForNextFight: boolean
+  actions: ManagerAction[]
+  retired: boolean
+  managerOptionsTimeLeft: number
   jobSeekers: JobSeeker[]
-  loanSharkData: LoanSharkData
-  ready: boolean
-  actions: IManagerAction[]
+  nextFightFighters: FighterInfo[]
+  notifications: string[]
 }
 

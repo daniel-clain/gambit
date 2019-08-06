@@ -1,10 +1,10 @@
-import { Component } from "react";
-import IMessageService from "../../../../../../interfaces/message-service.interface";
-import FighterSkeleton from "../../../../../../interfaces/game/fighter/fighter-skeleton";
-import FightSkeleton from "../../../../../../interfaces/game/fight-skeleton";
-import styled from 'styled-components'
+import { Component } from "./node_modules/react";
+import IMessageService from "../../../interfaces/message-service.interface";
+import FighterSkeleton from "../../../interfaces/game/fighter/fighter-skeleton";
+import FightSkeleton from "../../../interfaces/game/fight-skeleton";
+import styled from './node_modules/styled-components'
 import FighterComponent from "./fighter/fighter.component";
-import * as React from 'react'
+import * as React from './node_modules/react'
 
 
 

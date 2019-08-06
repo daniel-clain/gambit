@@ -1,10 +1,10 @@
 
-import FighterModelImage from '../../../../../../../interfaces/game/fighter/fighter-model-image';
-import styled from 'styled-components';
-import { Component } from 'react';
-import FighterSkeleton from '../../../../../../../interfaces/game/fighter/fighter-skeleton';
-import * as React from 'react'
-import { fighterModelImages } from '../../../../../../images/fighter/fighter-model-images';
+import FighterModelImage from '../../../../interfaces/game/fighter/fighter-model-image';
+import styled from './node_modules/styled-components';
+import { Component } from './node_modules/react';
+import FighterSkeleton from '../../../../interfaces/game/fighter/fighter-skeleton';
+import * as React from './node_modules/react'
+import { fighterModelImages } from '../../../images/fighter/fighter-model-images';
 
 const Fighter = styled.div`
 	position: absolute;

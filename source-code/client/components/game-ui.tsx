@@ -2,8 +2,8 @@
 import * as React from 'react';
 import FightUi from "./fight-ui";
 import { GameUiState } from '../../interfaces/game-ui-state.interface';
-import { ManagerUi } from './manager-ui';
 import ClientWebsocketService from '../main-game/client-websocket-service';
+import { ManagerUi } from './manager-ui/manager-ui';
 
 interface GameUiProps{
   websocketService: ClientWebsocketService
@@ -21,11 +21,14 @@ export default class GameUi extends React.Component<GameUiProps>{
   render(){
     if(!this.state)
       return <span>loading....</span>
+    const {websocketService} = this.props
     const {fightUiState, managerUiState} = this.state
-    if(fightUiState)
-      return <FightUi fightUiState={fightUiState}/>
+    if(managerUiState.managerOptionsTimeLeft)
+      return <ManagerUi 
+        managerUiState={managerUiState} 
+        sendPlayerAction={websocketService.sendPlayerAction.bind(websocketService)} />
     else
-      return <ManagerUi managerUiState={managerUiState} sendPlayerAction={this.props.websocketService.sendPlayerAction} />
+      return <FightUi fightUiState={fightUiState}/>
   }
 
 }

@@ -1,8 +1,9 @@
-import { LoanSharkData } from '../../interfaces/game-ui-state.interface';
+
 import * as React from 'react';
+import { Loan } from '../../../interfaces/game-ui-state.interface';
 
 interface LoanSharkCardProps{
-  loanSharkData: LoanSharkData
+  loan: Loan
   paybackMoney(amount: number)
   borrowMoney(amount: number)
 }
@@ -10,14 +11,14 @@ interface LoanSharkCardProps{
 
 export default class LoanSharkCard extends React.Component<LoanSharkCardProps>{
 
-  paybackAmount
-  borrowAmount
+  paybackAmount: number
+  borrowAmount: number
 
   updatePaybackAmount = (e) => {
-    this.paybackAmount = e.target.value
+    this.paybackAmount = parseInt(e.target.value)
   }
   updateLoanAmount = (e) => {
-    this.borrowAmount = e.target.value
+    this.borrowAmount = parseInt(e.target.value)
   }
 
   submitBorrowAmount(){
@@ -30,7 +31,7 @@ export default class LoanSharkCard extends React.Component<LoanSharkCardProps>{
 
   render(){
 
-    const {debt} = this.props.loanSharkData
+    const {debt} = this.props.loan
     
 
 
@@ -59,10 +60,10 @@ export default class LoanSharkCard extends React.Component<LoanSharkCardProps>{
             <div className='right'>
               <div className='heading'>Get Loan</div>
               <div className='get-loan-input'>
-                Borrow ammount: <input onInput={this.updateLoanAmount} />
+                Borrow amount: <input onInput={this.updateLoanAmount} />
               </div>
               <button className='standard-button borrow-money-submit'
-                onClick={this.submitBorrowAmount}>Submit</button>
+                onClick={this.submitBorrowAmount.bind(this)}>Submit</button>
             </div>
 
           </div>          

@@ -1,7 +1,7 @@
 import {ManagerOptionNames} from './manager-options/manager-option';
 import { EmployeeTypes } from '../../../interfaces/game-ui-state.interface';
 
-export interface IManagerAction{
+export interface ManagerAction{
   name: ManagerOptionNames
   source: {
     name: string,

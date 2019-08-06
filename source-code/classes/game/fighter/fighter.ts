@@ -1,3 +1,4 @@
+import {Contract} from './../../../interfaces/game/contract.interface';
 
 import IFighterStrategy, { RunAwayAndRecover } from "./fighter-strategies";
 import Direction360 from "../../../types/figher/direction-360";
@@ -10,6 +11,8 @@ import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
 import FighterAttributes from './fighter-attributes';
 import { FighterInfo } from '../../../interfaces/game-ui-state.interface';
 import Manager from '../manager/manager';
+import FighterFightStateInfo from '../../../interfaces/game/fighter-fight-state-info';
+import { of } from 'rxjs';
 
 interface FighterFighterInterface{
   //getAttacked(attack: FighterAttack, enemyFighterName: FighterName ): AttackResults
@@ -24,23 +27,31 @@ type FighterName = string
 
 export default class Fighter {
 
-  private _name: FighterName
-  private _numberOfFights: number
-  private _numberOfWins: number
-  manager: Manager
   state: FighterState
   attributes: FighterAttributes
   private strategies: IFighterStrategy[] = [
     new RunAwayAndRecover(this)
   ]
+  goalContract: Contract = {
+    weeklyCost: 20,
+    numberOfWeeks: 24
+  }
 
 
   movingDirection: Direction360
 
-  constructor(name: string){
-    this._name = name
+  constructor(private _name: string){
     this.attributes = new FighterAttributes()
     this.state = new FighterState()
+  }
+
+  stopFighting(){
+    console.log(`${this.name} was told to stop fighting`);
+  }
+
+  contractOffered(offeredContract: Contract){
+    if(offeredContract == this.goalContract)
+      return true
   }
 
   getInfo(): FighterInfo{
@@ -64,6 +75,15 @@ export default class Fighter {
       happyness: this.state.happieness,
       publicityRating: this.state.publicityRating,
 
+    }
+  }
+
+  getFighterFightStateInfo(): FighterFightStateInfo{
+    return {
+      name: this._name,
+      position: this.state.position,
+      facingDirection: this.state.facingDirection,
+      fighterModelState: this.state.fighterModelState
     }
   }
 
@@ -100,6 +120,10 @@ export default class Fighter {
 
   recieveFightInterface(fightInterface: FightFighterInterface){
 
+  }
+
+  startFighting(){
+    console.log(`${this.name} started fighting`);
   }
 
   getPutInFight(x: ArenaDimensions){

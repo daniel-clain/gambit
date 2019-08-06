@@ -1,3 +1,4 @@
+import OneToFive from '../../../types/game/one-to-five.type';
 
 type FighterAttributeName = 'Strength' | 'Speed' | 'Intelligence' | 'Endurance' | 'Aggression' | 'Passion'
 
@@ -8,16 +9,19 @@ export interface IFighterAttribute{
 
 
 export default class FighterAttributes{  
-  private _strength: number
-  private _intelligence: number
-  private _speed: number
-  private _endurance: number
-  private _aggression: number
-  private _numberOfFights: number
-  private _numberOfWins: number
+  private _strength: OneToFive = 1
+  private _intelligence: OneToFive = 1
+  private _speed: OneToFive = 1
+  private _endurance: OneToFive = 1
+  private _aggression: OneToFive = 1
 
-  private maxVal: 10
-  private minVal: 0
+  private _numberOfFights: number = 0
+  private _numberOfWins: number = 0
+
+  private maxVal: 5
+  private minVal: 1
+
+  constructor(){}
 
   get strength(){
     return this._strength

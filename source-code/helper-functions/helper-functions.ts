@@ -54,3 +54,8 @@ export const shuffle = <T>(array: T[]): T[] => {
 
   return array;
 }
+
+export const timer = (seconds: number): Promise<void> => new Promise(resolve => setTimeout(resolve, seconds*1000))
+
+
+

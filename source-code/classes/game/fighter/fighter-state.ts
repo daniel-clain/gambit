@@ -3,29 +3,39 @@ import FighterModelState from "../../../types/figher/fighter-model-states";
 import { Observable, Subject } from "rxjs";
 import { random } from "../../../helper-functions/helper-functions";
 import OneToFive from '../../../types/game/one-to-five.type';
+import Position from '../../../interfaces/game/fighter/position';
+import { ActiveContract } from '../../../interfaces/game/contract.interface';
+import Manager from '../manager/manager';
+
 
 export interface IFighterUIState{
   position: Position
   facingDirection: FacingDirection
-  modelState: FighterModelState
+  fighterModelState: FighterModelState
 }
 
 export default class FighterState implements IFighterUIState{
-  private _position: Position
+  private _position: Position = {x: 0, y: 0}
 	private _facingDirection: FacingDirection
-  private _modelState: FighterModelState = 'Idle'
+  private _fighterModelState: FighterModelState = 'Idle'
   private _stamina: number
   private _spirit: number
   maxStamina: number
   maxSpirit: number
-  private _injured: boolean
-  private _healthRating: OneToFive
-  private _doping: boolean
-  private _happieness: OneToFive
-  private _knockedOut: boolean 
-  private _publicityRating: OneToFive
+  private _doping: boolean = false
+  private _happieness: OneToFive = 4
+  private _knockedOut: boolean = false
+  
+  private _injured: boolean = false
+  private _healthRating: OneToFive = 5
+  private _publicityRating: OneToFive = 1
+  activeContract: ActiveContract = null
+  manager: Manager
 
-  updateSubject: Subject<IFighterUIState> = new Subject()
+
+
+  fighterStateUpdatedSubject: Subject<void> = new Subject()
+  knockedOutSubject: Subject<boolean> = new Subject()
 
   constructor(){    
     this._facingDirection = !!random(2) ? 'left' : 'right'
@@ -51,22 +61,18 @@ export default class FighterState implements IFighterUIState{
     return this._facingDirection
   }
 
-  set modelState(val: FighterModelState){
-    if(val !== this._modelState){
-      this._modelState = val
+  set fighterModelState(val: FighterModelState){
+    if(val !== this._fighterModelState){
+      this._fighterModelState = val
       this.triggerUiStateUpdate()
     }
   }
-  get modelState(): FighterModelState{
-    return this._modelState
+  get fighterModelState(): FighterModelState{
+    return this._fighterModelState
   }
 
   private triggerUiStateUpdate(){
-    this.updateSubject.next({
-      position: this.position, 
-      facingDirection: this.facingDirection, 
-      modelState: this.modelState
-    })
+    this.fighterStateUpdatedSubject.next()
   }
 
   set spirit(val: number){
@@ -117,6 +123,7 @@ export default class FighterState implements IFighterUIState{
   }
   set knockedOut(val){
     this._knockedOut = val
+    this.knockedOutSubject.next(this._knockedOut)
   }
   set publicityRating(val){
     this._publicityRating = val
@@ -134,3 +141,5 @@ export default class FighterState implements IFighterUIState{
     return this._publicityRating
   }
 }
+
+

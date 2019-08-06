@@ -1,100 +1,235 @@
-import {Subject} from 'rxjs';
-
-
+import {ManagerAction} from './manager/manager-action';
+import {Subject, Subscription} from 'rxjs';
 import RoundStages from '../../types/game/round-stages';
-import gameConfiguration, { GameConfiguration } from './game-configuration';
-import Fight from './fight/fight';
-import { FightUiState, JobSeeker } from '../../interfaces/game-ui-state.interface';
+import Fight, { FightReport, FightState } from './fight/fight';
+import { JobSeeker } from '../../interfaces/game-ui-state.interface';
 import Fighter from './fighter/fighter';
-import { shuffle } from '../../helper-functions/helper-functions';
-export class RoundController{
+import gameConfiguration, { StageDurations } from './game-configuration';
+import ManagerWinnings from '../../../manager-winnings';
+import Game from './game';
+import Manager, { ManagerState } from './manager/manager';
+import { Bet } from '../../interfaces/game/bet';
+import { timer, shuffle } from '../../helper-functions/helper-functions';
+
+export interface RoundState{
   number: number
   stage: RoundStages
-  jobSeekers: JobSeeker[]
-  stageDurations: any
-  timeUntilNextFight: number
-  timeUntilNextFightSubject: Subject<number> = new Subject()
-  fight: Fight
-  fightUiStateSubject: Subject<FightUiState> = new Subject()
-  private fighters: Fighter[]
-  gameConfiguration: GameConfiguration
-  //test
+  managerOptionsTimeLeft: number
+  gameFinished: boolean
+  activeJobSeekers: JobSeeker[]
+  activeFight: Fight
+}
+export class RoundController{
+  _roundNumber: number
+  _stage: RoundStages
+  _activeJobSeekers: JobSeeker[]
+  _gameFinished: boolean
+  _managerOptionsTimeLeft: number
+  _activeFight: Fight
 
-  constructor(){
-    this.gameConfiguration = gameConfiguration
-    this.stageDurations = this.gameConfiguration.stageDurations
-    
-
-    const {numberOfFighters, fighterNames} = this.gameConfiguration
-    this.fighters = this.getFightersWithRandomNames(numberOfFighters, fighterNames)
+  stageDurations: StageDurations
+  roundStateUpdateSubject: Subject<RoundState> = new Subject()
+  fightStateUpdatedSubject: Subject<FightState> = new Subject()
+  private allManagersReadySubject: Subject<void> = new Subject()
+  
+  constructor(private game: Game){
+    this.stageDurations = gameConfiguration.stageDurations
   }
 
   startRound(number){
-    this.number = number
-    Promise.resolve()
-    .then(this.setUpRound.bind(this))
+    this.setUpRound(number)
     .then(this.managerOptionsStage.bind(this))
     .then(this.preFightNewsStage.bind(this))
     .then(this.fightDayStage.bind(this))
+    .then(this.processManagerBets.bind(this))
     .then(this.postFightReportStage.bind(this))
     .then(() => this.startRound(number++))
   }
 
-  private setUpRound(){
-    const numOfFighters = this.gameConfiguration.numberOfFightersPerFight
-    console.log('xnumOfFighters :', numOfFighters);
+  private setUpRound(number){
+    this._roundNumber = number
+    console.log('ding');
+    this.setupRoundFight()
+    console.log('dang');
+    this.setRoundJobSeekers()
+
+    return Promise.resolve()
+  }
+
+  setupRoundFight(){
+    const numOfFighters = gameConfiguration.numberOfFightersPerFight
     const randomFighters: Fighter[] = []
-    for(;randomFighters.length < numOfFighters;console.log('ding')){
-      const random = Math.random()
-      console.log('random :', random);
-      const randomIndex = Math.floor(Math.random() * this.fighters.length)
-      console.log('randomIndex :', randomIndex);
-      const fighter: Fighter = this.fighters[randomIndex]
+    console.log('ding');
+    for(;randomFighters.length < numOfFighters;){
+      const randomIndex = Math.floor(Math.random() * this.game.fighters.length)
+      const fighter: Fighter = this.game.fighters[randomIndex]
       const fighterIsAlreadySlected = randomFighters.some(randomFighter => randomFighter.name == fighter.name)
 
+
       if(!fighterIsAlreadySlected)
-        console.log('adding fighter');
         randomFighters.push(fighter)
     }
 
-    this.fight = new Fight(randomFighters)
+    if(this._activeFight != null)
+      this._activeFight.doTeardown()
+    this._activeFight = new Fight(randomFighters)
+    //this.nextFightFighters = this.fight.fighters.map(f => f.getInfo())
+    this._activeFight.fightStateUpdatedSubject.subscribe(
+      this.fightStateUpdatedSubject.next.bind(this))
+  }
+  
+  
+  setRoundJobSeekers(){
+    const {numberOfJobSeekersPerRound} = gameConfiguration
+    this._activeJobSeekers = shuffle(this.game.jobSeekers).reduce((accumulator, jobSeeker, index) => {
+      if(index < numberOfJobSeekersPerRound)
+        accumulator.push(jobSeeker)
+      return accumulator
+    },[])
+    
   }
 
-  private managerOptionsStage(){
+  private managerOptionsStage(): Promise<void>{
+    return new Promise<void>(resolve => {
+      const managerStateSubscriptions = this.subscribeToManagersReadyState()
+      console.log(`Round ${this._roundNumber}. Stage 'Manager Options', `);
 
-    this.timeUntilNextFight = this.stageDurations.managerOptions
-    this.timeUntilNextFightSubject.next(this.timeUntilNextFight)
-    const fightCountdownInterval = setInterval(() => {
-      this.timeUntilNextFight --
-      this.timeUntilNextFightSubject.next(this.timeUntilNextFight)
-    }, 1000
-    )
-    console.log(`Round ${this.number}. Stage 'Manager Options', `);
-    return this.stageDuration(this.stageDurations.managerOptions)
-    .then(() => clearInterval(fightCountdownInterval))
+      this.managerOptionsTimeLeft = this.stageDurations.managerOptions
+      const managerOptionsTimeLeftInterval = setInterval(() => this.managerOptionsTimeLeft --, 1000)
+
+      let endOfStageTimeout = timer(this.stageDurations.managerOptions)  
+
+      const managerStageFinished = () => {
+        this.managerOptionsTimeLeft = null
+        managerStateSubscriptions.forEach(s => s.unsubscribe())
+        clearInterval(managerOptionsTimeLeftInterval)
+        resolve()
+      }
+
+      endOfStageTimeout.then(managerStageFinished)      
+
+      this.allManagersReadySubject.subscribe(managerStageFinished)  
+    })
   }
-  private preFightNewsStage(){
-    return this.stageDuration(this.stageDurations.eachNewsSlide)
+
+  subscribeToManagersReadyState(): Subscription[]{
+    return this.game.managers.map((manager) => {
+      return manager.managerStateUpdatedSubject.subscribe((managerState: ManagerState) => {
+        if(managerState.readyForNextFight)
+          this.checkIfAllManagersAreReady()
+      })
+    })
+
   }
-  private fightDayStage(){
-    return this.stageDuration(this.stageDurations.maxFightDuration)
+
+  checkIfAllManagersAreReady(){
+    let allManagersReady: boolean = this.game.managers.reduce((returnVal: boolean, manager) => {
+      if(returnVal == false)
+        return false
+      return manager.readyForNextFight
+    }, true)
+
+    if(allManagersReady){
+      this.allManagersReadySubject.next()
+    }
+
   }
-  private postFightReportStage(){
-    return this.stageDuration(this.stageDurations.postFightReport)
+
+
+
+  private preFightNewsStage(fightReport: FightReport): Promise<void>{
+    console.log('pre fight news');
+    return this.stageDuration(0)
+    /* this.fight.uiState.preFightNews = this.preFightNews
+    this.sendUiStateUpdate()
+
+    return this.stageDuration(this.stageDurations.eachNewsSlide * this.preFightNews.length) */
   }
+
+  private async fightDayStage(): Promise<FightReport>{
+    return new Promise(endOfFightDay => {
+      console.log('fight day');
+
+      this._activeFight.start()
+
+      const fightSubscription: Subscription = this._activeFight.fightStateUpdatedSubject.subscribe(
+        (fightState: FightState) => {
+          if(fightState.finished){
+            fightSubscription.unsubscribe()
+            endOfFightDay(fightState.report)
+          }
+        }
+      )
+      
+    });
+  }
+
+  
 
   stageDuration(duration): Promise<void>{
     return new Promise((resolve, reject) => {
       setTimeout(resolve, duration*1000)
     });
   }
+  
+  processManagerBets(fightReport: FightReport): FightReport{
+    const {winner} = fightReport
 
-  private getFightersWithRandomNames(amount, randomNames: string[]): Fighter[]{
-    const shuffledNames: string[] = shuffle(randomNames)
-    const newFighters: Fighter[] = []
-    for(;newFighters.length < amount;)
-      newFighters.push(new Fighter(shuffledNames.pop()))
+    if(winner){
+      const managerWinnings: ManagerWinnings[] = this.game.managers.map(
+        (manager: Manager) => {
+        let winnings = 0
+        const managersBet: Bet = manager.nextFightBet
+        if(managersBet.fighterName == winner.name){
+          winnings += managersBet.amount*1.6+50
+        }
+        if(manager.fighters.find((f: Fighter) => f.name == winner.name)){
+          winnings +=100
+          winnings *= (winner.publicityRating*5+100)/100 
+        }
+        console.log(`${manager.name} just won ${winnings}`);
+        manager.money += winnings        
+        
+        return {
+          managerName: manager.name,
+          winnings
+        }
+      })
+    }
+    return fightReport
+  }
 
-    return newFighters
+
+  private postFightReportStage(fightReport: FightReport){
+    console.log('post fight reportc');
+    return this.stageDuration(0)/* 
+    return this.stageDuration(this.stageDurations.postFightReport) */
+  }
+
+  set roundNumber(value: number){
+    this._roundNumber = value
+    this.roundStateUpdateSubject.next(this.roundState)
+  }
+
+  set managerOptionsTimeLeft(value: number){
+    this._managerOptionsTimeLeft = value
+    this.roundStateUpdateSubject.next(this.roundState)
+  }
+
+  get managerOptionsTimeLeft(){
+    return this._managerOptionsTimeLeft
+  }
+
+
+
+  get roundState(): RoundState{
+    return {
+      number: this._roundNumber,
+      stage: this._stage,
+      activeJobSeekers: this._activeJobSeekers,
+      gameFinished: this._gameFinished,
+      managerOptionsTimeLeft: this._managerOptionsTimeLeft,
+      activeFight: this._activeFight
+    }
   }
 }

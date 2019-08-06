@@ -5,4 +5,4 @@ export default interface PlayerAction{
   args: any
 }
 
-type PlayerActionNames = 'Add Manager Action' | 'Bet On Fighter' | 'Borrow Money' | 'Payback Money' | 'Toggle Ready'
+type PlayerActionNames = 'Option Confirmed' | 'Bet On Fighter' | 'Borrow Money' | 'Payback Money' | 'Toggle Ready'
