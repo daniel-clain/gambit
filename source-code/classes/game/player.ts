@@ -1,13 +1,14 @@
+import {AbilityData} from './abilities/abilities';
 import {Subject} from 'rxjs';
 import {GameUiState} from '../../interfaces/game-ui-state.interface';
 import ClientId from '../../types/client-id.type';
 import ClientName from '../../types/client-name.type';
 import { Socket } from 'socket.io';
-import Manager, { ManagerState } from './manager/manager';
+import Manager, { ManagerInfo } from './manager/manager';
 import { FightState } from './fight/fight';
 import {RoundState, RoundController} from './round-controller';
 import PlayerAction from '../../interfaces/player-action';
-import OptionsProcessor from './manager/manager-options/manager-option';
+import AbilityProcessor from './abilities/ability-processor';
 
 export default class Player{
   
@@ -21,14 +22,6 @@ export default class Player{
     },
     managerUiState: {
       managerInfo: null,
-      nextFightBet: null,
-      managersFighters: [],
-      knownFighters: [],
-      employees: [],
-      loan: null,
-      readyForNextFight: false,
-      actions: null,
-      retired: null,
       managerOptionsTimeLeft: null,
       nextFightFighters: [],
       jobSeekers: [],
@@ -42,20 +35,22 @@ export default class Player{
     private name: ClientName,
     private roundController: RoundController,
     private manager: Manager,  
-    private optionsProcessor: OptionsProcessor
+    private abilityProcessor: AbilityProcessor
   ){
     this.socket.on('Action From Player', this.handleActionsFromClient.bind(this))
+
     this.roundController.roundStateUpdateSubject.subscribe(this.receiveRoundUpdate.bind(this))
     this.roundController.fightStateUpdatedSubject.subscribe(this.receiveFightUpdate.bind(this))
-    this.manager.managerStateUpdatedSubject.subscribe(this.receiveManagerUpdate.bind(this))
-    this.gameUiState.managerUiState.name = manager.name
+    this.manager.managerUpdatedSubject.subscribe(this.receiveManagerUpdate.bind(this))
+
+    this.gameUiState.managerUiState.managerInfo = manager.info
   }
 
   handleActionsFromClient(playerAction: PlayerAction){
     const {args} = playerAction
     switch(playerAction.name){
-      case 'Option Confirmed': 
-        this.optionsProcessor.processSelectedOption(args.optionInfo); break;
+      case 'Ability Confirmed': 
+        this.handleAbilitySelected(args); break;
       case 'Bet On Fighter':
         this.manager.nextFightBet = {fighterName: args.fighterName, amount: args.betSize}; break;
       case 'Borrow Money':
@@ -65,6 +60,9 @@ export default class Player{
       case 'Toggle Ready':
         this.manager.readyForNextFight = args.ready; break;
     }
+  }
+  handleAbilitySelected(selectedAbility: AbilityData){
+    this.abilityProcessor.processSelectedAbility(selectedAbility)
   }
 
 
@@ -93,17 +91,8 @@ export default class Player{
     managerUiState.notifications.push(error)
   }
 
-  private receiveManagerUpdate(managerState: ManagerState){ 
-    const {managerUiState} = this.gameUiState
-    managerUiState.actionPoints = managerState.actionPoints
-    managerUiState.money = managerState.money
-    managerUiState.managersFighters = managerState.fighters.map(f => f.getInfo())
-    managerUiState.knownFighters = managerState.knownFighters
-    managerUiState.nextFightBet = managerState.nextFightBet
-    managerUiState.retired = managerState.retired
-    managerUiState.readyForNextFight = managerState.readyForNextFight
-    managerUiState.employees = managerState.employees
-    managerUiState.loan = managerState.loan
+  private receiveManagerUpdate(managerInfo: ManagerInfo){
+    this.gameUiState.managerUiState.managerInfo = managerInfo
     this.emitGameUIStateUpdate()
   }
 

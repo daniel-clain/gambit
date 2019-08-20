@@ -1,4 +1,3 @@
-import {ManagerAction} from './manager/manager-action';
 import {Subject, Subscription} from 'rxjs';
 import RoundStages from '../../types/game/round-stages';
 import Fight, { FightReport, FightState } from './fight/fight';
@@ -7,7 +6,7 @@ import Fighter from './fighter/fighter';
 import gameConfiguration, { StageDurations } from './game-configuration';
 import ManagerWinnings from '../../../manager-winnings';
 import Game from './game';
-import Manager, { ManagerState } from './manager/manager';
+import Manager, { ManagerInfo } from './manager/manager';
 import { Bet } from '../../interfaces/game/bet';
 import { timer, shuffle } from '../../helper-functions/helper-functions';
 
@@ -48,9 +47,7 @@ export class RoundController{
 
   private setUpRound(number){
     this._roundNumber = number
-    console.log('ding');
     this.setupRoundFight()
-    console.log('dang');
     this.setRoundJobSeekers()
 
     return Promise.resolve()
@@ -59,7 +56,6 @@ export class RoundController{
   setupRoundFight(){
     const numOfFighters = gameConfiguration.numberOfFightersPerFight
     const randomFighters: Fighter[] = []
-    console.log('ding');
     for(;randomFighters.length < numOfFighters;){
       const randomIndex = Math.floor(Math.random() * this.game.fighters.length)
       const fighter: Fighter = this.game.fighters[randomIndex]
@@ -114,8 +110,8 @@ export class RoundController{
 
   subscribeToManagersReadyState(): Subscription[]{
     return this.game.managers.map((manager) => {
-      return manager.managerStateUpdatedSubject.subscribe((managerState: ManagerState) => {
-        if(managerState.readyForNextFight)
+      return manager.managerUpdatedSubject.subscribe((managerInfo: ManagerInfo) => {
+        if(managerInfo.readyForNextFight)
           this.checkIfAllManagersAreReady()
       })
     })
@@ -147,20 +143,23 @@ export class RoundController{
   }
 
   private async fightDayStage(): Promise<FightReport>{
-    return new Promise(endOfFightDay => {
+    return new Promise(resolve => {
       console.log('fight day');
 
       this._activeFight.start()
 
-      const fightSubscription: Subscription = this._activeFight.fightStateUpdatedSubject.subscribe(
+      this._activeFight.fightStateUpdatedSubject.subscribe(
         (fightState: FightState) => {
-          if(fightState.finished){
-            fightSubscription.unsubscribe()
-            endOfFightDay(fightState.report)
-          }
+          console.log('fight update');
         }
       )
-      
+
+      this._activeFight.fightFinishedSubject.subscribe(
+        (fightReport: FightReport) => {
+          console.log('fight finished');
+          resolve(fightReport)
+        }
+      )
     });
   }
 

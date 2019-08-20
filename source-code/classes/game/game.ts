@@ -8,8 +8,9 @@ import {RoundController, RoundState} from './round-controller';
 import Fighter from './fighter/fighter';
 import gameConfiguration from './game-configuration';
 import { shuffle, random } from '../../helper-functions/helper-functions';
-import OptionsProcessor, { OptionNames } from './manager/manager-options/manager-option';
+import OptionsProcessor, { OptionNames, getOptionProcessors } from './manager/manager-options/manager-option';
 import SkillLevel from '../../types/skill-level.type';
+import AbilityProcessor from './abilities/ability-processor';
 
 
 export default class Game{
@@ -21,14 +22,15 @@ export default class Game{
   players: Player[]
   managers: Manager[]
   jobSeekers: JobSeeker[]
+  abilityProcessor: AbilityProcessor
 
 	constructor(playerInfo: PlayerInfo[]) {   
     
-    
     const shuffledNames: string[] = shuffle([...gameConfiguration.listOfNames])
+    this.roundController = new RoundController(this) 
+    this.abilityProcessor = new AbilityProcessor(this)
     this.createFighters(shuffledNames)
     this.createJobSeekers(shuffledNames)
-    this.roundController = new RoundController(this) 
     this.setupPlayersAndManagers(playerInfo)
     this.startGame()
     this.handleWhenGameFinished()
@@ -52,7 +54,6 @@ export default class Game{
   private setupPlayersAndManagers(playerInfo: PlayerInfo[]){
     this.managers = []
     this.players = []
-    const optionsProcessor = new OptionsProcessor(this)
     playerInfo.forEach((playerInfo: PlayerInfo, index) => {
       const {socket, name, id} = playerInfo
       const playersManager: Manager = new Manager(`Manager${index}`)
@@ -61,7 +62,7 @@ export default class Game{
         socket, name, id,
         this.roundController,
         playersManager,
-        optionsProcessor
+        this.abilityProcessor
       ))
     }) 
   }
@@ -95,11 +96,10 @@ export default class Game{
         name: shuffledNames.pop(),
         type,
         skillLevel: <SkillLevel>random(3, true),
-        offeredContract: {
+        goalContract: {
           numberOfWeeks: 4,
           weeklyCost: 20
-        },
-        options
+        }
       })
     }
 

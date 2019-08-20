@@ -3,11 +3,12 @@ import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import ClientWebsocketService from './client-websocket-service';
 import PreGame from './pre-game';
-import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
+import { GameHostUiState, EmployeeTypes } from '../../interfaces/game-ui-state.interface';
 import GameHost from './game-host';
 import ClientAction from '../../interfaces/client-action';
 import GameUi from '../components/game-ui';
 import './global.scss'
+
 
 interface MainGameProps{
   websocketService: ClientWebsocketService
@@ -21,6 +22,8 @@ export default class MainGame extends React.Component<MainGameProps>{
     this.props.websocketService.gameHostUiStateUpdate.subscribe(
       (state: GameHostUiState) => this.setState(state))
     this.tryToConnectToGameHost()
+
+
   }
 
   tryToConnectToGameHost(){

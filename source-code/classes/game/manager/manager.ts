@@ -1,82 +1,70 @@
-import {ManagerInfo} from './../../../interfaces/game-ui-state.interface';
+import {AbilitySourceType, AbilityTarget, AbilityTargetType} from './../abilities/abilities';
+
 import {Bet} from './../../../interfaces/game/bet';
 import {Subject} from 'rxjs';
 import {FighterInfo, Employee, Loan} from '../../../interfaces/game-ui-state.interface';
 import Fighter from "../fighter/fighter";
-import { OptionNames, SelectedOptionInfo, IOptionProcessor } from './manager-options/manager-option';
-import PlayerAction from '../../../interfaces/player-action';
-import OptionsProcessor from './manager-options/manager-option';
+import { AbilitySource } from '../abilities/abilities';
 
-export interface ManagerState{
+
+export interface ManagerInfo{
+  name: string
   money: number
   actionPoints: number
+  fighters: FighterInfo[]
+  knownFighters: FighterInfo[]
   loan: Loan
+  nextFightBet: Bet
   employees: Employee[]
   readyForNextFight: boolean
   retired: boolean
-  fighters: Fighter[]
-  storedOptions: SelectedOptionInfo[]
-  knownFighters: FighterInfo[]
-  nextFightBet: Bet
 }
-
-export default class Manager{ 
+export default class Manager implements AbilitySource, AbilityTarget{
   private _money: number = 500
-  private _actionPoints = 3
-  private _loan: Loan = {
-    debt: 0,
-    weeksOverdue: 0
-  }
-  private _employees: Employee[] = []
-  private _readyForNextFight: boolean
-  private _retired: boolean
+  private _actionPoints: number = 1
   private _fighters: Fighter[] = []
-  private _storedOptions: SelectedOptionInfo[] = []
   private _knownFighters: FighterInfo[] = []
   private _nextFightBet: Bet
-  private options: OptionNames[] = ['Research fighter', 'Offer contract', 'Train fighter', 'Dope fighter', 'Discover fighter']
+  private _employees: Employee[] = []
+  private _loan: Loan
+  private _readyForNextFight: boolean
+  private _retired: boolean
 
+  type: any = 'Manager'
 
-  managerStateUpdatedSubject: Subject<ManagerState> = new Subject()
+  managerUpdatedSubject: Subject<ManagerInfo> = new Subject()
   managerErrorSubject: Subject<string> = new Subject()
 
   constructor(private _name: string){}
 
-  get managerState(): ManagerState{
+  get info(): ManagerInfo{
     return {
+      name: this._name,
       money: this._money,
       actionPoints: this._actionPoints,
-      fighters: this._fighters,
+      fighters: this._fighters.map(fighter => fighter.getInfo()),
       knownFighters: this._knownFighters,
       nextFightBet: this._nextFightBet,
       employees: this._employees,
       loan: this._loan,
       readyForNextFight: this._readyForNextFight,
-      storedOptions: this._storedOptions,
       retired: this._retired
     }
   }
 
 
-  get info(): ManagerInfo{
-    return {
-      name: this.name,
-      money: this.money,
-      actionPoints: this.actionPoints,
-      options: this.options
-    }
+  get name(): string{
+    return this._name
   }
-
-  get name(){return this._name}
 
 
   set money(val: number){
     this._money = val
-    this.managerStateUpdatedSubject.next(this.managerState)
+    this.managerUpdatedSubject.next(this.info)
   }
   set actionPoints(val){
     this._actionPoints = val
-    this.managerStateUpdatedSubject.next(this.managerState)
+    this.managerUpdatedSubject.next(this.info)
   }
 
   set nextFightBet(bet: Bet){
@@ -86,7 +74,7 @@ export default class Manager{
     }
     this._money -= bet.amount
     this._nextFightBet = bet
-    this.managerStateUpdatedSubject.next(this.managerState)
+    this.managerUpdatedSubject.next(this.info)
 
   }
   get nextFightBet(): Bet{
@@ -99,7 +87,7 @@ export default class Manager{
 
   set readyForNextFight(value: boolean){
     this._readyForNextFight = value
-    this.managerStateUpdatedSubject.next(this.managerState)
+    this.managerUpdatedSubject.next(this.info)
   }
   
   get readyForNextFight(): boolean{
@@ -116,10 +104,6 @@ export default class Manager{
 
   get fighters(): Fighter[]{
     return this._fighters
-  }
-
-  get storedOptions(): SelectedOptionInfo[]{
-    return this._storedOptions
   }
 
   get employees(){return this._employees}
@@ -142,6 +126,10 @@ export default class Manager{
   paybackMoney(amount: number){
     this._money -= amount
     this.loan = {...this._loan, debt: this._loan.debt -= amount}
+  }
+
+  addEmployee(Employee){
+
   }
 
   

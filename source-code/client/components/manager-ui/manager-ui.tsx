@@ -1,17 +1,18 @@
 
 import * as React from 'react';
 import './manager-ui.scss'
-import { FighterInfo, Loan, ManagerUiState, Employee, JobSeeker, ManagerInfo } from '../../../interfaces/game-ui-state.interface';
+import { FighterInfo, ManagerUiState, Employee, JobSeeker } from '../../../interfaces/game-ui-state.interface';
 import PlayerAction from '../../../interfaces/player-action';
 import LoanSharkCard from './loan-shark-card';
-import gameConfiguration from '../../../classes/game/game-configuration';
 import List from './actor-list';
-import { IOptionClient, SelectedOptionInfo } from '../../../classes/game/manager/manager-options/manager-option';
 import { FighterCard } from './fighter-card';
 import { Bet } from '../../../interfaces/game/bet';
-import { EmployeeJobSeekerCard } from './employee-job-seeker-card';
-import OptionBlock from './option-block';
-import OptionCard, { OptionData } from './option-card';
+import { EmployeeCard } from './employee-card';
+import AbilityCard from './ability-card';
+import { ManagerInfo } from '../../../classes/game/manager/manager';
+import { JobSeekerCard } from './job-seeker-card';
+import AbilityService from './ability-service';
+import { AbilityData } from './client-abilities/client-ability.interface';
 
 interface Card{
   type: ActorTypes,
@@ -19,7 +20,7 @@ interface Card{
 
 }
 
-type ActiveModalTypes = 'Fighter Card' | 'Employee Card' | 'Job Seeker Card' | 'Loan Shark Card' | 'Option Card'
+type ActiveModalTypes = 'Fighter Card' | 'Employee Card' | 'Job Seeker Card' | 'Loan Shark Card' | 'Ability Card'
 
 interface ActiveModal{
   type: ActiveModalTypes
@@ -45,6 +46,12 @@ export class ManagerUi extends React.Component<ManagerUiProps, ManagerComponentS
     activeModal: null,
     activeSelectList: null
   }
+  abilityService: AbilityService
+
+  constructor(props){
+    super(props)
+    this.abilityService = new AbilityService()
+  }
 
 
   placeBet(bet: Bet){
@@ -53,13 +60,13 @@ export class ManagerUi extends React.Component<ManagerUiProps, ManagerComponentS
 
 
   showLoanSharkCard(){
-    const loanSharkProps = this.props.managerUiState.loan
+    const loanSharkProps = this.props.managerUiState.managerInfo.loan
     this.setState({activeModal: {type: 'Loan Shark Card', props: loanSharkProps}})
   }
 
-  optionBlockSelected(optionData: OptionData){
-    console.log('option selected ', optionData);
-    this.setState({activeModal: {type: 'Option Card', props: optionData}})
+  abilityBlockSelected(abilityData: AbilityData){
+    console.log('ability selected ', abilityData);
+    this.setState({activeModal: {type: 'Ability Card', props: abilityData}})
   }
 
   fighterSelected(fighterInfo: FighterInfo){
@@ -95,14 +102,14 @@ export class ManagerUi extends React.Component<ManagerUiProps, ManagerComponentS
   }
 
 
-  optionConfirmed(optionInfo: SelectedOptionInfo){
+/*   abilityConfirmed(abilityInfo: SelectedAbilityInfo){
     const playerAction: PlayerAction = {
-      name: 'Option Confirmed',
-      args: {optionInfo}
+      name: 'Ability Confirmed',
+      args: {abilityInfo}
     }
     this.props.sendPlayerAction(playerAction)
 
-  }
+  } */
 
 
   handleReadyToggle(e){
@@ -118,7 +125,8 @@ export class ManagerUi extends React.Component<ManagerUiProps, ManagerComponentS
   
   render(){      
 
-    const {money, actionPoints, managerOptionsTimeLeft, knownFighters, employees, jobSeekers, nextFightFighters, readyForNextFight, managersFighters, name} = this.props.managerUiState
+    const {managerInfo, managerOptionsTimeLeft, jobSeekers, nextFightFighters} = this.props.managerUiState
+    const {money, actionPoints, knownFighters, employees, readyForNextFight, fighters, name} = managerInfo
     const {activeModal} = this.state
     
     const yourFighters: FighterInfo[] = knownFighters.filter(fighterInfo => fighterInfo.isPlayersFighter)
@@ -202,13 +210,16 @@ export class ManagerUi extends React.Component<ManagerUiProps, ManagerComponentS
             <div className='action-modal__content'>
 
               {activeModal.type == 'Fighter Card' && 
-                <FighterCard fighterInfo={activeModal.props} money={money} placeBet={this.placeBet} onOptionBlockSelected={this.optionBlockSelected.bind(this)} managerName={name}/>
+                <FighterCard fighterInfo={activeModal.props} managerInfo={managerInfo} placeBet={this.placeBet} onAbilityBlockSelected={this.abilityBlockSelected.bind(this)} abilityService={this.abilityService}/>
               }
 
-              {(activeModal.type == 'Employee Card' || activeModal.type == 'Job Seeker Card') &&
-                <EmployeeJobSeekerCard actorInfo={activeModal.props} onOptionBlockSelected={this.optionBlockSelected.bind(this)} managerName={name}/>
+              {activeModal.type == 'Employee Card' &&
+                <EmployeeCard employee={activeModal.props} onAbilityBlockSelected={this.abilityBlockSelected.bind(this)} managerInfo={managerInfo} abilityService={this.abilityService}/>
               }
 
+              {activeModal.type == 'Job Seeker Card' &&
+                <JobSeekerCard jobSeeker={activeModal.props} onAbilityBlockSelected={this.abilityBlockSelected.bind(this)} managerInfo={managerInfo} abilityService={this.abilityService}/>
+              }
               {activeModal.type == 'Loan Shark Card' && 
                 <LoanSharkCard 
                   loan={activeModal.props}
@@ -217,10 +228,10 @@ export class ManagerUi extends React.Component<ManagerUiProps, ManagerComponentS
                 />
               }
 
-              {activeModal.type == 'Option Card' && 
-                <OptionCard
+              {activeModal.type == 'Ability Card' && 
+                <AbilityCard
                   sendPlayerAction={this.props.sendPlayerAction}
-                  optionData={activeModal.props}
+                  abilityData={activeModal.props} abilityService={this.abilityService}
                 />
               }
 

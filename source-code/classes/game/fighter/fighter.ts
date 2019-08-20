@@ -13,6 +13,7 @@ import { FighterInfo } from '../../../interfaces/game-ui-state.interface';
 import Manager from '../manager/manager';
 import FighterFightStateInfo from '../../../interfaces/game/fighter-fight-state-info';
 import { of } from 'rxjs';
+import { AbilityTarget } from '../abilities/abilities';
 
 interface FighterFighterInterface{
   //getAttacked(attack: FighterAttack, enemyFighterName: FighterName ): AttackResults
@@ -25,8 +26,8 @@ interface FightFighterInterface{
 type FighterName = string
 
 
-export default class Fighter {
-
+export default class Fighter implements AbilityTarget{
+  type: 'Fighter'
   state: FighterState
   attributes: FighterAttributes
   private strategies: IFighterStrategy[] = [
@@ -43,6 +44,9 @@ export default class Fighter {
   constructor(private _name: string){
     this.attributes = new FighterAttributes()
     this.state = new FighterState()
+  }
+  get name(){
+    return this._name
   }
 
   stopFighting(){
@@ -90,10 +94,6 @@ export default class Fighter {
 
   moveTowardFighter(fighter: Fighter){
     this.movingDirection = this.getDirectionOfFighter(fighter)
-  }
-
-  get name(): FighterName{
-    return this._name
   }
 
   get numberOfWins(): number{

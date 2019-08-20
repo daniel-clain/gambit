@@ -1,3 +1,4 @@
+import {OptionValidator} from './manager-option';
 
 import {validate} from '@babel/types';
 import {RoundState} from './../../round-controller';
@@ -10,7 +11,7 @@ import Manager from '../manager';
 import SkillLevel from '../../../../types/skill-level.type';
 import Game from '../../game';
 import Fighter from '../../fighter/fighter';
-import { OptionData } from '../../../../client/components/manager-ui/option-card';
+import { OptionData } from '../../../../client/components/manager-ui/ability-card';
 
 
 export type OptionNames = 
@@ -29,24 +30,21 @@ export type OptionNames =
 'Bet on fighter' |
 'Borrow from loan shark' | */
 
-type IManagerOptionSource = 'Manager' | EmployeeTypes
 
 
 type ExecuteOptionReport =  string
 
-type OptionTargetTypes = 'Fighter' | 'Manager' | 'Job Seeker'
-export interface OptionTarget{
-  type: OptionTargetTypes
-  name: string
-}
 
-type OptionSourceTypes = 'Employee' | 'Manager'
 export interface OptionSource{
-  type: OptionSourceTypes
+  type: 'Manager' | 'Employee'
+  name: string
+}
+export interface OptionTarget{
+  type: 'Manager' | 'Fighter' | 'Job Seeker'
   name: string
 }
 
-export interface SelectedOptionInfo{
+export interface OptionData{
   name: OptionNames
   target: OptionTarget
   source: OptionSource
@@ -57,210 +55,26 @@ interface IOption{
   name: OptionNames
 }
 
-export interface IOptionClient extends IOption{
-  target: OptionTarget
-  source: OptionSource
-  shortDescription: string
-  longDescription: string
-  details: string
-  confirm(): Promise<SelectedOptionInfo>
-  isValidTarget(target: FighterInfo | ManagerInfo | JobSeeker): boolean
-  isValidSource(source: Employee | ManagerInfo): boolean
-  
-}
-
-
-export interface IOptionProcessor extends IOption{
+interface IOptionProcessor{
   resolvedWhen: ResolvedWhenOptions
-  execute(...dependencies: any[]): ExecuteOptionReport
-
+  processOption(optionData: OptionData): ExecuteOptionReport
 }
+export abstract class OptionProcessor{
+  optionName: OptionNames
+  resolvedWhen: ResolvedWhenOptions
+  game: Game
 
-type ResolvedWhenOptions = 'Instantly' | 'After Manager Options Stage' | 'End Of Round'
-
-
-
-
-export class ResearchFighter implements IOption{
-  //Dev note: 
-  name: OptionNames = 'Research fighter'
-
-}
-export class ResearchFighterProcessor extends ResearchFighter implements IOptionProcessor{
-
-  resolvedWhen: ResolvedWhenOptions = 'Instantly'
-
-  constructor(private game: Game){
-    super()
+  constructor(game: Game){
+    this.game = game
   }
 
-
-  execute(optionInfo: SelectedOptionInfo): ExecuteOptionReport{    
-    const {fighters, managers} = this.game
-    const {source, target} = optionInfo
-    const targetFighter = fighters.find(fighter => fighter.name == target.name)
-    const sourceManager: Manager = managers.find(manager => {
-      if(source.type == 'Manager' && source.name == manager.name)
-        return
-      if(source.type == 'Employee')
-        return manager.employees.some(employee => employee.name == source.name)
-    })
-
-    const researchedFighterInfo: FighterInfo = targetFighter.getInfo()
-    
-    const existingFighterInfoIndex = sourceManager.knownFighters.findIndex(
-      fighterInfo => fighterInfo.name == researchedFighterInfo.name)
-
-    if(existingFighterInfoIndex >= 0)
-      sourceManager.knownFighters[existingFighterInfoIndex] = researchedFighterInfo
-    else
-      sourceManager.knownFighters.push(researchedFighterInfo)
-
-    return `${sourceManager.name} has gained info about ${targetFighter.name} due to ${source.name}'s research'`
-
-  }
-
-}
-
-
-class OfferContract implements IOption{
-  name: OptionNames = 'Offer contract'
-}
-export class OfferContractProcessor extends OfferContract implements IOptionProcessor{
-
-  resolvedWhen: ResolvedWhenOptions = 'End Of Round'
-  constructor(private game: Game){
-    super()
-  }
-
-
-  execute(optionInfo: SelectedOptionInfo): ExecuteOptionReport{    
-    if(optionInfo.name != 'Offer contract')
-      return
-
-    const {fighters, managers} = this.game
-    const {source, target, args} = optionInfo
-    const targetFighter: Fighter = fighters.find(fighter => fighter.name == target.name)
-    const manager: Manager = managers.find(manager => manager.name == source.name)    
-
-    const fighterAcceptedContract: boolean = targetFighter.contractOffered(args.offeredContract)
-
-    if(fighterAcceptedContract){
-      manager.fighters.push(targetFighter)
-      targetFighter.state.manager = manager
-    }
-    
-    
-    return `${manager.name} contract offer to ${targetFighter.name} was ${fighterAcceptedContract ? 'accepted' : 'declined'}'`
-
-  }
-
-}
-export class OfferContractClient extends OfferContract implements IOptionClient{
-  target: OptionTarget;  
-  source: OptionSource;
-  shortDescription: 'offer a business contract';
-  longDescription: string;
-  details: string;
-  offeredContract
-  
-  private getSelectedOptionInfo(): SelectedOptionInfo{
-    if(this.target == null || this.source == null || this.offeredContract == null)    
-    return {
-      name: this.name,
-      target: this.target,
-      source: this.source,
-      args: {offeredContract: this.offeredContract}
-    }
-  }
-
-
-  isValidTarget(target: FighterInfo | JobSeeker): boolean{
-    let fighter = target as FighterInfo
-    if(
-      fighter.inNextFight != true && 
-      fighter.isPlayersFighter != true && 
-      fighter.manager == null
-    ) return true
-    else return false
-  }
-  isValidSource(source: Employee | ManagerInfo): boolean{
-    if(source.options.some(optionName => optionName == 'Offer contract')) 
-      return true
-    else return false
-  }
-
-
-  confirm(): Promise<SelectedOptionInfo> {
-    return new Promise((resolve, reject) => {
-      if(!this.target) reject('target undefined')
-      if(!this.source) reject('source undefined')
-      resolve(this.getSelectedOptionInfo())
-    });
-  }
-
-}
-
-
-export class TrainFighter implements IOption{
-  name: OptionNames = 'Train fighter'
-}
-export class DiscoverFighter implements IOption{
-  name: OptionNames = 'Discover fighter'
-}
-export class GuardFighter implements IOption{
-  name: OptionNames = 'Guard fighter'
-}
-
-
-export default class  OptionsProcessor{
-  private optionProcessors: IOptionProcessor[]
-  storedSelectedOptions: SelectedOptionInfo[] = []
-  
-  constructor(private game: Game){
-    const { fighters, managers, roundController } = game
-    roundController.roundStateUpdateSubject.subscribe(this.onRoundUpdate)
-    this.optionProcessors = [
-      new ResearchFighterProcessor(game),
-      new OfferContractProcessor(game),
-    ]
-  }
-
-  onRoundUpdate(roundState: RoundState){
-    if(roundState.stage == 'Pre Fight News'){
-      console.log('round Stage :', roundState.stage);
-      this.processStoredOptions('After Manager Options Stage')
-    }
-
-    if(roundState.stage == 'Post Fight Report'){
-      console.log('round Stage :', roundState.stage);
-      this.processStoredOptions('End Of Round')
-    }
-  }
-  processStoredOptions(resolvedWhen: ResolvedWhenOptions){
-    
-
-    const optionProcessors: IOptionProcessor[] = this.storedSelectedOptions.map(
-      optionInfo => this.optionProcessors.find(optionProcessor => optionProcessor.name == optionInfo.name))
-    
-    optionProcessors.forEach(optionProcessor => {
-      if(optionProcessor.resolvedWhen == resolvedWhen){
-        const optionInfoIndex = this.storedSelectedOptions.findIndex(
-          option =>option.name = optionProcessor.name)
-        const optionInfo = this.storedSelectedOptions.splice(optionInfoIndex, 1)
-        optionProcessor.execute(optionInfo)
-      }
-    })
-  }
-
-
-  processSelectedOption(optionInfo: SelectedOptionInfo): {error: string}{
+  processOption(optionData: OptionData): ExecuteOptionReport{
     const { managers } = this.game
-    const { target, source} = optionInfo
-    if(optionInfo.source.type == 'Manager'){
+    const { target, source} = optionData
+    if(optionData.source.type == 'Manager'){
       const manager = managers.find(manager => manager.name == source.name)
       if(manager.actionPoints > 0){
-        return {error: 'dont have enough action points'}
+        return 'dont have enough action points'
       }
       else 
         manager.actionPoints --        
@@ -281,15 +95,111 @@ export default class  OptionsProcessor{
       )
 
       if(employee.actionPoints > 0){
-        return {error: 'employee dont have enough action points'}
+        return 'employee dont have enough action points'
       }
       else 
         employee.actionPoints --        
     }
-
-    this.storedSelectedOptions.push(optionInfo)
-    this.processStoredOptions('Instantly')
   }
+  execute(){}
+}
+export type ExecutesWhenOptions = 'Instantly' | 'After Manager Options Stage' | 'End Of Round'
+
+
+/* export class ResearchFighterProcessor extends OptionProcessor{
+  resolvedWhen: ResolvedWhenOptions = 'Instantly'
+  constructor(game: Game){
+    super(game)
+  }
+  processOption(optionData: OptionData){
+    super.processOption(optionData) 
+    const {fighters, managers} = super.game
+    const {source, target} = optionData
+    const targetFighter = fighters.find(fighter => fighter.name == target.name)
+    const sourceManager: Manager = managers.find(manager => {
+      if(source.type == 'Manager' && source.name == manager.name)
+        return
+      if(source.type == 'Employee')
+        return manager.employees.some(employee => employee.name == source.name)
+    })
+    const researchedFighterInfo: FighterInfo = targetFighter.getInfo()    
+    const existingFighterInfoIndex = sourceManager.knownFighters.findIndex(
+      fighterInfo => fighterInfo.name == researchedFighterInfo.name)
+    if(existingFighterInfoIndex >= 0)
+      sourceManager.knownFighters[existingFighterInfoIndex] = researchedFighterInfo
+    else
+      sourceManager.knownFighters.push(researchedFighterInfo)
+    return `${sourceManager.name} has gained info about ${targetFighter.name} due to ${source.name}'s research'`
+  }
+} */
+
+
+class OfferContract implements IOption{
+  name: OptionNames = 'Offer contract'
+}
+export class OfferContractProcessor extends OptionProcessor{
+
+  resolvedWhen: ResolvedWhenOptions = 'End Of Round'
+  constructor(game: Game){
+    super(game)
+  }
+  processOption(optionData: OptionData){  
+    if(optionData.name != 'Offer contract')
+      return
+
+    const {fighters, managers, jobSeekers} = this.game
+    const {source, target, args} = optionData
+    const manager: Manager = managers.find(manager => manager.name == source.name)  
+
+    if(target.type == 'Fighter'){
+      const targetFighter: Fighter = fighters.find(fighter => fighter.name == target.name)
+      const fighterAcceptedContract: boolean = targetFighter.contractOffered(args.offeredContract)
+
+      if(fighterAcceptedContract){
+        manager.fighters.push(targetFighter)
+        targetFighter.state.manager = manager
+      }
+      
+      
+      return `${manager.name} contract offer to ${targetFighter.name} was ${fighterAcceptedContract ? 'accepted' : 'declined'}'`
+    }
+    if(target.type == 'Job Seeker'){
+      const targetJobSeeker: JobSeeker = jobSeekers.find(jobSeeker => jobSeeker.name == target.name)
+      const {name, type, skillLevel, options} = targetJobSeeker
+      const newEmployee = new Employee(
+        name, type, skillLevel, options
+      )
+      manager.employees.push()
+    }
+  }
+
+}
+
+export class TrainFighter implements IOption{
+  name: OptionNames = 'Train fighter'
+}
+export class DiscoverFighter implements IOption{
+  name: OptionNames = 'Discover fighter'
+}
+export class GuardFighter implements IOption{
+  name: OptionNames = 'Guard fighter'
+}
+
+
+export default class OptionsProcessor{
+  private optionProcessors: IOptionProcessor[]
+  
+  constructor(private game: Game){
+    const { fighters, managers, roundController } = game
+    roundController.roundStateUpdateSubject.subscribe(this.onRoundUpdate)
+    this.optionProcessors = [
+      new ResearchFighterProcessor(game),
+      new OfferContractProcessor(game),
+    ]
+  }
+
+
+  
 
 }
 
@@ -315,6 +225,7 @@ export interface OptionValidator{
   validateTarget(optionTarget: OptionTarget): Error
   validate(option: OptionData): Error
 }
+
 class OfferContractValidator implements OptionValidator{
   optionName: OptionNames = 'Research fighter';
   validateSource(optionSource: OptionSource): Error {
@@ -365,6 +276,11 @@ export const optionValidators: OptionValidator[] = [
   new OfferContractValidator()
 ]
 
+export const getOptionProcessors = (game: Game) : OptionProcessor[] => [
+  new ResearchFighterProcessor(game),
+  new OfferContractProcessor(game)
+]
+
 export const optionsInfoList: OptionInfo[] = [
   {
     name: 'Research fighter',
@@ -374,6 +290,29 @@ export const optionsInfoList: OptionInfo[] = [
     longDescription: ``
   }
 ]
+
+export const determinePriorityOptionSource = (option: OptionData, employees: Employee[], managerInfo: ManagerInfo): OptionSource => {
+  let selectedSource: OptionSource
+  const optionValidator: OptionValidator = optionValidators.find(validator => validator.optionName == option.name)
+
+  if(managerInfo.actionPoints){
+    if(optionValidator.isValidSource(managerInfo))
+    selectedSource = {
+      type: 'Manager',
+      name: managerInfo.name,
+    }
+  }
+  employees.forEach(employee => {
+    if(employee.actionPoints){
+      if(optionValidator.isValidSource(employee))
+      selectedSource = {
+        type: 'Employee',
+        name: employee.name,
+      }
+    }
+  })
+  return selectedSource
+}
 /* 
 
 

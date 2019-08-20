@@ -1,9 +1,6 @@
-import {GameConfiguration} from './../game-configuration';
-import {Bet} from './../../../interfaces/game/bet';
-import {BetOnFighter} from './../manager/manager-options/manager-option';
-import FighterState, {IFighterUIState} from './../fighter/fighter-state';
+
 import {fighterModelImages} from './../../../client/images/fighter/fighter-model-images';
-import {FightUiState, FighterInfo} from './../../../interfaces/game-ui-state.interface';
+import {FighterInfo} from './../../../interfaces/game-ui-state.interface';
 import {Subject, Subscription} from 'rxjs';
 
 import FightUpdateLoop from "./fight-update-loop";
@@ -18,10 +15,8 @@ import FighterFightStateInfo from '../../../interfaces/game/fighter-fight-state-
 export interface FightState{
   startCountdown: number
   timeRemaining: number
-  finished: boolean
   report: FightReport
   fighters: FighterFightStateInfo[]
-
 }
 export interface FightReport{
   draw?: boolean
@@ -30,14 +25,12 @@ export interface FightReport{
   managerWinnings?: ManagerWinnings[]
 }
 
-
 export default class Fight {
   private fightUpdateLoop: FightUpdateLoop
   fighters: Fighter[] = []
   stageDurations
 
   _report: FightReport
-  _finished: boolean
   _timeRemaining: number
   _startCountdown: number
 
@@ -89,26 +82,16 @@ export default class Fight {
 
   
 
-  start(): Promise<FightReport>{
+  async start(){
     console.log('fight started');
     this.setupFighterEventListeners()
-    return this.startFight()
-  }
+    
+    this.placeFighters()
+    await this.fightCountdown()
+    this.handleFighterUpdates()
+    this.tellFightersToStartFighting()
 
-  private startFight(): Promise<FightReport>{
-    return new Promise(async (resolve, reject) => {
-      
-      console.log('fightEventStage');
-      
-      this.placeFighters()
-      await this.fightCountdown()
-      this.handleFighterUpdates()
-      this.tellFightersToStartFighting()
-      this.fightFinishedSubject.subscribe(resolve)
-
-      this.timer = setTimeout(() => this.timesUp().then(resolve), this.stageDurations.fight)
-      
-    });
+    this.timer = setTimeout(() => this.timesUp(), this.stageDurations.fight)
   }
 
   set timeRemaining(value: number){
@@ -124,12 +107,8 @@ export default class Fight {
     this._report = value
     this.fightStateUpdatedSubject.next(this.fightState)
   }
-  set finished(value: boolean){
-    this._finished = value
-    this.fightStateUpdatedSubject.next(this.fightState)
-  }
 
-  timesUp(): Promise<FightReport>{
+  timesUp(){
     const remainingFighters = this.getFightersThatArentKnockedOut().map(
       (fighter: Fighter) => fighter.getInfo()
     )
@@ -139,15 +118,14 @@ export default class Fight {
     }
     console.log(`The fight was a draw between ${remainingFighters.map((f, i) => i == 0 ? f.name : ' and ' + f.name)}`);
     this.finishFight(fightReport)
-    return Promise.resolve(fightReport)  
   }
+
   declareWinner(winningFighter: Fighter){
     winningFighter.attributes.numberOfWins++
     console.log(`congratulations to ${winningFighter.name}, he is the winner!`);
     const fightReport: FightReport = {
       winner: winningFighter.getInfo(),
       draw: false
-
     }
     this.finishFight(fightReport)
   }
@@ -175,7 +153,6 @@ export default class Fight {
       startCountdown: this._startCountdown,
       timeRemaining: this._timeRemaining,
       report: this._report,
-      finished: this._finished,
       fighters: this.fighters.map(f => f.getFighterFightStateInfo())
     }
   }

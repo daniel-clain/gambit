@@ -3,53 +3,35 @@ import * as React from 'react';
 import { FighterInfo, Employee } from '../../../interfaces/game-ui-state.interface';
 import gameConfiguration from '../../../classes/game/game-configuration';
 import { Bet } from '../../../interfaces/game/bet';
-import OptionsProcessor, { IOptionClient, OptionSource, optionValidators, OptionValidator } from '../../../classes/game/manager/manager-options/manager-option';
-import OptionBlock from './option-block';
-import { OptionData } from './option-card';
-
+import AbilityService from './ability-service';
+import { ManagerInfo } from '../../../classes/game/manager/manager';
+import AbilityBlock from './ability-block';
+import { AbilityData } from './client-abilities/client-ability.interface';
 
 
 interface FighterCardProps{
   fighterInfo: FighterInfo
-  money: number
-  managerInfo: string
-  employees: Employee[]
+  managerInfo: ManagerInfo
   placeBet(bet: Bet)
-  onOptionBlockSelected(optionData: OptionData)
-
+  onAbilityBlockSelected(optionData: AbilityData)
+  abilityService: AbilityService
 }
 
 export class FighterCard extends React.Component<FighterCardProps>{
 
   render(){
-    const {money, placeBet, fighterInfo, onOptionBlockSelected, managerName} = this.props
+    const {placeBet, fighterInfo, onAbilityBlockSelected, managerInfo, abilityService} = this.props
       let {name, inNextFight, isPlayersFighter, strength, speed, intelligence, aggression, manager, publicityRating, endurance, numberOfFights, numberOfWins, injured, healthRating, doping, happyness} = fighterInfo
       
     const {betSizePercentages} = gameConfiguration
 
-    const smallBetAmount = Math.round(money * (betSizePercentages.small/100))
-    const mediumBetAmount = Math.round(money * (betSizePercentages.medium/100))
-    const largeBetAmount = Math.round(money * (betSizePercentages.large/100))
+    const smallBetAmount = Math.round(managerInfo.money * (betSizePercentages.small/100))
+    const mediumBetAmount = Math.round(managerInfo.money * (betSizePercentages.medium/100))
+    const largeBetAmount = Math.round(managerInfo.money * (betSizePercentages.large/100))
 
-    const optionsFighterCanBeTheTargetOf: OptionData[] = optionValidators.map(
-      (optionValidator: OptionValidator) => {
-        if(optionValidator.isValidTarget(fighterInfo)){
-          const optionData: OptionData = {
-            name: optionValidator.optionName,
-            source: null,
-            target: {
-              name: fighterInfo.name,
-              type: 'Fighter'
-            }
-          }
-          return optionData
-        }          
-      })
+    const abilitiesFighterCanBeTheTargetOf: AbilityData[] = abilityService.getAbilitiesFighterCanBeTheTargetOf(fighterInfo, managerInfo)
 
-    determineDataItemPrioritySource(optionsFighterCanBeTheTargetOf){
-
-    }
-
+    console.log(abilitiesFighterCanBeTheTargetOf)
 
     return (
       <div className='card fighter-card'>
@@ -124,23 +106,24 @@ export class FighterCard extends React.Component<FighterCardProps>{
               <div className='stat'><label>Happiness: </label>{happyness}</div>
             </div>
           </div>
-
-
         </div>
+
         <div className='card__options'>
-          <div className='heading'>Options</div>
-          {optionsFighterCanBeTheTargetOf.map(
-            (option: OptionData) => (
-              <OptionBlock 
-                key={option.name} 
-                optionData={optionData} 
-                onSelected={onOptionBlockSelected}
+          <div className='heading'>Options x</div>
+          {abilitiesFighterCanBeTheTargetOf.map(
+            (abilityData: AbilityData) => (
+              <AbilityBlock 
+                key={abilityData.name} 
+                abilityData={abilityData} 
+                onSelected={onAbilityBlockSelected}
+                abilityService={abilityService}
               />
             )
-          )}          
+          )}
         </div>
-        
+
       </div>
     )
   }
 }
+
