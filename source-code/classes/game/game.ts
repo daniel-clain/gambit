@@ -4,13 +4,14 @@ import Manager from "./manager/manager";
 import { Subject } from 'rxjs';
 import Player from './player';
 import { PlayerInfo } from '../../interfaces/player-info.interface';
-import {RoundController, RoundState} from './round-controller';
+import {RoundController} from './round-controller/round-controller';
 import Fighter from './fighter/fighter';
 import gameConfiguration from './game-configuration';
 import { shuffle, random } from '../../helper-functions/helper-functions';
 import OptionsProcessor, { OptionNames, getOptionProcessors } from './manager/manager-options/manager-option';
 import SkillLevel from '../../types/skill-level.type';
 import AbilityProcessor from './abilities/ability-processor';
+import { RoundState } from '../../interfaces/game/round-state';
 
 
 export default class Game{
@@ -67,7 +68,6 @@ export default class Game{
     }) 
   }
 
-
   private createFighters(shuffledNames){
     const amount: number = gameConfiguration.numberOfFighters
     const newFighters: Fighter[] = []
@@ -76,7 +76,6 @@ export default class Game{
 
     this.fighters = newFighters
   }
-
 
   private createJobSeekers(shuffledNames){
     const amount: number = gameConfiguration.numberOfJobSeekers
@@ -94,7 +93,8 @@ export default class Game{
       }
       jobSeekers.push({
         name: shuffledNames.pop(),
-        type,
+        profession: type,
+        type: 'Job Seeker',
         skillLevel: <SkillLevel>random(3, true),
         goalContract: {
           numberOfWeeks: 4,
@@ -105,5 +105,5 @@ export default class Game{
 
     this.jobSeekers = jobSeekers
   }
-  
+    
 }

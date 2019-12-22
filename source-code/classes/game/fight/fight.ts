@@ -11,6 +11,8 @@ import FighterModelImage from '../../../interfaces/game/fighter/fighter-model-im
 import { random } from '../../../helper-functions/helper-functions';
 import ManagerWinnings from '../../../../manager-winnings';
 import FighterFightStateInfo from '../../../interfaces/game/fighter-fight-state-info';
+import Octagon from '../../../client/components/fight-ui/octagon';
+import Position from '../../../interfaces/game/fighter/position';
 
 export interface FightState{
   startCountdown: number
@@ -27,12 +29,12 @@ export interface FightReport{
 
 export default class Fight {
   private fightUpdateLoop: FightUpdateLoop
+  private fighterUpdateSubscriptions: Subscription[]
   fighters: Fighter[] = []
-  stageDurations
 
-  _report: FightReport
-  _timeRemaining: number
-  _startCountdown: number
+  private _report: FightReport = null
+  private _timeRemaining: number = null
+  private _startCountdown: number = null
 
   fightFinishedSubject: Subject<FightReport> = new Subject()
   fightStateUpdatedSubject: Subject<FightState> = new Subject()
@@ -48,19 +50,10 @@ export default class Fight {
   
   constructor(fighters: Fighter[]) {
     this.fighters = fighters
-    this.stageDurations = gameConfiguration.stageDurations
-    //this.fightUpdateLoop = new FightUpdateLoop(this)
-
   }
 
   doTeardown(){
     this.fightStateUpdatedSubject.complete()
-  }
-  resetFighters(){
-
-  }
-  resetFight(){
-
   }
 
   getOtherFightersInFight(thisFighter: Fighter){
@@ -68,7 +61,7 @@ export default class Fight {
   }
 
   setupFighterEventListeners(){
-    const fighterUpdateSubscriptions: Subscription[] = this.fighters.map(
+    this.fighterUpdateSubscriptions = this.fighters.map(
       (fighter: Fighter) => {
       return fighter.state.fighterStateUpdatedSubject.subscribe(() => {
         this.sendUiStateUpdate()
@@ -77,32 +70,48 @@ export default class Fight {
           this.declareWinner(fers[0])
       })
     })
-    this.fightFinishedSubject.subscribe(() => fighterUpdateSubscriptions.forEach(s => s.unsubscribe))
   }
-
-  
 
   async start(){
     console.log('fight started');
     this.setupFighterEventListeners()
     
     this.placeFighters()
-    await this.fightCountdown()
     this.handleFighterUpdates()
+    await this.fightCountdown()
     this.tellFightersToStartFighting()
-
-    this.timer = setTimeout(() => this.timesUp(), this.stageDurations.fight)
+    const {maxFightDuration} = gameConfiguration.stageDurations
+    this.timer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
+    //this.fighters[0].state.knockedOut = true
   }
 
   set timeRemaining(value: number){
     this._timeRemaining = value
     this.fightStateUpdatedSubject.next(this.fightState)
+  }  
+
+  private fightCountdown(): Promise<void>{
+    return new Promise(resolve => {
+      this.startCountdown = 3
+      const countdownInterval = setInterval(() => {
+        this.startCountdown --
+        if(this.startCountdown == 0){
+          clearInterval(countdownInterval)
+          resolve()
+        }
+      }, 1000)
+    })
   }
 
   set startCountdown(value: number){
+    console.log('value :', value);
     this._startCountdown = value
     this.fightStateUpdatedSubject.next(this.fightState)
   }
+  get startCountdown(){
+    return this._startCountdown
+  }
+
   set report(value: FightReport){
     this._report = value
     this.fightStateUpdatedSubject.next(this.fightState)
@@ -132,12 +141,10 @@ export default class Fight {
 
   private finishFight(fightReport){
     this.fightFinishedSubject.next(fightReport)
+    console.log('unsubscribing from fighter updates');
+    this.fighterUpdateSubscriptions.forEach((s: Subscription) => s.unsubscribe())
     this.fightFinishedSubject.complete()
     this.fighters.forEach(f => f.stopFighting())
-  }
-
-  fightCountdown(): Promise<void>{
-    return new Promise(timesUp => setTimeout(timesUp, 3000))
   }
 
   private tellFightersToStartFighting(){
@@ -145,7 +152,8 @@ export default class Fight {
   }
 
   sendUiStateUpdate(){
-    this.fightStateUpdatedSubject.next(this.fightState)
+    console.log(' send ui state update triggered');
+    //this.fightStateUpdatedSubject.next(this.fightState)
   }
 
   get fightState(): FightState{
@@ -168,8 +176,16 @@ export default class Fight {
   private placeFighters(){    
     this.fighters.forEach((fighter: Fighter) => {
       const modelHeight: number = fighterModelImages.find((image: FighterModelImage) => image.modelState == 'Idle').dimensions.height
-      fighter.state.position.x = random(this.arenaDimensions.width) + this.arenaDimensions.outFromLeft
-      fighter.state.position.y = random(this.arenaDimensions.height - modelHeight) + this.arenaDimensions.upFromBottom + modelHeight
+      let pos: Position
+      console.log(Octagon.balls());
+      while(!pos || !Octagon.checkIfPointIsWithinOctagon(pos)){
+        pos = {
+          x: random(Octagon.getWidth()),
+          y: random(Octagon.getHeight())
+        }
+        console.log('pos :', pos);
+      }
+      fighter.state.position = pos
     })
   }
 

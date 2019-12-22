@@ -1,0 +1,18 @@
+.fighter{
+	position: absolute;
+	display: block;
+	width: 1px;
+	height: 1px;
+	overflow: visible;
+  &__name {
+    position: absolute;
+    top: -20px;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    width: 0;
+    height: 0;
+  }
+  &__image {				
+    position: absolute;
+  }
+}

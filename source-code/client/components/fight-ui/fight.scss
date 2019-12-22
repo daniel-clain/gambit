@@ -1,6 +1,6 @@
 
 
-#fight{
+.fight{
   position: relative;
   height: 100%;
   background-color: #efefef;
@@ -8,27 +8,32 @@
   .arena{
     position: relative;
     margin: auto;
-    width: 1217px;
-    height: 798px;
-    &--behind{
+    width: 100%;
+    height: 100%;
+    &__behind{
       z-index: 1;
       position: absolute;
-      background-image: url('./../../assets/fight-arena-behind.png');
+      background-image: url('./../../images/arena/fight-arena-behind.png');
       width: 100%;
-      height: 100%;
+      height: 30vw;
+      background-size: cover;
+      background-repeat: no-repeat;
     }
-    &--fight-area{
+    &__fight-area{
       z-index: 2;
       position: absolute;
       width: 100%;
-      height: 100%;
+      height: 63vw;
     }
-    &--infront{
+    &__infront{
       z-index: 3;
       position: absolute;
-      background-image: url('./../../assets/fight-arena-infront.png');
+      background-image: url('./../../images/arena/fight-arena-infront.png');
       width: 100%;
-      height: 100%;
+      width: 100%;
+      height: 63vw;
+      background-size: cover;
+      background-repeat: no-repeat;
       
     }
 

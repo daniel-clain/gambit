@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import ClientWebsocketService from './client-websocket-service';
 import PreGame from './pre-game';
-import { GameHostUiState, EmployeeTypes } from '../../interfaces/game-ui-state.interface';
+import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
 import GameHost from './game-host';
 import ClientAction from '../../interfaces/client-action';
 import GameUi from '../components/game-ui';
@@ -42,7 +42,6 @@ export default class MainGame extends React.Component<MainGameProps>{
     }    
     this.props.websocketService.sendClientAction(connectAction)
   }
-
   render(){
     if(this.state == undefined)
       return <PreGame tryToConnectToGameHost={this.tryToConnectToGameHost.bind(this)}/>

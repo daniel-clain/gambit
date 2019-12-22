@@ -1,7 +1,7 @@
 import {OptionValidator} from './manager-option';
 
 import {validate} from '@babel/types';
-import {RoundState} from './../../round-controller';
+import {RoundState} from '../../round-controller/round-controller';
 
 
 import {FighterInfo, ManagerInfo, JobSeeker, Employee} from './../../../../interfaces/game-ui-state.interface';

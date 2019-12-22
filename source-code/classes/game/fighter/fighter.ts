@@ -1,19 +1,12 @@
 import {Contract} from './../../../interfaces/game/contract.interface';
-
 import IFighterStrategy, { RunAwayAndRecover } from "./fighter-strategies";
 import Direction360 from "../../../types/figher/direction-360";
-
-import FighterSkeleton from "../../../interfaces/game/fighter/fighter-skeleton";
-
 import FighterState from "./fighter-state";
-
-import ArenaDimensions from "../../../interfaces/game/fighter/arena-dimensions";
 import FighterAttributes from './fighter-attributes';
 import { FighterInfo } from '../../../interfaces/game-ui-state.interface';
-import Manager from '../manager/manager';
 import FighterFightStateInfo from '../../../interfaces/game/fighter-fight-state-info';
-import { of } from 'rxjs';
 import { AbilityTarget } from '../abilities/abilities';
+import Fight from '../fight/fight';
 
 interface FighterFighterInterface{
   //getAttacked(attack: FighterAttack, enemyFighterName: FighterName ): AttackResults
@@ -58,11 +51,12 @@ export default class Fighter implements AbilityTarget{
       return true
   }
 
+
   getInfo(): FighterInfo{
     return {
       lastUpdated: parseInt(new Date().getTime().toString()),
       name: this.name, 
-
+      type: 'Fighter',
       strength: this.attributes.strength,
       speed: this.attributes.speed,
       intelligence: this.attributes.intelligence,
@@ -70,9 +64,8 @@ export default class Fighter implements AbilityTarget{
       endurance: this.attributes.endurance,
       numberOfFights: this.attributes.numberOfFights,
       numberOfWins: this.attributes.numberOfWins,
-
-      manager: this.manager && this.manager.name,
-
+      inNextFight: !!this.state.inFight,
+      manager: this.state.manager && this.state.manager.name,
       injured: this.state.injured,
       healthRating: this.state.healthRating,
       doping: this.state.doping,
@@ -87,21 +80,27 @@ export default class Fighter implements AbilityTarget{
       name: this._name,
       position: this.state.position,
       facingDirection: this.state.facingDirection,
-      fighterModelState: this.state.fighterModelState
+      modelState: this.state.fighterModelState
     }
   }
 
+  reset(){
+    this.state.reset()
+  }
 
+
+  
+  get numberOfWins(): number{
+    return this.attributes.numberOfWins
+  }
+  
+  get numberOfFights(): number{
+    return this.attributes.numberOfFights
+  }
+
+  /* 
   moveTowardFighter(fighter: Fighter){
     this.movingDirection = this.getDirectionOfFighter(fighter)
-  }
-
-  get numberOfWins(): number{
-    return this._numberOfWins
-  }
-
-  get numberOfFights(): number{
-    return this._numberOfFights
   }
 
   tryToHitFighter(targetFighter: Fighter) {
@@ -121,19 +120,6 @@ export default class Fighter implements AbilityTarget{
   recieveFightInterface(fightInterface: FightFighterInterface){
 
   }
-
-  startFighting(){
-    console.log(`${this.name} started fighting`);
-  }
-
-  getPutInFight(x: ArenaDimensions){
-
-  }
-
-  leaveFight(){
-    this.fight = null
-  }
-
   getFighterSkeleton(): FighterSkeleton{
     return {
       name: this.name,
@@ -142,5 +128,16 @@ export default class Fighter implements AbilityTarget{
       position: this.position
     }
   }
+ */
+  startFighting(){
+    console.log(`${this.name} started fighting`);
+  }
+
+  getPutInFight(fight: Fight){
+    this.state.inFight = fight
+
+  }
+
+
 
 }

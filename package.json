@@ -2,17 +2,19 @@
   "name": "gambit",
   "version": "1.0.0",
   "scripts": {
-    "local-single-player": "run-p compile.local-single-player run.local-single-player",
-    "fighter-sandbox": "run-s compile.fighter-sandbox run.fighter-sandbox",
-    "run.local-single-player": "webpack-dev-server --open --config config/webpack.local-single-player.config.js",
     "run.manager-ui-test": "webpack-dev-server --config config/webpack.manager-ui-test.config.js",
-    "run.fighter-sandbox": "webpack-dev-server --open --config config/webpack.fighter-sandbox.config.js",
-    "run.main-game": "nodemon --inspect=0.0.0.0:1234 compiled-code/server/server.js ",
+
+    "local-single-player": "run-p compile.local-single-player run.local-single-player",
+    "run.local-single-player": "webpack-dev-server --open --config config/webpack.local-single-player.config.js",
     "compile.local-single-player": "webpack --watch --config config/webpack.local-single-player.config.js",
-    "compile.fighter-sandbox": "webpack --watch --config config/webpack.fighter-sandbox.config.js",
+
+    "run.fight-ui-test": "webpack-dev-server --open --config config/webpack.fight-ui-test.config.js",
+
+    "run.main-game": "nodemon --inspect=0.0.0.0:1234 compiled-code/server/server.js ",
     "compile.main-game": "run-p compile.client.main-game compile.server.main-game",
     "compile.client.main-game": "webpack --watch --config config/webpack.client.main-game.config.js",
     "compile.server.main-game": "webpack --watch --config config/webpack.server.main-game.config.js",
+    
     "compile.docker": "docker build -t balls .",
     "run.gui-tests": "jest --config config/jest.config.gui-test.js",
     "run.automated-scenarios": "jest --config config/jest.config.automated-scenarios.js",
@@ -57,7 +59,7 @@
     "styled-components": "^4.3.2",
     "ts-jest": "^24.0.2",
     "typescript": "^3.5.1",
-    "url-loader": "^2.0.1",
+    "url-loader": "^2.3.0",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.5",
     "webpack-node-externals": "^1.7.2"

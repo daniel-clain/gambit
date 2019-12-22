@@ -5,6 +5,7 @@ import {Subject} from 'rxjs';
 import {FighterInfo, Employee, Loan} from '../../../interfaces/game-ui-state.interface';
 import Fighter from "../fighter/fighter";
 import { AbilitySource } from '../abilities/abilities';
+import gameConfiguration from '../game-configuration';
 
 
 export interface ManagerInfo{
@@ -20,13 +21,13 @@ export interface ManagerInfo{
   retired: boolean
 }
 export default class Manager implements AbilitySource, AbilityTarget{
-  private _money: number = 500
+  private _money: number = gameConfiguration.manager.startingMoney
   private _actionPoints: number = 1
   private _fighters: Fighter[] = []
   private _knownFighters: FighterInfo[] = []
   private _nextFightBet: Bet
   private _employees: Employee[] = []
-  private _loan: Loan
+  private _loan: Loan = {debt: 0, weeksOverdue: 0}
   private _readyForNextFight: boolean
   private _retired: boolean
 
@@ -59,8 +60,12 @@ export default class Manager implements AbilitySource, AbilityTarget{
 
 
   set money(val: number){
+    console.log('manager money set to: ', val);
     this._money = val
     this.managerUpdatedSubject.next(this.info)
+  }
+  get money(){
+    return this._money
   }
   set actionPoints(val){
     this._actionPoints = val
@@ -68,11 +73,9 @@ export default class Manager implements AbilitySource, AbilityTarget{
   }
 
   set nextFightBet(bet: Bet){
-    if(this._nextFightBet != null){
-      this._money += this._nextFightBet.amount
-      this._nextFightBet = null
+    if(bet){
+      console.log(`${this.name} has put a ${bet.size} on ${bet.fighterName}`);
     }
-    this._money -= bet.amount
     this._nextFightBet = bet
     this.managerUpdatedSubject.next(this.info)
 
@@ -110,10 +113,7 @@ export default class Manager implements AbilitySource, AbilityTarget{
   
 
   resetForNewRound(){
-    this.nextFightBet = {
-      fighterName: null,
-      amount: null
-    }
+    this.nextFightBet = null
     this.readyForNextFight = false
     this.actionPoints = 3
   }

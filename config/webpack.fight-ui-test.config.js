@@ -1,14 +1,13 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var sourceDir = `${__dirname}/../source-code/client/main-game`
-var compiledDir = `${__dirname}/../compiled-code/client/main-game`
+var sourceDir = `${__dirname}/../source-code/client/fight-ui-test`
 
 module.exports = {
   mode: 'development',
-  entry: `${sourceDir}/main-game.tsx`,
-  output:{
-    path: compiledDir,
-    filename: "main-game.js"
+  entry: `${sourceDir}/fight-ui-test.tsx`,
+  devServer: {
+    watchContentBase: true,
+    liveReload: true,
   },
   devtool: 'source-map',
   module: {

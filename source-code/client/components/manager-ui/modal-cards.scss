@@ -1,0 +1,13 @@
+.card{
+  display: flex;
+  flex-flow: wrap;
+  &__name, &__options, &__abilities{
+    flex-basis: 100%;
+  }
+  &__left{
+    flex: 0 1 25%;
+  }
+  &__right{
+    flex: 0 3 75%;
+  }
+}

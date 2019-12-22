@@ -1,0 +1,49 @@
+.container{
+  margin: auto;
+  max-width: 1217px;
+  height: 798px;
+  position: relative;
+
+
+  .background-top{
+    background-image: url('./../../images/arena/fight-arena-behind.png');
+    width: 1217px;
+    height: 798px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+  .background-bottom{
+    background-image: url('./../../images/arena/fight-arena-infront.png');
+    width: 1217px;
+    height: 798px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+  }
+  .octagon{
+    
+    position: absolute;
+    width: 782px;
+    height: 355px;
+    bottom: 223px;
+    left: 223px;
+    .fighter{
+      position: absolute;
+      font-size: 18px;
+      background: aliceblue;
+      padding: .5em 1em;
+      border: 1px solid black;
+      border-radius: 9px 9px 9px 0px;
+    }
+
+    .octagon-point{
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background-color: #f44;
+    }
+
+  }
+  
+}

@@ -1,4 +1,4 @@
-import {AbilityData} from './abilities/abilities';
+
 import {Subject} from 'rxjs';
 import {GameUiState} from '../../interfaces/game-ui-state.interface';
 import ClientId from '../../types/client-id.type';
@@ -6,19 +6,21 @@ import ClientName from '../../types/client-name.type';
 import { Socket } from 'socket.io';
 import Manager, { ManagerInfo } from './manager/manager';
 import { FightState } from './fight/fight';
-import {RoundState, RoundController} from './round-controller';
+import {RoundController} from './round-controller/round-controller';
 import PlayerAction from '../../interfaces/player-action';
 import AbilityProcessor from './abilities/ability-processor';
+import { AbilityData } from '../../client/components/manager-ui/client-abilities/client-ability.interface';
+import { RoundState } from '../../interfaces/game/round-state';
 
 export default class Player{
   
   private gameUiState: GameUiState = {
-    fightUiState: {
-      preFightNews: [],
-      postFightReport: null,
+    roundStage: 'Manager Options',
+    fightState: {
       startCountdown: null,
       timeRemaining: null,
-      fighters: []
+      fighters: [],
+      report: null
     },
     managerUiState: {
       managerInfo: null,
@@ -52,7 +54,7 @@ export default class Player{
       case 'Ability Confirmed': 
         this.handleAbilitySelected(args); break;
       case 'Bet On Fighter':
-        this.manager.nextFightBet = {fighterName: args.fighterName, amount: args.betSize}; break;
+        this.manager.nextFightBet = args; break;
       case 'Borrow Money':
         this.manager.borrowMoney(args.amount); break;
       case 'Payback Money':
@@ -62,13 +64,13 @@ export default class Player{
     }
   }
   handleAbilitySelected(selectedAbility: AbilityData){
+    console.log('selectedAbility :', selectedAbility);
     this.abilityProcessor.processSelectedAbility(selectedAbility)
   }
 
-
-
   private receiveRoundUpdate(roundState: RoundState){ 
     const {managerUiState} = this.gameUiState
+    this.gameUiState.roundStage = roundState.stage
     managerUiState.managerOptionsTimeLeft = roundState.managerOptionsTimeLeft
     managerUiState.nextFightFighters = roundState.activeFight.fighters.map(
       fighter => fighter.getInfo())
@@ -77,14 +79,9 @@ export default class Player{
   }
 
   private receiveFightUpdate(fightState: FightState){ 
-    const {fightUiState} = this.gameUiState
-    fightUiState.fighters = fightState.fighters
-    fightUiState.startCountdown = fightState.startCountdown
-    fightUiState.timeRemaining = fightState.timeRemaining
-
+    this.gameUiState.fightState = fightState
     this.emitGameUIStateUpdate()
   }
-
 
   private receiveManagerError(error: string){ 
     const {managerUiState} = this.gameUiState

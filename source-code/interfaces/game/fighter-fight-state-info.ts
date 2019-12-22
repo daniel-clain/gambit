@@ -6,5 +6,5 @@ export default interface FighterFightStateInfo{
   name: string
   position: Position
   facingDirection: FacingDirection
-  fighterModelState: FighterModelState
+  modelState: FighterModelState
 }

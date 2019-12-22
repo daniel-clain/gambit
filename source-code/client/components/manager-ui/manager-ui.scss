@@ -17,7 +17,7 @@
 
   .fights, .wins{
     font-size: 1.3rem;
-    width: 14vw;
+    width: 12vw;
     display: inline-block;
     margin-right: 5vw;
     .icon{
@@ -102,15 +102,38 @@
     height: 96vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    padding: 1em;
+    box-sizing: border-box;
+    
+    & > *:not(.bet-status) {
+      margin-bottom: 1em;
+      flex: 1;
+    }
+    
+    & > *:last-child {
+      margin-bottom: 0;
+    }
+
+    .bet-status{
+      margin-bottom:1em;
+      min-height: 73px;
+      font-size: 1.2em;
+    }
+
+    .next-fight{
+      &__fighter{
+        &--bet-active{
+          background-color: #d5ffda;
+        }
+      }
+    }
+
     .group-panel {
       border: 1px outset #256152;
       box-sizing: border-box;
-      margin: 0 1vw;
       padding: 2vh 2vw;
       background-color: white;
       vertical-align: top;
-      height: 18vh;
 
       &__left, &__right {
         display: inline-block;
@@ -118,7 +141,6 @@
         vertical-align: top;
       }
       .list{
-        height: 11vh;
         overflow-y: scroll;
 
         /* width */

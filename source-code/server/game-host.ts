@@ -110,14 +110,14 @@ export default class GameHost{
 
     const gameLobby: GameLobby = this.gameLobbies.find((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
 
-    const cancledGameLobbyIndex = this.gameLobbies.findIndex((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
+    const canceldGameLobbyIndex = this.gameLobbies.findIndex((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
 
-    if(cancledGameLobbyIndex == -1)
+    if(canceldGameLobbyIndex == -1)
       throw `canceled game lobby could not be found in gameLobbies array`
 
-    console.log(`${gameLobby.creator.name} has cancled his game lobby`);
+    console.log(`${gameLobby.creator.name} has canceld his game lobby`);
 
-    this.gameLobbies.splice(cancledGameLobbyIndex, 1)
+    this.gameLobbies.splice(canceldGameLobbyIndex, 1)
 
     this.sendGameHostUiUpdateToClients()
   }

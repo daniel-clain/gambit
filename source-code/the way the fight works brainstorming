@@ -1,0 +1,3 @@
+* the server only emits 1 ui update every cycle, eg every 200 miliseconds. ui updates are stockpiled and every update cycle they are released as an update
+* fighters constantly have script run through their strategy list to test which is the hightest priority
+* there are 2 types of fighter action, responsive and major. when a major action is decided upon, they will not check any new major actions until the first one is fulfilled. a major action can be interupted by a responsive action. eg a fighter choses the major action to recover, but then another fighter attacks, and the recovering fighters recover action is interupted with a taking attack reactive action

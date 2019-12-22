@@ -7,6 +7,8 @@ import AbilityService from './ability-service';
 import { ManagerInfo } from '../../../classes/game/manager/manager';
 import AbilityBlock from './ability-block';
 import { AbilityData } from './client-abilities/client-ability.interface';
+import './fighter-card.scss';
+import './modal-cards.scss';
 
 
 interface FighterCardProps{
@@ -21,7 +23,7 @@ export class FighterCard extends React.Component<FighterCardProps>{
 
   render(){
     const {placeBet, fighterInfo, onAbilityBlockSelected, managerInfo, abilityService} = this.props
-      let {name, inNextFight, isPlayersFighter, strength, speed, intelligence, aggression, manager, publicityRating, endurance, numberOfFights, numberOfWins, injured, healthRating, doping, happyness} = fighterInfo
+      let {name, isPlayersFighter, inNextFight, strength, speed, intelligence, aggression, manager, publicityRating, endurance, numberOfFights, numberOfWins, injured, healthRating, doping, happyness} = fighterInfo
       
     const {betSizePercentages} = gameConfiguration
 
@@ -31,7 +33,6 @@ export class FighterCard extends React.Component<FighterCardProps>{
 
     const abilitiesFighterCanBeTheTargetOf: AbilityData[] = abilityService.getAbilitiesFighterCanBeTheTargetOf(fighterInfo, managerInfo)
 
-    console.log(abilitiesFighterCanBeTheTargetOf)
 
     return (
       <div className='card fighter-card'>
@@ -58,7 +59,7 @@ export class FighterCard extends React.Component<FighterCardProps>{
                   <span className='action-points'>1</span>
                 </div>
                 <button className='place-bet-button standard-button' 
-                  onClick={() => placeBet({amount: smallBetAmount, fighterName: name})}>Place Bet</button>
+                  onClick={() => placeBet({size: 'small', fighterName: name})}>Place Bet</button>
               </div>
 
               <div className='medium-bet bet-option'>
@@ -69,7 +70,7 @@ export class FighterCard extends React.Component<FighterCardProps>{
                   <span className='action-points'>1</span>
                 </div>
                 <button className='place-bet-button standard-button' 
-                  onClick={() => placeBet({amount: mediumBetAmount, fighterName: name})}>Place Bet</button>
+                  onClick={() => placeBet({size: 'medium', fighterName: name})}>Place Bet</button>
               </div>
 
               <div className='large-bet bet-option'>
@@ -80,7 +81,7 @@ export class FighterCard extends React.Component<FighterCardProps>{
                   <span className='action-points'>1</span>
                 </div>
                 <button className='place-bet-button standard-button' 
-                  onClick={() => placeBet({amount: largeBetAmount, fighterName: name})}>Place Bet</button>
+                  onClick={() => placeBet({size: 'large', fighterName: name})}>Place Bet</button>
               </div>
             </div>
           }

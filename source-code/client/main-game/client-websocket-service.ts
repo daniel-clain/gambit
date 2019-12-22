@@ -19,7 +19,9 @@ export default class ClientWebsocketService {
   private setUpWebsockets(){    
     this.isConnected = true
     this.socket = io(`localhost:${this.port}`, {transports: ['websocket']}); 
-    this.socket.on('disconnect', console.log)
+    this.socket.on('disconnect', e => {
+      console.log('e :', e);
+    })
     this.socket.on('Game Host UI State Update', (clientUIState: GameHostUiState) => this.gameHostUiStateUpdate.next(clientUIState))
     this.socket.on('Game UI State Update', (gameUiState: GameUiState) => this.gameUiStateUpdate.next(gameUiState))
   }

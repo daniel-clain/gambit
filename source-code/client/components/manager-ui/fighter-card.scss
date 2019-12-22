@@ -1,0 +1,17 @@
+.fighter-card{
+  &__fight-experience{
+    margin-bottom: 5px;
+  }
+  &__bet-options{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    &__option{
+      flex: 1;
+      margin-right: 4px;
+    }
+    &__option:last-child{
+      margin-right: 0;
+    }
+  }
+}

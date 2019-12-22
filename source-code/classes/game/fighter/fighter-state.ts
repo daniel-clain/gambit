@@ -6,6 +6,7 @@ import OneToFive from '../../../types/game/one-to-five.type';
 import Position from '../../../interfaces/game/fighter/position';
 import { ActiveContract } from '../../../interfaces/game/contract.interface';
 import Manager from '../manager/manager';
+import Fight from "../fight/fight";
 
 
 export interface IFighterUIState{
@@ -31,6 +32,7 @@ export default class FighterState implements IFighterUIState{
   private _publicityRating: OneToFive = 1
   activeContract: ActiveContract = null
   manager: Manager
+  inFight: Fight
 
 
 
@@ -75,10 +77,13 @@ export default class FighterState implements IFighterUIState{
     this.fighterStateUpdatedSubject.next()
   }
 
+  reset(){
+    this.knockedOut = false
+    this.stamina = this.maxStamina
+    this.spirit = this.maxSpirit
+  }
+
   set spirit(val: number){
-    if(val == this._spirit){
-      throw 'should not have set spirit to same value'
-    }
     if(val > 10){
       throw 'should not have set spirit to larger than max spirit: ' + this.maxSpirit
     }
@@ -92,9 +97,6 @@ export default class FighterState implements IFighterUIState{
   }
   
   set stamina(val: number){
-    if(val == this._stamina){
-      throw 'should not have set stamina to same value'
-    }
     if(val > this.maxStamina){
       throw 'should not have set stamina to larger than max stamina: ' + this.maxStamina
     }
@@ -124,6 +126,7 @@ export default class FighterState implements IFighterUIState{
   set knockedOut(val){
     this._knockedOut = val
     this.knockedOutSubject.next(this._knockedOut)
+    this.triggerUiStateUpdate()
   }
   set publicityRating(val){
     this._publicityRating = val

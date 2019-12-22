@@ -746,7 +746,7 @@ export class xFighter {
   //////////////////////////////////////////
 
   cancelMinorAction(reason: string){
-    this.showLogs && console.log(`${this.name}'s ${this.minorActionInProgress} has been cancled because ${reason}`)
+    this.showLogs && console.log(`${this.name}'s ${this.minorActionInProgress} has been canceld because ${reason}`)
     this.minorActionReject()    
     clearTimeout(this.minorActionTimer)
     delete this.minorActionInProgress
@@ -755,7 +755,7 @@ export class xFighter {
   }  
 
   cancelMajorAction(reason: string){
-    //console.log(`${this.name}'s ${this.majorActionInProgress} has been cancled because ${reason}`)
+    //console.log(`${this.name}'s ${this.majorActionInProgress} has been canceld because ${reason}`)
     this.majorActionReject()
     clearTimeout(this.majorActionTimer)
     delete this.majorActionInProgress

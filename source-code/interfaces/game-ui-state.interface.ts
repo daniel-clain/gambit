@@ -5,10 +5,11 @@ import PlayerNameAndId from './player-name-and-id';
 import GameLobby from './game-lobby.interface';
 import ChatMessage from './chat-message.interface';
 import SkillLevel from '../types/skill-level.type';
-import { FightReport } from '../classes/game/fight/fight';
+import { FightReport, FightState } from '../classes/game/fight/fight';
 import FighterFightStateInfo from './game/fighter-fight-state-info';
 import { ActiveContract, Contract } from './game/contract.interface';
 import Manager, { ManagerInfo } from '../classes/game/manager/manager';
+import RoundStages from '../types/game/round-stages';
 
 export interface GameHostUiState{
   inGame: boolean
@@ -17,16 +18,11 @@ export interface GameHostUiState{
   globalChat: ChatMessage[]
 }
 export interface GameUiState{
-  fightUiState: FightUiState,
+  roundStage: RoundStages,
+  fightState: FightState,
   managerUiState: ManagerUiState
 }
-export interface FightUiState{
-  preFightNews: string[]
-  postFightReport: FightReport
-  startCountdown: number
-  timeRemaining: number
-  fighters: FighterFightStateInfo[]
-}
+
 export interface Loan{
   debt: number
   weeksOverdue: number
@@ -54,8 +50,6 @@ export class Employee implements AbilitySource{
     public manager: Manager,
   ){}
 }
-
-
 
 export interface FighterInfo extends AbilityTarget{
   lastUpdated: number
