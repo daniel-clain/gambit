@@ -1,9 +1,8 @@
-
 import * as React from 'react';
-import FighterComponent from './fighter/fighter.component';
 import './fight.scss'
-import OctagonBoundaries from './octagon-boundaries';
-import { FightState } from '../../../classes/game/fight/fight';
+import { FightState } from '../../../game-components/fight/fight';
+import FighterFightState from '../../../interfaces/game/fighter-fight-state-info';
+import FighterComponent from './fighter/fighter.component';
 
 export interface FightUiProps{
   fightState: FightState
@@ -12,7 +11,6 @@ export interface FightUiProps{
 export default class FightUi extends React.Component<FightUiProps>{
   
   render(){
-    console.log('this.props.fightUiState :', this.props.fightState);
     const {startCountdown, timeRemaining, fighters, report} = this.props.fightState                                   
     
     
@@ -25,7 +23,15 @@ export default class FightUi extends React.Component<FightUiProps>{
           {startCountdown == 0 && timeRemaining != 0 && 
             <div className='fight__time-remaining'>Time Remaining: {timeRemaining}</div>
           }
-          <OctagonBoundaries fighters={this.props.fightState.fighters}/>
+          <div className="container">
+            <div className="background-top"></div>
+            <div className="background-bottom"></div>
+            <div className="octagon">
+              {fighters.map((fighter: FighterFightState, i) => 
+                <FighterComponent key={i} fighterFightState={fighter}/>
+              )}
+            </div>
+          </div>
           {report && report.winner && 
             <div className='fight__winner'>{report.winner} Wins!</div>
           }

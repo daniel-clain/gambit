@@ -1,8 +1,7 @@
-import {ResearchFighter} from './../../../../classes/game/abilities/research-fighter';
-import {ManagerInfo} from './../../../../classes/game/manager/manager';
-import IClientAbility, { AbilityData } from './client-ability.interface';
-import { FighterInfo } from '../../../../interfaces/game-ui-state.interface';
-import { AbilityValidationError } from '../../../../classes/game/abilities/abilities';
+import { ResearchFighter } from "../../../../game-components/abilities/research-fighter"
+import IClientAbility, { AbilityTargetInfo } from "../../../../interfaces/game/client-ability.interface"
+import { FighterInfo } from "../../../../interfaces/game-ui-state.interface"
+import { ManagerInfo } from "../../../../game-components/manager/manager"
 
 
 export class ResearchFighterClient extends ResearchFighter implements IClientAbility{
@@ -19,8 +18,8 @@ export class ResearchFighterClient extends ResearchFighter implements IClientAbi
 
 
 
-  isValidTarget(fighter: FighterInfo, managerInfo: ManagerInfo): boolean {
-    let isManagersFighter = managerInfo.fighters.some(managersFighter => managersFighter.name == fighter.name)
+  isValidTarget(target: AbilityTargetInfo, managerInfo: ManagerInfo): boolean {
+    let isManagersFighter = managerInfo.fighters.some(managersFighter => managersFighter.name == target.name)
     if(isManagersFighter){
       return false
     }

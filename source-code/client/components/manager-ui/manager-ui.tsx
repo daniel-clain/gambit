@@ -1,19 +1,20 @@
 
 import * as React from 'react';
 import './manager-ui.scss'
-import { FighterInfo, ManagerUiState, Employee, JobSeeker } from '../../../interfaces/game-ui-state.interface';
-import PlayerAction from '../../../interfaces/player-action';
-import LoanSharkCard from './loan-shark-card';
-import List from './actor-list';
-import { FighterCard } from './fighter-card';
+import { FighterInfo, Employee, JobSeeker, ManagerUiState } from '../../../interfaces/game-ui-state.interface';
+import { ManagerInfo } from '../../../game-components/manager/manager';
 import { Bet } from '../../../interfaces/game/bet';
-import { EmployeeCard } from './employee-card';
-import AbilityCard from './ability-card';
-import { ManagerInfo } from '../../../classes/game/manager/manager';
-import { JobSeekerCard } from './job-seeker-card';
 import AbilityService from './ability-service';
-import { AbilityData } from './client-abilities/client-ability.interface';
-import gameConfiguration from '../../../classes/game/game-configuration';
+import { AbilityData } from '../../../interfaces/game/client-ability.interface';
+import PlayerAction from '../../../interfaces/player-action';
+import gameConfiguration from '../../../game-components/game-configuration';
+import { FighterCard } from './fighter-card';
+import { EmployeeCard } from './employee-card';
+import { JobSeekerCard } from './job-seeker-card';
+import LoanSharkCard from './loan-shark-card';
+import AbilityCard from './ability-card';
+import ActorList from './actor-list';
+
 
 interface Card {
   type: ActorTypes,
@@ -219,22 +220,22 @@ export default class ManagerUi extends React.Component<ManagerUiProps, ManagerCo
           <div className='split-panel'>
             <div className='split-panel__left known-fighers'>
               <div className='heading'>Known Fighters</div>
-              <List list={knownFighters} onActorSelected={this.fighterSelected.bind(this)} />
+              <ActorList list={knownFighters} onActorSelected={this.fighterSelected.bind(this)} />
             </div>
             <div className='split-panel__right your-fighters'>
               <div className='heading'>Your Fighters</div>
-              <List list={yourFighters} onActorSelected={this.fighterSelected.bind(this)} />
+              <ActorList list={yourFighters} onActorSelected={this.fighterSelected.bind(this)} />
             </div>
           </div>
 
           <div className='split-panel'>
             <div className='split-panel__left job-seekers'>
               <div className='heading'>Job Seekers</div>
-              <List list={jobSeekers} onActorSelected={this.jobSeekerSelected.bind(this)} />
+              <ActorList list={jobSeekers} onActorSelected={this.jobSeekerSelected.bind(this)} />
             </div>
             <div className='activity-log split-panel__right'>
               <div className='heading'>Employees</div>
-              <List list={employees} onActorSelected={this.employeeSelected.bind(this)} />
+              <ActorList list={employees} onActorSelected={this.employeeSelected.bind(this)} />
             </div>
           </div>
 

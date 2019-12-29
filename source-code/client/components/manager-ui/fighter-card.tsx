@@ -1,14 +1,15 @@
 
 import * as React from 'react';
-import { FighterInfo, Employee } from '../../../interfaces/game-ui-state.interface';
-import gameConfiguration from '../../../classes/game/game-configuration';
-import { Bet } from '../../../interfaces/game/bet';
-import AbilityService from './ability-service';
-import { ManagerInfo } from '../../../classes/game/manager/manager';
-import AbilityBlock from './ability-block';
-import { AbilityData } from './client-abilities/client-ability.interface';
+
 import './fighter-card.scss';
 import './modal-cards.scss';
+import { FighterInfo } from '../../../interfaces/game-ui-state.interface';
+import { ManagerInfo } from '../../../game-components/manager/manager';
+import { Bet } from '../../../interfaces/game/bet';
+import { AbilityData } from '../../../interfaces/game/client-ability.interface';
+import AbilityService from './ability-service';
+import gameConfiguration from '../../../game-components/game-configuration';
+import AbilityBlock from './ability-block';
 
 
 interface FighterCardProps{
@@ -23,7 +24,7 @@ export class FighterCard extends React.Component<FighterCardProps>{
 
   render(){
     const {placeBet, fighterInfo, onAbilityBlockSelected, managerInfo, abilityService} = this.props
-      let {name, isPlayersFighter, inNextFight, strength, speed, intelligence, aggression, manager, publicityRating, endurance, numberOfFights, numberOfWins, injured, healthRating, doping, happyness} = fighterInfo
+      let {name, isPlayersFighter, inNextFight, strength, speed, intelligence, aggression, manager, publicityRating, numberOfFights, numberOfWins, injured, healthRating, doping, happyness} = fighterInfo
       
     const {betSizePercentages} = gameConfiguration
 
@@ -100,7 +101,6 @@ export class FighterCard extends React.Component<FighterCardProps>{
               <div className='stats__heading'>Private Stats</div>
               <div className='stat'><label>Strength: </label>{strength}</div>
               <div className='stat'><label>Speed: </label>{speed}</div>
-              <div className='stat'><label>Endurance: </label>{endurance}</div>
               <div className='stat'><label>Intelligence: </label>{intelligence}</div>
               <div className='stat'><label>Aggression: </label>{aggression}</div>
               <div className='stat'><label>Doping: </label>{doping ? 'yes':'no'}</div>

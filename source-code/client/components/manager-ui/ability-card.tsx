@@ -1,8 +1,8 @@
 
 import * as React from 'react';
-import PlayerAction from '../../../interfaces/player-action';
-import IClientAbility, { AbilityData } from './client-abilities/client-ability.interface';
 import AbilityService from './ability-service';
+import IClientAbility, { AbilityData } from '../../../interfaces/game/client-ability.interface';
+import PlayerAction from '../../../interfaces/player-action';
 
 
 

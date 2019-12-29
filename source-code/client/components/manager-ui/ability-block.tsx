@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import AbilityService from './ability-service';
-import { AbilityData } from './client-abilities/client-ability.interface';
+import { AbilityData } from '../../../interfaces/game/client-ability.interface';
 
 interface AbilityBlockProps{
   abilityData: AbilityData

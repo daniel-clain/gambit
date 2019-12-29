@@ -6,13 +6,70 @@
 	overflow: visible;
   &__name {
     position: absolute;
-    top: -20px;
     color: white;
     text-shadow: 1px 1px 2px black;
-    width: 0;
     height: 0;
+    text-align: center;
+    font-size: 12px;
   }
   &__image {				
     position: absolute;
+    bottom: 0;
+    
+    &--active{
+        width: 41px;
+        height: 93px;
+        background-image: url('./../../../images/fighter/walking.png');
+    }
+    &--idle{
+        width: 41px;
+        height: 93px;
+        background-image: url('./../../../images/fighter/walking.png');
+    }
+    &--punching{
+        width: 63px;
+        height: 79px;
+        background-image: url('./../../../images/fighter/punch.png');
+    }
+    &--kicking{ 
+        width: 87px;
+        height: 86px;
+        background-image: url('./../../../images/fighter/kick.png');
+    }
+    &--knocked-out{
+        width: 80px;
+        height: 40px;
+        background-image: url('./../../../images/fighter/down-and-out.png');
+    }
+    &--defending{ 
+        width: 58px;
+        height: 92px;
+        background-image: url('./../../../images/fighter/defending.png');
+    }
+    &--dodging{ 
+        width: 49px;
+        height: 79px;
+        background-image: url('./../../../images/fighter/dodge.png');
+    }
+    &--blocking{
+        width: 53px;
+        height: 74px;
+        background-image: url('./../../../images/fighter/block.png');
+    }
+    &--taking-hit{
+        width: 56px;
+        height: 83px;
+        background-image: url('./../../../images/fighter/take-hit.png');
+    }
+    &--walking{
+        width: 41px;
+        height: 93px;
+        background-image: url('./../../../images/fighter/walking.png');
+    }
+    &--recovering{
+        width: 45px;
+        height: 67px;
+        background-image: url('./../../../images/fighter/recover.png');
+    }
   }
 }

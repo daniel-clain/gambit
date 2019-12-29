@@ -1,0 +1,1 @@
+export type ResponseToFighter = 'retreat' | 'defend' | 'attack'

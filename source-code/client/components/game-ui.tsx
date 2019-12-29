@@ -22,7 +22,7 @@ export default class GameUi extends React.Component<GameUiProps>{
     if (!this.state)
       return <span>loading....</span>
     const { websocketService } = this.props
-    const { fightUiState, managerUiState, roundStage } = this.state
+    const { fightState, managerUiState, roundStage } = this.state
     console.log('this.state :', this.state);
 
     switch (roundStage) {
@@ -36,7 +36,7 @@ export default class GameUi extends React.Component<GameUiProps>{
         return <div>Pre Fight News</div>
 
       case 'Fight Day':
-        return <FightUi fightUiState={fightUiState} />
+        return <FightUi fightState={fightState} />
 
       case 'Post Fight Report':
         return <div>Post Fight Report</div>

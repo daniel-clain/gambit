@@ -1,11 +1,10 @@
 
 import * as React from 'react';
-import { Employee, JobSeeker } from '../../../interfaces/game-ui-state.interface';
-import AbilityBlock from './ability-block';
-import { ManagerInfo } from '../../../classes/game/manager/manager';
-import { IAbility } from '../../../classes/game/abilities/abilities';
+import { Employee } from '../../../interfaces/game-ui-state.interface';
+import { ManagerInfo } from '../../../game-components/manager/manager';
+import IClientAbility, { AbilityData } from '../../../interfaces/game/client-ability.interface';
 import AbilityService from './ability-service';
-import IClientAbility, { AbilityData } from './client-abilities/client-ability.interface';
+import AbilityBlock from './ability-block';
 
 interface EmployeeCardProps{
   employee: Employee

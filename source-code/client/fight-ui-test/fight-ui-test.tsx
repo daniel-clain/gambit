@@ -2,9 +2,9 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import FightUi from '../components/fight-ui/fight-ui';
-import Fight, { FightState } from '../../classes/game/fight/fight';
-import Fighter from '../../classes/game/fighter/fighter';
 import './../main-game/global.scss'
+import Fighter from '../../game-components/fighter/fighter';
+import Fight, { FightState } from '../../game-components/fight/fight';
 
 export default class FighterUiTest extends React.Component{
   state = {
@@ -12,12 +12,43 @@ export default class FighterUiTest extends React.Component{
   }
 
   componentDidMount(){
+    const fighterDaniel = new Fighter('Daniel')
     const fighterBob = new Fighter('Bob')
     const fighterFred = new Fighter('Fred')
+    const fighterSam = new Fighter('Sam')
+    const fighterJeff = new Fighter('Jeff')
+    const fighterKevin = new Fighter('Kevin')
+    const fighterJoe = new Fighter('Joe')
+    const fighterSteve = new Fighter('Steve')
+    const fighterDave = new Fighter('Dave')
 
-    const fight = new Fight([fighterBob, fighterFred])
+    fighterDaniel.state.strength = 3
+    fighterDaniel.state.speed = 3
+    fighterDaniel.state.intelligence = 3
+    fighterDaniel.state.aggression = 3
+
+
+    fighterBob.state.speed = 2
+    fighterFred.state.speed = 2
+    fighterSam.state.speed = 2
+    fighterJeff.state.speed = 2
+    fighterKevin.state.speed = 2
+    fighterJoe.state.speed = 2
+    fighterSteve.state.speed = 2
+    fighterDave.state.speed = 2
+
+    const fight = new Fight([
+      fighterDaniel,
+      fighterBob,
+      fighterFred,
+      fighterSam,
+      fighterJeff,
+      fighterKevin,
+      fighterJoe,
+      fighterSteve,
+      fighterDave
+    ])
     fight.fightStateUpdatedSubject.subscribe((fightState: FightState) => {
-      console.log('fightState :', fightState);
       this.setState({fightState})
     })
 

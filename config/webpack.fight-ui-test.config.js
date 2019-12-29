@@ -29,7 +29,11 @@ module.exports = {
       {
         test: /\.(jpg|png)$/,
         loader: 'url-loader'
-      }
+      },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader'
+    }
     ]
   },
   resolve: {

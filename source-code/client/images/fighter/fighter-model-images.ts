@@ -4,13 +4,13 @@ import FighterModelImage from "../../../interfaces/game/fighter/fighter-model-im
 export const fighterModelImages: FighterModelImage[] = [
 	{
 		modelState: 'Active',
-		dimensions: { width: 58, height: 92 },
-		imageName: 'images/idle.png'
+		dimensions: { width: 41, height: 93 },
+		imageName: 'images/walking.png'
 	},
 	{
 		modelState: 'Idle',
-		dimensions: { width: 58, height: 92 },
-		imageName: 'images/idle.png'
+		dimensions: { width: 41, height: 93 },
+		imageName: 'images/walking.png'
 	},
 	{
 		modelState: 'Punching',
@@ -26,6 +26,11 @@ export const fighterModelImages: FighterModelImage[] = [
 		modelState: 'Knocked Out',
 		dimensions: { width: 80, height: 40 },
 		imageName: 'down-and-out.png'
+	},
+	{
+		modelState: 'Defending',
+		dimensions: { width: 58, height: 92 },
+		imageName: 'images/defending.png'
 	},
 	{
 		modelState: 'Dodging',

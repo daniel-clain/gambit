@@ -1,18 +1,14 @@
-import { GameHostUiState } from '../interfaces/game-ui-state.interface';
+
 import ServerWebsocketService from "./server-websocket.service";
 import ConnectedClient from './connected-client';
 import ConnectingClientData from '../interfaces/connecting-client-data';
 import GameLobbyClient from '../interfaces/game-lobby-client.interface';
 import ClientNameAndId from '../interfaces/client-name-and-id.interface';
-import Game from '../classes/game/game';
-import PlayerNameAndId from '../interfaces/player-name-and-id';
 import ChatMessage from '../interfaces/chat-message.interface';
-import Player from '../classes/game/player';
 import GameLobby from '../interfaces/game-lobby.interface';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators'
 import ClientId from '../types/client-id.type';
 import { PlayerInfo } from '../interfaces/player-info.interface';
+import Game from "../game-components/game";
 
 
 export default class GameHost{
@@ -115,7 +111,7 @@ export default class GameHost{
     if(canceldGameLobbyIndex == -1)
       throw `canceled game lobby could not be found in gameLobbies array`
 
-    console.log(`${gameLobby.creator.name} has canceld his game lobby`);
+    console.log(`${gameLobby.creator.name} has canceled his game lobby`);
 
     this.gameLobbies.splice(canceldGameLobbyIndex, 1)
 

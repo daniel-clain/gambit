@@ -1,10 +1,9 @@
 import {ResearchFighterClient} from './client-abilities/research-fighter-client';
 import {OfferContractClient} from './client-abilities/offer-contract-client';
-import {Employee} from './../../../interfaces/game-ui-state.interface';
-import {ManagerInfo} from './../../../classes/game/manager/manager';
+import IClientAbility, { AbilityData, AbilitySourceInfo } from '../../../interfaces/game/client-ability.interface';
+import { FighterInfo, Employee } from '../../../interfaces/game-ui-state.interface';
+import { ManagerInfo } from '../../../game-components/manager/manager';
 
-import IClientAbility, { AbilityData, AbilitySourceInfo } from './client-abilities/client-ability.interface';
-import { FighterInfo } from '../../../interfaces/game-ui-state.interface';
 
 export default class AbilityService{
   

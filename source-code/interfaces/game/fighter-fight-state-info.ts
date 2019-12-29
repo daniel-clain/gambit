@@ -1,10 +1,13 @@
-import Position from './fighter/position';
+import Coords from './fighter/coords';
 import FacingDirection from '../../types/figher/facing-direction';
 import FighterModelState from '../../types/figher/fighter-model-states';
+import SoundTime from './fighter/sound-time';
 
-export default interface FighterFightStateInfo{
+export default interface FighterFightState{
   name: string
-  position: Position
+  coords: Coords
   facingDirection: FacingDirection
   modelState: FighterModelState
+  soundsMade: SoundTime[]
+  onRampage: boolean
 }

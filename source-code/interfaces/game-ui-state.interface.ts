@@ -1,15 +1,12 @@
-import {AbilityNames, AbilitySource, AbilityTarget, AbilityTargetType, AbilitySourceType} from './../classes/game/abilities/abilities';
-
-import {Bet} from './game/bet';
 import PlayerNameAndId from './player-name-and-id';
 import GameLobby from './game-lobby.interface';
 import ChatMessage from './chat-message.interface';
 import SkillLevel from '../types/skill-level.type';
-import { FightReport, FightState } from '../classes/game/fight/fight';
-import FighterFightStateInfo from './game/fighter-fight-state-info';
-import { ActiveContract, Contract } from './game/contract.interface';
-import Manager, { ManagerInfo } from '../classes/game/manager/manager';
 import RoundStages from '../types/game/round-stages';
+import { FightState } from '../game-components/fight/fight';
+import { Contract, ActiveContract } from './game/contract.interface';
+import Manager, { ManagerInfo } from '../game-components/manager/manager';
+import { AbilityTarget, AbilityTargetType, AbilitySource, AbilitySourceType } from '../game-components/abilities/abilities';
 
 export interface GameHostUiState{
   inGame: boolean
@@ -62,7 +59,6 @@ export interface FighterInfo extends AbilityTarget{
   aggression: number
   manager: string
   publicityRating: number
-  endurance: number
   numberOfFights: number
   numberOfWins: number
   injured: boolean

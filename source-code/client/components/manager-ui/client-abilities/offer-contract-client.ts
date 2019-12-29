@@ -1,8 +1,7 @@
 import {JobSeeker} from './../../../../interfaces/game-ui-state.interface';
-import IClientAbility, { AbilityData } from './client-ability.interface';
-import OfferContract from '../../../../classes/game/abilities/offer-contract';
-import { ManagerInfo } from '../../../../classes/game/manager/manager';
-import { AbilityValidationError } from '../../../../classes/game/abilities/abilities';
+import IClientAbility, { AbilityData } from '../../../../interfaces/game/client-ability.interface';
+import OfferContract from '../../../../game-components/abilities/offer-contract';
+import { ManagerInfo } from '../../../../game-components/manager/manager';
 
 
 export class OfferContractClient extends OfferContract implements IClientAbility{

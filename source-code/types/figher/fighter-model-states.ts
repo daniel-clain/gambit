@@ -5,6 +5,7 @@ type FighterModelState =
 'Recovering' | 
 'Walking' |
 'Punching' |
+'Defending' |
 'Blocking' |
 'Dodging' |
 'Taking Hit' |

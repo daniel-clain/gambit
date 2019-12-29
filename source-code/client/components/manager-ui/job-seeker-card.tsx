@@ -1,13 +1,12 @@
 
 import * as React from 'react';
 import { JobSeeker } from '../../../interfaces/game-ui-state.interface';
-import { ManagerInfo } from '../../../classes/game/manager/manager';
-import AbilityBlock from './ability-block';
-import AbilityService from './ability-service';
-import OfferContract from '../../../classes/game/abilities/offer-contract';
-import { Contract } from '../../../interfaces/game/contract.interface';
-import IClientAbility, { AbilityData } from './client-abilities/client-ability.interface';
+import { ManagerInfo } from '../../../game-components/manager/manager';
+import IClientAbility, { AbilityData } from '../../../interfaces/game/client-ability.interface';
 import { OfferContractClient } from './client-abilities/offer-contract-client';
+import AbilityService from './ability-service';
+import AbilityBlock from './ability-block';
+
 
 interface JobSeekerCardProps{
   jobSeeker: JobSeeker
