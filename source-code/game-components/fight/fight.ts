@@ -1,7 +1,7 @@
 import FighterFightState from "../../interfaces/game/fighter-fight-state-info"
 import { FighterInfo } from "../../interfaces/game-ui-state.interface"
 import ManagerWinnings from "../../../manager-winnings"
-import { Subject } from "rxjs"
+import { Subject, Subscription } from "rxjs"
 import Fighter from "../fighter/fighter"
 import gameConfiguration from "../game-configuration"
 import { random } from "../../helper-functions/helper-functions"
@@ -48,10 +48,12 @@ export default class Fight {
   }
 
   watchForAWinner(){
-    this.fightStateUpdatedSubject.subscribe(() => {
-      const knockedOutFighters: Fighter[] = this.getFightersThatArentKnockedOut()
-      if(knockedOutFighters.length == 1)
-        this.declareWinner(knockedOutFighters[0])
+    const watchForWinnerSubscription: Subscription = this.fightStateUpdatedSubject.subscribe(() => {
+      const remainingFighters: Fighter[] = this.getFightersThatArentKnockedOut()
+      if(remainingFighters.length == 1){
+        watchForWinnerSubscription.unsubscribe()
+        this.declareWinner(remainingFighters[0])
+      }
     })
   }
 
@@ -127,8 +129,11 @@ export default class Fight {
 
   private finishFight(fightReport){
     clearInterval(this.timer)
-    clearInterval(this.fightUpdateLoop)
-    this.fightFinishedSubject.next(fightReport)
+    
+    setTimeout(() => {
+      clearInterval(this.fightUpdateLoop)
+      this.fightFinishedSubject.next(fightReport)
+    }, 5000)
     this.fighters.forEach(f => f.stopFighting())
   }
 
@@ -162,14 +167,12 @@ export default class Fight {
 
   private placeFighters(){    
     this.fighters.forEach((fighter: Fighter) => {
-      let pos: Coords
-      while(!pos || !Octagon.checkIfPointIsWithinOctagon(pos)){
-        pos = {
+      while(!fighter.fighting.movement.coords || fighter.fighting.movement.isNearEdge(fighter.fighting.movement.coords)){
+        fighter.fighting.movement.coords = {
           x: random(Octagon.getWidth()),
-          y: random(Octagon.getHeight())
+          y: random(Octagon.getHeight())          
         }
-      }
-      fighter.fighting.setStartPosition(pos)
+      }      
     })
   }
 

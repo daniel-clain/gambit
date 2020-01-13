@@ -1,4 +1,5 @@
-type Sound = 'Punch' | 'Critical Strike' | 'Dodge' | 'Block'
+import { Sound } from "../../../types/figher/sound";
+
 
 export default interface SoundTime {
   soundName: Sound

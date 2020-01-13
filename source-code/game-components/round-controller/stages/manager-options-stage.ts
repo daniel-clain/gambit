@@ -6,7 +6,7 @@ import { ManagerInfo } from "../../manager/manager";
 import gameConfiguration from "../../game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stages";
-import { timer } from "../../../helper-functions/helper-functions";
+import { wait } from "../../../helper-functions/helper-functions";
 
 export default class ManagerOptionsStage implements IStage {
 
@@ -30,7 +30,7 @@ export default class ManagerOptionsStage implements IStage {
     this.timeLeft = this.duration
     this.timeLeftInterval = setInterval(() => this.timeLeft --, 1000)
 
-    timer(this.duration*1000).then(this.stageFinished.bind(this))  
+    wait(this.duration*1000).then(this.stageFinished.bind(this))  
     this.allManagersReadySubject.subscribe(this.stageFinished.bind(this))   
   }
 

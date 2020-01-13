@@ -1,13 +1,22 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var sourceDir = `${__dirname}/../source-code/client/fight-ui-test`
+var compiledDir = `${__dirname}/../compiled-code/client/fight-ui-test`
 
 module.exports = {
   mode: 'development',
   entry: `${sourceDir}/fight-ui-test.tsx`,
+  /* output:{
+    path: compiledDir,
+    filename: 'fight-ui-test.js'
+  }, */
   devServer: {
+    contentBase: compiledDir,
+    filename: 'fight-ui-test.js',
     watchContentBase: true,
     liveReload: true,
+    open: true,
+    port: 7788
   },
   devtool: 'source-map',
   module: {
@@ -18,8 +27,7 @@ module.exports = {
         exclude: /node_modules/,
         options: {
             configFileName: 'config/tsconfig.json',
-            reportFiles: [ `${sourceDir}/**/*`
-            ]
+            reportFiles: [ `${sourceDir}/**/*`]
         },
       },
       {
@@ -33,7 +41,7 @@ module.exports = {
       {
         test: /\.mp3$/,
         loader: 'file-loader'
-    }
+      }
     ]
   },
   resolve: {

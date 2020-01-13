@@ -2,6 +2,9 @@ import Dimensions from "../../interfaces/game/fighter/dimensions"
 import Coords from '../../interfaces/game/fighter/coords';
 import { Edges } from "../../interfaces/game/fighter/edges";
 import { Edge } from "../../interfaces/game/fighter/edge";
+import EdgeCoord from "../../interfaces/game/fighter/edge-coord-distance";
+import { getDistanceBetweenTwoPoints } from "../../helper-functions/helper-functions";
+import EdgeCoordDistance from "../../interfaces/game/fighter/edge-coord-distance";
 
 export default class Octagon {
 
@@ -64,6 +67,143 @@ export default class Octagon {
       }
     }
 
+  }
+
+  static getClosestDistanceAndCoordOnClosestEdge(testPoint: Coords, modelWidth: number): EdgeCoordDistance{
+    const edgeDistanceAndCoords: EdgeCoordDistance[] = []
+    let edgeName: Edge
+    for(edgeName in Octagon.edges){
+      const point = {...testPoint}
+      const upperEdges: Edge[] = ['top','topLeft', 'topRight']
+      if(upperEdges.some(name => name == edgeName))
+        point.y += 20
+      
+      const rightEdges: Edge[] = ['right', 'topRight', 'bottomRight']
+      
+      if(rightEdges.some(name => name == edgeName))
+        point.x += modelWidth/2
+
+        
+      const leftEdges: Edge[] = ['left', 'topLeft', 'bottomLeft']
+      
+      if(leftEdges.some(name => name == edgeName))
+        point.x -= modelWidth/2
+
+
+      const {distance, coords} = this.getClosestDistanceAndCoordOnEdge(point, edgeName)
+      edgeDistanceAndCoords.push({distance, coords, edgeName})
+    }
+
+    return edgeDistanceAndCoords.reduce((
+      smallest: EdgeCoordDistance, 
+      edgeCoordDistance: EdgeCoordDistance
+    ) => {
+      if(!smallest || edgeCoordDistance.distance < smallest.distance)
+        return edgeCoordDistance
+      else
+        return smallest
+    })
+  }
+
+  static getClosestDistanceAndCoordOnEdge(testPoint: Coords, edgeName: Edge): {distance: number, coords: Coords}{
+
+    const {point1, point2} = Octagon.edges[edgeName]
+    
+
+    let smallestDistance: number
+    let smallestDistanceCoords: Coords
+    let biggestX 
+    let smallestX
+    if(point1.x > point2.x){
+      biggestX = point1.x
+      smallestX = point2.x
+    }
+    else{
+      biggestX = point2.x 
+      smallestX = point1.x
+    } 
+    
+
+      
+    if(edgeName == 'top' || edgeName == 'bottom'){
+      const coordsOnEdge = {x: testPoint.x, y: point1.y}
+      let distanceFromEdge
+      if(edgeName == 'top')
+        distanceFromEdge = point1.y - testPoint.y
+      else
+        distanceFromEdge = testPoint.y - point1.y
+      return {distance: distanceFromEdge, coords: coordsOnEdge}
+    }
+    if(edgeName == 'left' || edgeName == 'right'){
+      const xOnSide = this.getSideXBasedOnYPercentage(point1, point2, testPoint)
+      const coordsOnEdge = {x: xOnSide, y: testPoint.y}
+      let distanceFromEdge
+      if(edgeName == 'left')
+        distanceFromEdge = testPoint.x - point1.x
+      else
+        distanceFromEdge = point1.x - testPoint.x
+      return {distance: distanceFromEdge, coords: coordsOnEdge}      
+    }
+
+
+    for(let x = smallestX; x < biggestX; x++){
+      const y = Octagon.getYOnSlopeBasedOnX(x, {point1, point2})
+      const distance = getDistanceBetweenTwoPoints(testPoint, {x, y})
+      if(!smallestDistance || distance < smallestDistance){
+        smallestDistance = distance
+        smallestDistanceCoords = {x, y}
+      }      
+    }
+    
+    return {distance: smallestDistance, coords: smallestDistanceCoords}
+
+  }
+
+  static getSideXBasedOnYPercentage(point1: Coords, point2: Coords, testPoint: Coords){
+    
+    let biggestX 
+    let smallestX
+    if(point1.x > point2.x){
+      biggestX = point1.x
+      smallestX = point2.x
+    }
+    else{
+      biggestX = point2.x 
+      smallestX = point1.x
+    }     
+
+    let biggestY 
+    let smallestY
+    if(point1.y > point2.y){
+      biggestY = point1.y
+      smallestY = point2.y
+    }
+    else{
+      biggestY = point2.y 
+      smallestY = point1.y
+    } 
+
+    const sideRange = biggestY - smallestY
+
+    const xRange = biggestX - smallestX
+
+    const testPointYAmountInRange = testPoint.y - smallestY
+
+    const percentageOfYAmountInRange = testPointYAmountInRange/sideRange
+
+    const xValueInXRangeBasedOnYPercentage = xRange * percentageOfYAmountInRange
+
+    return xValueInXRangeBasedOnYPercentage + smallestX
+
+  }
+
+  static getYOnSlopeBasedOnX(x, points){
+    const {point1, point2} = points
+    
+    const m = (point1.y - point2.y) / (point1.x - point2.x)
+    const b = point1.y - (m * point1.x)
+    const y = m * x + b
+    return y
   }
 
   static getHeight(){

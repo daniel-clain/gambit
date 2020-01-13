@@ -1,0 +1,12 @@
+* fighter does recover when on full stamina = i think 2 recoveryies start after attack because an action isnt cancled
+* scale action speeds with fighters speed stat
+* make fighters move into striking range before attacking
+*when against edge, dont try to retreat, only block or attacking
+* should not try to recover when enemy is near = check for enemy infront
+* retreat from flanked doesnt happen the way it should
+* fighters sometimes stand inside eachother, make code to avoid this
+* when a fighter walks past an enemy he should remember that that enemy is behind him but he doesnt
+* how do you include model dimensions for things like striking range, distance, hitting edge, not being inside eachother without throwin everything else off
+* when fighter has no determined action, defaults to wander around. however a lot of scenarios there should a be a determined action
+* if fighter is retreating from something when they get attacked, they shouldnt have a 0 probability to block or dodge when theyre facing the attacker
+* sometimes fighers have knowledge of an enemy focusing him for attack, but because that enemy is not the closest, he will act relative to a closer fighter who is not targeting him for attack. should i do something about this

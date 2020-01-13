@@ -1,5 +1,4 @@
 type FighterModelState =
-'Active' |
 'Knocked Out' |
 'Idle' |
 'Recovering' | 
@@ -9,6 +8,7 @@ type FighterModelState =
 'Blocking' |
 'Dodging' |
 'Taking Hit' |
-'Kicking'
+'Kicking' |
+'Victory'
 
 export default FighterModelState

@@ -1,6 +1,8 @@
 #manager-ui{
   height: 100vh;
   background-color: #e0e0f9;
+  max-width: 500px;
+  margin:auto;
 
   .standard-button {
     background: #3b6056;
@@ -214,7 +216,7 @@
             left: 20px;
           }
           &__image{
-            background-image: url('./../../images/fighter/idle.png');
+            background-image: url('./../../images/fighter/default-skin/defending.png');
             width: 2.5rem;
             height: 2.5rem;
             border: 1px solid grey;
@@ -297,7 +299,7 @@
       padding-bottom: .5rem;
     }
     &__image{
-      background: url('./../../images/fighter/punch.png') no-repeat;
+      background: url('./../../images/fighter/default-skin/punch.png') no-repeat;
       height: 11vh;
     }
     .left{

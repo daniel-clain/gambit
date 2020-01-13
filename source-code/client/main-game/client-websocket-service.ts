@@ -12,13 +12,15 @@ export default class ClientWebsocketService {
   gameHostUiStateUpdate: Subject<GameHostUiState> = new Subject()
   gameUiStateUpdate: Subject<GameUiState> = new Subject()
 
+  websocketAddress = '192.168.0.12'
+
   constructor(){
     this.setUpWebsockets()
   }  
 
   private setUpWebsockets(){    
     this.isConnected = true
-    this.socket = io(`localhost:${this.port}`, {transports: ['websocket']}); 
+    this.socket = io(`${this.websocketAddress}:${this.port}`, {transports: ['websocket']}); 
     this.socket.on('disconnect', e => {
       console.log('e :', e);
     })

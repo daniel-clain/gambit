@@ -31,7 +31,7 @@ const gameConfiguration: GameConfiguration = {
   numberOfFighters: 8,
   numberOfJobSeekers: 9,
   numberOfJobSeekersPerRound: 2,
-  numberOfFightersPerFight: 2,
+  numberOfFightersPerFight: 4,
   listOfNames: ['Daniel', 'Tomasz', 'Hassan', 'Dardan', 'Alex', 'Angelo', 'Paul', 'Suleman', 'Mark', 'Mat', 'Mike', 'Brad', 'Steve', 'James', 'Jake', 'Harry', 'Kevin', 'Stan', 'Dave', 'Chris', 'Sam', 'Bob', 'Fred'],
   betSizePercentages: {
     small: 15,
@@ -39,7 +39,7 @@ const gameConfiguration: GameConfiguration = {
     large: 60
   },
   stageDurations: {
-    managerOptions: 2,
+    managerOptions: 10,
     maxFightDuration: 999999,
     eachNewsSlide: 2,
     postFightReport: 2

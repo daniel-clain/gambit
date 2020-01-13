@@ -1,235 +1,305 @@
 import Fighter from "../fighter"
 import FighterFighting from "./fighter-fighting"
-import { fighterModelImages } from "../../../client/images/fighter/fighter-model-images"
 import Coords from "../../../interfaces/game/fighter/coords"
 import Direction360 from "../../../types/figher/direction-360"
 import { Closeness } from "../../../types/figher/closeness"
 import Dimensions from "../../../interfaces/game/fighter/dimensions"
-import FighterModelState from "../../../types/figher/fighter-model-states"
+import { getDirectionOfPosition2FromPosition1, getDistanceBetweenTwoPoints } from "../../../helper-functions/helper-functions"
+import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right"
+
 
 export default class Proximity {
-
-  closeRange = 25
-  nearbyRange = 100
-
-  constructor(private fighterFighting: FighterFighting){}
+  strikingRange = 20
+  closeRange = 70
+  nearbyRange = 180
   
-  getFightersInfront(closeness: Closeness){
-    const fightersInfront: Fighter[] = this.fighterFighting.otherFightersInFight
+  rememberedEnemyBehind: Fighter
+
+  constructor(private fighting: FighterFighting){}
+
+
+  
+  getEnemiesInfront(){
+    const fightersInfront: Fighter[] = this.fighting.otherFightersInFight
     .filter((fighter: Fighter) => {  
       if(fighter.fighting.knockedOut){
         return false
       }
-      const otherX = fighter.fighting.movement.coords.x
-      const otherWidth = this.getModelDimensions(fighter.fighting.modelState).width
+      const otherX = fighter.fighting.movement.coords.x      
+      const thisX = this.fighting.movement.coords.x 
 
-      const thisX = this.fighterFighting.movement.coords.x  
-      const thisWidth = this.getModelDimensions(this.fighterFighting.modelState).width
-
-      if(this.fighterFighting.movement.facingDirection === 'left'){        
-        return (otherX + otherWidth/2) < thisX
+      if(this.fighting.facingDirection === 'left'){        
+        return otherX < thisX
       }
-      if(this.fighterFighting.movement.facingDirection === 'right'){        
-        return otherX > (thisX + thisWidth/2)
+      if(this.fighting.facingDirection === 'right'){        
+        return otherX > thisX
       }
     })
     
-
-    if(closeness == 'nearby'){
-      return fightersInfront.filter(fighter => this.getFighterDistanceAway(fighter) < this.nearbyRange)
-    }
-    
-    if(closeness == 'close'){
-      return fightersInfront.filter(fighter => this.fighterWithinStrikingRange(fighter))
-    }
     return fightersInfront
   }
 
-  fighterInfront(closeness: Closeness): boolean{
-    return this.getFightersInfront(closeness).length > 0
+  rememberEnemyBehind(enemy){
+    if(enemy === undefined)
+      return
+
+    if(enemy == null)
+      this.rememberedEnemyBehind = null
+
+    else if(enemy){    
+      this.rememberedEnemyBehind = enemy
+    }   
+         
+    this.fighting.startTimer(this.fighting.timers.memoryOfEnemyBehind)
   }
 
-  isFighterClose(fighter: Fighter, closeness: Closeness): boolean{
-    const distance = this.getFighterDistanceAway(fighter)
-    if(closeness == 'close'){
-      return distance < this.closeRange
-    }
-    if(closeness == 'nearby'){
-      return distance < this.nearbyRange
-    }
-  }
-
-  lookForClosestFighter(){
-    const {movement} = this.fighterFighting
-    let fighter = this.getClosestFighterInfront()
-    if(!fighter){
-      movement.facingDirection = movement.facingDirection == 'left' ? 'right' : 'left'
-      fighter = this.getClosestFighterInfront()
-    }
-    return fighter
-  }
-
-  getClosestFighterInfront(){
-    return this.getFightersInfront(null).reduce(
-      (closestFighter: Fighter, fighter: Fighter) => {
-          if(!closestFighter || this.getFighterDistanceAway(fighter) < 
-          this.getFighterDistanceAway(closestFighter)){
-            closestFighter = fighter
-          }
-        return closestFighter
-      }, null)
-  }
-
-  isFacingFighter(fighter: Fighter): boolean {
-    const directionOfFighter: Direction360 = this.getDirectionOfFighter(fighter)
-    if(directionOfFighter < 180 && this.fighterFighting.movement.facingDirection == 'right'){
-      return true
-    }
-    if(directionOfFighter >= 180 && this.fighterFighting.movement.facingDirection == 'left'){
-      return true
-    }
-  }
-
-  checkForNearbyFighterInfront(): boolean{
-    const nearFightersInfront: Fighter[] = this.getFightersInfront('nearby')
-    return nearFightersInfront.length > 0
-
-  }
-
-
-  getFighterDistanceAway(fighter: Fighter): number{
-    let distance
-    let xDiff
-    const thisCoords = this.fighterFighting.movement.coords
-    const otherCoords = fighter.fighting.movement.coords
+  getClosestRememberedEnemy(): Fighter{
+    const closestEnemyInfront = this.getClosestEnemyInfront()
+    if(!closestEnemyInfront && !this.rememberedEnemyBehind)
+      return
+    if(closestEnemyInfront && !this.rememberedEnemyBehind)
+      return closestEnemyInfront
+    if(!closestEnemyInfront && this.rememberedEnemyBehind)
+      return this.rememberedEnemyBehind
     
-    const thisModel: Dimensions = this.getModelDimensions(this.fighterFighting.modelState)
 
-    const otherModel: Dimensions = this.getModelDimensions(fighter.fighting.modelState)
+    const infrontEnemyDistance = this.getDistanceFromEnemyCenterPoint(closestEnemyInfront)
+    
+    const behindEnemyDistance = this.getDistanceFromEnemyCenterPoint(closestEnemyInfront)
 
-    if(thisCoords.x > otherCoords.x)
-      xDiff = thisCoords.x - (otherCoords.x + otherModel.width/2)  
-    else 
-      xDiff = otherCoords.x - (thisCoords.x + thisModel.width/2)
+    return infrontEnemyDistance < behindEnemyDistance ? closestEnemyInfront : this.rememberedEnemyBehind
+  }
 
-    let yDiff
-    if(thisCoords.y > otherCoords.y)
-      yDiff = thisCoords.y - otherCoords.y
-    else 
-      yDiff = otherCoords.y - thisCoords.y
+  getFighterStrikingCenter(fighter: Fighter): Coords{
+    const {movement, facingDirection} = fighter.fighting
+    const {width, height} = this.getFighterModelDimensions(fighter)
 
-    distance = Math.sqrt(yDiff*yDiff + xDiff*xDiff)
+    let x
+    const y = movement.coords.y + height * 0.8
+    if(facingDirection == 'right')
+      x = movement.coords.x + width * 0.2
+    if(facingDirection == 'left')
+      x = movement.coords.x - width * 0.2
 
-    return distance
+    return {x, y}
+  }
+
+  getDirectionOfEnemyStrikingCenter(enemy: Fighter): Direction360{
+    const thisStrikingCenter: Coords = this.getFighterStrikingCenter(this.fighting.fighter)
+    const enemyStrikingCenter: Coords = this.getFighterStrikingCenter(enemy)
+
+    return getDirectionOfPosition2FromPosition1(thisStrikingCenter, enemyStrikingCenter)
+  }
+
+  
+  getDistanceOfEnemyStrikingCenter(enemy: Fighter): number{
+    const thisStrikingCenter: Coords = this.getFighterStrikingCenter(this.fighting.fighter)
+    const enemyStrikingCenter: Coords = this.getFighterStrikingCenter(enemy)
+
+    return getDistanceBetweenTwoPoints(thisStrikingCenter, enemyStrikingCenter)
+  }
+
+  
+
+  enemyWithinStrikingRange(enemy: Fighter): boolean{
+    const thisStrikingCenter: Coords = this.getFighterStrikingCenter(this.fighting.fighter)
+    const enemyStrikingCenter: Coords = this.getFighterStrikingCenter(enemy)
+    
+    let verticalInRange
+    if(
+      thisStrikingCenter.y + 10 > enemyStrikingCenter.y - 10 ||
+      thisStrikingCenter.y - 10 < enemyStrikingCenter.y + 10
+    )
+      verticalInRange = true
+      
+    let horizontalInRange
+    if(
+      thisStrikingCenter.x + 10 > enemyStrikingCenter.x - 10 ||
+      thisStrikingCenter.x - 10 < enemyStrikingCenter.x + 10
+    )
+      horizontalInRange = true
+    
+    return verticalInRange && horizontalInRange
+  }
+  
+
+
+  isEnemyBehind(enemy: Fighter){
+    const {facingDirection, movement} = this.fighting
+    const enemyX = enemy.fighting.movement.coords.x
+    const thisX = movement.coords.x
+
+    if(
+      facingDirection == 'left' &&
+      enemyX > thisX)
+      return true
+
+    if(facingDirection == 'right' &&
+    enemyX < thisX)
+      return true
+    
+    return false
+  }
+
+  isFacingCoods(coords: Coords){
+    const {facingDirection, movement} = this.fighting
+    if(movement.coords.x < coords.x && facingDirection == 'left')
+    return true
+    if(movement.coords.x > coords.x && facingDirection == 'right')
+      return true
+    return false
   }
 
 
-  fighterWithinStrikingRange(fighter: Fighter){
-    const thisCoords = this.fighterFighting.movement.coords
-    const otherCoords = fighter.fighting.movement.coords
-
-    const thisModelHeight: number = this.getModelDimensions(this.fighterFighting.modelState).height
-
-    const otherModelHeight: number = this.getModelDimensions(fighter.fighting.modelState).height
-
-    const twentyPercentOfThisHeight = thisModelHeight * 0.2
-    const fourtyPercentOfThisHeight = thisModelHeight * 0.4
-
-    const fourtyPercentOfOtherHeight = otherModelHeight * 0.4
-
-    const thisAttackBoxTop = thisCoords.y + thisModelHeight - twentyPercentOfThisHeight
-    const thisAttackBoxBottom = thisCoords.y + fourtyPercentOfThisHeight
-
-    const otherHitBoxTop = otherCoords.y + otherModelHeight
-    const otherHitBoxBottom = otherCoords.y + otherModelHeight - fourtyPercentOfOtherHeight
-
-    const distance = this.getFighterDistanceAway(fighter)
-
-
-    if (distance <= this.closeRange) {
-      if (thisAttackBoxTop > otherHitBoxBottom && thisAttackBoxBottom < otherHitBoxTop)
-        return true
-    }
-
+  getClosestEnemyInfront(){
+    return this.getEnemiesInfront().reduce(
+      (closestFighter: Fighter, fighter: Fighter) => {        
+        if(!closestFighter)
+          return fighter
+        else {          
+          const fighterDistance = this.getDistanceFromEnemyCenterPoint(fighter)
+          const closestDistance = this.getDistanceFromEnemyCenterPoint(closestFighter)
+          if(fighterDistance < closestDistance)
+            closestFighter = fighter          
+          return closestFighter
+        }
+      },null)
   }
 
-  getModelDimensions(modelState: FighterModelState): Dimensions{
-    return fighterModelImages.find(image => image.modelState == modelState).dimensions
+  
+  getDistanceFromEnemyCenterPoint(enemy: Fighter): number{
+    const thisCoords = this.fighting.movement.coords
+    const enemyCoords = enemy.fighting.movement.coords    
+    return getDistanceBetweenTwoPoints(thisCoords, enemyCoords)    
+  }
+
+  
+
+  isFacingAwayFromEnemy(enemy: Fighter): boolean{
+
+    const enemyCoords = enemy.fighting.movement.coords
+    return this.isFacingCoods(enemyCoords)
+    
+  }
+  isEnemyFacingAway(enemy: Fighter): boolean{
+    const {coords} = this.fighting.movement
+    const enemyFacingDirection = enemy.fighting.facingDirection
+
+    const enemyCoords = enemy.fighting.movement.coords
+    if(coords.x < enemyCoords.x && enemyFacingDirection == 'right')
+      return true
+    if(coords.x > enemyCoords.x && enemyFacingDirection == 'left')
+      return true
+    return false
+  }
+
+
+  getEnemyCombatCloseness(enemy: Fighter): Closeness{
+    const distanceAway: number = this.getDistanceToEnemyStrikingPosition(enemy)
+    if(this.enemyWithinStrikingRange(enemy))
+      return Closeness['striking range']
+    if(distanceAway <= this.closeRange)
+      return Closeness['close']
+    if(distanceAway <= this.nearbyRange)
+      return Closeness['nearby']
+    
+    return Closeness['far']
+  }
+
+  getFighterSideX(fighter: Fighter, side: LeftOrRight): number {
+    const {modelState, movement} = fighter.fighting
+    const {x} = movement.coords
+    const width: number = this.getModelDimensions(modelState).width
+    
+    return side == 'left' ? x - width*0.5 : x + width*0.5
+  }
+
+  enemyIsOnThe(side: LeftOrRight, enemy: Fighter): boolean{    
+    const thisX = this.fighting.movement.coords.x
+    const otherX = enemy.fighting.movement.coords.x
+
+    if(side == 'left' && thisX > otherX)
+      return true
+    if(side == 'right' && thisX < otherX)
+      return true
+  }
+
+
+  getClosenessBasedOnDistance(distance): Closeness{
+    if(distance <= this.strikingRange)
+      return Closeness['striking range']
+    else if(distance <= this.closeRange)
+      return Closeness['close']
+    else if(distance <= this.nearbyRange)
+      return Closeness['nearby']
+    else
+      return Closeness['far']
+  }
+
+
+
+
+  getFighterModelDimensions(fighter: Fighter): Dimensions{    
+    return fighter.getSkinModelImages()
+    .find(modelImage => modelImage.modelState == fighter.fighting.modelState).dimensions
   }
   
   getDirectionOfFighter(fighter: Fighter, opposite?: boolean): Direction360{
-    if(fighter == null){
-      debugger
-    }
-    const {movement, modelState} = this.fighterFighting
+
+    const {movement, modelState} = this.fighting
     const thisCoords = movement.coords
     const otherCoords = fighter.fighting.movement.coords
 
-    const thisModelDimensions: Dimensions = this.getModelDimensions(modelState)
+    const thisModelDimensions: Dimensions = this.getFighterModelDimensions(modelState)
     
-    const otherModelDimensions: Dimensions = this.getModelDimensions( fighter.fighting.modelState)
+    const otherModelDimensions: Dimensions = this.getFighterModelDimensions( fighter.fighting.modelState)
 
     let pos1: Coords = {...thisCoords}
     let pos2: Coords = {...otherCoords}
-    /* 
+    
     if(thisCoords.x < otherCoords.x){
-      pos1.x += thisModelDimensions.width
+      pos1.x += thisModelDimensions.width / 2
+      pos2.x -= thisModelDimensions.width / 2
     }
     else {      
-      pos2.x += otherModelDimensions.width
-    } */
+      pos1.x -= thisModelDimensions.width / 2
+      pos2.x += thisModelDimensions.width / 2
+    }
     
 
-    const direction: Direction360 = this.getDirectionOfPosition2FromPosition1(pos1, pos2)
+    const direction: Direction360 = getDirectionOfPosition2FromPosition1(pos1, pos2)
     if(opposite){
-      if(direction > 180){
+      if(direction >= 180){
         return (direction - 180) as Direction360
       }
       else {
         return (180 + direction) as Direction360
       }
     }
+    
+    if(isNaN(direction) || direction >= 360)
+      debugger
     return direction
   }
-  getDirectionOfPosition2FromPosition1(pos1: Coords, pos2: Coords): Direction360{
-    let directionOfPosition2FromPosition1: Direction360
-    let xLength = pos2.x - pos1.x
-    let yLength = pos2.y - pos1.y
-    let adjacentSide
-    let oppositeSide
-    let addedDegrees
-    if (xLength < 0 && yLength > 0) {
-      oppositeSide = yLength
-      adjacentSide = xLength * -1
-      addedDegrees = 270
-    }
-    if (xLength < 0 && yLength < 0) {
-      adjacentSide = yLength * -1
-      oppositeSide = xLength * -1
-      addedDegrees = 180
-    }
-    if (xLength > 0 && yLength < 0) {
-      oppositeSide = yLength * -1
-      adjacentSide = xLength
-      addedDegrees = 90
-    }
-    if (xLength > 0 && yLength > 0) {
-      adjacentSide = yLength
-      oppositeSide = xLength
-      addedDegrees = 0
-    }
-  
-    const degrees = Math.round(Math.atan(oppositeSide / adjacentSide) * (180 / Math.PI))
-    directionOfPosition2FromPosition1 = degrees + addedDegrees
-  
-    return directionOfPosition2FromPosition1
-  }
 
-  distanceFromFighter(fighter: Fighter){
-    return this.getDistanceBetweenTwoPositions(this.fighterFighting.movement.coords, fighter.fighting.movement.coords)
+  hasVerticleOverlapWithEnemy(enemy: Fighter){
+    const {fighter} = this.fighting
+    if(this.enemyIsOnThe('left', enemy)){
+      if(
+        this.getFighterSideX(enemy, 'right') >
+        this.getFighterSideX(fighter, 'left')
+      )
+        return true
+    }
+    
+    if(this.enemyIsOnThe('right', enemy)){
+      if(
+        this.getFighterSideX(enemy, 'left') <
+        this.getFighterSideX(fighter, 'right')
+      )
+        return true
+    }
   }
   
-  getDistanceBetweenTwoPositions(pos1: Coords, pos2: Coords){
-    return Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y  - pos2.y, 2))
-  }
+  
 };

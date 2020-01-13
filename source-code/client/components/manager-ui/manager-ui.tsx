@@ -197,7 +197,7 @@ export default class ManagerUi extends React.Component<ManagerUiProps, ManagerCo
                   className={`
                     next-fight__fighter 
                     list__row 
-                    ${!!bet && bet.fighterName == fighter.name && 'next-fight__fighter--bet-active'}
+                    ${!!bet && bet.fighterName == fighter.name && 'next-fight__fighter--bet-idle'}
                   `} 
                   key={`next-fight-fighters-${fighter.name}`} 
                   onClick={() => this.fighterSelected(fighter)}

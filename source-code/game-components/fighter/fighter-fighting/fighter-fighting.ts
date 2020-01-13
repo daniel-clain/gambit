@@ -1,15 +1,22 @@
 import Fighter from "../fighter";
-import Direction360 from "../../../types/figher/direction-360";
-import { random, timer } from "../../../helper-functions/helper-functions";
+import { random, wait } from "../../../helper-functions/helper-functions";
 import FighterModelState from "../../../types/figher/fighter-model-states";
-import Coords from '../../../interfaces/game/fighter/coords';
 import FighterFightState from "../../../interfaces/game/fighter-fight-state-info";
 import Movement from "./movement";
 import Proximity from "./proximity";
 import Combat from "./combat";
-import { InteruptActions } from "../../../types/figher/interuptActions";
 import SoundTime from "../../../interfaces/game/fighter/sound-time";
-import { Actions } from "../../../types/figher/actions";
+import FacingDirection from "../../../types/figher/facing-direction";
+import { ActiveTimer } from "../../../interfaces/game/fighter/active-timer";
+import { Timer } from "../../../interfaces/game/fighter/timer";
+import { TimerName } from "../../../types/figher/timer-name";
+import Timers from './timers'
+import Recovery from "./recovery";
+import DecideActionProbability from "./fighter-actions/decide-action-probability";
+import FighterStats from "./stats";
+import Flanked from "../../../interfaces/game/fighter/flanked";
+import FighterActions from "./fighter-actions/fighter-actions";
+import Flanking from "./flanking";
 
 export default class FighterFighting {
 
@@ -17,207 +24,157 @@ export default class FighterFighting {
   stamina: number
   spirit: number
   knockedOut: boolean = false
+  _facingDirection: FacingDirection
+  flanked: Flanked
+  trapped: boolean
 
   soundsMade: SoundTime[] = []
 
   stopFighting: boolean
 
-  actionInProgress: Actions
-  actionTimer
-  cancelAction
-
-  interuptActionInProgress: InteruptActions
-  interuptActionTimer
-
-  wanderAroundTimer
-  wanderAroundDirection
-
-
   otherFightersInFight: Fighter[] = []
 
-  speedBoost: boolean
+  
+  activeTimers: ActiveTimer[] = []
 
+  stats: FighterStats
   movement: Movement
   proximity: Proximity
   combat: Combat
+  timers: Timers
+  actions: FighterActions
+  recovery: Recovery
+  flanking: Flanking
+  decideActionProbability: DecideActionProbability
 
   constructor(public fighter: Fighter) {
+    this.stats = new FighterStats(this)
     this.movement = new Movement(this)
     this.proximity = new Proximity(this)
     this.combat = new Combat(this)
+    this.timers = new Timers(this)
+    this.actions = new FighterActions(this)
+    this.recovery = new Recovery(this)
+    this.flanking = new Flanking(this)
+    this.decideActionProbability = new DecideActionProbability(this)
   }
 
   start() {
     this.otherFightersInFight = this.fighter.state.fight.fighters
       .filter(figher => figher.name != this.fighter.name)
-    this.decideAction()
+    this.actions.decideAction()
   }
   stop() {
     console.log(`${this.fighter.name} stopped fighting`);
     this.stopFighting = true
   }
 
-  setStartPosition(coords: Coords) {
-    this.movement.coords = coords
-  }
-
   getState(): FighterFightState {
     return {
       name: this.fighter.name,
       coords: this.movement.coords,
-      facingDirection: this.movement.facingDirection,
+      facingDirection: this.facingDirection,
       modelState: this.modelState,
       soundsMade: this.soundsMade,
-      onRampage: this.combat.onRampage,
-
+      onRampage: this.activeTimers.some(timer => timer.name == 'on a rampage'),
+      skin: this.fighter.skin,
+      flanked: this.flanked
     }
   }
 
   reset() {
     this.knockedOut = false
-    this.stamina = this.fighter.state.maxStamina
-    this.spirit = this.fighter.state.maxSpirit
+    this.stamina = this.stats.maxStamina
+    this.spirit = this.stats.maxSpirit
     this.otherFightersInFight = []
-    this.stopFighting = false
+    this.stopFighting = false    
+    this.facingDirection = !!random(2) ? 'left' : 'right'
+    this.soundsMade = []
   }
 
-  decideAction() {
-    if(this.stopFighting)
-      return
-      
-    if (this.proximity.fighterInfront('close')) {
-      switch (this.combat.respondToFighter('close')) {
-        case 'retreat':
-          this.combat.retreatFromFighter(); break
-        case 'defend':
-          this.combat.startDefending(); break
-        case 'attack':
-          this.combat.tryToHitFighter(); break
-      }
-    }
-    else if (this.proximity.fighterInfront('nearby')) {
-      switch (this.combat.respondToFighter('nearby')) {
-        case 'retreat':
-          this.combat.retreatFromFighter(); break
-        case 'attack':
-          this.combat.moveToAttackFighter(); break
-      }
-    }
-    else if (this.isStaminaLow()) {
-      this.startToRecover()
-    }
-    else if (this.combat.noActionForAWhile && (this.combat.fighterTargetedForAttack = this.proximity.lookForClosestFighter())) {
+  set facingDirection(direction: FacingDirection){    
+    const enemy: Fighter = this.proximity.getClosestEnemyInfront()
+    if(enemy)
+      this.proximity.rememberEnemyBehind(enemy)    
+    else
+      this.proximity.rememberEnemyBehind(null)    
 
-      this.combat.moveToAttackFighter()
-    }
-    else {
-      this.wanderAround()
-    }
-
+    this._facingDirection = direction
+  }
+  get facingDirection(): FacingDirection{
+    return this._facingDirection
   }
 
-  isStaminaLow() {
-    return this.stamina < Math.round(this.fighter.state.maxStamina * .8)
-  }
 
-  private wanderAround() {
-    //console.log(`${this.fighter.name} is wandering around`); 
-    if (!this.wanderAroundDirection) {
-      if (this.movement.nearEdge) {
-        this.movement.movingDirection = this.movement.getDirectionAwayFromEdge()
-      }
-      else {
-        this.movement.movingDirection = this.wanderAroundDirection = random(360) as Direction360
-      }
-      const duration = random(4, true) * 1000
+  async startTimer(timer: Timer){
+    const {name, duration} = timer
+    let timeoutRef
+    let countdownRef
+    
+    const randomNum = random(100)
 
-      clearTimeout(this.wanderAroundTimer)
-      this.wanderAroundTimer = setTimeout(() => {
-        this.wanderAroundDirection = null
-      }, duration)
+    const logSupressedTimers: TimerName[] = [
+      //'memory of enemy behind', 
+      'just turned around'
+    ]
+    const timerAlreadyRunning = this.activeTimers.find(timer => timer.name == name)
+    if(timerAlreadyRunning){
+      timerAlreadyRunning.cancel(`it was reset with a new timer (${randomNum})`) 
+      await wait(5)
     }
-    const moveSpeed = this.movement.moveSpeed()
-    this.startAction(moveSpeed, 'wandering around')
-    this.movement.moveABit()
-  }
 
-  startToRecover() {
-    this.modelState = 'Recovering'
-    this.startAction(1000, 'recovering')
-      .then(() => {
-        console.log(`${this.fighter.name} just recovered 1 stamina`);
-        this.stamina++
-      })
-  }
-
-  startAction(duration: number, actionName: Actions): Promise<any> {
-
-    if(this.interuptActionInProgress){
-      return Promise.reject()
-    }
-    switch (actionName) {
-      case 'wandering around':
-      case 'moving to attack':
-      case 'retreating':
-      case 'cooldown': this.modelState = 'Walking'; break
-      case 'blocking': this.modelState = 'Blocking'; break
-      case 'critical striking': this.modelState = 'Kicking'; break
-      case 'punching': this.modelState = 'Punching'; break
-      case 'dodging': this.modelState = 'Dodging'; break
-      case 'cooldown': this.modelState = 'Walking'; break
-      case 'blocking': this.modelState = 'Blocking'; break
-      case 'recovering': this.modelState = 'Recovering'; break
-    }
-    this.actionInProgress = actionName
     return new Promise((resolve, reject) => {
-      this.cancelAction = reject
-      this.actionTimer = setTimeout(() => {
-        this.actionInProgress = null
-        resolve()
-      }, duration)
+      if(!logSupressedTimers.some(name => name == timer.name))
+        console.log(`${this.fighter.name}'s ${name} timer (${randomNum}) started `);
+      if(timeoutRef)
+        debugger
+      timeoutRef = setTimeout(() => resolve(randomNum), duration);
+      this.activeTimers.push({
+        name,
+        cancel: reject,
+        timeRemaining: duration
+      })
+      countdownRef = setInterval(() => this.activeTimers.find(timer => timer.name == name).timeRemaining -= 50, 50)
     })
-      .catch(reason => {
-        console.log(`${this.fighter.name}'s ${this.actionInProgress} has been canceled because ${reason}`)
-        if (this.actionInProgress == 'wandering around') {
-          this.wanderAroundDirection = null
-          clearTimeout(this.wanderAroundTimer)
-        }
-        this.actionInProgress = null
-        clearTimeout(this.actionTimer)
-      })
-      .finally(() => {
-        setTimeout(() => {
-          if (!this.actionInProgress && !this.interuptActionInProgress) {
-            this.decideAction()
-          } else {
-            console.log(`${this.fighter.name} did not decide new action after ${actionName} because ${this.actionInProgress || this.interuptActionInProgress} in progress`);
-          }
-        }, 5)
-      })
-  }
+    .then((passedRandomNumber) => {
 
-
-  startInteruptAction(duration: number, actionName: InteruptActions): Promise<any> {
-    switch (actionName) {
-      case 'taking a hit':
-        this.modelState = 'Taking Hit';
-        break
-    }
-    if (this.actionInProgress) {
-      this.cancelAction(actionName + ' started')
-    }
-    this.interuptActionInProgress = actionName
-    return new Promise(resolve => {
-      this.interuptActionTimer = setTimeout(() => {
-        this.interuptActionInProgress = null
-        resolve()
-      }, duration)
-
+      const timeRemaining = this.activeTimers.find(timer => timer.name == name).timeRemaining
+      if (name == 'memory of enemy behind' && timeRemaining > 50)
+        console.log(`${name}'s ${name} timedout has ${timeRemaining} time remaining localNum(${randomNum}) passedRandomNumber(${passedRandomNumber})`);
+        
+      console.log(`${this.fighter.name}'s ${name} timer (${randomNum}) has timed out`);
+      timer.afterEffect && timer.afterEffect()
+    })
+    .catch(reason => {
+      
+      /* if(name == 'memory of enemy behind')
+        console.log(`${this.fighter.name}'s ${name} canceled timer has ${this.activeTimers.find(timer => timer.name == name).timeRemaining} time remaining`); */
+      if(!logSupressedTimers.some(name => name == timer.name))
+        console.log(`${this.fighter.name}'s ${name} timer (${randomNum}) was cancled because ${reason}`);
+      clearTimeout(timeoutRef)
+    })
+    .finally(() => {
+      clearInterval(countdownRef)
+      this.activeTimers.splice(this.activeTimers.findIndex(timer => timer.name === name), 1)
     })
   }
 
+  cancelTimers(timerNames: TimerName[], reason){
+    this.activeTimers.forEach(
+      (timer: ActiveTimer) => 
+        timerNames.some(timerName => timerName == timer.name) && 
+        timer.cancel(reason)
+    )
+  }
 
-
-
+  checkIfVictorious(){
+    const otherFightersAreKnockedOut: boolean = this.otherFightersInFight.every((fighter: Fighter) => fighter.fighting.knockedOut)
+    if(otherFightersAreKnockedOut)
+      this.modelState = 'Victory'
+  } 
+  
+  getOtherFightersStillFighting(){
+    return this.otherFightersInFight.filter(fighter => !fighter.fighting.knockedOut)
+  }
 
 };

@@ -1,0 +1,1 @@
+export type Skin = 'Default' | 'Muscle' | 'Fast'

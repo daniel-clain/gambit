@@ -8,7 +8,8 @@
     "run.local-single-player": "webpack-dev-server --open --config config/webpack.local-single-player.config.js",
     "compile.local-single-player": "webpack --watch --config config/webpack.local-single-player.config.js",
 
-    "run.fight-ui-test": "webpack-dev-server --open --config config/webpack.fight-ui-test.config.js",
+    "run.fight-ui-test": "webpack-dev-server --config config/webpack.fight-ui-test.config.js",
+    "compile.fight-ui-test": "webpack --config config/webpack.fight-ui-test.config.js",
 
     "run.main-game": "nodemon --inspect=0.0.0.0:1234 compiled-code/server/server.js ",
     "compile.main-game": "run-p compile.client.main-game compile.server.main-game",
@@ -18,7 +19,9 @@
     "compile.docker": "docker build -t balls .",
     "run.gui-tests": "jest --config config/jest.config.gui-test.js",
     "run.automated-scenarios": "jest --config config/jest.config.automated-scenarios.js",
-    "run.docker": "docker run --rm -p80:4444 --ip 172.17.0.1 balls"
+    "run.docker": "docker run --rm -p80:4444 --ip 172.17.0.1 balls",
+
+    "test-page": "webpack-dev-server --config config/webpack.test.config.js"
   },
   "dependencies": {
     "express": "^4.17.1",

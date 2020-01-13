@@ -2,6 +2,8 @@ import Coords from './fighter/coords';
 import FacingDirection from '../../types/figher/facing-direction';
 import FighterModelState from '../../types/figher/fighter-model-states';
 import SoundTime from './fighter/sound-time';
+import { Skin } from '../../types/figher/skin';
+import Flanked from './fighter/flanked';
 
 export default interface FighterFightState{
   name: string
@@ -9,5 +11,7 @@ export default interface FighterFightState{
   facingDirection: FacingDirection
   modelState: FighterModelState
   soundsMade: SoundTime[]
-  onRampage: boolean
+  onRampage: boolean,
+  skin: Skin,
+  flanked: Flanked
 }

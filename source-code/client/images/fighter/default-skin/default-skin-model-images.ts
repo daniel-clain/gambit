@@ -1,16 +1,11 @@
-import FighterModelImage from "../../../interfaces/game/fighter/fighter-model-image";
+import FighterModelImage from "../../../../interfaces/game/fighter/fighter-model-image";
 
 
-export const fighterModelImages: FighterModelImage[] = [
-	{
-		modelState: 'Active',
-		dimensions: { width: 41, height: 93 },
-		imageName: 'images/walking.png'
-	},
+export const defaultSkinModelImages: FighterModelImage[] = [
 	{
 		modelState: 'Idle',
 		dimensions: { width: 41, height: 93 },
-		imageName: 'images/walking.png'
+		imageName: 'walking.png'
 	},
 	{
 		modelState: 'Punching',
@@ -30,7 +25,7 @@ export const fighterModelImages: FighterModelImage[] = [
 	{
 		modelState: 'Defending',
 		dimensions: { width: 58, height: 92 },
-		imageName: 'images/defending.png'
+		imageName: 'defending.png'
 	},
 	{
 		modelState: 'Dodging',
@@ -56,6 +51,11 @@ export const fighterModelImages: FighterModelImage[] = [
 		modelState: 'Recovering',
 		dimensions: { width: 45, height: 67 },
 		imageName: 'recover.png'
+	},
+	{
+		modelState: 'Victory',
+		dimensions: { width: 51, height: 78 },
+		imageName: 'victory.png'
 	}
 ]
 

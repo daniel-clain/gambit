@@ -22,31 +22,40 @@ export default class FighterUiTest extends React.Component{
     const fighterSteve = new Fighter('Steve')
     const fighterDave = new Fighter('Dave')
 
-    fighterDaniel.state.strength = 3
-    fighterDaniel.state.speed = 3
-    fighterDaniel.state.intelligence = 3
-    fighterDaniel.state.aggression = 3
+    fighterDaniel.fighting.stats.strength = 4
+    fighterDaniel.fighting.stats.speed = 4
+    fighterDaniel.fighting.stats.intelligence = 5
+    fighterDaniel.fighting.stats.aggression = 3
+    fighterDaniel.fighting.stats.maxSpirit = 5
+    fighterDaniel.fighting.stats.maxStamina = 4
 
+    
+    fighterDave.fighting.stats.maxStamina = 5
+    fighterDave.fighting.stats.maxSpirit = 2
+    fighterDave.fighting.stats.aggression = 2
+    fighterDave.fighting.stats.intelligence = 1
+    fighterDave.fighting.stats.speed = 1
+    fighterDave.fighting.stats.strength = 5
 
-    fighterBob.state.speed = 2
-    fighterFred.state.speed = 2
-    fighterSam.state.speed = 2
-    fighterJeff.state.speed = 2
-    fighterKevin.state.speed = 2
-    fighterJoe.state.speed = 2
-    fighterSteve.state.speed = 2
-    fighterDave.state.speed = 2
+    
+    fighterSam.fighting.stats.strength = 2
+    fighterSam.fighting.stats.speed = 5
+    fighterSam.fighting.stats.intelligence = 5
+    fighterSam.fighting.stats.aggression = 4
+    fighterSam.fighting.stats.maxSpirit = 5
+    fighterSam.fighting.stats.maxStamina = 3
+
 
     const fight = new Fight([
       fighterDaniel,
       fighterBob,
       fighterFred,
       fighterSam,
+      fighterDave ,
       fighterJeff,
       fighterKevin,
       fighterJoe,
-      fighterSteve,
-      fighterDave
+      fighterSteve /**/
     ])
     fight.fightStateUpdatedSubject.subscribe((fightState: FightState) => {
       this.setState({fightState})

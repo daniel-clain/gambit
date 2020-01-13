@@ -1,4 +1,6 @@
-export type Closeness = 
-'close' | 
-'nearby' | 
-'far'
+export enum Closeness {
+  'striking range' = 0,
+  'close',
+  'nearby',
+  'far'
+}

@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
-import ClientWebsocketService from './client-websocket-service';
 import ClientAction from '../../interfaces/client-action';
 import GameLobby from '../../interfaces/game-lobby.interface';
 import ClientId from '../../types/client-id.type';

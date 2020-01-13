@@ -1,362 +1,205 @@
 import FighterFighting from "./fighter-fighting";
-import Proximity from "./proximity";
 import Fighter from "../fighter";
-import { random } from "../../../helper-functions/helper-functions";
-import Direction360 from "../../../types/figher/direction-360";
-import { ResponseToFighterAttack } from "../../../types/figher/responseToFighterAttack";
 import { HitDamage } from "../../../types/figher/hitDamage";
-import { fighterModelImages } from "../../../client/images/fighter/fighter-model-images";
-import CombatProbability from "./combat-probability";
-import { Closeness } from "../../../types/figher/closeness";
-import { ResponseToFighter } from "../../../interfaces/game/fighter/responseToFighter";
+import { AttackType } from "../../../types/figher/attack-types";
+import AttackResponseProbability from "./attack-response-probability";
+import selectRandomResponseBasedOnProbability from "./random-based-on-probability";
+import { PossibleAttackResponses } from "../../../types/figher/possible-attack-responses";
+
+
 
 export default class Combat {
-  fighterTargetedForAttack: Fighter
-  retreatingFromFighter: Fighter
 
-  noActionForAWhile: boolean
-  noActionTimer
+  enemyTargetedForAttack: Fighter
+  retreatingFromEnemy: Fighter
 
-  movingToAttackTimerActive: boolean
-  movingToAttackTimer
+  noActionForAWhile = false
 
-  
-  retreatingTimerActive: boolean
-  retreatingTimer
+  attackResponseProbability
 
-  justBlocked: boolean
-  justDodged: boolean
-
-  justDidAttack: boolean
-  justDidAttackTimer
-
-  speedBoost: boolean
-  speedBoostTimer
-
-  onRampage: boolean
-  rampageTimer
-
-  animationTimes = {
-    punch: 900* 2,
-    criticalStrike: 1000* 2,
-    block: 600* 2,
-    dodge: 900* 2,
-    takeAHit: 900* 2
+  constructor(public fighting: FighterFighting){
+    this.attackResponseProbability = new AttackResponseProbability(fighting)
   }
 
-  cooldowns
-
-  combatProbability: CombatProbability
-
-  constructor(public fighterFighting: FighterFighting){    
-    this.combatProbability = new CombatProbability(this)
-    this.resetNoActionTimer()
-    const {speed} = this.fighterFighting.fighter.state
-    this.cooldowns = {
-      punch: Number(((900 * 2) - speed * 100).toFixed(1)),
-      criticalStrike: Number(((900 * 2) - speed * 300).toFixed(1)),
-      block: Number(((600 * 2) - speed * 100).toFixed(1)),
-      dodge: Number(((700 * 2) - speed * 100).toFixed(1)),
-      takeAHit: Number(((800 * 2) - speed * 100).toFixed(1))
-    }
-  }
-
-  respondToFighter(closeness: Closeness): ResponseToFighter{
-    const fighter = this.fighterFighting.proximity.getClosestFighterInfront()
-    const probailityToAttack: number = this.combatProbability.getProbabilityToAttack(fighter)
-    const probailityToDefend: number = closeness == 'nearby' ? 0 : this.combatProbability.getProbabilityToDefend(fighter)
-    const probailityToRetreat: number = this.combatProbability.getProbabilityToRetreat(fighter)
-
-    const totalProbability = probailityToAttack + probailityToDefend + probailityToRetreat
-
-    const randomNum = random(totalProbability)
-    let probabilityRange: number = 0
-    let result: ResponseToFighter
-
-    if (randomNum >= probabilityRange && randomNum < probailityToAttack + probabilityRange) {
-      this.fighterTargetedForAttack = fighter
-      result = 'attack'
-
-    } else {
-      this.fighterTargetedForAttack = undefined
-    }
-    probabilityRange += probailityToAttack
-
-    if (randomNum >= probabilityRange && randomNum < probailityToDefend + probabilityRange) {
-      result = 'defend'
-    }
-    probabilityRange += probailityToDefend
-
-    if (randomNum >= probabilityRange && randomNum < probailityToRetreat + probabilityRange) {
-      this.retreatingFromFighter = fighter   
-      result = 'retreat'
-    }
-    return result
-  }
-  
 
 
-
-  moveToAttackFighter(){
-    const {proximity, fighter, movement} = this.fighterFighting
-
-    if(this.retreatingTimerActive){
-      clearTimeout(this.retreatingTimer)
-      this.retreatingTimerActive = false
-    }
-    if(!this.movingToAttackTimerActive){
-      this.movingToAttackTimerActive = true
-      this.movingToAttackTimer = setTimeout(() => {
-        this.movingToAttackTimerActive = false
-      }, 1000)
-      console.log(`${fighter.name} moving to attacking ${this.fighterTargetedForAttack.name}`);
-    }
-
-    movement.movingDirection = proximity.getDirectionOfFighter(this.fighterTargetedForAttack)  
-    const moveSpeed = movement.moveSpeed()
-    this.fighterFighting.startAction(moveSpeed, 'moving to attack')
-    movement.moveABit()
-
-  }
-
-  startDefending() {   
-    this.fighterFighting.startAction(1500, 'defending')
-  }
-
-  retreatFromFighter() {
-    const {proximity, movement} = this.fighterFighting
-
+  moveToAttackEnemy(closestEnemy: Fighter){
+    const {actions, timers, movement, proximity, activeTimers} = this.fighting
     
-    if(this.movingToAttackTimerActive){
-      clearTimeout(this.movingToAttackTimer)
-      this.movingToAttackTimerActive = false
-    }
-    if(!this.retreatingTimerActive){
-      this.retreatingTimerActive = true
-      this.retreatingTimer = setTimeout(() => {
-        this.retreatingTimerActive = false
-      }, 1000)
-      console.log(`${this.fighterFighting.fighter.name} retreating from ${this.retreatingFromFighter.name}`);
-    }
-    movement.movingDirection = proximity.getDirectionOfFighter(this.retreatingFromFighter, true)    
+    this.fighting.cancelTimers(['doing cautious retreat', 'doing fast retreat', 'retreating from flanked', 'retreating'], 'started moving to attack')
+
+    this.enemyTargetedForAttack = closestEnemy
     
-    const moveSpeed = movement.moveSpeed()
-    this.fighterFighting.startAction(moveSpeed, 'retreating')
-    movement.moveABit()      
+    if(!activeTimers.some(timer => timer.name == 'moving to attack'))
+    this.fighting.startTimer(timers.movingToAttack)
+
+    movement.reverseMoving = proximity.hasVerticleOverlapWithEnemy(closestEnemy)
+          
+
+    movement.movingDirection = proximity.getDirectionOfFighter(closestEnemy)
+    if(this.fighting.actions.actionInProgress != 'turning around')
+      this.fighting.actions.startAction(actions.moveABit)
+      .catch(reason => reason)
   }
+
   
-  tryToHitFighter() {    
-    console.log(`${this.fighterFighting.fighter.name} trying to hit ${this.fighterTargetedForAttack.name}`);
-    this.resetNoActionTimer()
-    const result: ResponseToFighterAttack = this.fighterTargetedForAttack.fighting.combat.getAttacked(this.fighterFighting.fighter)
-    if(result == 'take critical hit'){
-      this.fighterFighting.soundsMade.push({soundName: 'Critical Strike', time: Date.now()})
-      this.fighterFighting.startAction(this.animationTimes.criticalStrike, 'critical striking')
-      .then(() => this.afterTryToHitFighter(result))
-    } 
-    else {
-      if(result == 'take hit'){
-        this.fighterFighting.soundsMade.push({soundName: 'Punch', time: Date.now()})
-      } 
-      this.fighterFighting.startAction(this.animationTimes.punch, 'punching')
-      .then(() => this.afterTryToHitFighter(result))
+  async startDefending(closestEnemy: Fighter) {   
+    const {proximity} = this.fighting
+    const {defend, turnAround} = this.fighting.actions
+    
+    let turnInterupted
+
+    if(proximity.isFacingAwayFromEnemy(closestEnemy)){
+      await this.fighting.actions.startAction(turnAround)
+      .catch(() => turnInterupted = true)
+      if(turnInterupted)
+        return      
     }
+    
+    this.fighting.actions.startAction(defend)
+  }
+
+  
+  async tryToPunchEnemy(closestEnemy: Fighter) { 
+    
+    const {actions, proximity} = this.fighting
+
+    let turnInterupted
+
+    if(proximity.isFacingAwayFromEnemy(closestEnemy)){
+      await this.fighting.actions.startAction(actions.turnAround)
+      .catch(() => turnInterupted = true)
+      if(turnInterupted)
+        return
+    }
+    
+    this.enemyTargetedForAttack = closestEnemy
+    this.resetNoActionTimer()
+    
+    this.fighting.actions.startAction(actions.tryToPunch)
+    .then(() => {
+
+      const success: boolean = closestEnemy.fighting.combat.getAttacked(this.fighting.fighter, 'punch')
+      if(success){
+        this.fighting.actions.startAction(actions.punch)
+      }
+      else {
+        this.fighting.actions.startAction(actions.missedPunch)
+      }    
+    })
   }
 
 
-  
-  getAttacked(fighter: Fighter): ResponseToFighterAttack {  
-    //console.log(this.fighterFighting.fighter.name + ' was attacked by ' + fighter.name);
+  async tryToCriticalStrikeEnemy(closestEnemy: Fighter){
+    
+    const {actions, proximity} = this.fighting
+
+    let turnInterupted
+
+    if(proximity.isFacingAwayFromEnemy(closestEnemy)){
+      await this.fighting.actions.startAction(actions.turnAround)
+      .catch(() => turnInterupted = true)
+      if(turnInterupted)
+        return      
+    }
+    
+    this.enemyTargetedForAttack = closestEnemy
     this.resetNoActionTimer()
-    let result: ResponseToFighterAttack
-    if (this.fighterFighting.proximity.isFacingFighter(fighter)) {
-      result = this.respondToFighterAttack(fighter)
+
+    try{
+      await this.fighting.actions.startAction(actions.tryToCriticalStrike)
+      const success: boolean = closestEnemy.fighting.combat.getAttacked(this.fighting.fighter, 'critical strike')
+      if(success)
+         this.fighting.actions.startAction(actions.criticalStrike)
+      else
+        this.fighting.actions.startAction(actions.missedCriticalStrike)
+    }catch{console.log('critical strike interupted');}
+  }
+  
+
+  getAttacked(enemy: Fighter, attackType: AttackType): boolean {  
+
+    const {proximity, fighter} = this.fighting
+
+    if(proximity.isEnemyBehind(enemy)){
+      console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
+      proximity.rememberEnemyBehind(enemy)
     }
-    else{
-      result = this.takeUnprparedAttack(fighter)
-    }
+
+    const probabilityToDodge: number = this.attackResponseProbability.getProbabilityToDodge(enemy, attackType)
+    const probabilityToBlock: number = this.attackResponseProbability.getProbabilityToBlock(enemy, attackType)
+    const probabilityToTakeHit: number = this.attackResponseProbability.getProbabilityToTakeHit(enemy, attackType)
+
+    const result: PossibleAttackResponses = selectRandomResponseBasedOnProbability([
+      {response: 'dodge', probability: probabilityToDodge},
+      {response: 'block', probability: probabilityToBlock},
+      {response: 'take hit', probability: probabilityToTakeHit},
+    ])
+
+
     switch(result){
-      case 'dodged' : this.dodgeFighterAttack(fighter); break
-      case 'blocked' : this.blockFighterAttack(fighter); break
-      case 'take hit' :
-      case 'take critical hit' : {
-        this.takeAHit(result, fighter)
-      } break
+      case 'dodge' : 
+        this.dodgeEnemyAttack(enemy, attackType)
+        return false
+      case 'block' : 
+        this.blockEnemyAttack(enemy, attackType)
+        return false
+      case 'take hit' : 
+        return true
     }
-    return result
+  }  
+
+
+  blockEnemyAttack(fighter: Fighter, attackType: AttackType){
+    const {actions} = this.fighting
+    console.log(`${this.fighting.fighter.name} blocked ${fighter.name}'s ${attackType}`);
+    this.fighting.actions.startAction(actions.block)
+    .catch(reason => reason)
   }
 
 
-  respondToFighterAttack(fighter: Fighter): ResponseToFighterAttack{
-    
-    const probailityToDodge: number = this.combatProbability.getProbabilityToDodge(fighter)
-    const probailityToBlock: number = this.combatProbability.getProbabilityToBlock(fighter)
-    const probailityToTakeHit: number = this.combatProbability.getProbabilityToTakeHit(fighter)
-    const probailityToTakeCriticalHit: number = this.combatProbability.getProbabilityToTakeCriticalHit(fighter)
-
-    const totalProbability = probailityToDodge + probailityToBlock + probailityToTakeHit + probailityToTakeCriticalHit
-
-    const randomNum = random(totalProbability)
-    let probabilityRange: number = 0
-
-    if (randomNum >= probabilityRange && randomNum < probailityToDodge + probabilityRange) {
-      return 'dodged'
-    }
-    probabilityRange += probailityToDodge
-
-    if (randomNum >= probabilityRange && randomNum < probailityToBlock + probabilityRange) {
-      return 'blocked'
-    }
-    probabilityRange += probailityToBlock
-
-    if (randomNum >= probabilityRange && randomNum < probailityToTakeHit + probabilityRange) {
-      return'take hit'
-    }    
-    probabilityRange += probailityToTakeHit
-
-    if (randomNum >= probabilityRange && randomNum < probailityToTakeCriticalHit + probabilityRange) {
-      return 'take critical hit'
-    }
+  dodgeEnemyAttack(fighter: Fighter, attackType: AttackType){
+    const {actions} = this.fighting
+    console.log(`${this.fighting.fighter.name} dodged ${fighter.name}'s ${attackType}`);    
+    this.fighting.actions.startAction(actions.dodge)
+    .catch(reason => reason)
   }
 
 
-  takeUnprparedAttack(fighter: Fighter): ResponseToFighterAttack {
-    
-    const probailityToTakeHit: number = this.combatProbability.getProbabilityToTakeHit(fighter)
-    const probailityToTakeCriticalHit: number = this.combatProbability.getProbabilityToTakeCriticalHit(fighter)
+  takeAHit(attackType: AttackType, attackingFighter: Fighter){    
 
-    const totalProbability = probailityToTakeHit + probailityToTakeCriticalHit
-
-    const randomNum = random(totalProbability)
-    let probabilityRange: number = 0
-
-    
-    if (randomNum >= probabilityRange && randomNum < probailityToTakeHit + probabilityRange) {
-      return'take hit'
-    }    
-    probabilityRange += probailityToTakeHit
-
-    if (randomNum >= probabilityRange && randomNum < probailityToTakeCriticalHit + probabilityRange) {
-      return 'take critical hit'
-    }
-  }
-
-  
-
-  blockFighterAttack(fighter: Fighter){
-    console.log(`${this.fighterFighting.fighter.name} blocked ${fighter.name}'s attack`);
-    this.fighterFighting.soundsMade.push({soundName: 'Block', time: Date.now()})
-    this.fighterFighting.startAction(this.animationTimes.block, 'blocking')
-    .then(() => this.afterBlock())
-
-  }
-
-  dodgeFighterAttack(fighter: Fighter){
-    console.log(`${this.fighterFighting.fighter.name} dodged ${fighter.name}'s attack`);    
-    this.fighterFighting.soundsMade.push({soundName: 'Dodge', time: Date.now()})
-    this.fighterFighting.startAction(this.animationTimes.dodge, 'dodging')
-    .then(() => this.afterDodge())
-
-  }
-
-
-  takeAHit(result: ResponseToFighterAttack, attackingFighter: Fighter){    
-
-    let {spirit, stamina, fighter} = this.fighterFighting
-    const {aggression, strength} = attackingFighter.state
-
+    let {spirit, stamina, fighter, actions} = this.fighting
+    const {aggression, strength} = attackingFighter.fighting.stats
     
     let hitDamage: HitDamage
-    if(result == 'take critical hit'){
+    if(attackType == 'critical strike'){
       hitDamage = Math.round(aggression + strength * .5) as HitDamage
     } else {
       hitDamage = Math.round(strength * .5) as HitDamage
     } 
     if(spirit != 0)
-    this.fighterFighting.spirit --
-      this.fighterFighting.stamina = stamina - hitDamage
-    console.log(`${fighter.name} was ${hitDamage > 2 ? 'critically ' : ''}hit by ${attackingFighter.name}'s attack`);
-
-    this.fighterFighting.startInteruptAction(this.animationTimes.takeAHit, 'taking a hit')
-    .then(() => {
-      if (this.fighterFighting.stamina <= 0) {   
-        this.getKnockedOut(attackingFighter)  
-      }
-      else{
-        this.fighterFighting.startAction(this.cooldowns.takeAHit, 'cooldown')
-      }
-    })
+    this.fighting.spirit --
+      this.fighting.stamina = stamina - hitDamage
+    console.log(`${fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
+    this.fighting.actions.startAction(actions.takeAHit)
+    .catch(reason => reason)
     
   }
 
-  getKnockedOut(attackigFighter: Fighter){   
-    this.fighterFighting.knockedOut = true
-    this.fighterFighting.modelState = 'Knocked Out'
-    const message = `${this.fighterFighting.fighter.name} has been knocked out by ${attackigFighter.name}`
+
+  getKnockedOut(){   
+    this.fighting.knockedOut = true
+    this.fighting.actions.cancelAction('is knocked out')
+    this.fighting.modelState = 'Knocked Out'
+    const message = `${this.fighting.fighter.name} has been knocked out`
     console.warn(message);
   }
 
-  afterTryToHitFighter(result: ResponseToFighterAttack) {
-    
-    if(!this.fighterFighting.interuptActionInProgress){
-      if (result == 'take critical hit') {
-        this.goOnARampage()
-        this.fighterFighting.startAction(this.cooldowns.criticalStrike, 'cooldown')
-      }
-      else {
-        this.fighterFighting.startAction(this.cooldowns.punch, 'cooldown')
-      }
-      
-      this.justDidAttack = true
-      clearTimeout(this.justDidAttackTimer)
-      this.justDidAttackTimer = setTimeout(() => this.justDidAttack = false, 3000)
-    }
-  }
-
-  goOnARampage(){
-    this.speedBoost = true
-    clearInterval(this.speedBoostTimer)
-    this.speedBoostTimer = setTimeout(() => this.speedBoost = false, 1000)
-    this.onRampage = true
-    clearTimeout(this.rampageTimer)
-    this.rampageTimer = setTimeout(() => this.onRampage = false, 3000)
-    if(this.fighterFighting.spirit < this.fighterFighting.fighter.state.maxSpirit)
-      this.fighterFighting.spirit ++  
-
-  }
-
-  afterDodge() {    
-    if(!this.fighterFighting.interuptActionInProgress){ // from taking hit while dodging
-      this.fighterFighting.startAction(this.cooldowns.dodge, 'cooldown')
-      .then(() => {
-        this.justDodged = true
-        setTimeout(() => this.justDodged = false, 500)
-        if(this.fighterFighting.isStaminaLow()){
-            this.speedBoost = true
-            clearTimeout(this.speedBoostTimer)
-            this.speedBoostTimer = setTimeout(() => this.speedBoost = false, 1000)
-        }
-        
-      })
-    }
-  }
-
-  afterBlock() {
-    if(!this.fighterFighting.interuptActionInProgress){ // from taking hit while blocking
-      this.fighterFighting.startAction(this.cooldowns.block, 'cooldown')
-      .then(() => {
-        this.justBlocked = true
-        setTimeout(() => this.justBlocked = false, 500)
-      })
-    }
-  }
 
   resetNoActionTimer(){
+    const {timers} = this.fighting
     this.noActionForAWhile = false
-    clearTimeout(this.noActionTimer)
-    this.noActionTimer = setTimeout(() => {
-      this.noActionForAWhile = true
-    }, 7000)
+    this.fighting.startTimer(timers.noActionForAWhile)
   }
 
 }
