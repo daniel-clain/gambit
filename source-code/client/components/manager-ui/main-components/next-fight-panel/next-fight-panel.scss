@@ -1,0 +1,64 @@
+.next-fight{
+
+  &__heading{
+    font-family: 'Bangers';
+    font-size: 2.5rem;
+    color: #ffb1f9;
+    padding-bottom: 10px;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px white;
+  }
+  &__fighters{
+    display: flex;
+    justify-content: space-around;
+  }
+
+  &__fighter{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-align: center;
+    min-width: 20%;
+    margin-right: 2px;
+    &:last-child{
+      margin-right: 0;
+    }
+    &__name{      
+      font-size: 1.3rem;
+      padding-top: 8px;
+      display: inline-block;
+      color: white;
+    }
+
+    &__yours{
+      background-image: url('/source-code/client/images/icons/your-fighter-in-fight.png');
+      width: 20px;
+      height: 18px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      position: absolute;
+      top: -10px;
+      left:0;
+      right:0;
+      margin: auto;
+    }
+    
+    &__image{
+      background-image: url('/source-code/client/images/fighter/default-skin/high-res.png');    
+      width: 80px;
+      height: 100px;
+      margin: 0 auto 5px;
+      border: 2px solid #1b4965;
+      border-radius: 6px;
+      background-position-y: 30px;
+      background-repeat: no-repeat;
+      background-color: #90d1e4ab;
+      background-size: cover;
+    }
+  }
+}
+  .place-bet-button{
+    background: #e7ffe0;
+    border: 2px outset #69bc51;
+    color: black;
+  }

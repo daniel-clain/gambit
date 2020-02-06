@@ -1,5 +1,6 @@
 import Coords from "../interfaces/game/fighter/coords";
 import Direction360 from "../types/figher/direction-360";
+import { FighterInfo, KnownFighter, KnownFighterStats } from "../interfaces/game-ui-state.interface";
 
 export function random(number: number, startAtOne?: boolean){return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
 
@@ -73,6 +74,24 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
   }
 
   return directionOfPosition2FromPosition1
+}
+
+export const convertFighterInfoToKnownFighter = (fighterInfo: FighterInfo): KnownFighter => {
+
+  let knownStats = {} as KnownFighterStats
+
+  for(let key in fighterInfo){
+    if(key !== 'name' && key !== 'inNextFight')
+      knownStats[key] = fighterInfo[key]
+  }
+
+  const knownFighter: KnownFighter = {
+    name: fighterInfo.name,
+    inNextFight: fighterInfo.inNextFight,
+    knownStats
+  }
+
+  return knownFighter
 }
 
 

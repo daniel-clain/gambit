@@ -1,6 +1,6 @@
-import Flanker from "./flanker";
+import FlankingPair from "./flanking-pair";
 
 export default interface Flanked{
-  flanker1: Flanker
-  flanker2: Flanker
+  flankingPairs: FlankingPair[]
+  criticality: number
 }

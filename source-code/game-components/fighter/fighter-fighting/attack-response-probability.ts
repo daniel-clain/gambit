@@ -1,41 +1,53 @@
 import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
 import { AttackType } from "../../../types/figher/attack-types"
+import { ActionName, AttackResponseAction } from "../../../types/figher/action-name"
 
 export default class AttackResponseProbability {
   
-  constructor(private fighting: FighterFighting){}
+  constructor(public fighting: FighterFighting){}
 
+  getProbabilityTo(action: AttackResponseAction, enemy: Fighter, attackType: AttackType): [AttackResponseAction, number]{
+    switch(action){      
+      case 'dodge':
+        return [action, this.getProbabilityToDodge(enemy, attackType)]
+      case 'block':
+        return [action, this.getProbabilityToBlock(enemy, attackType)]
+      case 'take hit':
+        return [action, this.getProbabilityToTakeHit(enemy, attackType)]
+    }
+  }
   
   getProbabilityToDodge(enemy: Fighter, attackType: AttackType): number {
 
     const {speed, intelligence} = this.fighting.stats
-    const {actions, proximity, stamina, knockedOut} = this.fighting
-
-    const defending = actions.actionInProgress == 'defending'
-
-    let probability: number = 0
+    const {animation, proximity, logistics, spirit} = this.fighting
     
-    if(proximity.isFacingAwayFromEnemy(enemy) 
-    || !(this.doingCautiousRetreat() || defending)
-    || knockedOut){
+    if(
+      proximity.isFacingAwayFromEnemy(enemy) ||
+      (animation.inProgress && animation.inProgress != 'defending' && animation.inProgress != 'recovering')
+    )
       return 0
-    }
 
-    if(defending)
-      probability += 6
+    let probability: number = 1
 
-    if(this.doingCautiousRetreat())
-      probability += 3
+    if(animation.inProgress == 'defending')
+      probability += 8
+
+    if(logistics.moveActionInProgress == 'cautious retreat')
+      probability += 4
+
 
     probability += speed * 3 - enemy.fighting.stats.speed * 3
+    
+    probability += spirit - enemy.fighting.spirit
     
     probability += intelligence
 
     if(attackType == 'critical strike')
-      probability ++
+      probability += 1
 
-    if(this.hasLowStamina() || this.hasLowSpirit())
+    if(this.hasLowStamina())
       probability ++
 
     
@@ -47,25 +59,27 @@ export default class AttackResponseProbability {
   }
 
   getProbabilityToBlock(enemy: Fighter, attackType: AttackType): number {
-    const {strength, speed, aggression, intelligence} = this.fighting.stats
-    const {stamina, spirit, actions, activeTimers, proximity, knockedOut} = this.fighting
-
-    const defending = actions.actionInProgress == 'defending'
-
-    let probability: number = 0
+    const {strength, speed, intelligence} = this.fighting.stats
+    const {spirit, animation, proximity, logistics} = this.fighting
 
     
-    if(proximity.isFacingAwayFromEnemy(enemy) || 
-    !(this.doingCautiousRetreat() || defending)
-    || knockedOut){
+    if(
+      proximity.isFacingAwayFromEnemy(enemy) ||
+      (animation.inProgress && animation.inProgress != 'defending' && animation.inProgress != 'recovering')
+    )
       return 0
-    }
 
-    if(defending)
-      probability += 5
+    let probability: number = 0
+   
+    if(animation.inProgress == 'defending')
+      probability += 10
 
-    if(this.doingCautiousRetreat())
-      probability += 4
+    if(logistics.moveActionInProgress == 'cautious retreat')
+      probability += 8
+
+      
+    if(animation.inProgress == 'recovering')
+      probability -= 5
     
     probability += strength * 3 - enemy.fighting.stats.strength * 3
           
@@ -76,12 +90,12 @@ export default class AttackResponseProbability {
     probability += intelligence
 
     if(attackType == 'punch')
-      probability ++
+      probability += 1
+      
+    if(this.hasFullStamina())
+      probability += 1
 
-      
-    if(this.hasFullStamina() || this.hasFullSpirit())
-      probability ++
-      
+
     if(probability < 0)
       probability = 0
 
@@ -89,30 +103,10 @@ export default class AttackResponseProbability {
   }
   
   getProbabilityToTakeHit(enemy: Fighter, attackType: AttackType): number {
-    const {spirit} = this.fighting
-
-    let probability: number = 2
-
-    if(attackType == 'critical strike')
-      probability += 2
-
-    const spiritDiff = spirit - enemy.fighting.spirit
-    if(!(spiritDiff < 0))
-    probability += spiritDiff
-
-
-    if(probability < 0)
-      probability = 0
-
-
-    return probability
+    return 5
   }
 
 
-  private doingCautiousRetreat(): boolean{
-    return this.fighting.activeTimers.some(timer => timer.name == 'doing cautious retreat')
-  }
-  
   hasLowStamina(): boolean{
     const {stamina, fighter} = this.fighting
     return stamina < fighter.fighting.stats.maxStamina * .5

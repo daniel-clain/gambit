@@ -6,4 +6,5 @@ export interface Contract{
 export interface ActiveContract{
   costPerWeek: number
   weeksRemaining: number
+  numberOfWeeks: number
 }

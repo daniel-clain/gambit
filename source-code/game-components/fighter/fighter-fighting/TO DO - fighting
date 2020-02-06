@@ -1,0 +1,11 @@
+
+* when fighters reteat against diagonal, they move out of range of the edge and are no longer flanked, then retread into range of edge, making a zig zag effect, instead make them run paralel to the diagonal edge
+
+* when a fighter walks past an enemy he should remember that that enemy is behind him but he doesnt
+
+
+* insted of speedboost state affecting move speed, have base speed, when speedboost state active, give temporary modification to speed stat. when spirit is higher, inscrease speed, and when low decrease. when on rampage increase speed, when doing fast retreat increse speed. this willnot only affect move speed but also action speed
+* base stamina stat = strength + agression*.5 + fitness*.5
+* base speed and recovery rate is directly related to fitness stat
+
+*refactor do animation

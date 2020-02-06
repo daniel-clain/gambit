@@ -25,7 +25,7 @@ export default class FighterComponent extends React.Component<{fighterFightState
 	processedSounds = []
 
 	render() {
-		const {name, coords, modelState, facingDirection, flanked, soundsMade, onRampage, skin} = this.props.fighterFightState
+		const {name, coords, modelState, facingDirection, flanked, soundsMade, onRampage, skin, strikingCenters} = this.props.fighterFightState
 
 		const soundsToPlay = soundsMade.reduce((soundsToPlay, soundMade) => {
 			if(this.processedSounds.some(sound => sound.time == soundMade.time))
@@ -42,10 +42,10 @@ export default class FighterComponent extends React.Component<{fighterFightState
 				const {punch, criticalStrike, dodge, block} = this.soundEffects
 				//console.log(`**FighterComponent** - ${name} makes sound ${sound.soundName}`)
 				switch(sound.soundName){
-					case 'Punch' : return punch.play().catch(reason => reason)
-					case 'Critical Strike' : return criticalStrike.play().catch(reason => reason)
-					case 'Dodge' : return dodge.play().catch(reason => reason)
-					case 'Block' : return block.play().catch(reason => reason)
+					case 'Punch' : return punch.play().catch(() => null)
+					case 'Critical Strike' : return criticalStrike.play().catch(() => null)
+					case 'Dodge' : return dodge.play().catch(() => null)
+					case 'Block' : return block.play().catch(() => null)
 				}
 			})
 		}
@@ -84,9 +84,18 @@ export default class FighterComponent extends React.Component<{fighterFightState
 			flankedStyle = {
 				bottom: fighterModelImage.dimensions.height - 10,
 			}
+
+		const frontStrikingCenterStyle = {
+			left: strikingCenters.front.x,
+			bottom: strikingCenters.front.y
+		}
+		const backStrikingCenterStyle = {
+			left: strikingCenters.back.x,
+			bottom: strikingCenters.back.y
+		}
 		
-		return (			
-			<div className='fighter' id={name} style={fighterStyle}>
+		return ([
+			<div key='figher' className='fighter' id={name} style={fighterStyle}>
 				<div className='fighter__name' style={fighterNameStyle}>{name}</div>
 				{flanked && <div className='fighter__flanked' style={flankedStyle}></div>}
 				<div 
@@ -96,7 +105,23 @@ export default class FighterComponent extends React.Component<{fighterFightState
 						${fighterModelClass}
 					`} 
 					style={fighterImageStyle}></div>
+			</div>,
+			
+			<div key='strike-boxes'>
+				{modelState != 'Knocked Out' && [
+					<div key='front'
+						className='striking-center' 
+						style={frontStrikingCenterStyle}>
+						<div className='striking-range'></div>
+					</div>,
+					<div key='back'
+						className='striking-center' 
+						style={backStrikingCenterStyle}>
+						<div className='striking-range'></div>
+					</div>
+				]}
 			</div>
-		)
+				
+			])
 	} 
 }

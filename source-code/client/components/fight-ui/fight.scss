@@ -1,64 +1,76 @@
 
 
-.fight{
-  position: relative;
+.fight-ui{
   height: 100%;
-  background-color: #efefef;
+  &__content{
 
-  .container{
-    margin: auto;
-    max-width: 1217px;
-    height: 798px;
-    position: relative;
-  
-  
-    .background-top{
-      background-image: url('./../../images/arena/fight-arena-behind.png');
+    .container{
+      background-color: #efefef;
+      margin: auto;
       width: 1217px;
       height: 798px;
-      position: absolute;
-      left: 0;
-      bottom: 0;
+      position: relative;
+    
+    
+      .background-top{
+        background-image: url('/source-code/client/images/arena/fight-arena-behind.png');
+        width: 1217px;
+        height: 798px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+      }
+      .background-bottom{
+        background-image: url('/source-code/client/images/arena/fight-arena-infront.png');
+        width: 1217px;
+        height: 798px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: 1000;
+      }
+      .octagon{        
+        position: absolute;
+        width: 782px;
+        height: 355px;
+        bottom: 223px;
+        left: 223px;    
+      }      
     }
-    .background-bottom{
-      background-image: url('./../../images/arena/fight-arena-infront.png');
-      width: 1217px;
-      height: 798px;
+
+    &__count-down, &__winner, &__time-remaining{
       position: absolute;
-      left: 0;
-      bottom: 0;
-      z-index: 1000;
-    }
-    .octagon{
-      
-      position: absolute;
-      width: 782px;
-      height: 355px;
-      bottom: 223px;
-      left: 223px;
-  
+      text-shadow: 1px 1px 2px #000;
+      font-size: 4rem;
+      width: 20rem;
+      text-align: center;
+      top: 2rem;
+      left: 0px;
+      right: 0px;
+      color: #3f3;
+      z-index: 4;
+      margin: auto;
     }
     
+
+    &__time-remaining{
+      font-size: 1.7rem;
+      width: 14rem;
+      text-align: left;
+    }
   }
 
-  &__count-down, &__winner, &__time-remaining{
-    position: absolute;
-    text-shadow: 1px 1px 2px #000;
-    font-size: 4rem;
-    width: 20rem;
-    text-align: center;
-    top: 2rem;
-    left: 0px;
-    right: 0px;
-    color: #3f3;
-    z-index: 4;
-    margin: auto;
+  .turn-phone-message{
+    display: none;
   }
-  
-
-  &__time-remaining{
-    font-size: 1.7rem;
-    width: 14rem;
-    text-align: left;
+  @media all and (orientation: portrait) {
+    &__content{
+      display: none;
+    }
+    .turn-phone-message{
+      display: flex;
+    }
   }
 }
+
+

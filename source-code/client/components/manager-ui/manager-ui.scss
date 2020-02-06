@@ -1,463 +1,78 @@
-#manager-ui{
-  height: 100vh;
-  background-color: #e0e0f9;
-  max-width: 500px;
-  margin:auto;
-
-  .standard-button {
-    background: #3b6056;
-    color: white;
-    padding: .3rem .5rem;
-    border: 2px outset #3b6056;
-    border-radius: 2px;
-  }
-  .place-bet-button{
-    background: #e7ffe0;
-    border: 2px outset #69bc51;
-    color: black;
-  }
-
-  .fights, .wins{
-    font-size: 1.3rem;
-    width: 12vw;
-    display: inline-block;
-    margin-right: 5vw;
-    .icon{
-      display: inline-block;
-      background-size: 1.5rem;
-      height: 2rem;
-      background-repeat: no-repeat;
-      position: relative;
-      top: 0px;
-      padding-top: 1.6rem;
-      box-sizing: border-box;
-      vertical-align: middle;
-      margin-right: 1rem;
-      font-size: 0.7rem;
-      text-align: center;
-    }
-  }
-  .wins{
-    .icon{
-      background-image: url('./../../images/icons/wins.png');
-    }
-  }
-
-  .fights{
-    .icon{
-      background-image: url('./../../images/icons/fights.png');
-    }
-  }
 
 
-  .money{
-    background-image: url('./../../images/icons/money.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    padding-left: 2rem;
-  }
+.manager-ui{
+  height: 100%;
 
-  .action-points{
-    background-image: url('./../../images/icons/action-points.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    padding-left: 2rem;
-  }
-
-  .heading{
-    font-size: 1.1rem;
-    margin-bottom: 1vh;
-    border-bottom: 1px solid grey;
-    padding-bottom: .5vh;
-  }
-
-  .headbar{
-    height: 4vh;
-    background-color: #344a44;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    &__left {
-      font-size: 1.5rem;
-      margin-left: 2vw;
-    }
-
-    &__right {
-      margin-right: 2vw;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0 1rem;
-      font-size: 1.5rem;
-
-      & > * {
-        margin-left: .5rem;
-      }
-
-    }
-
-  }
-
-  .main-content{
-    height: 96vh;
+  &__content{
+    background-color: #e0e0f9;
+    max-width: 500px;
+    margin:auto;
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 1em;
-    box-sizing: border-box;
-    
-    & > *:not(.bet-status) {
-      margin-bottom: 1em;
-      flex: 1;
-    }
-    
-    & > *:last-child {
-      margin-bottom: 0;
-    }
+    height: 100%;
 
-    .bet-status{
-      margin-bottom:1em;
-      min-height: 73px;
-      font-size: 1.2em;
-    }
+    .headbar{
+      height: 31px;
+    } 
 
-    .next-fight{
-      &__fighter{
-        &--bet-active{
-          background-color: #d5ffda;
-        }
-      }
-    }
-
-    .group-panel {
-      border: 1px outset #256152;
-      box-sizing: border-box;
-      padding: 2vh 2vw;
-      background-color: white;
-      vertical-align: top;
-
-      &__left, &__right {
-        display: inline-block;
-        width: 50%;
-        vertical-align: top;
-      }
-      .list{
-        overflow-y: scroll;
-
-        /* width */
-        &::-webkit-scrollbar {
-          width: 10px;
-        }
-
-        /* Track */
-        &::-webkit-scrollbar-track {
-          box-shadow: inset 0 0 5px grey; 
-          border-radius: 10px;
-        }
-        
-        /* Handle */
-        &::-webkit-scrollbar-thumb {
-          background: #344944;
-          border-radius: 10px;
-        }
-
-        &__row{
-          margin: .5rem 0;
-          & > * {
-            pointer-events: none
-          }
-          &__image{
-            background-size: 100vh;
-            background-repeat: no-repeat;
-            display: inline-block;
-            vertical-align: middle;
-          }
-          &__name{
-            vertical-align: middle;
-            width: 22vw;
-            display: inline-block;
-            font-size: 1.1rem;
-          }
-        }
-      }
-      .fighter-list{
-        &__fights{
-          font-size: 1.3rem;
-          width: 6rem;
-          display: inline-block;
-          margin-left: 1rem;
-          .fights-icon{
-            background-image: url('./../../images/icons/fights.png');
-            display: inline-block;
-            background-size: 1.5rem;
-            height: 2rem;
-            background-repeat: no-repeat;
-            position: relative;
-            top: 0px;
-            padding-top: 1.6rem;
-            box-sizing: border-box;
-            vertical-align: middle;
-            margin-right: 1rem;
-            font-size: 0.7rem;
-            text-align: center;
-          }
-        }
-        .list__row{
-          position: relative;
-
-          .your-fighter-in-fight-icon{
-            background-image: url('./../../images/icons/fighter-in-fight.png');
-            width: 1.2rem;
-            height: 1.2rem;
-            background-size: cover;
-            position: absolute;
-            top: -5px;
-            left: 20px;
-          }
-          &__image{
-            background-image: url('./../../images/fighter/default-skin/defending.png');
-            width: 2.5rem;
-            height: 2.5rem;
-            border: 1px solid grey;
-            box-sizing: border-box;
-            border-radius: 4rem;
-            background-size: 3.5rem;
-            background-position: -0.6rem -0.2rem;
-            background-color: #fff9e8;
-            margin-right: 1rem;
-          }
-        }
-      }
-      .employee-list{
-        .list__row{
-          &__image{
-            background-image: url('./../../images/icons/employee.png');
-            width: 2rem;
-            height: 2.5rem;
-            margin-right: .5rem;
-          }
-        }
-      }
-    }
-    .split-panel{
+    .main-content{
       display: flex;
-      height: 18vh;
-      justify-content: space-between;
-      &__left, &__right {
-        border: 1px outset #256152;
-        box-sizing: border-box;
-        margin: 0 1vw;
-        padding: 2vh 2vw;
-        background-color: white;
-        vertical-align: top;
-        width: 47vw;
-    }
-    }
-  }
+      flex-direction: column;
+      padding: 8px;
+      box-sizing: border-box;
+      flex: 1;      
+      overflow: hidden;
+      background-image: url('/source-code/client/images/icons/bg.jpg');
+      background-size: cover;
+      background-position-x: right;
 
-  .action-modal{
-    position: absolute;
-    top: 0;
-    &__blackout{
-      position: absolute;
-      top: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,0.7);
-    }
-    &__content{
-      border: 2px outset #b6cde1;
-      background-color: white;
-      z-index: 1;
-      position: relative;
-      width: 90vw;
-      padding: 2vh 2vw;
-      margin: 10vh 5vw 0;
-      box-sizing: border-box;      
-    }
-    &__close-button{    
-      z-index: 1;
-      position: relative;
-      float: right;
-      margin: .5vh 5vw 0 0;
-      font-size: 1.3rem;
-      background-color: #3787db;
-      color: white;
-      padding: 1.5rem 3rem 1.5rem 2.5rem;
-      border: 2px outset #466c8d;
-      border-radius: 0 0 35px 0;
-    }
-    
-  }
-
-  .fighter-card{
-    &__name{
-      font-size: 1.5rem;
-      border-bottom: 1px solid grey;
-      margin-bottom: 1rem;
-      padding-bottom: .5rem;
-    }
-    &__image{
-      background: url('./../../images/fighter/default-skin/punch.png') no-repeat;
-      height: 11vh;
-    }
-    .left{
-      width: 15vw;
-      display: inline-block;
-      vertical-align: top;
-      margin-right: 5vw;
-    }
-    .right{
-      width: 65vw;
-      display: inline-block;
-
-      .fight-experience {
-        text-align: center;
-        margin-bottom: 2rem;
+      .next-fight{
+        margin-bottom: 8px;
       }
-      .bet-options{
-        margin-bottom: 2rem;
-
-
-        .bet-option {
-          text-align: center;
-          width: 18vw;
-          display: inline-block;
-          line-height: 1.4rem;
-          margin-right: 2vw;
-          border-right: 1px solid grey;
-          padding-right: 2vw;
-
-          &:last-child{
-            margin-right: 0;
-            border-right: none;
-            padding-right: 0;
-          }
-
-          .bet-info {
-            font-size: 0.7rem;
-          }
-
-
-          & > * {
-            margin-bottom: 0.2rem;
-          }
-          .bet-cost{
-            .money, .action-points {
-              padding-left: 1.5rem;
-              margin-right: 0.5rem;
-            }
-          }
-        }
-      }
-
-      .stats{
-        margin-bottom: 2rem;
-        &__group{
-          width: 31vw;
-          display: inline-block;
-          vertical-align: top;
-          border: 1px solid grey;
-          padding: .5rem;
-          box-sizing: border-box;
-          background-color: #f6f6ff;
-          margin-right: 3vw;
-          
-          &:last-child {
-            margin-right: 0;
-          }
-        }
-        &__heading{
-          margin-bottom: 0.5rem;
-          font-size: 1.1rem;
-        }
-
-        .stat{
-          line-height: 1.4rem;
-          font-size: .8rem;
-          label{
-            width: 22vw;
-            display: inline-block;
-          }
-        }
-      }
-    }
-    .options{
-      .your-fighter-options, .other-fighter-options {
+      
+      .two-columns{
         display: flex;
+        flex: 1;
+        overflow: hidden;
         justify-content: space-between;
-        flex-wrap: wrap;      
+        > * {
+          width: 49%;
+          display: flex;
+          flex-direction: column;
+          > * {
+            margin-bottom: 8px;
+            &:last-child{
+              margin-bottom: 0;
+            }
+          }  
+        }
+        .your-fighters, .employees, .job-seekers{
+          flex: 1;
+          min-height: 100px;
+          max-height: 160px;
+        }
+        .known-fighters{
+          flex: 2;
+          min-height: 100px;
+        }
+        .activity-log{
+          flex: 2;
+        }
       }
     }
   }
 
-  .loan-shark-card{
-    &__loan-tool{
+  .turn-phone-message{
+    display: none;
+  }
+
+  @media screen and (max-height: 600px) and (orientation: landscape) {
+    &__content{
+      display: none;
+    }
+    .turn-phone-message{
       display: flex;
-      justify-content: space-between;
-
-      input {
-        border: 2px inset #9ac8bb;
-        width: 7rem;
-        margin: 0.6rem 0;
-        border-radius: 2px;
-      }
-
-      .left, .right{
-        width: 22vw;
-        display: inline-block;
-        vertical-align: top;
-      }
-    }
-    &__left{
-      width: 30vw;
-      display: inline-block;
-    }
-    &__right{
-      width: 50vw;
-      display: inline-block;
-      margin-left: 1rem;
-      box-sizing: border-box;
-      vertical-align: top;
-    }
-    &__image{   
-      background: url('./../../images/icons/loan-shark.png') no-repeat;
-      background-size: 100%;
-      height: 23vh;
-    }
-    &__debt{
-      margin: 4vh auto;
-      text-align: center;
-      font-size: 2rem;
-    }
-
-  }
-
-  .action-block{    display: inline-block;
-    padding: .5rem;
-    border: 1px outset #3b6056;
-    width: 41vw;
-    margin-bottom: 1rem;
-    height: 11vh;
-    background-color: #f2fffb;
-    box-sizing: border-box;
-    position: relative;
-
-    &__name{
-      margin-bottom: .6rem;
-      font-size: 1rem;
-    }
-    &__short-description{
-      font-size: 0.8rem;
-      line-height: 1.2rem;
-    }
-    &__button{
-      font-size: 0.8rem;
-      position: absolute;
-      bottom: .5rem;
-      right: .5rem;
     }
   }
-
 }

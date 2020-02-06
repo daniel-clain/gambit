@@ -1,0 +1,10 @@
+.employee-list{
+  .list__row{
+    &__image{
+      background-image: url('/source-code/client/images/icons/employee.png');      
+      width: 16px;
+      height: 16px;
+      background-size: contain;
+    }
+  }
+}

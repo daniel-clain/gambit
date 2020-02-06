@@ -14,4 +14,5 @@ export default interface FighterFightState{
   onRampage: boolean,
   skin: Skin,
   flanked: Flanked
+  strikingCenters: {front: Coords, back: Coords}
 }

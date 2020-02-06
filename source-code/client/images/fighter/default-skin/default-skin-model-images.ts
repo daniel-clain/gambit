@@ -4,53 +4,53 @@ import FighterModelImage from "../../../../interfaces/game/fighter/fighter-model
 export const defaultSkinModelImages: FighterModelImage[] = [
 	{
 		modelState: 'Idle',
-		dimensions: { width: 41, height: 93 },
+		dimensions: { width: 41, height: 89 },
 		imageName: 'walking.png'
 	},
 	{
 		modelState: 'Punching',
-		dimensions: { width: 63, height: 79 },
-		imageName: 'punch.png'
+		dimensions: { width: 65, height: 76 },
+		imageName: 'punching.png'
 	},
 	{
 		modelState: 'Kicking',
-		dimensions: { width: 87, height: 86 },
-		imageName: 'kick.png'
+		dimensions: { width: 87, height: 78 },
+		imageName: 'kicking.png'
 	},
 	{
 		modelState: 'Knocked Out',
-		dimensions: { width: 80, height: 40 },
-		imageName: 'down-and-out.png'
+		dimensions: { width: 82, height: 25 },
+		imageName: 'knocked-out.png'
 	},
 	{
 		modelState: 'Defending',
-		dimensions: { width: 58, height: 92 },
+		dimensions: { width: 50, height: 81 },
 		imageName: 'defending.png'
 	},
 	{
 		modelState: 'Dodging',
-		dimensions: { width: 49, height: 79 },
-		imageName: 'dodge.png'
+		dimensions: { width: 45, height: 71 },
+		imageName: 'dodging.png'
 	},
 	{
 		modelState: 'Blocking',
-		dimensions: { width: 53, height: 74 },
-		imageName: 'block.png'
+		dimensions: { width: 51, height: 77 },
+		imageName: 'blocking.png'
 	},
 	{
 		modelState: 'Taking Hit',
-		dimensions: { width: 56, height: 83 },
-		imageName: 'take-hit.png'
+		dimensions: { width: 49, height: 76 },
+		imageName: 'taking-hit.png'
 	},
 	{
 		modelState: 'Walking',
-		dimensions: { width: 41, height: 93 },
+		dimensions: { width: 41, height: 89 },
 		imageName: 'walking.png'
 	},
 	{
 		modelState: 'Recovering',
-		dimensions: { width: 45, height: 67 },
-		imageName: 'recover.png'
+		dimensions: { width: 41, height: 61 },
+		imageName: 'recovering.png'
 	},
 	{
 		modelState: 'Victory',

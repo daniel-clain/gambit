@@ -1,15 +1,27 @@
+
+
+export type MoveAction = 
+'retreat from flanked' | 
+'retreat' | 
+'cautious retreat' | 
+'fast retreat' |
+'move to attack' 
+
+export type AttackResponseAction = 
+'block' |
+'dodge' |
+'take hit'
+
+export type CombatAction = 
+'punch' |
+'critical strike' |
+'defend'
+
 export type ActionName = 
-'trying to punch' |
-'punching' | 
-'missed punch' |
-'trying to critical strike' |
-'critical striking' |
-'missed critical strike' |
-'taking a hit' |
-'doing cooldown' | 
-'blocking' | 
-'dodging' | 
-'turning around' | 
-'moving a bit' |
-'recovering' | 
-'defending' 
+MoveAction |
+AttackResponseAction |
+CombatAction |
+'turn around' |
+'recover' 
+
+

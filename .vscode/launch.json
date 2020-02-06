@@ -25,7 +25,7 @@
       "name": "test",
       "args": [
         "--runInBand",
-        "helper-functions"
+        "proximity"
       ],
       "program": "${workspaceFolder}/node_modules/jest/bin/jest",
       "console": "internalConsole"

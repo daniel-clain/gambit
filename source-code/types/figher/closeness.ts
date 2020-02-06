@@ -2,5 +2,6 @@ export enum Closeness {
   'striking range' = 0,
   'close',
   'nearby',
-  'far'
+  'far',
+  'very far'
 }

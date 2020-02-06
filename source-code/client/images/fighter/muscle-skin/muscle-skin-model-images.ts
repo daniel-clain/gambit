@@ -28,7 +28,7 @@ export const muscleSkinModelImages: FighterModelImage[] = [
 	},
 	{
 		modelState: 'Dodging',
-		dimensions: { width: 65, height: 103 },
+		dimensions: { width: 54, height: 63 },
 		imageName: 'dodging.png'
 	},
 	{

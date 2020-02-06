@@ -1,7 +1,0 @@
-* eg decided action is to punch but enemy is behind
-* code is to turn around and async await for it to finish
-* turn around has a cooldown which is chained onto the turn around action 
-* if the cooldown action is interupted by an attack, the turn around action isnt considered rejected
-* because the turn around action isnt interupted the try to punch action starts
-* even tho the fighter takes a hit, and start action, he also immediatly does the try to punch action
-* the take a hit cooldown finishes, and the punch cooldown finishes and both start a new decide action

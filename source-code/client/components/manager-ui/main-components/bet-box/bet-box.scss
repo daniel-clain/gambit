@@ -1,0 +1,41 @@
+.bet-box{
+  font-size: .9rem;
+  background-color: #d3fbfff7;
+  border: 1px solid #218490;
+  &__heading{
+    padding: 3px 0;
+    &--selected{
+      background-color: #83ff90;
+    }
+  }
+  
+  .bet-options{
+    display: flex;
+
+    .bet-option{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 3px 3px;
+      border-right: 1px solid #218490;
+      border-top: 1px solid #218490;
+
+      &--selected{
+        background-color: #83ff90;
+      }
+
+      &:last-child{
+        border-right: none;
+      }
+
+      &__size{
+        font-size: 0.7rem;
+        margin-bottom: 2px;
+      }
+      &__amount{
+        font-size: 0.8rem;
+      }
+      
+    }
+  }
+}

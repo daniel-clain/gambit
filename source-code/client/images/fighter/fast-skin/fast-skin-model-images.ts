@@ -8,7 +8,7 @@ export const fastSkinModelImages: FighterModelImage[] = [
 	},
 	{
 		modelState: 'Punching',
-		dimensions: { width: 73, height: 82 },
+		dimensions: { width: 67, height: 82 },
 		imageName: 'punching.png'
 	},
 	{
@@ -33,7 +33,7 @@ export const fastSkinModelImages: FighterModelImage[] = [
 	},
 	{
 		modelState: 'Blocking',
-		dimensions: { width: 65, height: 74 },
+		dimensions: { width: 43, height: 82 },
 		imageName: 'blocking.png'
 	},
 	{

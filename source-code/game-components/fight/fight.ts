@@ -60,10 +60,10 @@ export default class Fight {
   async start(){
     console.log('fight started');
     
+    this.startFightUpdateLoop()
     this.placeFighters()
     await this.fightCountdown()
     this.tellFightersToStartFighting()
-    this.startFightUpdateLoop()
     this.watchForAWinner()
     const {maxFightDuration} = gameConfiguration.stageDurations
     this.timer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
@@ -129,12 +129,16 @@ export default class Fight {
 
   private finishFight(fightReport){
     clearInterval(this.timer)
+
     
     setTimeout(() => {
       clearInterval(this.fightUpdateLoop)
       this.fightFinishedSubject.next(fightReport)
     }, 5000)
-    this.fighters.forEach(f => f.stopFighting())
+    this.fighters.forEach(f => {
+      f.stopFighting()
+      f.state.numberOfFights ++
+    })
   }
 
   private tellFightersToStartFighting(){
@@ -167,7 +171,7 @@ export default class Fight {
 
   private placeFighters(){    
     this.fighters.forEach((fighter: Fighter) => {
-      while(!fighter.fighting.movement.coords || fighter.fighting.movement.isNearEdge(fighter.fighting.movement.coords)){
+      while(!fighter.fighting.movement.coords || fighter.fighting.movement.isMoveOutsideOfBounds(fighter.fighting.movement.coords)){
         fighter.fighting.movement.coords = {
           x: random(Octagon.getWidth()),
           y: random(Octagon.getHeight())          

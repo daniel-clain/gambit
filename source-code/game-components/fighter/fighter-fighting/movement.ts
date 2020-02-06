@@ -4,9 +4,10 @@ import Coords from '../../../interfaces/game/fighter/coords';
 import Direction360 from "../../../types/figher/direction-360";
 import Octagon from "../../fight/octagon";
 import { Edge } from "../../../interfaces/game/fighter/edge";
-import Dimensions from "../../../interfaces/game/fighter/dimensions";
-import { random } from "../../../helper-functions/helper-functions";
+import { random, wait } from "../../../helper-functions/helper-functions";
 import FacingDirection from "../../../types/figher/facing-direction";
+import EdgeCoordDistance from "../../../interfaces/game/fighter/edge-coord-distance";
+import { MoveAction } from "../../../types/figher/action-name";
 
 export default class Movement {
 
@@ -16,27 +17,25 @@ export default class Movement {
 
   reverseMoving: boolean
 
+
   moveInterval
   moveDurationTimer
 
   nearEdge: Edge
 
-  constructor(private fighting: FighterFighting){    
-  }
+  constructor(public fighting: FighterFighting){}
 
   set movingDirection(val){
-    if(isNaN(val) || val >= 360)
-      debugger
     this._movingDirection = val
-    this.setFacingDirectionByDegree(this.movingDirection)
+    //this.setFacingDirectionByDegree(this.movingDirection)
   }
   get movingDirection(){
     return this._movingDirection
   }
 
   setFacingDirectionByDegree(movingDirection: Direction360){
-    const {actions, facingDirection, activeTimers} = this.fighting
-    const doingCautiusRetreat = activeTimers.some(timer => timer.name == 'doing cautious retreat')
+    const {logistics, facingDirection, timers} = this.fighting
+    const {moveActionInProgress} = logistics
 
     const currentFacingDirection = facingDirection
 
@@ -49,102 +48,131 @@ export default class Movement {
       
     const walkingBackwardFacingDirection: FacingDirection = facingBasedOnMovingDirection == 'left' ? 'right' : 'left'
 
-    const movingToAttack = activeTimers.some(timer => timer.name == 'moving to attack')
 
-    if(!movingToAttack)
+    if(moveActionInProgress != 'move to attack')
       this.reverseMoving = false
 
 
-    if(doingCautiusRetreat || this.reverseMoving){
+    if(moveActionInProgress == 'cautious retreat' || this.reverseMoving){
       if(currentFacingDirection == walkingBackwardFacingDirection)
         return
-      else
+     /*  else
         this.fighting.actions.startAction(actions.turnAround)
-        .catch(reason => reason)
+        .catch(() => null) */
     }
     else {
       if(currentFacingDirection == facingBasedOnMovingDirection)
         return
-      else
+      /* else
         this.fighting.actions.startAction(actions.turnAround)
-        .catch(reason => reason)
+        .catch(() => null) */
     }
   }
-  
-  moveABit() {
+
+  async doMoveAction(enemy: Fighter, moveAction: MoveAction): Promise<void>{    
+    const {proximity, flanking, logistics} = this.fighting
     
-    const isDoingCautiousRetreat = this.fighting.activeTimers.some(timer => timer.name == 'doing cautious retreat')
-    this.fighting.modelState = isDoingCautiousRetreat ? 'Defending' : 'Walking'
+    logistics.moveActionInProgress = moveAction
+
+    this.fighting.enemyTargetedForAttack = 
+    moveAction == 'move to attack' ? enemy : null
+    
+    if(moveAction == 'retreat from flanked')
+      this.movingDirection = flanking.getRetreatFromFlankedDirection()
+    else
+      this.movingDirection = proximity.getDirectionOfEnemyStrikingCenter(enemy, moveAction != 'move to attack')
+
+
+    const moveActionFacesAway = ['fast retreat', 'retreat'].some(a => a == moveAction)   
+
+    const moveActionFacesToward = ['move to attack', 'cautious retreat'].some(a => a == moveAction)
+
+    let interupted: boolean
+    if(moveActionFacesAway && !proximity.isFacingAwayFromEnemy(enemy) ||
+      moveActionFacesToward && proximity.isFacingAwayFromEnemy(enemy))
+      await this.turnAround().catch(() => interupted = true)
+
+    if(!interupted)
+      await this.moveABit()
+
+    return
+  }
+
+  async turnAround(){
+    const {timers, animation, logistics} = this.fighting
+    return animation.start({
+      name: 'turning around',
+      duration: animation.speedModifier(100)
+    })
+    .then(() => {      
+      this.fighting.facingDirection = this.fighting.facingDirection == 'left' ? 'right' : 'left'
+      timers.start('just turned around')
+      return animation.cooldown(80)
+    })
+
+  }
+
+  
+  async moveABit(): Promise<void> {    
+    const {logistics} = this.fighting
+    this.fighting.modelState = logistics.moveActionInProgress == 'cautious retreat' ? 'Defending' : 'Walking'
     const newMoveCoords: Coords = this.getNewMoveCoords(this.movingDirection, this.coords)
-    if(!this.isNearEdge(newMoveCoords))
+    if(this.isMoveOutsideOfBounds(newMoveCoords))
+      return
+    else{
       this.coords = newMoveCoords
+      return wait(this.moveSpeed())
+    }
+
+    
   }
 
   moveSpeed(){
+    const {logistics, stats, timers} = this.fighting
+    const {activeTimers} = timers
+    const {speed} = stats  
 
-    const {speed} = this.fighting.stats  
-    const doingCautiusRetreat = this.fighting.activeTimers.some(timer => timer.name == 'doing cautious retreat')
+    const onARampage = activeTimers.some(timer => timer.name == 'on a rampage')
 
-
-    const doingFastRetreat = this.fighting.activeTimers.some(timer => timer.name == 'doing fast retreat')
-    const retreatingFromFlanked = this.fighting.activeTimers.some(timer => timer.name == 'retreating from flanked')
-    const onARampage = this.fighting.activeTimers.some(timer => timer.name == 'on a rampage')
     let speedBoostActive: boolean = false
-    if(doingFastRetreat || onARampage || retreatingFromFlanked){
-      //console.log(`>> Speed Boost for ${this.fighting.fighter.name}`);
+    if(logistics.moveActionInProgress == 'fast retreat' || onARampage || logistics.moveActionInProgress == 'retreat from flanked')
       speedBoostActive = true
-    }
 
-    let timeToMove2Pixels = (80 - (speed * 10))
-    if(doingCautiusRetreat) 
-      timeToMove2Pixels *=  1.1
+    let timeToMove2Pixels = (100 - (speed * 15))
+    if(logistics.moveActionInProgress == 'cautious retreat') 
+      timeToMove2Pixels *=  1.15
     if(speedBoostActive)
-      timeToMove2Pixels *= 0.2
+      timeToMove2Pixels *= 0.15
     return timeToMove2Pixels
-
   }
+  
 
-  isNearEdge(newMoveCoords: Coords): boolean{
-    const {proximity, modelState} = this.fighting
-    const modelWidth = proximity.getModelDimensions(modelState).width
-
-    const baseDimensions: Dimensions = {width: modelWidth, height: 10}
-    const nearEdge = Octagon.checkIfFighterIsNearEdge(baseDimensions, newMoveCoords)
-    const {name} =this.fighting.fighter
-
-    if(this.nearEdge && nearEdge){
-      if(this.nearEdge !== nearEdge){
-        console.log(`${name} is near another edge ${nearEdge}`);
-        this.hitEdge(nearEdge)
+  isMoveOutsideOfBounds(newMoveCoords: Coords): boolean{
+      const {proximity, fighter, logistics, timers} = this.fighting
+      const modelWidth = proximity.getFighterModelDimensions(fighter, 'Idle').width  
+      if(Octagon.checkIfFighterIsWithinOctagon(modelWidth, newMoveCoords)){
+        return false
       }
-      return true
-    }
-    if(!this.nearEdge && nearEdge){
-      console.log(`${name} is near ${nearEdge}`);
-        this.hitEdge(nearEdge)
+      else {
+        timers.cancelTimers(['move action in progress'], 'tried to move outside of bounds')
         return true
-    }    
-    else if(this.nearEdge && !nearEdge) {
-      console.log(`${name} is no longer near an edge`);
-      this.nearEdge = null;
-      return false
-    }    
-    else
-      return false
+      }
   }
+
   hitEdge(edge: Edge){
     this.nearEdge = edge
-    this.fighting.cancelTimers(
-      ['wandering direction', 'doing cautious retreat', 'doing fast retreat', 'moving to attack' ],
-      'hit edge ' + edge)
-
+    if(this.fighting.logistics.moveActionInProgress != 'retreat from flanked')
+      this.fighting.timers.cancelTimers( ['move action in progress'], 'hit edge ' + edge)
   }
-
 
   
   getDirectionAwayFromEdge(): Direction360{
+    
+    const {proximity, fighter} = this.fighting
+    const modelWidth = proximity.getFighterModelDimensions(fighter, 'Idle').width
+    const edgeCoordDistance: EdgeCoordDistance = proximity.sortEdgesByClosest(Octagon.getAllEdgeDistanceAndCoordOnClosestEdge(this.coords, modelWidth))[0]
     const randomNum = random(89)
-    switch(this.nearEdge){
+    switch(edgeCoordDistance.edgeName){
       case 'left': return (45 + randomNum) as Direction360
       case 'topLeft': return (90 + randomNum) as Direction360
       case 'top': return (135 + randomNum) as Direction360
@@ -184,14 +212,11 @@ export default class Movement {
       addXAmmount *= -1
     }
 
-    addXAmmount = Math.round(addXAmmount)
-    addYAmmount = Math.round(addYAmmount)
+    const x = Math.round((coords.x + addXAmmount) * 100) / 100
+    const y = Math.round((coords.y + addYAmmount) * 100) / 100
 
-    if(isNaN(addXAmmount) || isNaN(addYAmmount)){
-      debugger
-    }
 
-    return { x: coords.x + addXAmmount, y:coords.y +  addYAmmount }
+    return {x, y}
   }
 
 };

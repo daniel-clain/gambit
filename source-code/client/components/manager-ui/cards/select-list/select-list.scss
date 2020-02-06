@@ -1,0 +1,25 @@
+.select-list{
+  &__item{
+    display: flex;
+    height: 24px;
+    > * {
+      margin-right: 10px;
+    }
+    .fighter-in-next-fight,  .your-fighter, .manager{
+      width: 20px;
+      height: 20px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position-x: center;
+    }
+    .fighter-in-next-fight{      
+      background-image: url('/source-code/client/images/icons/fights.png');
+    }
+    .your-fighter{
+      background-image: url('/source-code/client/images/icons/your-fighter-in-fight.png');
+    }
+    .manager{
+      background-image: url('/source-code/client/images/icons/manager1-face.png');
+    }
+  }
+}

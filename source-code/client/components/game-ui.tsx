@@ -1,19 +1,19 @@
 
 import * as React from 'react';
 import { GameUiState } from '../../interfaces/game-ui-state.interface';
-import ClientWebsocketService from '../main-game/client-websocket-service';
 import ManagerUi from './manager-ui/manager-ui';
 import FightUi from './fight-ui/fight-ui';
+import IUpdateCommunicatorUi from '../../interfaces/update-communicator-ui.interface';
 
 interface GameUiProps {
-  websocketService: ClientWebsocketService
+  updateCommunicatorUi: IUpdateCommunicatorUi
 }
 
 export default class GameUi extends React.Component<GameUiProps>{
   state: GameUiState
   constructor(props) {
     super(props)
-    this.props.websocketService.gameUiStateUpdate.subscribe(
+    this.props.updateCommunicatorUi.receiveGameUiStateUpdate.subscribe(
       (gameUiState: GameUiState) => this.setState(gameUiState)
     )
   }
@@ -21,16 +21,15 @@ export default class GameUi extends React.Component<GameUiProps>{
   render() {
     if (!this.state)
       return <span>loading....</span>
-    const { websocketService } = this.props
+    const { updateCommunicatorUi } = this.props
     const { fightState, managerUiState, roundStage } = this.state
-    console.log('this.state :', this.state);
 
     switch (roundStage) {
 
       case 'Manager Options':
         return <ManagerUi
           managerUiState={managerUiState}
-          sendPlayerAction={websocketService.sendPlayerAction.bind(websocketService)} />
+          sendPlayerAction={updateCommunicatorUi.sendPlayerAction.bind(updateCommunicatorUi)} />
 
       case 'Pre Fight News':
         return <div>Pre Fight News</div>

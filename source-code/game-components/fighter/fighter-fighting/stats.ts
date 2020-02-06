@@ -1,85 +1,89 @@
-import OneToFive from "../../../types/game/one-to-five.type"
-import Fighter from "../fighter"
 import FighterFighting from "./fighter-fighting"
 
 export default class FighterStats {
   
-  private _maxStamina: OneToFive = 3
-  private _maxSpirit: OneToFive = 3
-  private _strength: OneToFive = 1
-  private _intelligence: OneToFive = 1
-  private _speed: OneToFive = 1
-  private _aggression: OneToFive = 1
+  private _baseStamina
+  private _baseSpirit = 5
+  private _baseSpeed
+  private _baseStrength
+  private _baseIntelligence
+  private _baseAggression
+  private _fitness
+ 
+  maxStamina
+  maxSpirit
+  strength
+  speed
+  aggression
+  intelligence
 
-  private maxVal: 5
-  private minVal: 1
+  constructor(public fighting: FighterFighting){}
 
-  constructor(private fighting: FighterFighting){}
-
-  get strength(){
-    return this._strength
+  get fitness(){
+    return this._fitness
   }
-  get intelligence(){
-    return this._intelligence
+  get baseStrength(){
+    return this._baseStrength
   }
-  get speed(){
-    return this._speed
+  get baseSpeed(){
+    return this._baseSpeed
   }
-  get aggression(){
-    return this._aggression
+  get baseAggression(){
+    return this._baseAggression
   }
-  get maxStamina(){
-    return this._maxStamina
+  get baseStamina(){
+    return this._baseStamina
   }
-  get maxSpirit(){
-    return this._maxSpirit
+  get baseSpirit(){
+    return this._baseSpirit
   }
-
-
-  set strength(val){
-    if(this.validateAttribute(val)){
-      this._strength = val
-      this.fighting.fighter.determineSkin()
-    }
-  }
-  set intelligence(val){
-    if(this.validateAttribute(val))
-      this._intelligence = val
-  }
-  set speed(val){
-    if(this.validateAttribute(val)){
-      this._speed = val
-      this.fighting.fighter.determineSkin()
-    }
-  }
-  set aggression(val){
-    if(this.validateAttribute(val)){
-      this._aggression = val
-      this.fighting.fighter.determineSkin()
-    }
-  }
-  set maxStamina(val){
-    if(this.validateAttribute(val)){
-      this._maxStamina = val
-      this.fighting.fighter.determineSkin()
-    }
-  }
-  set maxSpirit(val){
-    if(this.validateAttribute(val))
-      this._maxSpirit = val
+  get baseIntelligence(){
+    return this._baseIntelligence
   }
 
-  private validateAttribute(attributeValue: number): boolean{
-    let isValid: boolean = true;
-    if(attributeValue < this.minVal){
-      console.log(`Fighter attribute can not be below ${this.minVal}. Received: ${attributeValue}`);
-      isValid = false
-    }    
-    if(attributeValue > this.maxVal){
-      console.log(`Fighter attribute can not be above ${this.minVal}. Received: ${attributeValue}`);
-      isValid = false
-    }
-    return isValid
+
+
+  set baseAggression(val){
+    this._baseAggression = val
+    this.aggression = val
   }
+  set baseSpeed(val){
+    this._baseSpeed = val
+    this.speed = val
+  }
+  set baseIntelligence(val){
+    this._baseIntelligence = val
+    this.intelligence = val
+  }
+  
+
+  set baseStrength(val){
+    this._baseStrength = val
+    this.strength = val
+    this.fighting.fighter.determineSkin()
+    this.updateBaseStamina()
+  }
+  
+  set fitness(val){
+    this._fitness = val
+    this.baseSpeed = val
+    this.fighting.fighter.determineSkin()
+    this.updateBaseStamina()
+  }
+
+  set baseStamina(val){
+    this._baseStamina = val
+    this.maxStamina = val
+  }
+  set baseSpirit(val){
+    this._baseSpirit = val
+    this.maxSpirit = val
+  }
+
+
+  private updateBaseStamina(){
+    this.baseStamina = Math.round(this.strength*.7 + this.fitness*.5)
+  }
+
 
 };

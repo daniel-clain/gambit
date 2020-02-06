@@ -1,0 +1,107 @@
+= sue manager
+  - requires:
+    * target manager
+    * evidence
+  - source:
+    * lawyer
+
+= research fighter
+  - target:
+    * fighter thats not yours
+  - source:
+    * manager
+    * talent scout
+    * private agent
+
+= train fighter
+  - target:
+    * fighter
+  - source:
+    * manager
+    * trainer
+  
+= assault fighter
+  - target:
+    * fighter thats not yours
+  - source:
+    * thug
+    * hitman
+
+= guard fighter
+  - requires:
+    * target fighter
+  - source:
+    * thug
+
+= poison fighter
+  - target
+    * fighter thats not yours
+  - source
+    * hitman
+    * private agent
+
+= do surveillance
+  - target
+    * manager
+    * fighter
+  - source 
+    * private agent
+
+= dope fighter
+  - target
+    * fighter
+  - source
+    * drug dealer
+    * manager
+
+= sue manager
+  - target
+    * manager
+  - source
+    * lawyer
+  - requires
+    * evidence
+
+= discover fighter
+  - source
+    * manager
+    * talent scout
+    * private agent
+
+= offer contract
+  - target
+    * job seeker
+    * fighter
+  - source
+    * manager
+    * talent scout
+
+= sell drugs
+  - source:
+    * drug dealer
+    * manager
+
+
+= gather evidence
+  - target:
+    * manager
+  - source
+    * private agent
+    * lawyer
+  - requires
+    * evidence type
+
+= murder
+  - target:
+    * figher thats not yours
+  - source
+    * hitman
+
+  
+
+
+
+
+
+
+  

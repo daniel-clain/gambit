@@ -7,6 +7,7 @@ import gameConfiguration from "../../game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stages";
 import { wait } from "../../../helper-functions/helper-functions";
+import { FighterInfo } from "../../../interfaces/game-ui-state.interface";
 
 export default class ManagerOptionsStage implements IStage {
 
@@ -25,6 +26,7 @@ export default class ManagerOptionsStage implements IStage {
 
   start(): void {
     this.finished = new Subject();
+
     this.setupManagersReadyStateWatchers()
 
     this.timeLeft = this.duration
@@ -77,6 +79,8 @@ export default class ManagerOptionsStage implements IStage {
       this.allManagersReadySubject.next()
     }
   }
+
+  
   
 
   private triggerUiUpdate(){

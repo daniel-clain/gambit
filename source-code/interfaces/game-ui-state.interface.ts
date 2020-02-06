@@ -5,8 +5,9 @@ import SkillLevel from '../types/skill-level.type';
 import RoundStages from '../types/game/round-stages';
 import { FightState } from '../game-components/fight/fight';
 import { Contract, ActiveContract } from './game/contract.interface';
-import Manager, { ManagerInfo } from '../game-components/manager/manager';
-import { AbilityTarget, AbilityTargetType, AbilitySource, AbilitySourceType } from '../game-components/abilities/abilities';
+import { ManagerInfo } from '../game-components/manager/manager';
+import { Profession } from '../types/game/profession';
+import { AbilityName, AbilityData } from '../game-components/abilities-reformed/ability';
 
 export interface GameHostUiState{
   inGame: boolean
@@ -25,53 +26,69 @@ export interface Loan{
   weeksOverdue: number
 }
 
-export type EmployeeTypes = 'Lawyer' | 'Heavy' | 'Talent Scout' | 'Private Investigator' | 'Hitman' | 'Promoter' | 'Fitness Trainer' | 'Combat Tactics Trainer'
 
-
-export interface JobSeeker extends AbilityTarget{
+export interface Professional{
   name: string
-  type: AbilityTargetType
-  profession: EmployeeTypes
+  profession: Profession
   skillLevel: SkillLevel
-  goalContract: Contract
+  abilities: AbilityName[]
 }
 
-export class Employee implements AbilitySource{
-  actionPoints = 1
-  type: AbilitySourceType
-  constructor(
-    public name: string,
-    public profession: EmployeeTypes,
-    public skillLevel: SkillLevel,
-    public activeContract: ActiveContract,
-    public manager: Manager,
-  ){}
-}
-
-export interface FighterInfo extends AbilityTarget{
-  lastUpdated: number
+export interface JobSeeker{
   name: string
-  inNextFight?: boolean
-  isPlayersFighter?: boolean
+  type: 'Fighter' | 'Professional'
+  profession?: Profession
+  skillLevel?: SkillLevel
+  abilities?: AbilityName[]
+  goalContract: Contract  
+
+}
+
+export interface Employee extends Professional{
+  actionPoints: number
+  activeContract: ActiveContract
+}
+
+export interface KnownFighterStatValue{
+  lastKnownValue: any,
+  roundsSinceUpdated: number
+}
+
+export interface KnownFighterStats{
+
+  strength: KnownFighterStatValue
+  fitness: KnownFighterStatValue
+  intelligence: KnownFighterStatValue
+  aggression: KnownFighterStatValue
+  numberOfFights: KnownFighterStatValue
+  numberOfWins: KnownFighterStatValue
+  manager: KnownFighterStatValue
+}
+
+
+
+export interface KnownFighter{
+  name: string
+  knownStats: KnownFighterStats
+}
+
+export interface FighterInfo{
+  name: string
   strength: number
-  speed: number
+  fitness: number
   intelligence: number
   aggression: number
-  manager: string
-  publicityRating: number
   numberOfFights: number
   numberOfWins: number
-  injured: boolean
-  healthRating: number
-  doping: boolean
-  happyness: number
+  manager: string
+  activeContract: ActiveContract
 }
 
 export interface ManagerUiState{
   managerInfo: ManagerInfo  
   managerOptionsTimeLeft: number
   jobSeekers: JobSeeker[]
-  nextFightFighters: FighterInfo[]
-  notifications: string[]
+  nextFightFighters: string[]
+  delayedExecutionAbilities: AbilityData[]
 }
 

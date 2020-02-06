@@ -2,27 +2,29 @@ import { Subject, merge } from 'rxjs';
 import RoundStages from '../../types/game/round-stages';
 import Fight, { FightState } from '../fight/fight';
 import { JobSeeker } from '../../interfaces/game-ui-state.interface';
-import Fighter from '../fighter/fighter';
-import gameConfiguration from '../game-configuration';
 import Game from '../game';
-import { shuffle } from '../../helper-functions/helper-functions';
 import ManagerOptionsStage from './stages/manager-options-stage';
 import PreFightNewsStage from './stages/pre-fight-news-stage';
 import IStage from '../../interfaces/game/stage';
 import FightDayStage from './stages/fight-day-stage';
 import PostFightReportStage from './stages/post-fight-report-stage';
 import { RoundState } from '../../interfaces/game/round-state';
+import { updateManagersForNewRound } from './new-round-manager-update';
+import { doEndOfRoundReset } from './end-of-round-reset';
+import { setupNewRound } from './new-round-setup';
 
 
 export class RoundController {
   roundNumber: number
   private _activeStage: RoundStages
-  activeJobSeekers: JobSeeker[]
-  gameFinished: boolean
+  jobSeekers: JobSeeker[]
   activeFight: Fight
+  lastFightFighters: string[] = []
 
   roundStateUpdateSubject: Subject<RoundState> = new Subject()
   fightStateUpdatedSubject: Subject<FightState> = new Subject()
+  endOfRoundSubject: Subject<void> = new Subject()
+  endOfManagerOptionsStageSubject: Subject<void> = new Subject()
 
   managerOptionsStage: ManagerOptionsStage
   preFightNewsStage: PreFightNewsStage
@@ -48,9 +50,12 @@ export class RoundController {
     console.log(`starting round ${number}`);
     this.setUpRound(number)
       .then(() => this.doStage(this.managerOptionsStage))
+      .then(() => this.endOfManagerOptionsStageSubject.next())
       .then(() => this.doStage(this.preFightNewsStage))
       .then(() => this.doStage(this.fightDayStage))
       .then(() => this.doStage(this.postFightReportStage))
+      .then(() => this.endOfRoundSubject.next())
+      .then(() => doEndOfRoundReset(this.game))
       .then(() => this.startRound(++number))
   }
 
@@ -67,41 +72,9 @@ export class RoundController {
 
   private setUpRound(number) {
     this.roundNumber = number
-    this.game.managers.forEach(manager => manager.resetForNewRound())
-    this.setupRoundFight()
-    this.setRoundJobSeekers()
-
+    setupNewRound(this.game)
+    updateManagersForNewRound(this.game)
     return Promise.resolve()
-  }
-
-  private setupRoundFight() {
-    if (this.activeFight != null)
-      this.activeFight.doTeardown()
-
-    const numOfFighters = gameConfiguration.numberOfFightersPerFight
-    const randomFighters: Fighter[] = []
-    for (; randomFighters.length < numOfFighters;) {
-      const randomIndex = Math.floor(Math.random() * this.game.fighters.length)
-      const fighter: Fighter = this.game.fighters[randomIndex]
-      const fighterIsAlreadySlected = randomFighters.some(randomFighter => randomFighter.name == fighter.name)
-      if (!fighterIsAlreadySlected)
-        randomFighters.push(fighter)
-    }
-    this.activeFight = new Fight(randomFighters)
-
-    this.activeFight.fightStateUpdatedSubject.subscribe((fightState: FightState) => {
-      this.fightStateUpdatedSubject.next(fightState)
-    })
-  }
-
-
-  private setRoundJobSeekers() {
-    const { numberOfJobSeekersPerRound } = gameConfiguration
-    this.activeJobSeekers = shuffle(this.game.jobSeekers).reduce((jobSeekerArray, jobSeeker, index) => {
-      if (index < numberOfJobSeekersPerRound)
-        jobSeekerArray.push(jobSeeker)
-      return jobSeekerArray
-    }, [])
   }
 
   set activeStage(val){
@@ -121,8 +94,7 @@ export class RoundController {
     return {
       number: this.roundNumber,
       stage: this.activeStage,
-      activeJobSeekers: this.activeJobSeekers,
-      gameFinished: this.gameFinished,
+      jobSeekers: this.jobSeekers,
       managerOptionsTimeLeft: this.managerOptionsStage.timeLeft,
       activeFight: this.activeFight
     }

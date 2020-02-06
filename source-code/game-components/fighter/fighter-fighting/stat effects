@@ -1,0 +1,84 @@
+= Strength
+* attacks hit for more damage
+* higher chance to block attacks relative to enemy strength
+* more stamina
+
+= Speed
+* more chance to dodge
+* faster move speed
+* higher chance to land attacks
+* action animations are performed faster
+
+= Aggression
+* more chance to attack
+* less chance to retreat
+* less chance to defend
+* more chance to crit
+* more chance to go on a rampage
+* less chance to check behind
+* less cooldown after attack
+* more spirit
+* more movement speed when moving to attack
+* get more aggression from 
+  (increase based on base aggression)
+  - when on rampage
+  - hitting attack
+  - taking hit
+* higher aggression lowers intelligence 
+* more stamina
+
+= On A Rampage
+  * increase aggression for short duration
+  * duration increase by hitting attacks and knocking out opponents
+  * has chance to trigger when hitting a critical strike or taking a hit
+  * lower chance to trigger when low spirit
+  * gain stamina on trigger
+
+
+= Spirit
+* high spirit
+  - move faster
+  - recover faster
+  - more chance to dodge and block
+  - more chance to hit attack
+* low spirit
+  - opposite
+  - more chance to retreat
+  - more chance to recover
+* get more spirit from
+  - hitting attack, dodging, blocking or recovering
+* get less spirit from
+  - missing attack, taking hit
+
+
+
+= Intelligence
+* more chance defend when enemy spirit is not low
+* more chance to attack after dodge or block
+* more chance to punch when they have high stamina and spirit
+* more chance to crit when they have low stamina
+* more chance to check flank 
+* more chance to retreat when low spirit or stamina
+* more chance to move away from being flanked
+* more chance to dodge when enemy is on a rampage
+* less chance to attack someone with higher speed or strength who is defending
+* less chance to recover when enemies are near
+* more chance to attack someone with their back turned
+* more chance to position where not inbetween enemies, so that all enemies are on one side
+
+= Recovery
+* increases how fast fighter recovers
+
+
+= Happieness
+* increases spirit
+* low means chance of leaving
+
+
+= Training
+* 3 types 
+  - fitness training - increases speed and recovery
+  - strength training - increases strength and stamina
+  - combat training - increases intelligence
+
+

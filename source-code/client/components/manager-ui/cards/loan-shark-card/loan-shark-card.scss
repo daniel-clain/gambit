@@ -1,0 +1,35 @@
+@import "./../../manager-ui-global-styles/manager-ui-variables";
+.loan-shark-card {
+  
+  &__loan-tool {
+    display: flex;
+    justify-content: space-around;
+    &__heading{
+      font-size: 1.1rem;
+    }
+    &__left,
+    &__right {
+      width: 40%;
+      display: inline-block;
+      vertical-align: top;    
+
+      input {
+        width: 100%;
+        border: 2px inset $blue-light;
+        margin: 0.6rem 0;
+        border-radius: 2px;
+      }
+    }
+  }
+
+  &__image {
+    background: url("/source-code/client/images/icons/loan-shark.png") no-repeat;
+    background-size: 100%;
+    min-height: 120px;
+  }
+  &__debt {
+    margin: 20px auto;
+    text-align: center;
+    font-size: 2rem;
+  }
+}

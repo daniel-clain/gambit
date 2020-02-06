@@ -1,0 +1,19 @@
+==== Getting started =====
+- start with the user experience, think of if you were going to play the game, how would you encounter it, what parts would you say 'thats not right', start there
+- have a checklist of all the things you can do and all the things that could happen, for each thing list out all the scenarios, when all that work is done ur finished
+
+
+* contract weeks remaining value goes down by 1 each week
+* display ability money and action point cost
+* make abilites have execute function
+* reset employee action points
+* show manager winnings in post fight report
+* return professionals to the global pool after they have been job seekers
+* error for subtracting weeks remaining of null
+* start of each fight plays all sounds at once
+* fighters should start evenly spread out
+* set target shows if fighter is in fight or not
+* show professionals action points
+* display ability options if professional has no action points
+
+

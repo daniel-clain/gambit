@@ -1,56 +1,26 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
-
-import ClientAction from '../../interfaces/client-action';
 import GameUi from '../components/game-ui';
-import './global.scss'
-import MockClientWebsocketService from './mock-client-websocket-service';
-import ClientWebsocketService from '../main-game/client-websocket-service';
-import PreGame from '../main-game/pre-game';
-import GameHost from '../main-game/game-host';
+import '../main-game/global.scss'
+import Game from '../../game-components/game';
+import IUpdateCommunicatorUi from '../../interfaces/update-communicator-ui.interface';
+import UpdateCommunicatorUiLocal from './update-communicator-ui-local';
 
 
-interface MainGameProps{
-  websocketService: ClientWebsocketService
-}
 
-export default class SinglePlayerTest extends React.Component<MainGameProps>{
-  state: GameHostUiState
-  
+export default class SinglePlayerTest extends React.Component{
+  private game: Game
+  private updateCommunicatorUiLocal: IUpdateCommunicatorUi
   constructor(props){
     super(props)
-    this.props.websocketService.gameHostUiStateUpdate.subscribe(
-      (state: GameHostUiState) => this.setState(state))
-    this.tryToConnectToGameHost()
-
-
+    this.game = new Game('Local', [{name: 'local player', socket: null, id: null}])
+    this.updateCommunicatorUiLocal = new UpdateCommunicatorUiLocal(this.game.playersUpdateCommunicators[0])
   }
 
-  tryToConnectToGameHost(){
-    const name = localStorage.getItem('name')
-    if(name == null)
-      return
-
-    let clientId = localStorage.getItem('clientId')
-    if(clientId == null){
-      clientId = new Date().getTime().toString()
-      localStorage.setItem('clientId', clientId)
-    }
-    const connectAction: ClientAction = {      
-      name: 'Connect',
-      args: {name, clientId}    
-    }    
-    this.props.websocketService.sendClientAction(connectAction)
-  }
-  render(){
-    
-    const {inGame} = this.state
-    if(inGame)
-      return <GameUi websocketService={this.props.websocketService}/> 
-    
+  render(){    
+    return <GameUi updateCommunicatorUi={this.updateCommunicatorUiLocal}/>
   }
 }
-ReactDOM.render(<SinglePlayerTest websocketService={new MockClientWebsocketService() as unknown as ClientWebsocketService}/>, document.getElementById('react-rendering-div'))
+ReactDOM.render(<SinglePlayerTest/>, document.getElementById('react-rendering-div'))
 

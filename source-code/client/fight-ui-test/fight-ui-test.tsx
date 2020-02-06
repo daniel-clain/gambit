@@ -2,7 +2,7 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import FightUi from '../components/fight-ui/fight-ui';
-import './../main-game/global.scss'
+import '../main-game/global.scss'
 import Fighter from '../../game-components/fighter/fighter';
 import Fight, { FightState } from '../../game-components/fight/fight';
 
@@ -21,18 +21,23 @@ export default class FighterUiTest extends React.Component{
     const fighterJoe = new Fighter('Joe')
     const fighterSteve = new Fighter('Steve')
     const fighterDave = new Fighter('Dave')
+    const fighterFast = new Fighter('Fast')
+    const fighterIntelligent = new Fighter('Intelligent')
+    const fighterAggressive = new Fighter('Aggressive')
+
+    fighterFast.fighting.stats.speed = 5
+    fighterIntelligent.fighting.stats.intelligence = 5
+    fighterAggressive.fighting.stats.aggression = 5
 
     fighterDaniel.fighting.stats.strength = 4
     fighterDaniel.fighting.stats.speed = 4
     fighterDaniel.fighting.stats.intelligence = 5
-    fighterDaniel.fighting.stats.aggression = 3
-    fighterDaniel.fighting.stats.maxSpirit = 5
+    fighterDaniel.fighting.stats.aggression = 1
     fighterDaniel.fighting.stats.maxStamina = 4
 
     
     fighterDave.fighting.stats.maxStamina = 5
-    fighterDave.fighting.stats.maxSpirit = 2
-    fighterDave.fighting.stats.aggression = 2
+    fighterDave.fighting.stats.aggression = 5
     fighterDave.fighting.stats.intelligence = 1
     fighterDave.fighting.stats.speed = 1
     fighterDave.fighting.stats.strength = 5
@@ -41,21 +46,23 @@ export default class FighterUiTest extends React.Component{
     fighterSam.fighting.stats.strength = 2
     fighterSam.fighting.stats.speed = 5
     fighterSam.fighting.stats.intelligence = 5
-    fighterSam.fighting.stats.aggression = 4
-    fighterSam.fighting.stats.maxSpirit = 5
+    fighterSam.fighting.stats.aggression = 5
     fighterSam.fighting.stats.maxStamina = 3
 
 
     const fight = new Fight([
       fighterDaniel,
+      fighterDave ,
       fighterBob,
       fighterFred,
       fighterSam,
-      fighterDave ,
       fighterJeff,
       fighterKevin,
       fighterJoe,
-      fighterSteve /**/
+      fighterSteve,
+      fighterFast,
+      fighterIntelligent,
+      fighterAggressive
     ])
     fight.fightStateUpdatedSubject.subscribe((fightState: FightState) => {
       this.setState({fightState})

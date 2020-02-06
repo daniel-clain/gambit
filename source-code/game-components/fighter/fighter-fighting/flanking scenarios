@@ -1,0 +1,44 @@
+
+
+-------- Non Attacking --------
+==== 1 edge 1 fighter ====
+
+* 1 close edge & 1 nearby> fighter not attacking
+ = criticality 1
+
+* 1 close edge and 1 close fighter not attacking
+ = criticality 2
+ 
+* 1 close edge and 1 vclose fighter not attacking
+ = criticality 3
+
+
+* 1 vclose edge & 1 nearby> fighter not attacking
+ = criticality 2
+
+* 1 vclose edge and 1 close fighter not attacking
+ = criticality 3
+
+* 1 vclose edge and 1 vclose fighter not attacking
+ = criticality 4
+ 
+
+ === 2 edge 1 fighter ===
+* 2 close edge & 1 nearby> fighter not attacking
+ = criticality 2
+
+* 2 close edge and 1 close fighter not attacking
+ = criticality 3
+ 
+* 2 close edge and 1 vclose fighter not attacking
+ = criticality 4
+
+
+* 2 vclose edge & 1 nearby> fighter not attacking
+ = criticality 3
+
+* 2 vclose edge and 1 close fighter not attacking
+ = criticality 4
+
+* 2 vclose edge and 1 vclose fighter not attacking
+ = criticality 5

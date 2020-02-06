@@ -11,8 +11,8 @@ module.exports = {
     filename: 'fight-ui-test.js'
   }, */
   devServer: {
-    contentBase: compiledDir,
-    filename: 'fight-ui-test.js',
+    /* contentBase: compiledDir,
+    filename: 'fight-ui-test.js', */
     watchContentBase: true,
     liveReload: true,
     open: true,
@@ -35,8 +35,16 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'sass-loader']
       },
       {
-        test: /\.(jpg|png)$/,
-        loader: 'url-loader'
+        test: /\.(jpg|png)$/,        
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 100000,
+            fallback: 'file-loader',
+            name: '[name].[ext]',
+            publicPath: './../'
+          }
+        }
       },
       {
         test: /\.mp3$/,

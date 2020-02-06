@@ -1,28 +1,23 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import ClientWebsocketService from './client-websocket-service';
 import PreGame from './pre-game';
 import { GameHostUiState } from '../../interfaces/game-ui-state.interface';
 import GameHost from './game-host';
 import ClientAction from '../../interfaces/client-action';
 import GameUi from '../components/game-ui';
 import './global.scss'
+import UpdateCommunicatorUiWebsocket from './update-communicator-ui-websocket';
 
 
-interface MainGameProps{
-  websocketService: ClientWebsocketService
-}
-
-export default class MainGame extends React.Component<MainGameProps>{
+export default class MainGame extends React.Component<{updateCommunicatorUi: UpdateCommunicatorUiWebsocket}>{
   state: GameHostUiState
   
   constructor(props){
     super(props)
-    this.props.websocketService.gameHostUiStateUpdate.subscribe(
+    this.props.updateCommunicatorUi.gameHostUiStateUpdate.subscribe(
       (state: GameHostUiState) => this.setState(state))
     this.tryToConnectToGameHost()
-
 
   }
 
@@ -40,7 +35,7 @@ export default class MainGame extends React.Component<MainGameProps>{
       name: 'Connect',
       args: {name, clientId}    
     }    
-    this.props.websocketService.sendClientAction(connectAction)
+    this.props.updateCommunicatorUi.sendClientAction(connectAction)
   }
   render(){
     if(this.state == undefined)
@@ -49,14 +44,14 @@ export default class MainGame extends React.Component<MainGameProps>{
 
     const {inGame} = this.state
     if(inGame)
-      return <GameUi websocketService={this.props.websocketService}/> 
+      return <GameUi updateCommunicatorUi={this.props.updateCommunicatorUi}/> 
     
     if(inGame == false)
       return <GameHost 
         gameHostUiState={this.state}
-        sendClientAction={this.props.websocketService.sendClientAction.bind(this.props.websocketService)}/>
+        sendClientAction={this.props.updateCommunicatorUi.sendClientAction.bind(this.props.updateCommunicatorUi)}/>
     
   }
 }
-ReactDOM.render(<MainGame websocketService={new ClientWebsocketService()}/>, document.getElementById('react-rendering-div'))
+ReactDOM.render(<MainGame updateCommunicatorUi={new UpdateCommunicatorUiWebsocket()}/>, document.getElementById('react-rendering-div'))
 

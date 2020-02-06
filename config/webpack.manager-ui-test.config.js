@@ -1,21 +1,16 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
 
 var sourceDir = `${__dirname}/../source-code/client/manager-ui-test`
 var compiledDir = `${__dirname}/../compiled-code/client/manager-ui-test`
 
 module.exports = {
   mode: 'development',  
+  entry: `${sourceDir}/manager-ui-test.tsx`,
   devServer: {
-    contentBase: compiledDir,
-    progress: true,
     watchContentBase: true,
     liveReload: true,
-  },
-  entry: `${sourceDir}/manager-ui-test.tsx`,
-  output:{
-    path: __dirname + './../compiled-code/client/manager-ui-test',
-    filename: "manager-ui-test.js"
+    open: true,
+    port: 7766
   },
   devtool: 'source-map',
   module: {
@@ -26,9 +21,7 @@ module.exports = {
         exclude: /node_modules/,
         options: {
             configFileName: 'config/tsconfig.json',
-            reportFiles: [ // need otherwise will compile server and node_modules
-              `./../source-code/client/manager-ui-test/**/*`
-            ]
+            reportFiles: [ `${sourceDir}/**/*`]
         },
       },
       {
@@ -36,11 +29,20 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'sass-loader']
       },
       {
-        test: /\.png$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]'
+        test: /\.(jpg|png)$/,
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 100000,
+            fallback: 'file-loader',
+            name: '[name].[ext]',
+            publicPath: './../'
+          }
         }
+      },
+      {
+        test: /\.mp3$/,
+        loader: 'file-loader'
       }
     ]
   },
@@ -50,15 +52,6 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './source-code/client/base.html'
-    }),
-    new CopyPlugin([
-      { 
-        from: './source-code/client/images/**/*', 
-        to: './../images',
-        test: /\.(jpe?g|png)$/i,     
-        flatten: true,   
-        ignore: ['*.ts']
-      },
-    ]),
+    })
   ]
 };

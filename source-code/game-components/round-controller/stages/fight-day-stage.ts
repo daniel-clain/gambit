@@ -23,7 +23,6 @@ export default class FightDayStage implements IStage {
     
     this.finished = new Subject();
 
-    this.resetFighters()
 
     const {fightStateUpdatedSubject, fightFinishedSubject} = this.roundController.activeFight
     this.roundController.activeFight.start()
@@ -46,16 +45,18 @@ export default class FightDayStage implements IStage {
   stageFinished(){
     this.finished.next()
     this.finished.complete()
+    this.resetFighters()
   }
 
   resetFighters() {
-    this.game.fighters.forEach(fighter => fighter.reset())
+    this.roundController.activeFight.fighters.forEach(fighter => fighter.reset())
   }
   
   private processManagerBets(fightReport: FightReport): FightReport {
     const { winner } = fightReport
 
     if (winner) {
+      const bonusFromPublicityRating = this.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * 10
       const managerWinnings: ManagerWinnings[] = this.game.managers.map(
         (manager: Manager) => {
           let winnings = 0
@@ -65,12 +66,14 @@ export default class FightDayStage implements IStage {
             const managersBetAmount = Math.round(manager.money * betSizePercentage / 100)
             manager.money -= managersBetAmount
             if (managersBet.fighterName == winner.name) {
-              winnings += Math.round(managersBetAmount * 1.6 + 50)
+              winnings += Math.round(managersBetAmount * 2 + 150)
+              winnings += bonusFromPublicityRating
             }
           }
-          if (manager.fighters.find((f: Fighter) => f.name == winner.name)) {
+          const managersFighter = manager.fighters.find((f: Fighter) => f.name == winner.name)
+          if (managersFighter) {
             winnings += 100
-            winnings *= Math.round((winner.publicityRating * 5 + 100) / 100)
+            winnings += Math.round(winnings *(managersFighter.state.publicityRating * 2) / 100)
           }
           console.log(`${manager.name} just won ${winnings}`);
           manager.money += winnings

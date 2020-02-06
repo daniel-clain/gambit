@@ -1,31 +1,35 @@
-//@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Bangers&display=swap');
 html{
-  height: 100vh;
-  font-size: 10px;
+  font-size: 11px;
   font-family: 'Nunito', sans-serif;
 }
 body{
-  height: 100%;
   margin: 0;
+  height: 100vh;
 }
+#react-rendering-div{
+  height: 100vh;
+}
+
 
 button{
   outline: none;
 }
 
-#react-rendering-div{
+.turn-phone-message{
+  justify-content: center;
+  align-items: center;    
   height: 100%;
-}
 
-/* @media all and (orientation: landscape) {
-  html {
-    transform: rotate(-90deg);
-    transform-origin: left top;
-    width: 100vh;
-    height: 100vw;
-    overflow-x: hidden;
-    position: absolute;
-    top: 100%;
-    left: 0;
+  .image{
+    background-image: url('/source-code/client/images/icons/turn-phone.png');
+    width:300px;
+    height: 300px;
+    padding: 100px 40px 0 150px;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    font-size: 25px;
+    text-align: center;
   }
-} */
+}
