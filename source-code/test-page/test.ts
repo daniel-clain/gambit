@@ -1,17 +1,7 @@
-const originalArray = [
-  {name: 'bob', ears: 3},
-  {name: 'jim', ears: 8}
-]
+import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../helper-functions/helper-functions";
+import Coords from "../interfaces/game/fighter/coords";
 
-const myArray = []
-myArray.push(originalArray.find(x => x.name == 'bob'))
+const coord: Coords = getPointGivenDistanceAndDirectionFromOtherPoint({x:200, y:200}, 100, 280)
 
-const bob = originalArray.find(x => x.name == 'bob')
-bob.ears += 2
 
-const bobIndex = originalArray.findIndex(x => x.name == 'bob')
-
-originalArray.splice(bobIndex,1)
-bob.ears += 7
-
-console.log(myArray);
+console.log('coord :', coord);

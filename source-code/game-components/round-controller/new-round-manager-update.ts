@@ -1,7 +1,9 @@
 import Game from "../game";
-import Manager from "../manager/manager";
+import Manager from "../manager";
 import Fighter from "../fighter/fighter";
 import { Employee, KnownFighter, KnownFighterStatValue, FighterInfo } from "../../interfaces/game-ui-state.interface";
+import { loanSharkSettings } from "../../game-settings/loan-shark-settings";
+import { random } from "../../helper-functions/helper-functions";
 
 
 export const updateManagersForNewRound = (game: Game) => {
@@ -16,6 +18,7 @@ export const updateManagersForNewRound = (game: Game) => {
     resetEmployeeActionPoints(manager.employees)
     updateNumberOfRoundsForKnowFighterStats(manager.knownFighters)
     addFightersToManagersKnownFightersList(game)
+    updateLoanSharkData(game)
   })
 }
 
@@ -38,9 +41,11 @@ function returnEmployeesAndFightersWithExpiredContracts(manager: Manager, game: 
 
   expiredFighters.forEach(fighter => {
     fighter.state.manager = undefined
+    fighter.state.goalContract = null
     const {strength, fitness, intelligence, aggression, numberOfFights, numberOfWins} = fighter.getInfo()
     manager.knownFighters.push({
       name: fighter.name,
+      goalContract: fighter.state.goalContract,
       knownStats: {
         strength: {lastKnownValue: strength, roundsSinceUpdated: 0},
         fitness: {lastKnownValue: fitness, roundsSinceUpdated: 0},
@@ -56,10 +61,10 @@ function returnEmployeesAndFightersWithExpiredContracts(manager: Manager, game: 
 
 function payEmployeeAndFighterWages(manager: Manager){
   const employeeExpenses = manager.employees.reduce(
-    (count, employee) => count + employee.activeContract.costPerWeek
+    (count, employee) => count + employee.activeContract.weeklyCost
   , 0)
   const fighterExpenses = manager.fighters.reduce(
-    (count, fighter) => count + fighter.state.activeContract.costPerWeek
+    (count, fighter) => count + fighter.state.activeContract.weeklyCost
   , 0)
   manager.money -= (employeeExpenses + fighterExpenses)
   manager.addToLog({message: `Spent ${employeeExpenses} on employee wage`})
@@ -74,8 +79,10 @@ function resetEmployeeActionPoints(employees: Employee[]){
 function updateEmployeeAndFighterWeeksLeft(manager: Manager){
   manager.fighters.forEach(fighter => {
     fighter.state.activeContract.weeksRemaining --
-    if(fighter.state.activeContract.weeksRemaining == 0)
+    if(fighter.state.activeContract.weeksRemaining == 0){
+      fighter.determineGoalContract()
       manager.addToLog({message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
+    }
   })
   manager.employees.forEach(employee => {
     employee.activeContract.weeksRemaining --
@@ -108,11 +115,12 @@ function addFightersToManagersKnownFightersList(game: Game){
   game.managers.forEach(manager => {
     roundFighersAndJobSeekerFighters.forEach(roundFighter => {
       if(
-        !manager.fighters.some(fighter => fighter.name == roundFighter.name) &&
-        !manager.knownFighters.some(knownFighter => knownFighter.name == roundFighter.name)
+        managerDoesNotOwnRoundFighter() &&
+        managerDoesNotKnowRoundFighter()
       )
         manager.knownFighters.push({
           name: roundFighter.name,
+          goalContract: roundFighter.goalContract,
           knownStats: {
             strength: undefined,
             fitness: undefined,
@@ -123,6 +131,82 @@ function addFightersToManagersKnownFightersList(game: Game){
             numberOfWins: undefined
           }
         })
+
+      function managerDoesNotOwnRoundFighter(): boolean{
+        return !manager.fighters.some(fighter => fighter.name == roundFighter.name)
+      }
+      function managerDoesNotKnowRoundFighter(): boolean{
+        return !manager.knownFighters.some(knownFighter => knownFighter.name == roundFighter.name)
+      }
     })
+  })
+}
+
+function updateLoanSharkData(game: Game){
+  game.managers.forEach(manager => {
+
+    if(managerHasALoan()){
+      manager.loan.weeksOverdue ++
+      addInterestToLoan()
+
+      if(managerHasPaidBackTheMinimumAmountThisWeek())
+        manager.loan = {...manager.loan, weeksOverdue: 0}
+
+      else if(dayBeforeOverdue())
+        sendWarning()
+
+      else if(managerHasNotMadeRepaymentInSpecifiedNumberOfWeeks())
+        loanSharkAssaultsOneOfManagersFighters()
+
+      manager.loan.amountPaidBackThisWeek = 0
+
+    }
+
+
+    function sendWarning(){
+      manager.addToLog({type: 'critical', message: `you have not a repayment in ${manager.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
+    }
+    function dayBeforeOverdue(): boolean{
+      return manager.loan.weeksOverdue == loanSharkSettings.weeksOfNoPaybackUntilRespond - 1
+    }
+
+    function managerHasPaidBackTheMinimumAmountThisWeek(): boolean{
+      return manager.loan.amountPaidBackThisWeek >= loanSharkSettings.minimumAmountToPayBackEachWeek
+    }
+    function managerHasALoan(): boolean{
+      return manager.loan.debt != 0
+    }
+    function addInterestToLoan(){
+      const addedAmount = Math.round(manager.loan.debt * loanSharkSettings.interestAddedPerWeek)
+      manager.loan.debt += addedAmount
+      manager.addToLog({message: `You loan debt has incresed by ${addedAmount} because of ${loanSharkSettings.interestAddedPerWeek * 100}% interest, you now owe ${manager.loan.debt}`})
+
+    }
+    function managerHasNotMadeRepaymentInSpecifiedNumberOfWeeks(): boolean{
+      return manager.loan.weeksOverdue >= loanSharkSettings.weeksOfNoPaybackUntilRespond
+    }
+    function loanSharkAssaultsOneOfManagersFighters(){
+      if(manager.fighters.length == 0)
+        return
+      
+      const randomFighter = manager.fighters[random(manager.fighters.length - 1)]
+
+      let randomStat
+      let failSafeTries = 0
+      while(!randomStat || randomFighter.fighting.stats[randomStat] == 0){
+        const stats = ['strength', 'fitness', 'intelligence', 'agression']
+        randomStat = stats[random(3)]
+        failSafeTries ++
+        if(failSafeTries == 10)
+          return        
+      }
+
+      randomFighter.fighting.stats[randomStat] --
+
+      manager.addToLog({type: 'critical', message: `The loan shark is mad that you didnt pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat} has been reduced by 1`})
+
+
+    }
+
   })
 }

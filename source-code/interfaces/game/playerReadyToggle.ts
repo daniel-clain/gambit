@@ -1,4 +1,5 @@
-import { ClientId } from "../../types/game/clientId";
+import ClientId from "../../types/client-id.type";
+
 
 export interface PlayerReadyToggle{
   ready: boolean

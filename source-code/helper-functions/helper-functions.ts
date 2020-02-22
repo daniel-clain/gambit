@@ -32,6 +32,52 @@ export const getDistanceBetweenTwoPoints = (point1: Coords, point2: Coords): num
   )
 }
 
+export function getPointGivenDistanceAndDirectionFromOtherPoint(point: Coords, distance: number, direction: Direction360): Coords{
+  const hypotenuse = distance
+  let {x, y} = point
+
+  if(direction < 90){
+    const angle = direction - 0
+    const sinAngle = Math.sin(angle * (Math.PI/180))
+    const cosAngle = Math.cos(angle * (Math.PI/180))
+    x += Math.round(sinAngle * hypotenuse)
+    y += Math.round(cosAngle * hypotenuse)
+  }
+  else if(direction < 180){
+    const angle = direction - 90
+    const sinAngle = Math.sin(angle * (Math.PI/180))
+    const cosAngle = Math.cos(angle * (Math.PI/180))
+    x += Math.round(cosAngle * hypotenuse)
+    y -= Math.round(sinAngle * hypotenuse)
+  }
+  else if(direction < 270){
+    const angle = direction - 180
+    const sinAngle = Math.sin(angle * (Math.PI/180))
+    const cosAngle = Math.cos(angle * (Math.PI/180))
+    x -= Math.round(sinAngle * hypotenuse)
+    y -= Math.round(cosAngle * hypotenuse)
+  }
+  else if(direction < 360){
+    const angle = direction - 270
+    const sinAngle = Math.sin(angle * (Math.PI/180))
+    const cosAngle = Math.cos(angle * (Math.PI/180))
+    x -= Math.round(cosAngle * hypotenuse)
+    y += Math.round(sinAngle * hypotenuse)
+
+  }
+
+
+
+
+
+
+  const sinAngle = Math.sin(direction * (Math.PI/180))
+  const cosAngle = Math.cos(direction * (Math.PI/180))
+
+  
+  return {x, y}
+}
+
 
 export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords): Direction360 => {
   let directionOfPosition2FromPosition1: Direction360
@@ -87,7 +133,6 @@ export const convertFighterInfoToKnownFighter = (fighterInfo: FighterInfo): Know
 
   const knownFighter: KnownFighter = {
     name: fighterInfo.name,
-    inNextFight: fighterInfo.inNextFight,
     knownStats
   }
 

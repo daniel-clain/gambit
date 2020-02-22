@@ -12,6 +12,7 @@ export interface Ability {
   possibleTargets: AbilityTargetType[]
   executes: ExecutesWhenOptions 
   canOnlyTargetSameTargetOnce: boolean
+  disabled?: boolean
 }
 
 export interface ServerAbility extends Ability {

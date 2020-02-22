@@ -7,7 +7,8 @@ const gatherEvidence: Ability = {
   cost: { money: 20, actionPoints: 1 },
   possibleTargets: ['opponent manager'],
   executes: 'End Of Round',
-  canOnlyTargetSameTargetOnce: true
+  canOnlyTargetSameTargetOnce: true,
+  disabled: true
 }
 
 export const gatherEvidenceServer: ServerAbility = {

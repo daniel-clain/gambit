@@ -3,7 +3,7 @@ import FighterFighting from "./fighter-fighting"
 export default class FighterStats {
   
   private _baseStamina
-  private _baseSpirit = 5
+  private _baseSpirit
   private _baseSpeed
   private _baseStrength
   private _baseIntelligence
@@ -17,7 +17,9 @@ export default class FighterStats {
   aggression
   intelligence
 
-  constructor(public fighting: FighterFighting){}
+  constructor(public fighting: FighterFighting){
+    this.baseSpirit = 5
+  }
 
   get fitness(){
     return this._fitness
@@ -82,7 +84,11 @@ export default class FighterStats {
 
 
   private updateBaseStamina(){
-    this.baseStamina = Math.round(this.strength*.7 + this.fitness*.5)
+    this.baseStamina = Math.round(
+      3 +
+      (this.strength ? this.strength*.7 : 0) + 
+      (this.fitness ? this.fitness*.5 : 0)
+    )
   }
 
 

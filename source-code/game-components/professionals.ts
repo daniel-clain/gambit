@@ -1,6 +1,6 @@
 
 import { Profession } from "../types/game/profession";
-import { AbilityName } from "./abilities/abilities";
+import { AbilityName } from "./abilities-reformed/ability";
 
 export const getProfessionalsAbilities = (profession: Profession): AbilityName[] => {
   switch (profession) {

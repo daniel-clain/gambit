@@ -2,7 +2,7 @@ import {PlayerInfo} from './../interfaces/player-info.interface';
 import { Socket } from 'socket.io';
 import ClientName from '../types/client-name.type';
 import ClientId from '../types/client-id.type';
-import { GameHostUiState } from '../interfaces/game-ui-state.interface';
+import { MainGameData } from '../interfaces/game-ui-state.interface';
 import ClientAction from '../interfaces/client-action';
 import GameHost from './game-host';
 import GameLobbyClient from '../interfaces/game-lobby-client.interface';
@@ -14,7 +14,7 @@ export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Up
 
 
 export default class ConnectedClient{
-  private gameHostUiState: GameHostUiState = {
+  private gameHostUiState: MainGameData = {
     inGame: false,
     connectedPlayers: [],
     gameLobbies: [],
@@ -89,15 +89,15 @@ export default class ConnectedClient{
   }
 
 
-  private sendGameHostUiStateToClient(){
-    this.socket.emit('Game Host UI State Update', this.gameHostUiState)
+  private sendMainGameDataToClient(){
+    this.socket.emit('Main Game Data Update', this.gameHostUiState)
   }
 
   gameHostUiUpdate(connectedClients: ClientNameAndId[], gameLobbies: GameLobby[], globalChat: ChatMessage[]){
     this.gameHostUiState.connectedPlayers = connectedClients  
     this.gameHostUiState.gameLobbies = gameLobbies  
     this.gameHostUiState.globalChat = globalChat    
-    this.sendGameHostUiStateToClient()
+    this.sendMainGameDataToClient()
   }
 
   getPlayerInfo(): PlayerInfo{
@@ -109,12 +109,12 @@ export default class ConnectedClient{
   }
   gameStarted(){
     this.gameHostUiState.inGame = true     
-    this.sendGameHostUiStateToClient()
+    this.sendMainGameDataToClient()
   }
 
   gameFinished(){
     this.gameHostUiState.inGame = false    
-    this.sendGameHostUiStateToClient()
+    this.sendMainGameDataToClient()
   }
 
 }

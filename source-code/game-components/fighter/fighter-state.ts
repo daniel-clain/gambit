@@ -1,7 +1,6 @@
 
-import OneToFive from '../../types/game/one-to-five.type';
-import { ActiveContract, Contract } from '../../interfaces/game/contract.interface';
-import Manager from '../manager/manager';
+import { ActiveContract, GoalContract } from '../../interfaces/game/contract.interface';
+import Manager from '../manager';
 import Fight from "../fight/fight";
 import { Employee } from '../../interfaces/game-ui-state.interface';
 import Fighter from './fighter';
@@ -14,6 +13,7 @@ export default class FighterState{
   private _poisoned: boolean = false
   dead: boolean = false
   activeContract: ActiveContract = null
+  goalContract: GoalContract = null
   guards: Employee[] = []
   
   trainingProgress = 0

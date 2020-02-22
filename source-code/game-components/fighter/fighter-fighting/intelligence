@@ -17,3 +17,13 @@
 * does not attack enemies with their back turned
 * does not attack enemies that are in an animation
 * does not reposition to avoid being in the middle
+
+= whats the difference between unintelligent fighter and agressive fighter
+* aggressive 
+  - has higher attack speed
+  - attacks more often than defends or retreats
+  - more likely to crit
+  - more likely to go on a rampage
+* unintelligent fighter
+  - less probability to make the best decision
+  - has probability to do weird stuff

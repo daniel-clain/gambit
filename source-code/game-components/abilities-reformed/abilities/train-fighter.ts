@@ -2,7 +2,7 @@ import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
 import Fighter from "../../fighter/fighter"
 import { random } from "../../../helper-functions/helper-functions"
-import Manager from "../../manager/manager"
+import Manager from "../../manager"
 import SkillLevel from "../../../types/skill-level.type"
 import { Employee } from "../../../interfaces/game-ui-state.interface"
 

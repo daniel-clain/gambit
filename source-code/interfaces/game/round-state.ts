@@ -8,5 +8,5 @@ export interface RoundState {
   stage: RoundStages
   managerOptionsTimeLeft: number
   jobSeekers: JobSeeker[]
-  activeFight: Fight
+  activeFight: Fight,
 }

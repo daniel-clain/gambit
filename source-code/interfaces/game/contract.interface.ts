@@ -1,10 +1,15 @@
-export interface Contract{
+export interface GoalContract{
   weeklyCost: number
   numberOfWeeks: number
 }
 
 export interface ActiveContract{
-  costPerWeek: number
+  weeklyCost: number
   weeksRemaining: number
   numberOfWeeks: number
+}
+
+export interface ContractOffer{
+  numberOfWeeks: number
+  weeklyCost: number
 }

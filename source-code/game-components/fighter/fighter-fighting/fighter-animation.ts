@@ -69,8 +69,8 @@ export default class FighterAnimation{
 
   
   speedModifier(baseAnimationSpeed){
-    const {speed} = this.fighting.stats
-    return baseAnimationSpeed * (1-(speed*2/100))
+    const {speed, aggression} = this.fighting.stats
+    return baseAnimationSpeed * (1-(speed*1.7/100)) * (1-(aggression*1.7/100))
   }
 
 

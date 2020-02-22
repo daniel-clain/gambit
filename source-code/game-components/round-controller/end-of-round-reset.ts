@@ -14,6 +14,8 @@ function returnProfessionalJobSeekersToProfessionalsPool(game: Game){
     const {name, profession, skillLevel, abilities} = jobSeeker
     return {name, profession, skillLevel, abilities}
   }))
+
+  game.fighters.forEach(fighter => fighter.state.goalContract = null)
 }
 
 function resetFighterAffects(game: Game) {

@@ -8,7 +8,7 @@ console.clear()
 const server = express()
 server.use(express.static('compiled-code/client/main-game'))
 const serverPort = 3302
-server.listen(serverPort, () => console.log('server listening on port ' + serverPort))
+server.listen(serverPort, () => console.log('server running on port ' + serverPort))
 
 
 new GameHost(new ServerWebsocketService())

@@ -1,0 +1,26 @@
+.activity-log{
+  overflow: hidden;
+  .list{
+    padding-right: 0;
+    &__row{
+      padding: 4px;
+      margin-bottom: 0;
+      &--main-color{
+        background-color: #eefbff;
+      }
+      &--alternate-color{
+        background-color: #e2ffe5;
+      }
+      &--critical{
+        background-color: #ffdede;
+        color: #ce0000;
+      }
+      &--new-round{
+        background-color: #ccc;
+        font-weight: bold;
+        color: #666;
+        border-bottom: #666 solid 1px;
+      }
+    }
+  }
+}

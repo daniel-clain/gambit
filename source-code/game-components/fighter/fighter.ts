@@ -4,6 +4,8 @@ import { FighterInfo } from '../../interfaces/game-ui-state.interface';
 import Fight from '../fight/fight';
 import FighterFighting from './fighter-fighting/fighter-fighting';
 import { Skin } from '../../types/figher/skin';
+import { GoalContract } from "../../interfaces/game/contract.interface";
+import { random } from "../../helper-functions/helper-functions";
 
 
 export default class Fighter{
@@ -40,6 +42,22 @@ export default class Fighter{
     }
   }
 
+  determineGoalContract(){
+    const {intelligence, fitness, strength, aggression } = this.fighting.stats
+    const mainStatsCombined = intelligence + fitness + strength + aggression
+
+    const halfOfMainStats = Math.round(mainStatsCombined * .5)
+
+    const randomRange = random(halfOfMainStats) + halfOfMainStats
+
+    const weeklyCost = randomRange
+
+    this.state.goalContract = {
+      numberOfWeeks: 6,
+      weeklyCost
+    }
+  }
+
 
 
 
@@ -53,7 +71,8 @@ export default class Fighter{
       numberOfFights: this.state.numberOfFights,
       numberOfWins: this.state.numberOfWins,
       manager: this.state.manager && this.state.manager.name,
-      activeContract: this.state.activeContract
+      activeContract: this.state.activeContract,
+      goalContract: this.state.goalContract,
     }
   }
   startFighting(){

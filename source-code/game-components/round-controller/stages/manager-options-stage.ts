@@ -2,12 +2,10 @@
 import { Subject, Subscription } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
-import { ManagerInfo } from "../../manager/manager";
+import { ManagerInfo } from "../../manager";
 import gameConfiguration from "../../game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stages";
-import { wait } from "../../../helper-functions/helper-functions";
-import { FighterInfo } from "../../../interfaces/game-ui-state.interface";
 
 export default class ManagerOptionsStage implements IStage {
 
@@ -18,6 +16,7 @@ export default class ManagerOptionsStage implements IStage {
   private managerReadyStateSubscriptions: Subscription[]
   private _timeLeft: number
   private timeLeftInterval
+  private timesUpTimer
   private duration
 
   constructor(private game: Game, private roundController: RoundController){
@@ -31,8 +30,9 @@ export default class ManagerOptionsStage implements IStage {
 
     this.timeLeft = this.duration
     this.timeLeftInterval = setInterval(() => this.timeLeft --, 1000)
-
-    wait(this.duration*1000).then(this.stageFinished.bind(this))  
+    this.timesUpTimer = setTimeout(() => {
+      this.stageFinished.bind(this)
+    }, this.duration*1000);
     this.allManagersReadySubject.subscribe(this.stageFinished.bind(this))   
   }
 
@@ -47,6 +47,7 @@ export default class ManagerOptionsStage implements IStage {
 
   private stageFinished(){
     this.timeLeft = null
+    clearInterval(this.timesUpTimer)
     clearInterval(this.timeLeftInterval)
     this.tearDownManagersReadyStateSubscriptions()
     this.finished.next()

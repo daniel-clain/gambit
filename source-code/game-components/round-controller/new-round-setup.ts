@@ -2,15 +2,20 @@ import Game from "../game";
 import gameConfiguration from "../game-configuration";
 import { shuffle, random } from "../../helper-functions/helper-functions";
 import { JobSeeker } from "../../interfaces/game-ui-state.interface";
-import { Contract } from "../../interfaces/game/contract.interface";
+import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
-import Fight, { FightState } from "../fight/fight";
+import Fight from "../fight/fight";
+import Manager from "../manager";
 
 export function setupNewRound(game: Game){
   setRoundJobSeekers(game)
   setupRoundFight(game)
+  addNewRoundToManagerLog(game)
 }
 
+function addNewRoundToManagerLog(game: Game){
+  game.managers.forEach(manager => manager.addToLog({type: 'new round', message: `Round ${game.roundController.roundNumber}`}));
+}
 
 function setRoundJobSeekers(game: Game){
   const { numberOfProfessionalJobSeekersPerRound, numberOfFighterJobSeekersPerRound } = gameConfiguration
@@ -18,7 +23,7 @@ function setRoundJobSeekers(game: Game){
   shuffle(game.professionals)
   .splice(0, numberOfProfessionalJobSeekersPerRound)
   .map((professional): JobSeeker => {
-    let goalContract: Contract
+    let goalContract: GoalContract
     switch(professional.profession){
       case 'Drug Dealer':
         goalContract = {
@@ -73,14 +78,14 @@ function setRoundJobSeekers(game: Game){
     )
   )
   .slice(0, numberOfFighterJobSeekersPerRound)
-  .map((fighter): JobSeeker => ({
-    type: 'Fighter',
-    name: fighter.name,
-    goalContract: {
-      numberOfWeeks: 6,
-      weeklyCost: 5
+  .map((fighter): JobSeeker => {
+    fighter.determineGoalContract()
+    return {
+      type: 'Fighter',
+      name: fighter.name,
+      goalContract: fighter.state.goalContract
     }
-  }))
+  })
 
   game.roundController.jobSeekers.push(...fighterJobSeekers)
 
@@ -98,6 +103,7 @@ function setupRoundFight(game: Game) {
     numOfFighters -= 1
   if(game.roundController.roundNumber > 16)
     numOfFighters += 1
+
   
   const randomFighters: Fighter[] = []
 
@@ -139,7 +145,7 @@ function setupRoundFight(game: Game) {
   game.roundController.lastFightFighters = randomFighters.map(fighter => fighter.name)
 
 
-  game.roundController.activeFight.fightStateUpdatedSubject.subscribe((fightState: FightState) => {
-    game.roundController.fightStateUpdatedSubject.next(fightState)
+  game.roundController.activeFight.fightUiDataSubject.subscribe(() => {
+    game.roundController.fightUiDataSubject.next()
   })
 }

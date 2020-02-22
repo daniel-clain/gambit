@@ -1,7 +1,6 @@
 
 import { ClientAbility, AbilityData, AbilitySourceInfo, AbilityTargetInfo } from "./ability"
 import { researchFighterClient } from "./abilities/research-fighter"
-import { ManagerInfo } from "../manager/manager"
 import { assaultFighterClient } from "./abilities/assault-fighter"
 import { doSurveillanceClient } from "./abilities/do-surveillance"
 import { gatherEvidenceClient } from "./abilities/gather-evidence"
@@ -15,6 +14,8 @@ import { sueManagerClient } from "./abilities/sue-manager"
 import { trainFighterClient } from "./abilities/train-fighter"
 import { Employee, JobSeeker } from "../../interfaces/game-ui-state.interface"
 import { dopeFighterClient } from "./abilities/dope-fighter"
+import Game from "../game"
+import { ManagerInfo } from "../manager"
 
 interface AbilityServiceClient {
   abilities: ClientAbility[]
@@ -31,7 +32,7 @@ interface AbilityServiceClient {
 
   getPossibleTargets(clientAbility: ClientAbility, managerInfo: ManagerInfo, jobSeekers: JobSeeker[]): AbilityTargetInfo[]
 
-  canOnlyBeTargetedOnceConflict (ability: ClientAbility, abilityTarget: AbilityTargetInfo, delayedExecutionAbilities: AbilityData[]): boolean
+  canOnlyBeTargetedOnceConflict (ability: ClientAbility, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], managerInfo: ManagerInfo): boolean
 }
 
 export const abilityServiceClient: AbilityServiceClient = (() => {
@@ -137,14 +138,29 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
       if (managerInfo.fighters.length == 0)
         return false
 
-    if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData.target, delayedExecutionAbilities))
+    if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
       return false
 
     return true
   }
 
-  const canOnlyBeTargetedOnceConflict = (ability: ClientAbility, abilityTarget: AbilityTargetInfo, delayedExecutionAbilities: AbilityData[]): boolean => {
-    return ability.canOnlyTargetSameTargetOnce && abilityTarget && delayedExecutionAbilities.some(delayedAbility => delayedAbility.name == ability.name && delayedAbility.target.name == abilityTarget.name)
+  const canOnlyBeTargetedOnceConflict = (ability: ClientAbility, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], managerInfo: ManagerInfo): boolean => {
+    if(
+      ability.canOnlyTargetSameTargetOnce && 
+      abilityData.target && 
+      delayedExecutionAbilities.some(delayedAbility => {
+        if(
+          (
+            delayedAbility.source.name == managerInfo.name || 
+            managerInfo.employees.some(employee => employee.name == delayedAbility.source.name)
+          ) &&
+          delayedAbility.name == ability.name && 
+          delayedAbility.target.name == abilityData.target.name
+        )
+          return true
+      })
+    )
+      return true
   }
 
   const canAffordAbility = (ability: ClientAbility, managerMoney: number): boolean => {
@@ -172,12 +188,17 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
     if (sourceActionPoints < clientAbility.cost.actionPoints)
       throw (`${abilityData.source.type} ${abilityData.source.name} does not have enough action points for ${clientAbility.name}`)
 
-    if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData.target, delayedExecutionAbilities))
+    if((clientAbility.name == 'Dope Fighter' || clientAbility.name == 'Poison Fighter') && !managerInfo.employees.some(employee => employee.profession == 'Drug Dealer'))
+      throw(`${clientAbility.name} can only be used unless if you have a Drug Dealer employed`)
+
+    if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
       throw (`${abilityData.target.name} has already been targeted for ${clientAbility.name} and can not be the target of this ability again`)
 
   }
   const getAbilitiesFighterCanBeTheTargetOf = (fighterOwnedByManager: boolean): ClientAbility[] => {
     return abilities.filter((ability: ClientAbility) => {
+      if(ability.disabled)
+        return false
       if(fighterOwnedByManager)
         return ability.possibleTargets.includes('fighter owned by manager')  
       else

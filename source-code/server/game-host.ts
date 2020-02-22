@@ -142,7 +142,7 @@ export default class GameHost{
       
     const playerInfos: PlayerInfo[] = connectedClients.map(client => client.getPlayerInfo())
     console.log(`${startedGameLobby.creator.name} has started his game lobby!`);
-    const newGame: Game = new Game(playerInfos)
+    const newGame: Game = new Game('Websockets' ,playerInfos)
 
     this.activeGames.push(newGame)
     this.removeGameLobby(startedGameLobby)

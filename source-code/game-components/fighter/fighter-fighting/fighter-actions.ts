@@ -6,7 +6,6 @@ import selectRandomResponseBasedOnProbability from "./random-based-on-probabilit
 import { wait, random } from "../../../helper-functions/helper-functions";
 import AttackResponseProbability from "./attack-response-probability";
 import { AttackType } from "../../../types/figher/attack-types";
-import { HitDamage } from "../../../types/figher/hitDamage";
 
 export default class FighterActions {
   
@@ -23,13 +22,22 @@ export default class FighterActions {
   }
 
   async decideAction(){  
-    const { proximity, flanking, movement, fighter, logistics} = this.fighting
+    const { proximity, flanking, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
+
+    if(knockedOut || stopFighting){
+      console.log(`${fighter.name} did not decide an action`);
+      return
+    }
+    
+
+    
+    //console.log(`${fighter.name} decide action`);
     
     let closestEnemy: Fighter = proximity.getClosestRememberedEnemy()
 
     let enemyWithinStrikingRange = closestEnemy && proximity.enemyWithinStrikingRange(closestEnemy)
     
-    flanking.determineIfFlanked()
+    //flanking.determineIfFlanked()
 
     const combatActions: CombatAction[] = ['punch', 'critical strike', 'defend']
     const moveActions: MoveAction[] = ['move to attack', 'retreat', 'retreat from flanked', 'fast retreat', 'cautious retreat']
@@ -61,21 +69,19 @@ export default class FighterActions {
     )
     const totalNum = responseProbabilities.reduce((count, rp) => count + rp[1], 0)
 
-    console.log(`${fighter.name}'s response probabilities are: ${responseProbabilities.map((rp: [ActionName, number]) => 
+    /* console.log(`${fighter.name}'s action probabilities are: ${responseProbabilities.map((rp: [ActionName, number]) => 
       `\n ${rp[0]}: ${Math.round(rp[1]/totalNum*100)}%`
-    )}`,responseProbabilities);
+    )}`,responseProbabilities); */
 
     decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
 
     if(!decidedAction){
-      console.log(`${fighter.name} had no decided action, wait half a sec then decide again`);
-      wait(500).then(() => 
-        !this.fighting.knockedOut && 
-        this.decideAction())
+      //console.log(`${fighter.name} had no decided action, wait half a sec then decide again`);
+      wait(500).then(() => this.decideAction())
     }
     else {
     
-      console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
+      //console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
 
       try{
         switch (decidedAction) {
@@ -104,16 +110,22 @@ export default class FighterActions {
       if(logistics.allOtherFightersAreKnockedOut())
         this.fighting.modelState = 'Victory'
 
-      if(!this.fighting.animation.inProgress)
-        if(!this.fighting.knockedOut && !this.fighting.stopFighting)
-          this.fighting.actions.decideAction()
-      else        
-        console.log(`${this.fighting.fighter.name} did not start a new action after ${name} because ${this.fighting.animation.inProgress} is in progress`);
+      if(!this.fighting.animation.inProgress){
+        this.fighting.actions.decideAction()
+      }
+      else{        
+        if(this.fighting.animation.inProgress == null)
+          debugger
+        if(!this.fighting.fighter.name)
+          debugger
+        console.log(`${this.fighting.fighter.name} did not start a new action after ${decidedAction} because ${this.fighting.animation.inProgress} is in progress`);
+
+      }
     }           
   }
 
   async startDefending(enemy: Fighter) {   
-    const {proximity, animation, movement} = this.fighting
+  const {proximity, animation, movement} = this.fighting
     if(proximity.isFacingAwayFromEnemy(enemy))
       await movement.turnAround()
 
@@ -138,13 +150,13 @@ export default class FighterActions {
       attackType == 'punch' && {
         name: 'trying to punch',
         model: 'Punching',
-        duration: animation.speedModifier(200)
+        duration: animation.speedModifier(100)
       }
       ||
       attackType == 'critical strike' && {
         name: 'trying to critical strike',
         model: 'Kicking',
-        duration: animation.speedModifier(200)
+        duration: animation.speedModifier(100)
       }      
     )
     
@@ -167,8 +179,8 @@ export default class FighterActions {
       
 
       if(attackType == 'critical strike'){
-        const chanceToGoOnARampage = random(3)
-        if(chanceToGoOnARampage == 3)
+        const chanceToGoOnARampage = random(10)
+        if(chanceToGoOnARampage < this.fighting.stats.aggression)
           timers.start('on a rampage')
       }
       
@@ -253,11 +265,12 @@ export default class FighterActions {
     }
 
     const attackResponseActions: AttackResponseAction[] = ['dodge', 'block', 'take hit']
-    const result: ActionName = selectRandomResponseBasedOnProbability(
-      attackResponseActions.map(response => 
-        this.attackResponseProbability.getProbabilityTo(response, enemy, attackType)
-      )
+
+    const responseProbabilities = attackResponseActions.map(response => 
+      this.attackResponseProbability.getProbabilityTo(response, enemy, attackType)
     )
+  
+    const result: ActionName = selectRandomResponseBasedOnProbability(responseProbabilities)
 
     switch(result){
       case 'dodge' : 
@@ -316,14 +329,18 @@ export default class FighterActions {
   async takeAHit(attackType: AttackType, attackingFighter: Fighter){    
 
     let {spirit, stamina, fighter, animation} = this.fighting
-    const {aggression, strength} = attackingFighter.fighting.stats
+    const {strength} = attackingFighter.fighting.stats
     
-    let hitDamage: HitDamage
-    if(attackType == 'critical strike'){
-      hitDamage = Math.round(aggression + strength * .5) as HitDamage
-    } else {
-      hitDamage = Math.round(strength * .5) as HitDamage
-    } 
+    let hitDamage = Math.round(
+      (
+        attackType == 'critical strike' ?
+        strength * .8 :
+        strength * .4
+      ) * 10
+    ) / 10
+
+    hitDamage = 0
+    
     if(spirit != 0)
     this.fighting.spirit --
       this.fighting.stamina = stamina - hitDamage
@@ -358,9 +375,8 @@ export default class FighterActions {
       console.log(`${fighter.name}'s take hit was interupted because ${reason}`);
       return
     }
-    
-    if(!this.fighting.knockedOut)
-      this.decideAction()
+
+    this.decideAction()
   }
 
   resetNoActionTimer(){

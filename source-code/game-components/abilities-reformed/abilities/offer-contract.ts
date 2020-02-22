@@ -1,7 +1,7 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
-import Manager from "../../manager/manager"
-import { ActiveContract } from "../../../interfaces/game/contract.interface"
+import Manager from "../../manager"
+import { ActiveContract, ContractOffer } from "../../../interfaces/game/contract.interface"
 import Fighter from "../../fighter/fighter"
 import { JobSeeker, Employee } from "../../../interfaces/game-ui-state.interface"
 
@@ -27,18 +27,19 @@ export const offerContractServer: ServerAbility = {
       })
     }
 
+    const contractOffer: ContractOffer = abilityData.additionalData.contractOffer
 
     const jobSeeker: JobSeeker = game.roundController.jobSeekers.find(jobSeeker => jobSeeker.name == abilityData.target.name)
 
-    const isRecontracting: boolean = !jobSeeker
+    const isRecontractingFighter: boolean = !jobSeeker
 
     if(jobSeeker){
       if(jobSeeker.type == 'Professional'){
         const {abilities, profession, skillLevel, name} = jobSeeker
         const activeContract: ActiveContract = {
-          costPerWeek: jobSeeker.goalContract.weeklyCost, 
-          weeksRemaining: jobSeeker.goalContract.numberOfWeeks,
-          numberOfWeeks: jobSeeker.goalContract.numberOfWeeks
+          weeklyCost: contractOffer.weeklyCost, 
+          weeksRemaining: contractOffer.numberOfWeeks,
+          numberOfWeeks: contractOffer.numberOfWeeks
         }
         game.roundController.jobSeekers.splice(game.roundController.jobSeekers.findIndex(jobSeeker => jobSeeker.name == abilityData.target.name), 1)
         const employee: Employee = {abilities, profession, skillLevel, name, activeContract, actionPoints: 1}
@@ -53,24 +54,23 @@ export const offerContractServer: ServerAbility = {
         manager.fighters.push(fighter)
         fighter.state.manager = manager
         const activeContract: ActiveContract = {
-          costPerWeek: jobSeeker.goalContract.weeklyCost, 
-          weeksRemaining: jobSeeker.goalContract.numberOfWeeks,
-          numberOfWeeks: jobSeeker.goalContract.numberOfWeeks
+          weeklyCost: contractOffer.weeklyCost, 
+          weeksRemaining: contractOffer.numberOfWeeks,
+          numberOfWeeks: contractOffer.numberOfWeeks
         }
         fighter.state.activeContract = activeContract
         const knownFighterIndex = manager.knownFighters.findIndex(fighter => fighter.name == abilityData.target.name)
         manager.knownFighters.splice(knownFighterIndex, 1)
       }
     }
-    if(isRecontracting){
-      const employee = manager.employees.find(employee => employee.name == abilityData.target.name)
-      if(employee){
-        employee.activeContract.weeksRemaining == employee.activeContract.numberOfWeeks
-      }
-      
+    if(isRecontractingFighter){
       const fighter = manager.fighters.find(fighter => fighter.name == abilityData.target.name)
       if(fighter){
-        fighter.state.activeContract.weeksRemaining = fighter.state.activeContract.numberOfWeeks
+        fighter.state.activeContract = {
+          weeklyCost: contractOffer.weeklyCost,
+          weeksRemaining: contractOffer.numberOfWeeks,
+          numberOfWeeks: contractOffer.numberOfWeeks
+        }
       }
     }
 

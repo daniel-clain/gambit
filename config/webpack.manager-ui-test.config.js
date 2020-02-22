@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var sourceDir = `${__dirname}/../source-code/client/manager-ui-test`
-var compiledDir = `${__dirname}/../compiled-code/client/manager-ui-test`
+var sourceDir = `${__dirname}/../source-code/client/different-build-modes/manager-ui-test`
 
 module.exports = {
   mode: 'development',  

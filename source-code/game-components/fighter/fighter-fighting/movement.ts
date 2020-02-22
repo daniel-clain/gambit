@@ -12,7 +12,7 @@ import { MoveAction } from "../../../types/figher/action-name";
 export default class Movement {
 
   
-  private _movingDirection: Direction360
+  private movingDirection: Direction360
   coords: Coords = {x: 0, y: 0}
 
   reverseMoving: boolean
@@ -25,49 +25,6 @@ export default class Movement {
 
   constructor(public fighting: FighterFighting){}
 
-  set movingDirection(val){
-    this._movingDirection = val
-    //this.setFacingDirectionByDegree(this.movingDirection)
-  }
-  get movingDirection(){
-    return this._movingDirection
-  }
-
-  setFacingDirectionByDegree(movingDirection: Direction360){
-    const {logistics, facingDirection, timers} = this.fighting
-    const {moveActionInProgress} = logistics
-
-    const currentFacingDirection = facingDirection
-
-    let facingBasedOnMovingDirection: FacingDirection
-    if(movingDirection < 180)
-      facingBasedOnMovingDirection = 'right'
-    else
-      facingBasedOnMovingDirection = 'left'
-
-      
-    const walkingBackwardFacingDirection: FacingDirection = facingBasedOnMovingDirection == 'left' ? 'right' : 'left'
-
-
-    if(moveActionInProgress != 'move to attack')
-      this.reverseMoving = false
-
-
-    if(moveActionInProgress == 'cautious retreat' || this.reverseMoving){
-      if(currentFacingDirection == walkingBackwardFacingDirection)
-        return
-     /*  else
-        this.fighting.actions.startAction(actions.turnAround)
-        .catch(() => null) */
-    }
-    else {
-      if(currentFacingDirection == facingBasedOnMovingDirection)
-        return
-      /* else
-        this.fighting.actions.startAction(actions.turnAround)
-        .catch(() => null) */
-    }
-  }
 
   async doMoveAction(enemy: Fighter, moveAction: MoveAction): Promise<void>{    
     const {proximity, flanking, logistics} = this.fighting
@@ -81,7 +38,6 @@ export default class Movement {
       this.movingDirection = flanking.getRetreatFromFlankedDirection()
     else
       this.movingDirection = proximity.getDirectionOfEnemyStrikingCenter(enemy, moveAction != 'move to attack')
-
 
     const moveActionFacesAway = ['fast retreat', 'retreat'].some(a => a == moveAction)   
 
@@ -138,7 +94,7 @@ export default class Movement {
     if(logistics.moveActionInProgress == 'fast retreat' || onARampage || logistics.moveActionInProgress == 'retreat from flanked')
       speedBoostActive = true
 
-    let timeToMove2Pixels = (100 - (speed * 15))
+    let timeToMove2Pixels = (100 - (speed * 10))
     if(logistics.moveActionInProgress == 'cautious retreat') 
       timeToMove2Pixels *=  1.15
     if(speedBoostActive)

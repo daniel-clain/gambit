@@ -1,5 +1,5 @@
 import {Bet} from './bet';
-import Manager from '../../classes/game/manager/manager';
+import Manager from '../../game-components/manager/manager';
 
 export interface ManagersBet{
   manager: Manager

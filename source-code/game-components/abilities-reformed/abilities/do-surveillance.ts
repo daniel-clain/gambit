@@ -7,7 +7,8 @@ const doSurveillance: Ability = {
   cost: { money: 50, actionPoints: 1 },
   possibleTargets: ['fighter not owned by manager', 'opponent manager'],
   executes: 'End Of Manager Options Stage',
-  canOnlyTargetSameTargetOnce: false
+  canOnlyTargetSameTargetOnce: false,
+  disabled: true
 }
 
 export const doSurveillanceServer: ServerAbility = {

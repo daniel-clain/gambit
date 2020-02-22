@@ -1,8 +1,10 @@
 import { Subject } from "rxjs";
-import { GameUiState } from "./game-ui-state.interface";
 import PlayerAction from "./player-action";
+import { PlayerGameUiData, DisplayGameUiData } from "./game-ui-state.interface";
+
 
 export default interface IUpdateCommunicatorUi {
-  receiveGameUiStateUpdate: Subject<GameUiState>
+  receivePlayerGameUiData: Subject<PlayerGameUiData>
+  receiveDisplayGameUiData: Subject<DisplayGameUiData>
   sendPlayerAction(playerAction: PlayerAction): void  
 };

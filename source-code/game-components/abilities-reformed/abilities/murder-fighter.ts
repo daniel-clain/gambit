@@ -1,7 +1,7 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
 import { Employee } from "../../../interfaces/game-ui-state.interface"
-import Manager from "../../manager/manager"
+import Manager from "../../manager"
 import { random } from "../../../helper-functions/helper-functions"
 
 
@@ -17,14 +17,15 @@ export const murderFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
     
-    
+    const fightersManager = fighter.state.manager
     let hitman: Employee
     let hitmansManager: Manager
     for(let manager of game.managers){
       hitman = manager.employees.find(employee => employee.name == abilityData.source.name)
-      if(hitman)
+      if(hitman){
         hitmansManager = manager
         break
+      }
     }
 
     
@@ -54,6 +55,8 @@ export const murderFighterServer: ServerAbility = {
       hitmansManager.addToLog({
         message: `${hitman.name} has murdered ${fighter.name}, he is dead`
       })
+      if(fightersManager)
+        fightersManager.addToLog({type: 'critical', message: `Your fighter, ${fighter.name}, has been murdered`})
     }
     else
       game.roundController.preFightNewsStage.newsItems.push({

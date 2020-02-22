@@ -2,28 +2,69 @@ import PlayerNameAndId from './player-name-and-id';
 import GameLobby from './game-lobby.interface';
 import ChatMessage from './chat-message.interface';
 import SkillLevel from '../types/skill-level.type';
-import RoundStages from '../types/game/round-stages';
-import { FightState } from '../game-components/fight/fight';
-import { Contract, ActiveContract } from './game/contract.interface';
-import { ManagerInfo } from '../game-components/manager/manager';
+import { ActiveContract, GoalContract } from './game/contract.interface';
+import { ManagerInfo } from '../game-components/manager';
 import { Profession } from '../types/game/profession';
 import { AbilityName, AbilityData } from '../game-components/abilities-reformed/ability';
+import RoundStages from '../types/game/round-stages';
+import { ManagerImage } from '../types/game/manager-image';
+import { NewsItem } from '../types/game/news-item';
+import FighterFightState from './game/fighter-fight-state-info';
+import { FightUiData } from './game/fight-ui-data';
+import { Bet } from './game/bet';
 
-export interface GameHostUiState{
+export interface MainGameData{
   inGame: boolean
   connectedPlayers: PlayerNameAndId[]
   gameLobbies: GameLobby[]
   globalChat: ChatMessage[]
 }
-export interface GameUiState{
-  roundStage: RoundStages,
-  fightState: FightState,
-  managerUiState: ManagerUiState
+
+export interface DisplayGameUiData{
+  roundStage: RoundStages
+  displayManagerUiData: DisplayManagerUiData
+  preFightNewsUiData: DisplayPreFightNewsUiData
+  fightUiData: FightUiData
 }
+
+export interface PlayerGameUiData{
+  roundStage: RoundStages
+  playerPreManagerUiData: PlayerPreManagerUiData
+  playerManagerUiData: PlayerManagerUiData
+  preFightNewsUiData: DisplayPreFightNewsUiData
+  fightUiData: FightUiData
+}
+
+
+
+interface DisplayPreFightNewsUiData{
+  newsItems: NewsItem[]
+}
+
+interface PlayerPreManagerUiData{
+  notifications: string[]
+}
+
+export interface ManagerDisplayInfo{
+  name: string
+  ready: boolean
+  image: ManagerImage
+  bet: Bet
+}
+
+export interface DisplayManagerUiData{  
+  roundStage: RoundStages,
+  timeLeft: number
+  managersDisplayInfo: ManagerDisplayInfo[]
+  nextFightFighters: string[]
+  jobSeekers: JobSeekerInfo[]
+}
+
 
 export interface Loan{
   debt: number
   weeksOverdue: number
+  amountPaidBackThisWeek: number
 }
 
 
@@ -40,8 +81,13 @@ export interface JobSeeker{
   profession?: Profession
   skillLevel?: SkillLevel
   abilities?: AbilityName[]
-  goalContract: Contract  
+  goalContract: GoalContract  
 
+}
+
+export interface JobSeekerInfo{
+  name: string, 
+  type: Profession | 'Fighter'
 }
 
 export interface Employee extends Professional{
@@ -70,6 +116,7 @@ export interface KnownFighterStats{
 export interface KnownFighter{
   name: string
   knownStats: KnownFighterStats
+  goalContract: GoalContract
 }
 
 export interface FighterInfo{
@@ -82,9 +129,10 @@ export interface FighterInfo{
   numberOfWins: number
   manager: string
   activeContract: ActiveContract
+  goalContract: GoalContract
 }
 
-export interface ManagerUiState{
+export interface PlayerManagerUiData{
   managerInfo: ManagerInfo  
   managerOptionsTimeLeft: number
   jobSeekers: JobSeeker[]

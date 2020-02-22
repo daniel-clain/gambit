@@ -6,7 +6,7 @@ const dopeFighter: Ability = {
   name: 'Dope Fighter',
   cost: { money: 40, actionPoints: 1 },
   possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
-  executes: 'Instantly',
+  executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true
 }
 

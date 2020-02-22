@@ -1,7 +1,7 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
 import { Employee } from "../../../interfaces/game-ui-state.interface"
-import Manager from "../../manager/manager"
+import Manager from "../../manager"
 import { random } from "../../../helper-functions/helper-functions"
 
 
@@ -21,9 +21,10 @@ export const poisonFighterServer: ServerAbility = {
     let poisonersManager: Manager
     for(let manager of game.managers){
       poisoner = manager.employees.find(employee => employee.name == abilityData.source.name)
-      if(poisoner)
+      if(poisoner){
         poisonersManager = manager
         break
+      }
     }    
     
     if(fighter.state.dead){

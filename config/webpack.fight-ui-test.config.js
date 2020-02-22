@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var sourceDir = `${__dirname}/../source-code/client/fight-ui-test`
-var compiledDir = `${__dirname}/../compiled-code/client/fight-ui-test`
+var sourceDir = `${__dirname}/../source-code/client/different-build-modes/fight-ui-test`
 
 module.exports = {
   mode: 'development',
@@ -37,13 +36,7 @@ module.exports = {
       {
         test: /\.(jpg|png)$/,        
         use: {
-          loader: 'url-loader',
-          options: {
-            limit: 100000,
-            fallback: 'file-loader',
-            name: '[name].[ext]',
-            publicPath: './../'
-          }
+          loader: 'url-loader'
         }
       },
       {

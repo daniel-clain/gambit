@@ -1,0 +1,73 @@
+* generate fighter match history
+* when fighter wins, make money relative to their odds
+
+*make manager options stage 3 mins, make 10 seconds remaining obvious
+* make knows fighters a lot smaller(maybe button that opens card), use space for other stuff
+*-loanshark charging double interest(cant replicate, try with multiplayer)
+*phone only connects if on the wifi
+* know who you bet on and how much u made
+* handle disconnecting player
+
+*goal contract not showing in fighter card for job seeking fighters sometimes
+* preload images
+* winner text centered in arena
+* fighter can target fighter while standing on same y value (should move to attack from accurate range)
+* attack should not miss if moves closer
+*sound playing when start fight(cant replicate single player)
+
+* intelligent guy gettin stuck in the middle
+* fighter start positions make them more random
+*fighters get stuck on diagonal
+* does a fighter recover stam and spirit if interupted
+* fighters with low intelligence need to do unintelligent things
+* add recovery based on fitness
+* speedboost changes speed stat
+* rampage changes aggression stat
+
+
+*values in ability cards should reflect variable values from abilites affects, including loanshark
+*prefight global and personal info cards, premanager personal info cards
+*drug dealers makes less money for each other active drug dealer selling that turn
+*show ability card costs, red if cant affort
+*on ability card, click on source or target to see their card
+*marker next to your fighters and knowfighter if fighter is in fight
+*add recovery stat
+*talent scout prioritized for research over private agent
+
+ongoing
+=======
+*spelling mistakes
+
+
+minor
+======
+* stats have a random chance to decrease each round, higher based on how high the stats are
+* get manager pics for players to pick
+
+Ideas
+=========================
+* random events
+- fighter with high publicity get attacked by a fan
+- agency checks fighters for doping and removes them if found
+- fighters get food poisoning
+- royal rumble, 8 fighters, winner makes x4 money
+- police arest drug dealer
+- fighter get injured from excessive exercise
+
+* manager can expend action points to make small amounts of money
+* states like poisoning, injured and doping persist mutiple rounds and go down over time
+*fighter can be injured from fight
+*injured can give concussion which reduces intellignce
+* can see fighters in next weeks fight
+* injured or poisoned cant get put in fight
+* doping permanantly increases agression and decreases intelligence, too much doping fighter can die
+* remove activity log, replace with pre post news updates
+* other managers panel, shows known info about other managers
+* discover fighter ability, finds fighters that are unknown with minimal stats
+
+
+
+
+
+
+

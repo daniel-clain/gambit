@@ -8,8 +8,6 @@ import { getDirectionOfPosition2FromPosition1, getDistanceBetweenTwoPoints } fro
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right"
 import EdgeCoordDistance from "../../../interfaces/game/fighter/edge-coord-distance"
 import Octagon from "../../fight/octagon"
-import EnemiesSortedByDistance from "../../../interfaces/game/fighter/enemies-sorted-by-distance"
-import EdgesSortedByDistance from "../../../interfaces/game/fighter/edges-sorted-by-distance"
 import FighterModelState from "../../../types/figher/fighter-model-states"
 import Flanker from "../../../interfaces/game/fighter/flanker"
 import { defaultSkinModelImages } from "../../../client/images/fighter/default-skin/default-skin-model-images"
@@ -47,10 +45,10 @@ export default class Proximity {
       const thisX = this.fighting.movement.coords.x 
 
       if(this.fighting.facingDirection === 'left'){        
-        return otherX < thisX
+        return otherX <= thisX
       }
       if(this.fighting.facingDirection === 'right'){        
-        return otherX > thisX
+        return otherX >= thisX
       }
     })
     
@@ -153,6 +151,7 @@ export default class Proximity {
       (facingDirection == 'right' && behindCenter)
     )
       x = movement.coords.x - width * 0.4
+
 
     return {x, y}
   }

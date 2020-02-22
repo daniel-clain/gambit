@@ -1,46 +1,36 @@
-import FighterFightState from "../../interfaces/game/fighter-fight-state-info"
-import { FighterInfo } from "../../interfaces/game-ui-state.interface"
-import ManagerWinnings from "../../../manager-winnings"
+
 import { Subject, Subscription } from "rxjs"
 import Fighter from "../fighter/fighter"
 import gameConfiguration from "../game-configuration"
-import { random } from "../../helper-functions/helper-functions"
+import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../helper-functions/helper-functions"
 import Octagon from "./octagon"
 import Coords from '../../interfaces/game/fighter/coords';
+import Direction360 from "../../types/figher/direction-360"
+import { FightReport } from "../../interfaces/game/fight-report"
+import { FightUiData } from "../../interfaces/game/fight-ui-data"
 
 
-export interface FightState{
-  startCountdown: number
-  timeRemaining: number
-  report: FightReport
-  fighters: FighterFightState[]
-}
-export interface FightReport{
-  draw?: boolean
-  remainingFighters?: FighterInfo[]
-  winner?: FighterInfo
-  managerWinnings?: ManagerWinnings[]
-}
 
 export default class Fight {
   private fightUpdateLoop
 
   private _report: FightReport = null
-  private _timeRemaining: number = null
+  private timeRemaining: number = null
   private _startCountdown: number = null
 
   fightFinishedSubject: Subject<FightReport> = new Subject()
-  fightStateUpdatedSubject: Subject<FightState> = new Subject()  
+  fightUiDataSubject: Subject<FightUiData> = new Subject()  
   
 
-  private timer
+  private timesUpTimer
+  private timeRemainingInterval
   
   constructor(public fighters: Fighter[]) {    
     fighters.forEach(fighter => fighter.getPutInFight(this))
   }
 
   doTeardown(){
-    this.fightStateUpdatedSubject.complete()
+    this.fightUiDataSubject.complete()
   }
 
   getOtherFightersInFight(thisFighter: Fighter){
@@ -48,7 +38,7 @@ export default class Fight {
   }
 
   watchForAWinner(){
-    const watchForWinnerSubscription: Subscription = this.fightStateUpdatedSubject.subscribe(() => {
+    const watchForWinnerSubscription: Subscription = this.fightUiDataSubject.subscribe(() => {
       const remainingFighters: Fighter[] = this.getFightersThatArentKnockedOut()
       if(remainingFighters.length == 1){
         watchForWinnerSubscription.unsubscribe()
@@ -66,13 +56,11 @@ export default class Fight {
     this.tellFightersToStartFighting()
     this.watchForAWinner()
     const {maxFightDuration} = gameConfiguration.stageDurations
-    this.timer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
+    this.timeRemaining = maxFightDuration
+    this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
+    this.timesUpTimer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
   }
 
-  set time(value: number){
-    this._timeRemaining = value
-    this.sendUiStateUpdate()
-  }  
 
   private fightCountdown(): Promise<void>{
     return new Promise(resolve => {
@@ -88,7 +76,6 @@ export default class Fight {
   }
 
   set startCountdown(value: number){
-    console.log('value :', value);
     this._startCountdown = value
     this.sendUiStateUpdate()
   }
@@ -128,13 +115,16 @@ export default class Fight {
   }
 
   private finishFight(fightReport){
-    clearInterval(this.timer)
+    this.report = fightReport
+    this.timeRemaining = 0
+    clearTimeout(this.timesUpTimer)
+    clearInterval(this.timeRemainingInterval)
 
     
     setTimeout(() => {
       clearInterval(this.fightUpdateLoop)
       this.fightFinishedSubject.next(fightReport)
-    }, 5000)
+    }, 2000)
     this.fighters.forEach(f => {
       f.stopFighting()
       f.state.numberOfFights ++
@@ -146,13 +136,13 @@ export default class Fight {
   }
 
   sendUiStateUpdate(){
-    this.fightStateUpdatedSubject.next(this.fightState)
+    this.fightUiDataSubject.next(this.fightUiData)
   }
 
-  get fightState(): FightState{
+  get fightUiData(): FightUiData{
     return {
       startCountdown: this._startCountdown,
-      timeRemaining: this._timeRemaining,
+      timeRemaining: this.timeRemaining,
       report: this._report,
       fighters: this.fighters.map(fighter => fighter.fighting.getState())
     }
@@ -170,13 +160,18 @@ export default class Fight {
   }
 
   private placeFighters(){    
-    this.fighters.forEach((fighter: Fighter) => {
-      while(!fighter.fighting.movement.coords || fighter.fighting.movement.isMoveOutsideOfBounds(fighter.fighting.movement.coords)){
-        fighter.fighting.movement.coords = {
-          x: random(Octagon.getWidth()),
-          y: random(Octagon.getHeight())          
-        }
-      }      
+    const angleBetweenEachFighter = 360 / this.fighters.length
+    const distanceFromCenter = 150
+    const centerPoint: Coords = {
+      x: (Octagon.edges.right.point1.x - Octagon.edges.left.point1.x) / 2,
+      y: (Octagon.edges.top.point1.y - Octagon.edges.bottom.point1.y) / 2
+    }
+
+    this.fighters.forEach((fighter: Fighter, index) => {
+      let angle: Direction360 = 90 + angleBetweenEachFighter * index as Direction360
+      if(angle >= 360)
+        angle -= 360
+      fighter.fighting.movement.coords = getPointGivenDistanceAndDirectionFromOtherPoint(centerPoint, distanceFromCenter, angle)
     })
   }
 

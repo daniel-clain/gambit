@@ -1,52 +1,76 @@
 import { random, shuffle } from "../helper-functions/helper-functions";
-import { JobSeeker, Professional } from "../interfaces/game-ui-state.interface";
+import { Professional } from "../interfaces/game-ui-state.interface";
 import Game from "./game";
 import gameConfiguration from "./game-configuration";
 import { PlayerInfo } from "../interfaces/player-info.interface";
-import Manager from "./manager/manager";
-import UpdateCommunicatorGameWebsocket from "./update-communicator-game-websocket";
-import UpdateCommunicatorGame from "./update-communicator-game";
+import Manager from "./manager";
 import Fighter from "./fighter/fighter";
 import { GameType } from "../types/game/game-type";
-import { type } from "os";
 import SkillLevel from "../types/skill-level.type";
 import { Profession } from "../types/game/profession";
 import { getProfessionalsAbilities } from "./professionals";
+import { AbilityProcessor, getAbilityProcessor } from "./abilities-reformed/ability-processor";
+import PlayerUpdateCommunicatorGame from "./update-communicators/player-update-communicator-game";
+import PlayerUpdateCommunicatorGameWebsocket from "./update-communicators/player-update-communicator-game-websocket";
+import DisplayUpdateCommunicatorGameWebsocket from "./update-communicators/display-update-communicator-game-websocket";
 
 export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo[]) => {
-    
-  const shuffledNames: string[] = shuffle([...gameConfiguration.listOfNames])  
+  const shuffledNames: string[] = shuffle([...gameConfiguration.listOfNames]) 
 
-  const setupPlayersAndManagers = (playerInfo: PlayerInfo[], gameType: GameType) => {
-    game.managers = []
-    game.playersUpdateCommunicators = []
-    playerInfo.forEach((playerInfo: PlayerInfo, index) => {
+  createFighters()
+  createProfessionals()
+  setupPlayersAndManagers(playerInfo, gameType)     
+  setupGameDisplay(playerInfo, gameType)
+
+  function setupGameDisplay (playerInfo: PlayerInfo[], gameType: GameType) {
+    game.displayUpdateCommunicators = []
+    playerInfo
+    .filter(playerInfo => playerInfo.name == 'Game Display')
+    .forEach((playerInfo: PlayerInfo, index) => {
       const {socket, name, id} = playerInfo
-      const playersManager: Manager = new Manager(playerInfo.name, game)
-      game.managers.push(playersManager)
       if(gameType == 'Websockets')
-        game.playersUpdateCommunicators.push(new UpdateCommunicatorGameWebsocket(
+        game.displayUpdateCommunicators.push(new DisplayUpdateCommunicatorGameWebsocket(
           socket,
-          game,
-          playersManager
-        ))
-      if(gameType == 'Local')
-        game.playersUpdateCommunicators.push(new UpdateCommunicatorGame(
-          game,
-          playersManager
+          game
         ))
     }) 
   }
 
-  const createFighters = () => {
+  function setupPlayersAndManagers (playerInfo: PlayerInfo[], gameType: GameType) {
+    const abilityProcessor: AbilityProcessor = getAbilityProcessor(game)
+    game.managers = []
+    game.playersUpdateCommunicators = []
+    playerInfo
+    .filter(playerInfo => playerInfo.name != 'Game Display')
+    .forEach((playerInfo: PlayerInfo, index) => { 
+      const {socket, name, id} = playerInfo
+      const playersManager: Manager = new Manager(playerInfo.name, game)
+      game.managers.push(playersManager)
+      if(gameType == 'Websockets')
+        game.playersUpdateCommunicators.push(new PlayerUpdateCommunicatorGameWebsocket(
+          socket,
+          game,
+          playersManager,
+          abilityProcessor
+        ))
+      if(gameType == 'Local')
+        game.playersUpdateCommunicators.push(new PlayerUpdateCommunicatorGame(
+          game,
+          playersManager,
+          abilityProcessor
+        ))
+    }) 
+  }
+
+  function createFighters(){
     const amount: number = gameConfiguration.numberOfFighters
     const newFighters: Fighter[] = []
     for(;newFighters.length < amount;){
       const newFighter = new Fighter(shuffledNames.pop())
       newFighter.fighting.stats.baseStrength = random(5, true)
       newFighter.fighting.stats.fitness = random(5, true)
-      newFighter.fighting.stats.baseAggression = random(5, true)
-      newFighter.fighting.stats.baseIntelligence = random(5, true)
+      newFighter.fighting.stats.baseAggression = random(5)
+      newFighter.fighting.stats.baseIntelligence = random(5)
       newFighter.fighting.reset()
       newFighters.push(newFighter)
     }
@@ -54,7 +78,7 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
     game.fighters = newFighters
   }
 
-  const createProfessionals = () => {
+  function createProfessionals(){
     const {numberOfProfessionals} = gameConfiguration
     const professionals: Professional[] = []
     for(;professionals.length < numberOfProfessionals;){
@@ -63,7 +87,7 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
     game.professionals = professionals
   }
 
-  const getRandomProfessional = (): Professional => {
+  function getRandomProfessional(): Professional {
     const randomProfession: Profession = getRandomProfession()
     
     return {
@@ -74,7 +98,7 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
     }
   }
 
-  const getRandomProfession = (): Profession => {
+  function getRandomProfession(): Profession{
     let totalProbability = 0
     
     for( let profession in gameConfiguration.professionalTypeProbability){
@@ -92,9 +116,5 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
         probabilityRange += gameConfiguration.professionalTypeProbability[profession]
     }
   }
-  
-  createFighters()
-  createProfessionals()
-  setupPlayersAndManagers(playerInfo, gameType)
 
 };

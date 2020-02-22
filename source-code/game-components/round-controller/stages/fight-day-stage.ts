@@ -3,14 +3,12 @@ import RoundStages from "../../../types/game/round-stages";
 import { Subject } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
-import { FightState, FightReport } from "../../fight/fight";
-import Manager from "../../manager/manager";
+import { FightUiData, FightReport } from "../../fight/fight";
+import Manager from "../../manager";
 import { Bet } from "../../../interfaces/game/bet";
 import gameConfiguration from "../../game-configuration";
 import Fighter from "../../fighter/fighter";
-import ManagerWinnings from "../../../../manager-winnings";
-
-
+import { ManagerWinnings } from "../../../interfaces/game/manager-winnings";
 
 export default class FightDayStage implements IStage {
   name: RoundStages = 'Fight Day'
@@ -24,7 +22,7 @@ export default class FightDayStage implements IStage {
     this.finished = new Subject();
 
 
-    const {fightStateUpdatedSubject, fightFinishedSubject} = this.roundController.activeFight
+    const {fightUiDataSubject, fightFinishedSubject} = this.roundController.activeFight
     this.roundController.activeFight.start()
 
     /* fightStateUpdatedSubject.subscribe(

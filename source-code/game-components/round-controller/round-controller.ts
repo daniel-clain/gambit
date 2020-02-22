@@ -1,6 +1,6 @@
 import { Subject, merge } from 'rxjs';
 import RoundStages from '../../types/game/round-stages';
-import Fight, { FightState } from '../fight/fight';
+import Fight from '../fight/fight';
 import { JobSeeker } from '../../interfaces/game-ui-state.interface';
 import Game from '../game';
 import ManagerOptionsStage from './stages/manager-options-stage';
@@ -21,8 +21,8 @@ export class RoundController {
   activeFight: Fight
   lastFightFighters: string[] = []
 
+  fightUiDataSubject: Subject<void> = new Subject()
   roundStateUpdateSubject: Subject<RoundState> = new Subject()
-  fightStateUpdatedSubject: Subject<FightState> = new Subject()
   endOfRoundSubject: Subject<void> = new Subject()
   endOfManagerOptionsStageSubject: Subject<void> = new Subject()
 
