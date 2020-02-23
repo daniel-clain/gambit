@@ -122,22 +122,6 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
   return directionOfPosition2FromPosition1
 }
 
-export const convertFighterInfoToKnownFighter = (fighterInfo: FighterInfo): KnownFighter => {
-
-  let knownStats = {} as KnownFighterStats
-
-  for(let key in fighterInfo){
-    if(key !== 'name' && key !== 'inNextFight')
-      knownStats[key] = fighterInfo[key]
-  }
-
-  const knownFighter: KnownFighter = {
-    name: fighterInfo.name,
-    knownStats
-  }
-
-  return knownFighter
-}
 
 
 
