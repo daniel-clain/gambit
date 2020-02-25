@@ -339,7 +339,6 @@ export default class FighterActions {
       ) * 10
     ) / 10
 
-    hitDamage = 0
     
     if(spirit != 0)
     this.fighting.spirit --

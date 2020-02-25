@@ -1,4 +1,6 @@
+host-packages
 compiled-code
+dist
 node_modules
 .cache
 .DS_Store

@@ -18,7 +18,8 @@ export default class DisplayFightUi extends React.Component<DisplayFightUiProps>
     return (
       <div className='display-fight-ui'>
         <ManagersBets managers={managers.map(manager => {
-          delete manager.bet.size
+          if(manager.bet)
+            manager.bet.size = undefined
           return manager
         })}/> 
         <FightUi fightUiData={fightUiData}/>

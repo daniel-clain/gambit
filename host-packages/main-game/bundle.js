@@ -81,10 +81,2359 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./source-code/client/main-game/main-game.tsx");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./source-code/client/different-build-modes/main-game/main-game.tsx");
 /******/ })
 /************************************************************************/
 /******/ ({
+
+/***/ "./node_modules/React/cjs/react.development.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/React/cjs/react.development.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/** @license React v16.12.0
+ * react.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
+
+
+
+if (true) {
+  (function() {
+'use strict';
+
+var _assign = __webpack_require__(/*! object-assign */ "./node_modules/object-assign/index.js");
+var checkPropTypes = __webpack_require__(/*! prop-types/checkPropTypes */ "./node_modules/prop-types/checkPropTypes.js");
+
+// TODO: this is special because it gets imported during build.
+
+var ReactVersion = '16.12.0';
+
+// The Symbol used to tag the ReactElement-like types. If there is no native Symbol
+// nor polyfill, then a plain number is used for performance.
+var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+// (unstable) APIs that have been removed. Can we remove the symbols?
+
+
+var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
+var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+var REACT_SUSPENSE_TYPE = hasSymbol ? Symbol.for('react.suspense') : 0xead1;
+var REACT_SUSPENSE_LIST_TYPE = hasSymbol ? Symbol.for('react.suspense_list') : 0xead8;
+var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
+var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
+var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
+var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
+var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
+var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
+var FAUX_ITERATOR_SYMBOL = '@@iterator';
+function getIteratorFn(maybeIterable) {
+  if (maybeIterable === null || typeof maybeIterable !== 'object') {
+    return null;
+  }
+
+  var maybeIterator = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL];
+
+  if (typeof maybeIterator === 'function') {
+    return maybeIterator;
+  }
+
+  return null;
+}
+
+// Do not require this module directly! Use normal `invariant` calls with
+// template literal strings. The messages will be replaced with error codes
+// during build.
+
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
+/**
+ * Forked from fbjs/warning:
+ * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
+ *
+ * Only change is we use console.warn instead of console.error,
+ * and do nothing when 'console' is not supported.
+ * This really simplifies the code.
+ * ---
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+var lowPriorityWarningWithoutStack = function () {};
+
+{
+  var printWarning = function (format) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    var argIndex = 0;
+    var message = 'Warning: ' + format.replace(/%s/g, function () {
+      return args[argIndex++];
+    });
+
+    if (typeof console !== 'undefined') {
+      console.warn(message);
+    }
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      throw new Error(message);
+    } catch (x) {}
+  };
+
+  lowPriorityWarningWithoutStack = function (condition, format) {
+    if (format === undefined) {
+      throw new Error('`lowPriorityWarningWithoutStack(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (!condition) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      printWarning.apply(void 0, [format].concat(args));
+    }
+  };
+}
+
+var lowPriorityWarningWithoutStack$1 = lowPriorityWarningWithoutStack;
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+var warningWithoutStack = function () {};
+
+{
+  warningWithoutStack = function (condition, format) {
+    for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      args[_key - 2] = arguments[_key];
+    }
+
+    if (format === undefined) {
+      throw new Error('`warningWithoutStack(condition, format, ...args)` requires a warning ' + 'message argument');
+    }
+
+    if (args.length > 8) {
+      // Check before the condition to catch violations early.
+      throw new Error('warningWithoutStack() currently supports at most 8 arguments.');
+    }
+
+    if (condition) {
+      return;
+    }
+
+    if (typeof console !== 'undefined') {
+      var argsWithFormat = args.map(function (item) {
+        return '' + item;
+      });
+      argsWithFormat.unshift('Warning: ' + format); // We intentionally don't use spread (or .apply) directly because it
+      // breaks IE9: https://github.com/facebook/react/issues/13610
+
+      Function.prototype.apply.call(console.error, console, argsWithFormat);
+    }
+
+    try {
+      // --- Welcome to debugging React ---
+      // This error was thrown as a convenience so that you can use this stack
+      // to find the callsite that caused this warning to fire.
+      var argIndex = 0;
+      var message = 'Warning: ' + format.replace(/%s/g, function () {
+        return args[argIndex++];
+      });
+      throw new Error(message);
+    } catch (x) {}
+  };
+}
+
+var warningWithoutStack$1 = warningWithoutStack;
+
+var didWarnStateUpdateForUnmountedComponent = {};
+
+function warnNoop(publicInstance, callerName) {
+  {
+    var _constructor = publicInstance.constructor;
+    var componentName = _constructor && (_constructor.displayName || _constructor.name) || 'ReactClass';
+    var warningKey = componentName + "." + callerName;
+
+    if (didWarnStateUpdateForUnmountedComponent[warningKey]) {
+      return;
+    }
+
+    warningWithoutStack$1(false, "Can't call %s on a component that is not yet mounted. " + 'This is a no-op, but it might indicate a bug in your application. ' + 'Instead, assign to `this.state` directly or define a `state = {};` ' + 'class property with the desired state in the %s component.', callerName, componentName);
+    didWarnStateUpdateForUnmountedComponent[warningKey] = true;
+  }
+}
+/**
+ * This is the abstract API for an update queue.
+ */
+
+
+var ReactNoopUpdateQueue = {
+  /**
+   * Checks whether or not this composite component is mounted.
+   * @param {ReactClass} publicInstance The instance we want to test.
+   * @return {boolean} True if mounted, false otherwise.
+   * @protected
+   * @final
+   */
+  isMounted: function (publicInstance) {
+    return false;
+  },
+
+  /**
+   * Forces an update. This should only be invoked when it is known with
+   * certainty that we are **not** in a DOM transaction.
+   *
+   * You may want to call this when you know that some deeper aspect of the
+   * component's state has changed but `setState` was not called.
+   *
+   * This will not invoke `shouldComponentUpdate`, but it will invoke
+   * `componentWillUpdate` and `componentDidUpdate`.
+   *
+   * @param {ReactClass} publicInstance The instance that should rerender.
+   * @param {?function} callback Called after component is updated.
+   * @param {?string} callerName name of the calling function in the public API.
+   * @internal
+   */
+  enqueueForceUpdate: function (publicInstance, callback, callerName) {
+    warnNoop(publicInstance, 'forceUpdate');
+  },
+
+  /**
+   * Replaces all of the state. Always use this or `setState` to mutate state.
+   * You should treat `this.state` as immutable.
+   *
+   * There is no guarantee that `this.state` will be immediately updated, so
+   * accessing `this.state` after calling this method may return the old value.
+   *
+   * @param {ReactClass} publicInstance The instance that should rerender.
+   * @param {object} completeState Next state.
+   * @param {?function} callback Called after component is updated.
+   * @param {?string} callerName name of the calling function in the public API.
+   * @internal
+   */
+  enqueueReplaceState: function (publicInstance, completeState, callback, callerName) {
+    warnNoop(publicInstance, 'replaceState');
+  },
+
+  /**
+   * Sets a subset of the state. This only exists because _pendingState is
+   * internal. This provides a merging strategy that is not available to deep
+   * properties which is confusing. TODO: Expose pendingState or don't use it
+   * during the merge.
+   *
+   * @param {ReactClass} publicInstance The instance that should rerender.
+   * @param {object} partialState Next partial state to be merged with state.
+   * @param {?function} callback Called after component is updated.
+   * @param {?string} Name of the calling function in the public API.
+   * @internal
+   */
+  enqueueSetState: function (publicInstance, partialState, callback, callerName) {
+    warnNoop(publicInstance, 'setState');
+  }
+};
+
+var emptyObject = {};
+
+{
+  Object.freeze(emptyObject);
+}
+/**
+ * Base class helpers for the updating state of a component.
+ */
+
+
+function Component(props, context, updater) {
+  this.props = props;
+  this.context = context; // If a component has string refs, we will assign a different object later.
+
+  this.refs = emptyObject; // We initialize the default updater but the real one gets injected by the
+  // renderer.
+
+  this.updater = updater || ReactNoopUpdateQueue;
+}
+
+Component.prototype.isReactComponent = {};
+/**
+ * Sets a subset of the state. Always use this to mutate
+ * state. You should treat `this.state` as immutable.
+ *
+ * There is no guarantee that `this.state` will be immediately updated, so
+ * accessing `this.state` after calling this method may return the old value.
+ *
+ * There is no guarantee that calls to `setState` will run synchronously,
+ * as they may eventually be batched together.  You can provide an optional
+ * callback that will be executed when the call to setState is actually
+ * completed.
+ *
+ * When a function is provided to setState, it will be called at some point in
+ * the future (not synchronously). It will be called with the up to date
+ * component arguments (state, props, context). These values can be different
+ * from this.* because your function may be called after receiveProps but before
+ * shouldComponentUpdate, and this new state, props, and context will not yet be
+ * assigned to this.
+ *
+ * @param {object|function} partialState Next partial state or function to
+ *        produce next partial state to be merged with current state.
+ * @param {?function} callback Called after state is updated.
+ * @final
+ * @protected
+ */
+
+Component.prototype.setState = function (partialState, callback) {
+  if (!(typeof partialState === 'object' || typeof partialState === 'function' || partialState == null)) {
+    {
+      throw Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
+    }
+  }
+
+  this.updater.enqueueSetState(this, partialState, callback, 'setState');
+};
+/**
+ * Forces an update. This should only be invoked when it is known with
+ * certainty that we are **not** in a DOM transaction.
+ *
+ * You may want to call this when you know that some deeper aspect of the
+ * component's state has changed but `setState` was not called.
+ *
+ * This will not invoke `shouldComponentUpdate`, but it will invoke
+ * `componentWillUpdate` and `componentDidUpdate`.
+ *
+ * @param {?function} callback Called after update is complete.
+ * @final
+ * @protected
+ */
+
+
+Component.prototype.forceUpdate = function (callback) {
+  this.updater.enqueueForceUpdate(this, callback, 'forceUpdate');
+};
+/**
+ * Deprecated APIs. These APIs used to exist on classic React classes but since
+ * we would like to deprecate them, we're not going to move them over to this
+ * modern base class. Instead, we define a getter that warns if it's accessed.
+ */
+
+
+{
+  var deprecatedAPIs = {
+    isMounted: ['isMounted', 'Instead, make sure to clean up subscriptions and pending requests in ' + 'componentWillUnmount to prevent memory leaks.'],
+    replaceState: ['replaceState', 'Refactor your code to use setState instead (see ' + 'https://github.com/facebook/react/issues/3236).']
+  };
+
+  var defineDeprecationWarning = function (methodName, info) {
+    Object.defineProperty(Component.prototype, methodName, {
+      get: function () {
+        lowPriorityWarningWithoutStack$1(false, '%s(...) is deprecated in plain JavaScript React classes. %s', info[0], info[1]);
+        return undefined;
+      }
+    });
+  };
+
+  for (var fnName in deprecatedAPIs) {
+    if (deprecatedAPIs.hasOwnProperty(fnName)) {
+      defineDeprecationWarning(fnName, deprecatedAPIs[fnName]);
+    }
+  }
+}
+
+function ComponentDummy() {}
+
+ComponentDummy.prototype = Component.prototype;
+/**
+ * Convenience component with default shallow equality check for sCU.
+ */
+
+function PureComponent(props, context, updater) {
+  this.props = props;
+  this.context = context; // If a component has string refs, we will assign a different object later.
+
+  this.refs = emptyObject;
+  this.updater = updater || ReactNoopUpdateQueue;
+}
+
+var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
+pureComponentPrototype.constructor = PureComponent; // Avoid an extra prototype jump for these methods.
+
+_assign(pureComponentPrototype, Component.prototype);
+
+pureComponentPrototype.isPureReactComponent = true;
+
+// an immutable object with a single mutable value
+function createRef() {
+  var refObject = {
+    current: null
+  };
+
+  {
+    Object.seal(refObject);
+  }
+
+  return refObject;
+}
+
+/**
+ * Keeps track of the current dispatcher.
+ */
+var ReactCurrentDispatcher = {
+  /**
+   * @internal
+   * @type {ReactComponent}
+   */
+  current: null
+};
+
+/**
+ * Keeps track of the current batch's configuration such as how long an update
+ * should suspend for if it needs to.
+ */
+var ReactCurrentBatchConfig = {
+  suspense: null
+};
+
+/**
+ * Keeps track of the current owner.
+ *
+ * The current owner is the component who should own any components that are
+ * currently being constructed.
+ */
+var ReactCurrentOwner = {
+  /**
+   * @internal
+   * @type {ReactComponent}
+   */
+  current: null
+};
+
+var BEFORE_SLASH_RE = /^(.*)[\\\/]/;
+var describeComponentFrame = function (name, source, ownerName) {
+  var sourceInfo = '';
+
+  if (source) {
+    var path = source.fileName;
+    var fileName = path.replace(BEFORE_SLASH_RE, '');
+
+    {
+      // In DEV, include code for a common special case:
+      // prefer "folder/index.js" instead of just "index.js".
+      if (/^index\./.test(fileName)) {
+        var match = path.match(BEFORE_SLASH_RE);
+
+        if (match) {
+          var pathBeforeSlash = match[1];
+
+          if (pathBeforeSlash) {
+            var folderName = pathBeforeSlash.replace(BEFORE_SLASH_RE, '');
+            fileName = folderName + '/' + fileName;
+          }
+        }
+      }
+    }
+
+    sourceInfo = ' (at ' + fileName + ':' + source.lineNumber + ')';
+  } else if (ownerName) {
+    sourceInfo = ' (created by ' + ownerName + ')';
+  }
+
+  return '\n    in ' + (name || 'Unknown') + sourceInfo;
+};
+
+var Resolved = 1;
+
+function refineResolvedLazyComponent(lazyComponent) {
+  return lazyComponent._status === Resolved ? lazyComponent._result : null;
+}
+
+function getWrappedName(outerType, innerType, wrapperName) {
+  var functionName = innerType.displayName || innerType.name || '';
+  return outerType.displayName || (functionName !== '' ? wrapperName + "(" + functionName + ")" : wrapperName);
+}
+
+function getComponentName(type) {
+  if (type == null) {
+    // Host root, text node or just invalid type.
+    return null;
+  }
+
+  {
+    if (typeof type.tag === 'number') {
+      warningWithoutStack$1(false, 'Received an unexpected object in getComponentName(). ' + 'This is likely a bug in React. Please file an issue.');
+    }
+  }
+
+  if (typeof type === 'function') {
+    return type.displayName || type.name || null;
+  }
+
+  if (typeof type === 'string') {
+    return type;
+  }
+
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return 'Fragment';
+
+    case REACT_PORTAL_TYPE:
+      return 'Portal';
+
+    case REACT_PROFILER_TYPE:
+      return "Profiler";
+
+    case REACT_STRICT_MODE_TYPE:
+      return 'StrictMode';
+
+    case REACT_SUSPENSE_TYPE:
+      return 'Suspense';
+
+    case REACT_SUSPENSE_LIST_TYPE:
+      return 'SuspenseList';
+  }
+
+  if (typeof type === 'object') {
+    switch (type.$$typeof) {
+      case REACT_CONTEXT_TYPE:
+        return 'Context.Consumer';
+
+      case REACT_PROVIDER_TYPE:
+        return 'Context.Provider';
+
+      case REACT_FORWARD_REF_TYPE:
+        return getWrappedName(type, type.render, 'ForwardRef');
+
+      case REACT_MEMO_TYPE:
+        return getComponentName(type.type);
+
+      case REACT_LAZY_TYPE:
+        {
+          var thenable = type;
+          var resolvedThenable = refineResolvedLazyComponent(thenable);
+
+          if (resolvedThenable) {
+            return getComponentName(resolvedThenable);
+          }
+
+          break;
+        }
+    }
+  }
+
+  return null;
+}
+
+var ReactDebugCurrentFrame = {};
+var currentlyValidatingElement = null;
+function setCurrentlyValidatingElement(element) {
+  {
+    currentlyValidatingElement = element;
+  }
+}
+
+{
+  // Stack implementation injected by the current renderer.
+  ReactDebugCurrentFrame.getCurrentStack = null;
+
+  ReactDebugCurrentFrame.getStackAddendum = function () {
+    var stack = ''; // Add an extra top frame while an element is being validated
+
+    if (currentlyValidatingElement) {
+      var name = getComponentName(currentlyValidatingElement.type);
+      var owner = currentlyValidatingElement._owner;
+      stack += describeComponentFrame(name, currentlyValidatingElement._source, owner && getComponentName(owner.type));
+    } // Delegate to the injected renderer-specific implementation
+
+
+    var impl = ReactDebugCurrentFrame.getCurrentStack;
+
+    if (impl) {
+      stack += impl() || '';
+    }
+
+    return stack;
+  };
+}
+
+/**
+ * Used by act() to track whether you're inside an act() scope.
+ */
+var IsSomeRendererActing = {
+  current: false
+};
+
+var ReactSharedInternals = {
+  ReactCurrentDispatcher: ReactCurrentDispatcher,
+  ReactCurrentBatchConfig: ReactCurrentBatchConfig,
+  ReactCurrentOwner: ReactCurrentOwner,
+  IsSomeRendererActing: IsSomeRendererActing,
+  // Used by renderers to avoid bundling object-assign twice in UMD bundles:
+  assign: _assign
+};
+
+{
+  _assign(ReactSharedInternals, {
+    // These should not be included in production.
+    ReactDebugCurrentFrame: ReactDebugCurrentFrame,
+    // Shim for React DOM 16.0.0 which still destructured (but not used) this.
+    // TODO: remove in React 17.0.
+    ReactComponentTreeHook: {}
+  });
+}
+
+/**
+ * Similar to invariant but only logs a warning if the condition is not met.
+ * This can be used to log issues in development environments in critical
+ * paths. Removing the logging code for production environments will keep the
+ * same logic and follow the same code paths.
+ */
+
+var warning = warningWithoutStack$1;
+
+{
+  warning = function (condition, format) {
+    if (condition) {
+      return;
+    }
+
+    var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
+    var stack = ReactDebugCurrentFrame.getStackAddendum(); // eslint-disable-next-line react-internal/warning-and-invariant-args
+
+    for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      args[_key - 2] = arguments[_key];
+    }
+
+    warningWithoutStack$1.apply(void 0, [false, format + '%s'].concat(args, [stack]));
+  };
+}
+
+var warning$1 = warning;
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var RESERVED_PROPS = {
+  key: true,
+  ref: true,
+  __self: true,
+  __source: true
+};
+var specialPropKeyWarningShown;
+var specialPropRefWarningShown;
+
+function hasValidRef(config) {
+  {
+    if (hasOwnProperty.call(config, 'ref')) {
+      var getter = Object.getOwnPropertyDescriptor(config, 'ref').get;
+
+      if (getter && getter.isReactWarning) {
+        return false;
+      }
+    }
+  }
+
+  return config.ref !== undefined;
+}
+
+function hasValidKey(config) {
+  {
+    if (hasOwnProperty.call(config, 'key')) {
+      var getter = Object.getOwnPropertyDescriptor(config, 'key').get;
+
+      if (getter && getter.isReactWarning) {
+        return false;
+      }
+    }
+  }
+
+  return config.key !== undefined;
+}
+
+function defineKeyPropWarningGetter(props, displayName) {
+  var warnAboutAccessingKey = function () {
+    if (!specialPropKeyWarningShown) {
+      specialPropKeyWarningShown = true;
+      warningWithoutStack$1(false, '%s: `key` is not a prop. Trying to access it will result ' + 'in `undefined` being returned. If you need to access the same ' + 'value within the child component, you should pass it as a different ' + 'prop. (https://fb.me/react-special-props)', displayName);
+    }
+  };
+
+  warnAboutAccessingKey.isReactWarning = true;
+  Object.defineProperty(props, 'key', {
+    get: warnAboutAccessingKey,
+    configurable: true
+  });
+}
+
+function defineRefPropWarningGetter(props, displayName) {
+  var warnAboutAccessingRef = function () {
+    if (!specialPropRefWarningShown) {
+      specialPropRefWarningShown = true;
+      warningWithoutStack$1(false, '%s: `ref` is not a prop. Trying to access it will result ' + 'in `undefined` being returned. If you need to access the same ' + 'value within the child component, you should pass it as a different ' + 'prop. (https://fb.me/react-special-props)', displayName);
+    }
+  };
+
+  warnAboutAccessingRef.isReactWarning = true;
+  Object.defineProperty(props, 'ref', {
+    get: warnAboutAccessingRef,
+    configurable: true
+  });
+}
+/**
+ * Factory method to create a new React element. This no longer adheres to
+ * the class pattern, so do not use new to call it. Also, instanceof check
+ * will not work. Instead test $$typeof field against Symbol.for('react.element') to check
+ * if something is a React Element.
+ *
+ * @param {*} type
+ * @param {*} props
+ * @param {*} key
+ * @param {string|object} ref
+ * @param {*} owner
+ * @param {*} self A *temporary* helper to detect places where `this` is
+ * different from the `owner` when React.createElement is called, so that we
+ * can warn. We want to get rid of owner and replace string `ref`s with arrow
+ * functions, and as long as `this` and owner are the same, there will be no
+ * change in behavior.
+ * @param {*} source An annotation object (added by a transpiler or otherwise)
+ * indicating filename, line number, and/or other information.
+ * @internal
+ */
+
+
+var ReactElement = function (type, key, ref, self, source, owner, props) {
+  var element = {
+    // This tag allows us to uniquely identify this as a React Element
+    $$typeof: REACT_ELEMENT_TYPE,
+    // Built-in properties that belong on the element
+    type: type,
+    key: key,
+    ref: ref,
+    props: props,
+    // Record the component responsible for creating this element.
+    _owner: owner
+  };
+
+  {
+    // The validation flag is currently mutative. We put it on
+    // an external backing store so that we can freeze the whole object.
+    // This can be replaced with a WeakMap once they are implemented in
+    // commonly used development environments.
+    element._store = {}; // To make comparing ReactElements easier for testing purposes, we make
+    // the validation flag non-enumerable (where possible, which should
+    // include every environment we run tests in), so the test framework
+    // ignores it.
+
+    Object.defineProperty(element._store, 'validated', {
+      configurable: false,
+      enumerable: false,
+      writable: true,
+      value: false
+    }); // self and source are DEV only properties.
+
+    Object.defineProperty(element, '_self', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: self
+    }); // Two elements created in two different places should be considered
+    // equal for testing purposes and therefore we hide it from enumeration.
+
+    Object.defineProperty(element, '_source', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: source
+    });
+
+    if (Object.freeze) {
+      Object.freeze(element.props);
+      Object.freeze(element);
+    }
+  }
+
+  return element;
+};
+/**
+ * https://github.com/reactjs/rfcs/pull/107
+ * @param {*} type
+ * @param {object} props
+ * @param {string} key
+ */
+
+
+
+/**
+ * https://github.com/reactjs/rfcs/pull/107
+ * @param {*} type
+ * @param {object} props
+ * @param {string} key
+ */
+
+function jsxDEV(type, config, maybeKey, source, self) {
+  var propName; // Reserved names are extracted
+
+  var props = {};
+  var key = null;
+  var ref = null; // Currently, key can be spread in as a prop. This causes a potential
+  // issue if key is also explicitly declared (ie. <div {...props} key="Hi" />
+  // or <div key="Hi" {...props} /> ). We want to deprecate key spread,
+  // but as an intermediary step, we will use jsxDEV for everything except
+  // <div {...props} key="Hi" />, because we aren't currently able to tell if
+  // key is explicitly declared to be undefined or not.
+
+  if (maybeKey !== undefined) {
+    key = '' + maybeKey;
+  }
+
+  if (hasValidKey(config)) {
+    key = '' + config.key;
+  }
+
+  if (hasValidRef(config)) {
+    ref = config.ref;
+  } // Remaining properties are added to a new props object
+
+
+  for (propName in config) {
+    if (hasOwnProperty.call(config, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
+      props[propName] = config[propName];
+    }
+  } // Resolve default props
+
+
+  if (type && type.defaultProps) {
+    var defaultProps = type.defaultProps;
+
+    for (propName in defaultProps) {
+      if (props[propName] === undefined) {
+        props[propName] = defaultProps[propName];
+      }
+    }
+  }
+
+  if (key || ref) {
+    var displayName = typeof type === 'function' ? type.displayName || type.name || 'Unknown' : type;
+
+    if (key) {
+      defineKeyPropWarningGetter(props, displayName);
+    }
+
+    if (ref) {
+      defineRefPropWarningGetter(props, displayName);
+    }
+  }
+
+  return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props);
+}
+/**
+ * Create and return a new ReactElement of the given type.
+ * See https://reactjs.org/docs/react-api.html#createelement
+ */
+
+function createElement(type, config, children) {
+  var propName; // Reserved names are extracted
+
+  var props = {};
+  var key = null;
+  var ref = null;
+  var self = null;
+  var source = null;
+
+  if (config != null) {
+    if (hasValidRef(config)) {
+      ref = config.ref;
+    }
+
+    if (hasValidKey(config)) {
+      key = '' + config.key;
+    }
+
+    self = config.__self === undefined ? null : config.__self;
+    source = config.__source === undefined ? null : config.__source; // Remaining properties are added to a new props object
+
+    for (propName in config) {
+      if (hasOwnProperty.call(config, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
+        props[propName] = config[propName];
+      }
+    }
+  } // Children can be more than one argument, and those are transferred onto
+  // the newly allocated props object.
+
+
+  var childrenLength = arguments.length - 2;
+
+  if (childrenLength === 1) {
+    props.children = children;
+  } else if (childrenLength > 1) {
+    var childArray = Array(childrenLength);
+
+    for (var i = 0; i < childrenLength; i++) {
+      childArray[i] = arguments[i + 2];
+    }
+
+    {
+      if (Object.freeze) {
+        Object.freeze(childArray);
+      }
+    }
+
+    props.children = childArray;
+  } // Resolve default props
+
+
+  if (type && type.defaultProps) {
+    var defaultProps = type.defaultProps;
+
+    for (propName in defaultProps) {
+      if (props[propName] === undefined) {
+        props[propName] = defaultProps[propName];
+      }
+    }
+  }
+
+  {
+    if (key || ref) {
+      var displayName = typeof type === 'function' ? type.displayName || type.name || 'Unknown' : type;
+
+      if (key) {
+        defineKeyPropWarningGetter(props, displayName);
+      }
+
+      if (ref) {
+        defineRefPropWarningGetter(props, displayName);
+      }
+    }
+  }
+
+  return ReactElement(type, key, ref, self, source, ReactCurrentOwner.current, props);
+}
+/**
+ * Return a function that produces ReactElements of a given type.
+ * See https://reactjs.org/docs/react-api.html#createfactory
+ */
+
+
+function cloneAndReplaceKey(oldElement, newKey) {
+  var newElement = ReactElement(oldElement.type, newKey, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, oldElement.props);
+  return newElement;
+}
+/**
+ * Clone and return a new ReactElement using element as the starting point.
+ * See https://reactjs.org/docs/react-api.html#cloneelement
+ */
+
+function cloneElement(element, config, children) {
+  if (!!(element === null || element === undefined)) {
+    {
+      throw Error("React.cloneElement(...): The argument must be a React element, but you passed " + element + ".");
+    }
+  }
+
+  var propName; // Original props are copied
+
+  var props = _assign({}, element.props); // Reserved names are extracted
+
+
+  var key = element.key;
+  var ref = element.ref; // Self is preserved since the owner is preserved.
+
+  var self = element._self; // Source is preserved since cloneElement is unlikely to be targeted by a
+  // transpiler, and the original source is probably a better indicator of the
+  // true owner.
+
+  var source = element._source; // Owner will be preserved, unless ref is overridden
+
+  var owner = element._owner;
+
+  if (config != null) {
+    if (hasValidRef(config)) {
+      // Silently steal the ref from the parent.
+      ref = config.ref;
+      owner = ReactCurrentOwner.current;
+    }
+
+    if (hasValidKey(config)) {
+      key = '' + config.key;
+    } // Remaining properties override existing props
+
+
+    var defaultProps;
+
+    if (element.type && element.type.defaultProps) {
+      defaultProps = element.type.defaultProps;
+    }
+
+    for (propName in config) {
+      if (hasOwnProperty.call(config, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
+        if (config[propName] === undefined && defaultProps !== undefined) {
+          // Resolve default props
+          props[propName] = defaultProps[propName];
+        } else {
+          props[propName] = config[propName];
+        }
+      }
+    }
+  } // Children can be more than one argument, and those are transferred onto
+  // the newly allocated props object.
+
+
+  var childrenLength = arguments.length - 2;
+
+  if (childrenLength === 1) {
+    props.children = children;
+  } else if (childrenLength > 1) {
+    var childArray = Array(childrenLength);
+
+    for (var i = 0; i < childrenLength; i++) {
+      childArray[i] = arguments[i + 2];
+    }
+
+    props.children = childArray;
+  }
+
+  return ReactElement(element.type, key, ref, self, source, owner, props);
+}
+/**
+ * Verifies the object is a ReactElement.
+ * See https://reactjs.org/docs/react-api.html#isvalidelement
+ * @param {?object} object
+ * @return {boolean} True if `object` is a ReactElement.
+ * @final
+ */
+
+function isValidElement(object) {
+  return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+}
+
+var SEPARATOR = '.';
+var SUBSEPARATOR = ':';
+/**
+ * Escape and wrap key so it is safe to use as a reactid
+ *
+ * @param {string} key to be escaped.
+ * @return {string} the escaped key.
+ */
+
+function escape(key) {
+  var escapeRegex = /[=:]/g;
+  var escaperLookup = {
+    '=': '=0',
+    ':': '=2'
+  };
+  var escapedString = ('' + key).replace(escapeRegex, function (match) {
+    return escaperLookup[match];
+  });
+  return '$' + escapedString;
+}
+/**
+ * TODO: Test that a single child and an array with one item have the same key
+ * pattern.
+ */
+
+
+var didWarnAboutMaps = false;
+var userProvidedKeyEscapeRegex = /\/+/g;
+
+function escapeUserProvidedKey(text) {
+  return ('' + text).replace(userProvidedKeyEscapeRegex, '$&/');
+}
+
+var POOL_SIZE = 10;
+var traverseContextPool = [];
+
+function getPooledTraverseContext(mapResult, keyPrefix, mapFunction, mapContext) {
+  if (traverseContextPool.length) {
+    var traverseContext = traverseContextPool.pop();
+    traverseContext.result = mapResult;
+    traverseContext.keyPrefix = keyPrefix;
+    traverseContext.func = mapFunction;
+    traverseContext.context = mapContext;
+    traverseContext.count = 0;
+    return traverseContext;
+  } else {
+    return {
+      result: mapResult,
+      keyPrefix: keyPrefix,
+      func: mapFunction,
+      context: mapContext,
+      count: 0
+    };
+  }
+}
+
+function releaseTraverseContext(traverseContext) {
+  traverseContext.result = null;
+  traverseContext.keyPrefix = null;
+  traverseContext.func = null;
+  traverseContext.context = null;
+  traverseContext.count = 0;
+
+  if (traverseContextPool.length < POOL_SIZE) {
+    traverseContextPool.push(traverseContext);
+  }
+}
+/**
+ * @param {?*} children Children tree container.
+ * @param {!string} nameSoFar Name of the key path so far.
+ * @param {!function} callback Callback to invoke with each child found.
+ * @param {?*} traverseContext Used to pass information throughout the traversal
+ * process.
+ * @return {!number} The number of children in this subtree.
+ */
+
+
+function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext) {
+  var type = typeof children;
+
+  if (type === 'undefined' || type === 'boolean') {
+    // All of the above are perceived as null.
+    children = null;
+  }
+
+  var invokeCallback = false;
+
+  if (children === null) {
+    invokeCallback = true;
+  } else {
+    switch (type) {
+      case 'string':
+      case 'number':
+        invokeCallback = true;
+        break;
+
+      case 'object':
+        switch (children.$$typeof) {
+          case REACT_ELEMENT_TYPE:
+          case REACT_PORTAL_TYPE:
+            invokeCallback = true;
+        }
+
+    }
+  }
+
+  if (invokeCallback) {
+    callback(traverseContext, children, // If it's the only child, treat the name as if it was wrapped in an array
+    // so that it's consistent if the number of children grows.
+    nameSoFar === '' ? SEPARATOR + getComponentKey(children, 0) : nameSoFar);
+    return 1;
+  }
+
+  var child;
+  var nextName;
+  var subtreeCount = 0; // Count of children found in the current subtree.
+
+  var nextNamePrefix = nameSoFar === '' ? SEPARATOR : nameSoFar + SUBSEPARATOR;
+
+  if (Array.isArray(children)) {
+    for (var i = 0; i < children.length; i++) {
+      child = children[i];
+      nextName = nextNamePrefix + getComponentKey(child, i);
+      subtreeCount += traverseAllChildrenImpl(child, nextName, callback, traverseContext);
+    }
+  } else {
+    var iteratorFn = getIteratorFn(children);
+
+    if (typeof iteratorFn === 'function') {
+      {
+        // Warn about using Maps as children
+        if (iteratorFn === children.entries) {
+          !didWarnAboutMaps ? warning$1(false, 'Using Maps as children is unsupported and will likely yield ' + 'unexpected results. Convert it to a sequence/iterable of keyed ' + 'ReactElements instead.') : void 0;
+          didWarnAboutMaps = true;
+        }
+      }
+
+      var iterator = iteratorFn.call(children);
+      var step;
+      var ii = 0;
+
+      while (!(step = iterator.next()).done) {
+        child = step.value;
+        nextName = nextNamePrefix + getComponentKey(child, ii++);
+        subtreeCount += traverseAllChildrenImpl(child, nextName, callback, traverseContext);
+      }
+    } else if (type === 'object') {
+      var addendum = '';
+
+      {
+        addendum = ' If you meant to render a collection of children, use an array ' + 'instead.' + ReactDebugCurrentFrame.getStackAddendum();
+      }
+
+      var childrenString = '' + children;
+
+      {
+        {
+          throw Error("Objects are not valid as a React child (found: " + (childrenString === '[object Object]' ? 'object with keys {' + Object.keys(children).join(', ') + '}' : childrenString) + ")." + addendum);
+        }
+      }
+    }
+  }
+
+  return subtreeCount;
+}
+/**
+ * Traverses children that are typically specified as `props.children`, but
+ * might also be specified through attributes:
+ *
+ * - `traverseAllChildren(this.props.children, ...)`
+ * - `traverseAllChildren(this.props.leftPanelChildren, ...)`
+ *
+ * The `traverseContext` is an optional argument that is passed through the
+ * entire traversal. It can be used to store accumulations or anything else that
+ * the callback might find relevant.
+ *
+ * @param {?*} children Children tree object.
+ * @param {!function} callback To invoke upon traversing each child.
+ * @param {?*} traverseContext Context for traversal.
+ * @return {!number} The number of children in this subtree.
+ */
+
+
+function traverseAllChildren(children, callback, traverseContext) {
+  if (children == null) {
+    return 0;
+  }
+
+  return traverseAllChildrenImpl(children, '', callback, traverseContext);
+}
+/**
+ * Generate a key string that identifies a component within a set.
+ *
+ * @param {*} component A component that could contain a manual key.
+ * @param {number} index Index that is used if a manual key is not provided.
+ * @return {string}
+ */
+
+
+function getComponentKey(component, index) {
+  // Do some typechecking here since we call this blindly. We want to ensure
+  // that we don't block potential future ES APIs.
+  if (typeof component === 'object' && component !== null && component.key != null) {
+    // Explicit key
+    return escape(component.key);
+  } // Implicit key determined by the index in the set
+
+
+  return index.toString(36);
+}
+
+function forEachSingleChild(bookKeeping, child, name) {
+  var func = bookKeeping.func,
+      context = bookKeeping.context;
+  func.call(context, child, bookKeeping.count++);
+}
+/**
+ * Iterates through children that are typically specified as `props.children`.
+ *
+ * See https://reactjs.org/docs/react-api.html#reactchildrenforeach
+ *
+ * The provided forEachFunc(child, index) will be called for each
+ * leaf child.
+ *
+ * @param {?*} children Children tree container.
+ * @param {function(*, int)} forEachFunc
+ * @param {*} forEachContext Context for forEachContext.
+ */
+
+
+function forEachChildren(children, forEachFunc, forEachContext) {
+  if (children == null) {
+    return children;
+  }
+
+  var traverseContext = getPooledTraverseContext(null, null, forEachFunc, forEachContext);
+  traverseAllChildren(children, forEachSingleChild, traverseContext);
+  releaseTraverseContext(traverseContext);
+}
+
+function mapSingleChildIntoContext(bookKeeping, child, childKey) {
+  var result = bookKeeping.result,
+      keyPrefix = bookKeeping.keyPrefix,
+      func = bookKeeping.func,
+      context = bookKeeping.context;
+  var mappedChild = func.call(context, child, bookKeeping.count++);
+
+  if (Array.isArray(mappedChild)) {
+    mapIntoWithKeyPrefixInternal(mappedChild, result, childKey, function (c) {
+      return c;
+    });
+  } else if (mappedChild != null) {
+    if (isValidElement(mappedChild)) {
+      mappedChild = cloneAndReplaceKey(mappedChild, // Keep both the (mapped) and old keys if they differ, just as
+      // traverseAllChildren used to do for objects as children
+      keyPrefix + (mappedChild.key && (!child || child.key !== mappedChild.key) ? escapeUserProvidedKey(mappedChild.key) + '/' : '') + childKey);
+    }
+
+    result.push(mappedChild);
+  }
+}
+
+function mapIntoWithKeyPrefixInternal(children, array, prefix, func, context) {
+  var escapedPrefix = '';
+
+  if (prefix != null) {
+    escapedPrefix = escapeUserProvidedKey(prefix) + '/';
+  }
+
+  var traverseContext = getPooledTraverseContext(array, escapedPrefix, func, context);
+  traverseAllChildren(children, mapSingleChildIntoContext, traverseContext);
+  releaseTraverseContext(traverseContext);
+}
+/**
+ * Maps children that are typically specified as `props.children`.
+ *
+ * See https://reactjs.org/docs/react-api.html#reactchildrenmap
+ *
+ * The provided mapFunction(child, key, index) will be called for each
+ * leaf child.
+ *
+ * @param {?*} children Children tree container.
+ * @param {function(*, int)} func The map function.
+ * @param {*} context Context for mapFunction.
+ * @return {object} Object containing the ordered map of results.
+ */
+
+
+function mapChildren(children, func, context) {
+  if (children == null) {
+    return children;
+  }
+
+  var result = [];
+  mapIntoWithKeyPrefixInternal(children, result, null, func, context);
+  return result;
+}
+/**
+ * Count the number of children that are typically specified as
+ * `props.children`.
+ *
+ * See https://reactjs.org/docs/react-api.html#reactchildrencount
+ *
+ * @param {?*} children Children tree container.
+ * @return {number} The number of children.
+ */
+
+
+function countChildren(children) {
+  return traverseAllChildren(children, function () {
+    return null;
+  }, null);
+}
+/**
+ * Flatten a children object (typically specified as `props.children`) and
+ * return an array with appropriately re-keyed children.
+ *
+ * See https://reactjs.org/docs/react-api.html#reactchildrentoarray
+ */
+
+
+function toArray(children) {
+  var result = [];
+  mapIntoWithKeyPrefixInternal(children, result, null, function (child) {
+    return child;
+  });
+  return result;
+}
+/**
+ * Returns the first child in a collection of children and verifies that there
+ * is only one child in the collection.
+ *
+ * See https://reactjs.org/docs/react-api.html#reactchildrenonly
+ *
+ * The current implementation of this function assumes that a single child gets
+ * passed without a wrapper, but the purpose of this helper function is to
+ * abstract away the particular structure of children.
+ *
+ * @param {?object} children Child collection structure.
+ * @return {ReactElement} The first and only `ReactElement` contained in the
+ * structure.
+ */
+
+
+function onlyChild(children) {
+  if (!isValidElement(children)) {
+    {
+      throw Error("React.Children.only expected to receive a single React element child.");
+    }
+  }
+
+  return children;
+}
+
+function createContext(defaultValue, calculateChangedBits) {
+  if (calculateChangedBits === undefined) {
+    calculateChangedBits = null;
+  } else {
+    {
+      !(calculateChangedBits === null || typeof calculateChangedBits === 'function') ? warningWithoutStack$1(false, 'createContext: Expected the optional second argument to be a ' + 'function. Instead received: %s', calculateChangedBits) : void 0;
+    }
+  }
+
+  var context = {
+    $$typeof: REACT_CONTEXT_TYPE,
+    _calculateChangedBits: calculateChangedBits,
+    // As a workaround to support multiple concurrent renderers, we categorize
+    // some renderers as primary and others as secondary. We only expect
+    // there to be two concurrent renderers at most: React Native (primary) and
+    // Fabric (secondary); React DOM (primary) and React ART (secondary).
+    // Secondary renderers store their context values on separate fields.
+    _currentValue: defaultValue,
+    _currentValue2: defaultValue,
+    // Used to track how many concurrent renderers this context currently
+    // supports within in a single renderer. Such as parallel server rendering.
+    _threadCount: 0,
+    // These are circular
+    Provider: null,
+    Consumer: null
+  };
+  context.Provider = {
+    $$typeof: REACT_PROVIDER_TYPE,
+    _context: context
+  };
+  var hasWarnedAboutUsingNestedContextConsumers = false;
+  var hasWarnedAboutUsingConsumerProvider = false;
+
+  {
+    // A separate object, but proxies back to the original context object for
+    // backwards compatibility. It has a different $$typeof, so we can properly
+    // warn for the incorrect usage of Context as a Consumer.
+    var Consumer = {
+      $$typeof: REACT_CONTEXT_TYPE,
+      _context: context,
+      _calculateChangedBits: context._calculateChangedBits
+    }; // $FlowFixMe: Flow complains about not setting a value, which is intentional here
+
+    Object.defineProperties(Consumer, {
+      Provider: {
+        get: function () {
+          if (!hasWarnedAboutUsingConsumerProvider) {
+            hasWarnedAboutUsingConsumerProvider = true;
+            warning$1(false, 'Rendering <Context.Consumer.Provider> is not supported and will be removed in ' + 'a future major release. Did you mean to render <Context.Provider> instead?');
+          }
+
+          return context.Provider;
+        },
+        set: function (_Provider) {
+          context.Provider = _Provider;
+        }
+      },
+      _currentValue: {
+        get: function () {
+          return context._currentValue;
+        },
+        set: function (_currentValue) {
+          context._currentValue = _currentValue;
+        }
+      },
+      _currentValue2: {
+        get: function () {
+          return context._currentValue2;
+        },
+        set: function (_currentValue2) {
+          context._currentValue2 = _currentValue2;
+        }
+      },
+      _threadCount: {
+        get: function () {
+          return context._threadCount;
+        },
+        set: function (_threadCount) {
+          context._threadCount = _threadCount;
+        }
+      },
+      Consumer: {
+        get: function () {
+          if (!hasWarnedAboutUsingNestedContextConsumers) {
+            hasWarnedAboutUsingNestedContextConsumers = true;
+            warning$1(false, 'Rendering <Context.Consumer.Consumer> is not supported and will be removed in ' + 'a future major release. Did you mean to render <Context.Consumer> instead?');
+          }
+
+          return context.Consumer;
+        }
+      }
+    }); // $FlowFixMe: Flow complains about missing properties because it doesn't understand defineProperty
+
+    context.Consumer = Consumer;
+  }
+
+  {
+    context._currentRenderer = null;
+    context._currentRenderer2 = null;
+  }
+
+  return context;
+}
+
+function lazy(ctor) {
+  var lazyType = {
+    $$typeof: REACT_LAZY_TYPE,
+    _ctor: ctor,
+    // React uses these fields to store the result.
+    _status: -1,
+    _result: null
+  };
+
+  {
+    // In production, this would just set it on the object.
+    var defaultProps;
+    var propTypes;
+    Object.defineProperties(lazyType, {
+      defaultProps: {
+        configurable: true,
+        get: function () {
+          return defaultProps;
+        },
+        set: function (newDefaultProps) {
+          warning$1(false, 'React.lazy(...): It is not supported to assign `defaultProps` to ' + 'a lazy component import. Either specify them where the component ' + 'is defined, or create a wrapping component around it.');
+          defaultProps = newDefaultProps; // Match production behavior more closely:
+
+          Object.defineProperty(lazyType, 'defaultProps', {
+            enumerable: true
+          });
+        }
+      },
+      propTypes: {
+        configurable: true,
+        get: function () {
+          return propTypes;
+        },
+        set: function (newPropTypes) {
+          warning$1(false, 'React.lazy(...): It is not supported to assign `propTypes` to ' + 'a lazy component import. Either specify them where the component ' + 'is defined, or create a wrapping component around it.');
+          propTypes = newPropTypes; // Match production behavior more closely:
+
+          Object.defineProperty(lazyType, 'propTypes', {
+            enumerable: true
+          });
+        }
+      }
+    });
+  }
+
+  return lazyType;
+}
+
+function forwardRef(render) {
+  {
+    if (render != null && render.$$typeof === REACT_MEMO_TYPE) {
+      warningWithoutStack$1(false, 'forwardRef requires a render function but received a `memo` ' + 'component. Instead of forwardRef(memo(...)), use ' + 'memo(forwardRef(...)).');
+    } else if (typeof render !== 'function') {
+      warningWithoutStack$1(false, 'forwardRef requires a render function but was given %s.', render === null ? 'null' : typeof render);
+    } else {
+      !( // Do not warn for 0 arguments because it could be due to usage of the 'arguments' object
+      render.length === 0 || render.length === 2) ? warningWithoutStack$1(false, 'forwardRef render functions accept exactly two parameters: props and ref. %s', render.length === 1 ? 'Did you forget to use the ref parameter?' : 'Any additional parameter will be undefined.') : void 0;
+    }
+
+    if (render != null) {
+      !(render.defaultProps == null && render.propTypes == null) ? warningWithoutStack$1(false, 'forwardRef render functions do not support propTypes or defaultProps. ' + 'Did you accidentally pass a React component?') : void 0;
+    }
+  }
+
+  return {
+    $$typeof: REACT_FORWARD_REF_TYPE,
+    render: render
+  };
+}
+
+function isValidElementType(type) {
+  return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
+  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE);
+}
+
+function memo(type, compare) {
+  {
+    if (!isValidElementType(type)) {
+      warningWithoutStack$1(false, 'memo: The first argument must be a component. Instead ' + 'received: %s', type === null ? 'null' : typeof type);
+    }
+  }
+
+  return {
+    $$typeof: REACT_MEMO_TYPE,
+    type: type,
+    compare: compare === undefined ? null : compare
+  };
+}
+
+function resolveDispatcher() {
+  var dispatcher = ReactCurrentDispatcher.current;
+
+  if (!(dispatcher !== null)) {
+    {
+      throw Error("Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons:\n1. You might have mismatching versions of React and the renderer (such as React DOM)\n2. You might be breaking the Rules of Hooks\n3. You might have more than one copy of React in the same app\nSee https://fb.me/react-invalid-hook-call for tips about how to debug and fix this problem.");
+    }
+  }
+
+  return dispatcher;
+}
+
+function useContext(Context, unstable_observedBits) {
+  var dispatcher = resolveDispatcher();
+
+  {
+    !(unstable_observedBits === undefined) ? warning$1(false, 'useContext() second argument is reserved for future ' + 'use in React. Passing it is not supported. ' + 'You passed: %s.%s', unstable_observedBits, typeof unstable_observedBits === 'number' && Array.isArray(arguments[2]) ? '\n\nDid you call array.map(useContext)? ' + 'Calling Hooks inside a loop is not supported. ' + 'Learn more at https://fb.me/rules-of-hooks' : '') : void 0; // TODO: add a more generic warning for invalid values.
+
+    if (Context._context !== undefined) {
+      var realContext = Context._context; // Don't deduplicate because this legitimately causes bugs
+      // and nobody should be using this in existing code.
+
+      if (realContext.Consumer === Context) {
+        warning$1(false, 'Calling useContext(Context.Consumer) is not supported, may cause bugs, and will be ' + 'removed in a future major release. Did you mean to call useContext(Context) instead?');
+      } else if (realContext.Provider === Context) {
+        warning$1(false, 'Calling useContext(Context.Provider) is not supported. ' + 'Did you mean to call useContext(Context) instead?');
+      }
+    }
+  }
+
+  return dispatcher.useContext(Context, unstable_observedBits);
+}
+function useState(initialState) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useState(initialState);
+}
+function useReducer(reducer, initialArg, init) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useReducer(reducer, initialArg, init);
+}
+function useRef(initialValue) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useRef(initialValue);
+}
+function useEffect(create, inputs) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useEffect(create, inputs);
+}
+function useLayoutEffect(create, inputs) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useLayoutEffect(create, inputs);
+}
+function useCallback(callback, inputs) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useCallback(callback, inputs);
+}
+function useMemo(create, inputs) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useMemo(create, inputs);
+}
+function useImperativeHandle(ref, create, inputs) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useImperativeHandle(ref, create, inputs);
+}
+function useDebugValue(value, formatterFn) {
+  {
+    var dispatcher = resolveDispatcher();
+    return dispatcher.useDebugValue(value, formatterFn);
+  }
+}
+var emptyObject$1 = {};
+function useResponder(responder, listenerProps) {
+  var dispatcher = resolveDispatcher();
+
+  {
+    if (responder == null || responder.$$typeof !== REACT_RESPONDER_TYPE) {
+      warning$1(false, 'useResponder: invalid first argument. Expected an event responder, but instead got %s', responder);
+      return;
+    }
+  }
+
+  return dispatcher.useResponder(responder, listenerProps || emptyObject$1);
+}
+function useTransition(config) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useTransition(config);
+}
+function useDeferredValue(value, config) {
+  var dispatcher = resolveDispatcher();
+  return dispatcher.useDeferredValue(value, config);
+}
+
+function withSuspenseConfig(scope, config) {
+  var previousConfig = ReactCurrentBatchConfig.suspense;
+  ReactCurrentBatchConfig.suspense = config === undefined ? null : config;
+
+  try {
+    scope();
+  } finally {
+    ReactCurrentBatchConfig.suspense = previousConfig;
+  }
+}
+
+/**
+ * ReactElementValidator provides a wrapper around a element factory
+ * which validates the props passed to the element. This is intended to be
+ * used only in DEV and could be replaced by a static type checker for languages
+ * that support it.
+ */
+var propTypesMisspellWarningShown;
+
+{
+  propTypesMisspellWarningShown = false;
+}
+
+var hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+
+function getDeclarationErrorAddendum() {
+  if (ReactCurrentOwner.current) {
+    var name = getComponentName(ReactCurrentOwner.current.type);
+
+    if (name) {
+      return '\n\nCheck the render method of `' + name + '`.';
+    }
+  }
+
+  return '';
+}
+
+function getSourceInfoErrorAddendum(source) {
+  if (source !== undefined) {
+    var fileName = source.fileName.replace(/^.*[\\\/]/, '');
+    var lineNumber = source.lineNumber;
+    return '\n\nCheck your code at ' + fileName + ':' + lineNumber + '.';
+  }
+
+  return '';
+}
+
+function getSourceInfoErrorAddendumForProps(elementProps) {
+  if (elementProps !== null && elementProps !== undefined) {
+    return getSourceInfoErrorAddendum(elementProps.__source);
+  }
+
+  return '';
+}
+/**
+ * Warn if there's no key explicitly set on dynamic arrays of children or
+ * object keys are not valid. This allows us to keep track of children between
+ * updates.
+ */
+
+
+var ownerHasKeyUseWarning = {};
+
+function getCurrentComponentErrorInfo(parentType) {
+  var info = getDeclarationErrorAddendum();
+
+  if (!info) {
+    var parentName = typeof parentType === 'string' ? parentType : parentType.displayName || parentType.name;
+
+    if (parentName) {
+      info = "\n\nCheck the top-level render call using <" + parentName + ">.";
+    }
+  }
+
+  return info;
+}
+/**
+ * Warn if the element doesn't have an explicit key assigned to it.
+ * This element is in an array. The array could grow and shrink or be
+ * reordered. All children that haven't already been validated are required to
+ * have a "key" property assigned to it. Error statuses are cached so a warning
+ * will only be shown once.
+ *
+ * @internal
+ * @param {ReactElement} element Element that requires a key.
+ * @param {*} parentType element's parent's type.
+ */
+
+
+function validateExplicitKey(element, parentType) {
+  if (!element._store || element._store.validated || element.key != null) {
+    return;
+  }
+
+  element._store.validated = true;
+  var currentComponentErrorInfo = getCurrentComponentErrorInfo(parentType);
+
+  if (ownerHasKeyUseWarning[currentComponentErrorInfo]) {
+    return;
+  }
+
+  ownerHasKeyUseWarning[currentComponentErrorInfo] = true; // Usually the current owner is the offender, but if it accepts children as a
+  // property, it may be the creator of the child that's responsible for
+  // assigning it a key.
+
+  var childOwner = '';
+
+  if (element && element._owner && element._owner !== ReactCurrentOwner.current) {
+    // Give the component that originally created this child.
+    childOwner = " It was passed a child from " + getComponentName(element._owner.type) + ".";
+  }
+
+  setCurrentlyValidatingElement(element);
+
+  {
+    warning$1(false, 'Each child in a list should have a unique "key" prop.' + '%s%s See https://fb.me/react-warning-keys for more information.', currentComponentErrorInfo, childOwner);
+  }
+
+  setCurrentlyValidatingElement(null);
+}
+/**
+ * Ensure that every element either is passed in a static location, in an
+ * array with an explicit keys property defined, or in an object literal
+ * with valid key property.
+ *
+ * @internal
+ * @param {ReactNode} node Statically passed child of any type.
+ * @param {*} parentType node's parent's type.
+ */
+
+
+function validateChildKeys(node, parentType) {
+  if (typeof node !== 'object') {
+    return;
+  }
+
+  if (Array.isArray(node)) {
+    for (var i = 0; i < node.length; i++) {
+      var child = node[i];
+
+      if (isValidElement(child)) {
+        validateExplicitKey(child, parentType);
+      }
+    }
+  } else if (isValidElement(node)) {
+    // This element was passed in a valid location.
+    if (node._store) {
+      node._store.validated = true;
+    }
+  } else if (node) {
+    var iteratorFn = getIteratorFn(node);
+
+    if (typeof iteratorFn === 'function') {
+      // Entry iterators used to provide implicit keys,
+      // but now we print a separate warning for them later.
+      if (iteratorFn !== node.entries) {
+        var iterator = iteratorFn.call(node);
+        var step;
+
+        while (!(step = iterator.next()).done) {
+          if (isValidElement(step.value)) {
+            validateExplicitKey(step.value, parentType);
+          }
+        }
+      }
+    }
+  }
+}
+/**
+ * Given an element, validate that its props follow the propTypes definition,
+ * provided by the type.
+ *
+ * @param {ReactElement} element
+ */
+
+
+function validatePropTypes(element) {
+  var type = element.type;
+
+  if (type === null || type === undefined || typeof type === 'string') {
+    return;
+  }
+
+  var name = getComponentName(type);
+  var propTypes;
+
+  if (typeof type === 'function') {
+    propTypes = type.propTypes;
+  } else if (typeof type === 'object' && (type.$$typeof === REACT_FORWARD_REF_TYPE || // Note: Memo only checks outer props here.
+  // Inner props are checked in the reconciler.
+  type.$$typeof === REACT_MEMO_TYPE)) {
+    propTypes = type.propTypes;
+  } else {
+    return;
+  }
+
+  if (propTypes) {
+    setCurrentlyValidatingElement(element);
+    checkPropTypes(propTypes, element.props, 'prop', name, ReactDebugCurrentFrame.getStackAddendum);
+    setCurrentlyValidatingElement(null);
+  } else if (type.PropTypes !== undefined && !propTypesMisspellWarningShown) {
+    propTypesMisspellWarningShown = true;
+    warningWithoutStack$1(false, 'Component %s declared `PropTypes` instead of `propTypes`. Did you misspell the property assignment?', name || 'Unknown');
+  }
+
+  if (typeof type.getDefaultProps === 'function') {
+    !type.getDefaultProps.isReactClassApproved ? warningWithoutStack$1(false, 'getDefaultProps is only used on classic React.createClass ' + 'definitions. Use a static property named `defaultProps` instead.') : void 0;
+  }
+}
+/**
+ * Given a fragment, validate that it can only be provided with fragment props
+ * @param {ReactElement} fragment
+ */
+
+
+function validateFragmentProps(fragment) {
+  setCurrentlyValidatingElement(fragment);
+  var keys = Object.keys(fragment.props);
+
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+
+    if (key !== 'children' && key !== 'key') {
+      warning$1(false, 'Invalid prop `%s` supplied to `React.Fragment`. ' + 'React.Fragment can only have `key` and `children` props.', key);
+      break;
+    }
+  }
+
+  if (fragment.ref !== null) {
+    warning$1(false, 'Invalid attribute `ref` supplied to `React.Fragment`.');
+  }
+
+  setCurrentlyValidatingElement(null);
+}
+
+function jsxWithValidation(type, props, key, isStaticChildren, source, self) {
+  var validType = isValidElementType(type); // We warn in this case but don't throw. We expect the element creation to
+  // succeed and there will likely be errors in render.
+
+  if (!validType) {
+    var info = '';
+
+    if (type === undefined || typeof type === 'object' && type !== null && Object.keys(type).length === 0) {
+      info += ' You likely forgot to export your component from the file ' + "it's defined in, or you might have mixed up default and named imports.";
+    }
+
+    var sourceInfo = getSourceInfoErrorAddendum(source);
+
+    if (sourceInfo) {
+      info += sourceInfo;
+    } else {
+      info += getDeclarationErrorAddendum();
+    }
+
+    var typeString;
+
+    if (type === null) {
+      typeString = 'null';
+    } else if (Array.isArray(type)) {
+      typeString = 'array';
+    } else if (type !== undefined && type.$$typeof === REACT_ELEMENT_TYPE) {
+      typeString = "<" + (getComponentName(type.type) || 'Unknown') + " />";
+      info = ' Did you accidentally export a JSX literal instead of a component?';
+    } else {
+      typeString = typeof type;
+    }
+
+    warning$1(false, 'React.jsx: type is invalid -- expected a string (for ' + 'built-in components) or a class/function (for composite ' + 'components) but got: %s.%s', typeString, info);
+  }
+
+  var element = jsxDEV(type, props, key, source, self); // The result can be nullish if a mock or a custom function is used.
+  // TODO: Drop this when these are no longer allowed as the type argument.
+
+  if (element == null) {
+    return element;
+  } // Skip key warning if the type isn't valid since our key validation logic
+  // doesn't expect a non-string/function type and can throw confusing errors.
+  // We don't want exception behavior to differ between dev and prod.
+  // (Rendering will throw with a helpful message and as soon as the type is
+  // fixed, the key warnings will appear.)
+
+
+  if (validType) {
+    var children = props.children;
+
+    if (children !== undefined) {
+      if (isStaticChildren) {
+        if (Array.isArray(children)) {
+          for (var i = 0; i < children.length; i++) {
+            validateChildKeys(children[i], type);
+          }
+
+          if (Object.freeze) {
+            Object.freeze(children);
+          }
+        } else {
+          warning$1(false, 'React.jsx: Static children should always be an array. ' + 'You are likely explicitly calling React.jsxs or React.jsxDEV. ' + 'Use the Babel transform instead.');
+        }
+      } else {
+        validateChildKeys(children, type);
+      }
+    }
+  }
+
+  if (hasOwnProperty$1.call(props, 'key')) {
+    warning$1(false, 'React.jsx: Spreading a key to JSX is a deprecated pattern. ' + 'Explicitly pass a key after spreading props in your JSX call. ' + 'E.g. <ComponentName {...props} key={key} />');
+  }
+
+  if (type === REACT_FRAGMENT_TYPE) {
+    validateFragmentProps(element);
+  } else {
+    validatePropTypes(element);
+  }
+
+  return element;
+} // These two functions exist to still get child warnings in dev
+// even with the prod transform. This means that jsxDEV is purely
+// opt-in behavior for better messages but that we won't stop
+// giving you warnings if you use production apis.
+
+function jsxWithValidationStatic(type, props, key) {
+  return jsxWithValidation(type, props, key, true);
+}
+function jsxWithValidationDynamic(type, props, key) {
+  return jsxWithValidation(type, props, key, false);
+}
+function createElementWithValidation(type, props, children) {
+  var validType = isValidElementType(type); // We warn in this case but don't throw. We expect the element creation to
+  // succeed and there will likely be errors in render.
+
+  if (!validType) {
+    var info = '';
+
+    if (type === undefined || typeof type === 'object' && type !== null && Object.keys(type).length === 0) {
+      info += ' You likely forgot to export your component from the file ' + "it's defined in, or you might have mixed up default and named imports.";
+    }
+
+    var sourceInfo = getSourceInfoErrorAddendumForProps(props);
+
+    if (sourceInfo) {
+      info += sourceInfo;
+    } else {
+      info += getDeclarationErrorAddendum();
+    }
+
+    var typeString;
+
+    if (type === null) {
+      typeString = 'null';
+    } else if (Array.isArray(type)) {
+      typeString = 'array';
+    } else if (type !== undefined && type.$$typeof === REACT_ELEMENT_TYPE) {
+      typeString = "<" + (getComponentName(type.type) || 'Unknown') + " />";
+      info = ' Did you accidentally export a JSX literal instead of a component?';
+    } else {
+      typeString = typeof type;
+    }
+
+    warning$1(false, 'React.createElement: type is invalid -- expected a string (for ' + 'built-in components) or a class/function (for composite ' + 'components) but got: %s.%s', typeString, info);
+  }
+
+  var element = createElement.apply(this, arguments); // The result can be nullish if a mock or a custom function is used.
+  // TODO: Drop this when these are no longer allowed as the type argument.
+
+  if (element == null) {
+    return element;
+  } // Skip key warning if the type isn't valid since our key validation logic
+  // doesn't expect a non-string/function type and can throw confusing errors.
+  // We don't want exception behavior to differ between dev and prod.
+  // (Rendering will throw with a helpful message and as soon as the type is
+  // fixed, the key warnings will appear.)
+
+
+  if (validType) {
+    for (var i = 2; i < arguments.length; i++) {
+      validateChildKeys(arguments[i], type);
+    }
+  }
+
+  if (type === REACT_FRAGMENT_TYPE) {
+    validateFragmentProps(element);
+  } else {
+    validatePropTypes(element);
+  }
+
+  return element;
+}
+function createFactoryWithValidation(type) {
+  var validatedFactory = createElementWithValidation.bind(null, type);
+  validatedFactory.type = type; // Legacy hook: remove it
+
+  {
+    Object.defineProperty(validatedFactory, 'type', {
+      enumerable: false,
+      get: function () {
+        lowPriorityWarningWithoutStack$1(false, 'Factory.type is deprecated. Access the class directly ' + 'before passing it to createFactory.');
+        Object.defineProperty(this, 'type', {
+          value: type
+        });
+        return type;
+      }
+    });
+  }
+
+  return validatedFactory;
+}
+function cloneElementWithValidation(element, props, children) {
+  var newElement = cloneElement.apply(this, arguments);
+
+  for (var i = 2; i < arguments.length; i++) {
+    validateChildKeys(arguments[i], newElement.type);
+  }
+
+  validatePropTypes(newElement);
+  return newElement;
+}
+
+var hasBadMapPolyfill;
+
+{
+  hasBadMapPolyfill = false;
+
+  try {
+    var frozenObject = Object.freeze({});
+    var testMap = new Map([[frozenObject, null]]);
+    var testSet = new Set([frozenObject]); // This is necessary for Rollup to not consider these unused.
+    // https://github.com/rollup/rollup/issues/1771
+    // TODO: we can remove these if Rollup fixes the bug.
+
+    testMap.set(0, 0);
+    testSet.add(0);
+  } catch (e) {
+    // TODO: Consider warning about bad polyfills
+    hasBadMapPolyfill = true;
+  }
+}
+
+function createFundamentalComponent(impl) {
+  // We use responder as a Map key later on. When we have a bad
+  // polyfill, then we can't use it as a key as the polyfill tries
+  // to add a property to the object.
+  if ( true && !hasBadMapPolyfill) {
+    Object.freeze(impl);
+  }
+
+  var fundamantalComponent = {
+    $$typeof: REACT_FUNDAMENTAL_TYPE,
+    impl: impl
+  };
+
+  {
+    Object.freeze(fundamantalComponent);
+  }
+
+  return fundamantalComponent;
+}
+
+function createEventResponder(displayName, responderConfig) {
+  var getInitialState = responderConfig.getInitialState,
+      onEvent = responderConfig.onEvent,
+      onMount = responderConfig.onMount,
+      onUnmount = responderConfig.onUnmount,
+      onRootEvent = responderConfig.onRootEvent,
+      rootEventTypes = responderConfig.rootEventTypes,
+      targetEventTypes = responderConfig.targetEventTypes,
+      targetPortalPropagation = responderConfig.targetPortalPropagation;
+  var eventResponder = {
+    $$typeof: REACT_RESPONDER_TYPE,
+    displayName: displayName,
+    getInitialState: getInitialState || null,
+    onEvent: onEvent || null,
+    onMount: onMount || null,
+    onRootEvent: onRootEvent || null,
+    onUnmount: onUnmount || null,
+    rootEventTypes: rootEventTypes || null,
+    targetEventTypes: targetEventTypes || null,
+    targetPortalPropagation: targetPortalPropagation || false
+  }; // We use responder as a Map key later on. When we have a bad
+  // polyfill, then we can't use it as a key as the polyfill tries
+  // to add a property to the object.
+
+  if ( true && !hasBadMapPolyfill) {
+    Object.freeze(eventResponder);
+  }
+
+  return eventResponder;
+}
+
+function createScope() {
+  var scopeComponent = {
+    $$typeof: REACT_SCOPE_TYPE
+  };
+
+  {
+    Object.freeze(scopeComponent);
+  }
+
+  return scopeComponent;
+}
+
+// Helps identify side effects in render-phase lifecycle hooks and setState
+// reducers by double invoking them in Strict Mode.
+
+ // To preserve the "Pause on caught exceptions" behavior of the debugger, we
+// replay the begin phase of a failed component inside invokeGuardedCallback.
+
+ // Warn about deprecated, async-unsafe lifecycles; relates to RFC #6:
+
+ // Gather advanced timing metrics for Profiler subtrees.
+
+ // Trace which interactions trigger each commit.
+
+ // SSR experiments
+
+
+ // Only used in www builds.
+
+ // Only used in www builds.
+
+ // Disable javascript: URL strings in href for XSS protection.
+
+ // React Fire: prevent the value and checked attributes from syncing
+// with their related DOM properties
+
+ // These APIs will no longer be "unstable" in the upcoming 16.7 release,
+// Control this behavior with a flag to support 16.6 minor releases in the meanwhile.
+
+var exposeConcurrentModeAPIs = false;
+ // Experimental React Flare event system and event components support.
+
+var enableFlareAPI = false; // Experimental Host Component support.
+
+var enableFundamentalAPI = false; // Experimental Scope support.
+
+var enableScopeAPI = false; // New API for JSX transforms to target - https://github.com/reactjs/rfcs/pull/107
+
+var enableJSXTransformAPI = false; // We will enforce mocking scheduler with scheduler/unstable_mock at some point. (v17?)
+// Till then, we warn about the missing mock, but still fallback to a legacy mode compatible version
+
+ // For tests, we flush suspense fallbacks in an act scope;
+// *except* in some of our own tests, where we test incremental loading states.
+
+ // Add a callback property to suspense to notify which promises are currently
+// in the update queue. This allows reporting and tracing of what is causing
+// the user to see a loading state.
+// Also allows hydration callbacks to fire when a dehydrated boundary gets
+// hydrated or deleted.
+
+ // Part of the simplification of React.createElement so we can eventually move
+// from React.createElement to React.jsx
+// https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md
+
+
+
+
+
+ // Flag to turn event.target and event.currentTarget in ReactNative from a reactTag to a component instance
+
+var React = {
+  Children: {
+    map: mapChildren,
+    forEach: forEachChildren,
+    count: countChildren,
+    toArray: toArray,
+    only: onlyChild
+  },
+  createRef: createRef,
+  Component: Component,
+  PureComponent: PureComponent,
+  createContext: createContext,
+  forwardRef: forwardRef,
+  lazy: lazy,
+  memo: memo,
+  useCallback: useCallback,
+  useContext: useContext,
+  useEffect: useEffect,
+  useImperativeHandle: useImperativeHandle,
+  useDebugValue: useDebugValue,
+  useLayoutEffect: useLayoutEffect,
+  useMemo: useMemo,
+  useReducer: useReducer,
+  useRef: useRef,
+  useState: useState,
+  Fragment: REACT_FRAGMENT_TYPE,
+  Profiler: REACT_PROFILER_TYPE,
+  StrictMode: REACT_STRICT_MODE_TYPE,
+  Suspense: REACT_SUSPENSE_TYPE,
+  createElement: createElementWithValidation,
+  cloneElement: cloneElementWithValidation,
+  createFactory: createFactoryWithValidation,
+  isValidElement: isValidElement,
+  version: ReactVersion,
+  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReactSharedInternals
+};
+
+if (exposeConcurrentModeAPIs) {
+  React.useTransition = useTransition;
+  React.useDeferredValue = useDeferredValue;
+  React.SuspenseList = REACT_SUSPENSE_LIST_TYPE;
+  React.unstable_withSuspenseConfig = withSuspenseConfig;
+}
+
+if (enableFlareAPI) {
+  React.unstable_useResponder = useResponder;
+  React.unstable_createResponder = createEventResponder;
+}
+
+if (enableFundamentalAPI) {
+  React.unstable_createFundamental = createFundamentalComponent;
+}
+
+if (enableScopeAPI) {
+  React.unstable_createScope = createScope;
+} // Note: some APIs are added with feature flags.
+// Make sure that stable builds for open source
+// don't modify the React object to avoid deopts.
+// Also let's not expose their names in stable builds.
+
+
+if (enableJSXTransformAPI) {
+  {
+    React.jsxDEV = jsxWithValidation;
+    React.jsx = jsxWithValidationDynamic;
+    React.jsxs = jsxWithValidationStatic;
+  }
+}
+
+
+
+var React$2 = Object.freeze({
+	default: React
+});
+
+var React$3 = ( React$2 && React ) || React$2;
+
+// TODO: decide on the top-level export form.
+// This is hacky but makes it work with both Rollup and Jest.
+
+
+var react = React$3.default || React$3;
+
+module.exports = react;
+  })();
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/React/index.js":
+/*!*************************************!*\
+  !*** ./node_modules/React/index.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+if (false) {} else {
+  module.exports = __webpack_require__(/*! ./cjs/react.development.js */ "./node_modules/React/cjs/react.development.js");
+}
+
+
+/***/ }),
 
 /***/ "./node_modules/after/index.js":
 /*!*************************************!*\
@@ -839,20 +3188,20 @@ module.exports = function(a, b){
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/display-manager-options/display-manager-options.scss":
-/*!*************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/display-manager-options/display-manager-options.scss ***!
-  \*************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.scss":
+/*!******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.scss ***!
+  \******************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../images/display-bg.jpg */ "./source-code/client/images/display-bg.jpg");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../images/icons/manager1.png */ "./source-code/client/images/icons/manager1.png");
-var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../images/icons/manager2.jpg */ "./source-code/client/images/icons/manager2.jpg");
-var ___CSS_LOADER_URL_IMPORT_3___ = __webpack_require__(/*! ../../images/fighter/default-skin/high-res.png */ "./source-code/client/images/fighter/default-skin/high-res.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../images/display-bg.jpg */ "./source-code/client/images/display-bg.jpg");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../images/icons/manager1.png */ "./source-code/client/images/icons/manager1.png");
+var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../images/icons/manager2.jpg */ "./source-code/client/images/icons/manager2.jpg");
+var ___CSS_LOADER_URL_IMPORT_3___ = __webpack_require__(/*! ../../../images/fighter/default-skin/high-res.png */ "./source-code/client/images/fighter/default-skin/high-res.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -970,29 +3319,29 @@ exports.push([module.i, ".striking-center {\n  display: none;\n  position: absol
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/ability-block/ability-block.scss":
-/*!**********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/ability-block/ability-block.scss ***!
-  \**********************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.scss":
+/*!****************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.scss ***!
+  \****************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/abilities/dope-fighter.png */ "./source-code/client/images/abilities/dope-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../images/abilities/assault-fighter.jpg */ "./source-code/client/images/abilities/assault-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../images/abilities/research-fighter.png */ "./source-code/client/images/abilities/research-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_3___ = __webpack_require__(/*! ../../../../images/abilities/do-surveillance.jpg */ "./source-code/client/images/abilities/do-surveillance.jpg");
-var ___CSS_LOADER_URL_IMPORT_4___ = __webpack_require__(/*! ../../../../images/abilities/train-fighter.png */ "./source-code/client/images/abilities/train-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_5___ = __webpack_require__(/*! ../../../../images/abilities/promote-fighter.png */ "./source-code/client/images/abilities/promote-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_6___ = __webpack_require__(/*! ../../../../images/abilities/murder-fighter.jpg */ "./source-code/client/images/abilities/murder-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_7___ = __webpack_require__(/*! ../../../../images/abilities/offer-contract.png */ "./source-code/client/images/abilities/offer-contract.png");
-var ___CSS_LOADER_URL_IMPORT_8___ = __webpack_require__(/*! ../../../../images/abilities/guard-fighter.jpg */ "./source-code/client/images/abilities/guard-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_9___ = __webpack_require__(/*! ../../../../images/abilities/poison-fighter.jpg */ "./source-code/client/images/abilities/poison-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_10___ = __webpack_require__(/*! ../../../../images/abilities/sue-manager.png */ "./source-code/client/images/abilities/sue-manager.png");
-var ___CSS_LOADER_URL_IMPORT_11___ = __webpack_require__(/*! ../../../../images/abilities/gather-evidence.png */ "./source-code/client/images/abilities/gather-evidence.png");
-var ___CSS_LOADER_URL_IMPORT_12___ = __webpack_require__(/*! ../../../../images/abilities/sell-drugs.jpg */ "./source-code/client/images/abilities/sell-drugs.jpg");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/abilities/dope-fighter.png */ "./source-code/client/images/abilities/dope-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../../images/abilities/assault-fighter.jpg */ "./source-code/client/images/abilities/assault-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../../images/abilities/research-fighter.png */ "./source-code/client/images/abilities/research-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_3___ = __webpack_require__(/*! ../../../../../images/abilities/do-surveillance.jpg */ "./source-code/client/images/abilities/do-surveillance.jpg");
+var ___CSS_LOADER_URL_IMPORT_4___ = __webpack_require__(/*! ../../../../../images/abilities/train-fighter.png */ "./source-code/client/images/abilities/train-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_5___ = __webpack_require__(/*! ../../../../../images/abilities/promote-fighter.png */ "./source-code/client/images/abilities/promote-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_6___ = __webpack_require__(/*! ../../../../../images/abilities/murder-fighter.jpg */ "./source-code/client/images/abilities/murder-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_7___ = __webpack_require__(/*! ../../../../../images/abilities/offer-contract.png */ "./source-code/client/images/abilities/offer-contract.png");
+var ___CSS_LOADER_URL_IMPORT_8___ = __webpack_require__(/*! ../../../../../images/abilities/guard-fighter.jpg */ "./source-code/client/images/abilities/guard-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_9___ = __webpack_require__(/*! ../../../../../images/abilities/poison-fighter.jpg */ "./source-code/client/images/abilities/poison-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_10___ = __webpack_require__(/*! ../../../../../images/abilities/sue-manager.png */ "./source-code/client/images/abilities/sue-manager.png");
+var ___CSS_LOADER_URL_IMPORT_11___ = __webpack_require__(/*! ../../../../../images/abilities/gather-evidence.png */ "./source-code/client/images/abilities/gather-evidence.png");
+var ___CSS_LOADER_URL_IMPORT_12___ = __webpack_require__(/*! ../../../../../images/abilities/sell-drugs.jpg */ "./source-code/client/images/abilities/sell-drugs.jpg");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -1013,29 +3362,29 @@ exports.push([module.i, ".ability-block {\n  position: relative;\n  text-align: 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/ability-card/ability-card.scss":
-/*!********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/ability-card/ability-card.scss ***!
-  \********************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.scss":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.scss ***!
+  \**************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/abilities/dope-fighter.png */ "./source-code/client/images/abilities/dope-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../images/abilities/assault-fighter.jpg */ "./source-code/client/images/abilities/assault-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../images/abilities/research-fighter.png */ "./source-code/client/images/abilities/research-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_3___ = __webpack_require__(/*! ../../../../images/abilities/do-surveillance.jpg */ "./source-code/client/images/abilities/do-surveillance.jpg");
-var ___CSS_LOADER_URL_IMPORT_4___ = __webpack_require__(/*! ../../../../images/abilities/train-fighter.png */ "./source-code/client/images/abilities/train-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_5___ = __webpack_require__(/*! ../../../../images/abilities/promote-fighter.png */ "./source-code/client/images/abilities/promote-fighter.png");
-var ___CSS_LOADER_URL_IMPORT_6___ = __webpack_require__(/*! ../../../../images/abilities/murder-fighter.jpg */ "./source-code/client/images/abilities/murder-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_7___ = __webpack_require__(/*! ../../../../images/abilities/offer-contract.png */ "./source-code/client/images/abilities/offer-contract.png");
-var ___CSS_LOADER_URL_IMPORT_8___ = __webpack_require__(/*! ../../../../images/abilities/guard-fighter.jpg */ "./source-code/client/images/abilities/guard-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_9___ = __webpack_require__(/*! ../../../../images/abilities/poison-fighter.jpg */ "./source-code/client/images/abilities/poison-fighter.jpg");
-var ___CSS_LOADER_URL_IMPORT_10___ = __webpack_require__(/*! ../../../../images/abilities/sue-manager.png */ "./source-code/client/images/abilities/sue-manager.png");
-var ___CSS_LOADER_URL_IMPORT_11___ = __webpack_require__(/*! ../../../../images/abilities/gather-evidence.png */ "./source-code/client/images/abilities/gather-evidence.png");
-var ___CSS_LOADER_URL_IMPORT_12___ = __webpack_require__(/*! ../../../../images/abilities/sell-drugs.jpg */ "./source-code/client/images/abilities/sell-drugs.jpg");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/abilities/dope-fighter.png */ "./source-code/client/images/abilities/dope-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../../images/abilities/assault-fighter.jpg */ "./source-code/client/images/abilities/assault-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../../images/abilities/research-fighter.png */ "./source-code/client/images/abilities/research-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_3___ = __webpack_require__(/*! ../../../../../images/abilities/do-surveillance.jpg */ "./source-code/client/images/abilities/do-surveillance.jpg");
+var ___CSS_LOADER_URL_IMPORT_4___ = __webpack_require__(/*! ../../../../../images/abilities/train-fighter.png */ "./source-code/client/images/abilities/train-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_5___ = __webpack_require__(/*! ../../../../../images/abilities/promote-fighter.png */ "./source-code/client/images/abilities/promote-fighter.png");
+var ___CSS_LOADER_URL_IMPORT_6___ = __webpack_require__(/*! ../../../../../images/abilities/murder-fighter.jpg */ "./source-code/client/images/abilities/murder-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_7___ = __webpack_require__(/*! ../../../../../images/abilities/offer-contract.png */ "./source-code/client/images/abilities/offer-contract.png");
+var ___CSS_LOADER_URL_IMPORT_8___ = __webpack_require__(/*! ../../../../../images/abilities/guard-fighter.jpg */ "./source-code/client/images/abilities/guard-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_9___ = __webpack_require__(/*! ../../../../../images/abilities/poison-fighter.jpg */ "./source-code/client/images/abilities/poison-fighter.jpg");
+var ___CSS_LOADER_URL_IMPORT_10___ = __webpack_require__(/*! ../../../../../images/abilities/sue-manager.png */ "./source-code/client/images/abilities/sue-manager.png");
+var ___CSS_LOADER_URL_IMPORT_11___ = __webpack_require__(/*! ../../../../../images/abilities/gather-evidence.png */ "./source-code/client/images/abilities/gather-evidence.png");
+var ___CSS_LOADER_URL_IMPORT_12___ = __webpack_require__(/*! ../../../../../images/abilities/sell-drugs.jpg */ "./source-code/client/images/abilities/sell-drugs.jpg");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -1056,17 +3405,17 @@ exports.push([module.i, ".ability-card input.money-offer {\n  width: 40px; }\n\n
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/employee-card/employee-card.scss":
-/*!**********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/employee-card/employee-card.scss ***!
-  \**********************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.scss":
+/*!****************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.scss ***!
+  \****************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/employee.png */ "./source-code/client/images/icons/employee.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/employee.png */ "./source-code/client/images/icons/employee.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1075,17 +3424,17 @@ exports.push([module.i, ".employee-card__image {\n  background: url(" + ___CSS_L
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.scss":
-/*!********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.scss ***!
-  \********************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.scss":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.scss ***!
+  \**************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/fighter/default-skin/punching.png */ "./source-code/client/images/fighter/default-skin/punching.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/fighter/default-skin/punching.png */ "./source-code/client/images/fighter/default-skin/punching.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1094,17 +3443,17 @@ exports.push([module.i, ".fighter-card__fight-experience {\n  margin-bottom: 20p
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.scss":
-/*!**************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.scss ***!
-  \**************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.scss":
+/*!********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.scss ***!
+  \********************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/employee.png */ "./source-code/client/images/icons/employee.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/employee.png */ "./source-code/client/images/icons/employee.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1113,17 +3462,17 @@ exports.push([module.i, ".job-seeker-card__image {\n  background: url(" + ___CSS
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.scss":
-/*!**************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.scss ***!
-  \**************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.scss":
+/*!********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.scss ***!
+  \********************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/loan-shark.png */ "./source-code/client/images/icons/loan-shark.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/loan-shark.png */ "./source-code/client/images/icons/loan-shark.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1132,15 +3481,15 @@ exports.push([module.i, ".loan-shark-card__loan-tool {\n  display: flex;\n  just
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/modal-card.scss":
-/*!*****************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/modal-card.scss ***!
-  \*****************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss":
+/*!***********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss ***!
+  \***********************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".card__two-columns {\n  display: flex; }\n  .card__two-columns__left {\n    display: inline-block;\n    margin-right: 20px;\n    width: 80px; }\n  .card__two-columns__right {\n    flex: 1; }\n\n.card__options {\n  display: flex;\n  flex-wrap: wrap;\n  margin: 0 -4px; }\n", ""]);
@@ -1148,19 +3497,19 @@ exports.push([module.i, ".card__two-columns {\n  display: flex; }\n  .card__two-
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/select-list/select-list.scss":
-/*!******************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/select-list/select-list.scss ***!
-  \******************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.scss":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.scss ***!
+  \************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/fights.png */ "./source-code/client/images/icons/fights.png");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../images/icons/your-fighter-in-fight.png */ "./source-code/client/images/icons/your-fighter-in-fight.png");
-var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../images/icons/manager1-face.png */ "./source-code/client/images/icons/manager1-face.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/fights.png */ "./source-code/client/images/icons/fights.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../../images/icons/your-fighter-in-fight.png */ "./source-code/client/images/icons/your-fighter-in-fight.png");
+var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../../images/icons/manager1-face.png */ "./source-code/client/images/icons/manager1-face.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -1171,15 +3520,15 @@ exports.push([module.i, ".select-list__item {\n  display: flex;\n  height: 24px;
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.scss":
-/*!******************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.scss ***!
-  \******************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.scss":
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.scss ***!
+  \************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".activity-log {\n  overflow: hidden; }\n  .activity-log .list {\n    padding-right: 0; }\n    .activity-log .list__row {\n      padding: 4px;\n      margin-bottom: 0; }\n      .activity-log .list__row--main-color {\n        background-color: #eefbff; }\n      .activity-log .list__row--alternate-color {\n        background-color: #e2ffe5; }\n      .activity-log .list__row--critical {\n        background-color: #ffdede;\n        color: #ce0000; }\n      .activity-log .list__row--new-round {\n        background-color: #ccc;\n        font-weight: bold;\n        color: #666;\n        border-bottom: #666 solid 1px; }\n", ""]);
@@ -1187,15 +3536,15 @@ exports.push([module.i, ".activity-log {\n  overflow: hidden; }\n  .activity-log
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/bet-box/bet-box.scss":
-/*!********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/bet-box/bet-box.scss ***!
-  \********************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.scss":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.scss ***!
+  \**************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".bet-box {\n  font-size: .9rem;\n  background-color: #d3fbfff7;\n  border: 1px solid #218490; }\n  .bet-box__heading {\n    padding: 3px 0; }\n    .bet-box__heading--selected {\n      background-color: #83ff90; }\n  .bet-box .bet-options {\n    display: flex; }\n    .bet-box .bet-options .bet-option {\n      flex: 1;\n      display: flex;\n      flex-direction: column;\n      padding: 3px 3px;\n      border-right: 1px solid #218490;\n      border-top: 1px solid #218490; }\n      .bet-box .bet-options .bet-option--selected {\n        background-color: #83ff90; }\n      .bet-box .bet-options .bet-option:last-child {\n        border-right: none; }\n      .bet-box .bet-options .bet-option__size {\n        font-size: 0.7rem;\n        margin-bottom: 2px; }\n      .bet-box .bet-options .bet-option__amount {\n        font-size: 0.8rem; }\n", ""]);
@@ -1203,17 +3552,17 @@ exports.push([module.i, ".bet-box {\n  font-size: .9rem;\n  background-color: #d
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/employee-list.scss":
-/*!******************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/employee-list.scss ***!
-  \******************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss ***!
+  \************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../images/icons/employee.png */ "./source-code/client/images/icons/employee.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/employee.png */ "./source-code/client/images/icons/employee.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1222,15 +3571,15 @@ exports.push([module.i, ".employee-list .list__row__image {\n  background-image:
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.scss":
-/*!************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.scss ***!
-  \************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.scss":
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.scss ***!
+  \******************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".has-action-points {\n  background-color: #e2f0ff; }\n", ""]);
@@ -1238,19 +3587,19 @@ exports.push([module.i, ".has-action-points {\n  background-color: #e2f0ff; }\n"
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/fighters-list.scss":
-/*!******************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/fighters-list.scss ***!
-  \******************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss":
+/*!************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss ***!
+  \************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../images/icons/fights.png */ "./source-code/client/images/icons/fights.png");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../images/icons/your-fighter-in-fight.png */ "./source-code/client/images/icons/your-fighter-in-fight.png");
-var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../images/fighter/default-skin/defending.png */ "./source-code/client/images/fighter/default-skin/defending.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/fights.png */ "./source-code/client/images/icons/fights.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../images/icons/your-fighter-in-fight.png */ "./source-code/client/images/icons/your-fighter-in-fight.png");
+var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../../images/fighter/default-skin/defending.png */ "./source-code/client/images/fighter/default-skin/defending.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -1261,15 +3610,15 @@ exports.push([module.i, ".fighter-list__fights {\n  font-size: 1.3rem;\n  width:
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/headbar/headbar.scss":
-/*!********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/headbar/headbar.scss ***!
-  \********************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.scss":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.scss ***!
+  \**************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".headbar {\n  background-color: #1d6b7d;\n  color: white;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  font-size: 1.2rem;\n  padding: 0 10px; }\n  .headbar .finished-turn input {\n    margin: 0;\n    vertical-align: middle;\n    width: 13px;\n    height: 13px;\n    margin-left: 5px; }\n  .headbar .money,\n  .headbar .action-points {\n    margin-left: 10px; }\n", ""]);
@@ -1277,15 +3626,15 @@ exports.push([module.i, ".headbar {\n  background-color: #1d6b7d;\n  color: whit
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/modal/modal.scss":
-/*!****************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/modal/modal.scss ***!
-  \****************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.scss":
+/*!**********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.scss ***!
+  \**********************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".modal {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  z-index: 1;\n  display: flex;\n  flex-direction: column;\n  padding: 20px;\n  box-sizing: border-box; }\n  .modal__blackout {\n    z-index: -1;\n    position: absolute;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    right: 0;\n    background-color: rgba(0, 0, 0, 0.7); }\n  .modal__content {\n    border: 2px outset #b6cde1;\n    background-color: white;\n    padding: 15px;\n    margin-bottom: 5px; }\n  .modal__close-button {\n    align-self: flex-end;\n    font-size: 1.2rem;\n    background-color: #3787db;\n    color: white;\n    padding: 1rem 3rem 1rem 2.5rem;\n    border: 4px outset #57aef9;\n    border-radius: 7px 7px 35px 7px; }\n", ""]);
@@ -1293,18 +3642,18 @@ exports.push([module.i, ".modal {\n  position: absolute;\n  top: 0;\n  bottom: 0
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.scss":
-/*!**************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.scss ***!
-  \**************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.scss":
+/*!********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.scss ***!
+  \********************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/your-fighter-in-fight.png */ "./source-code/client/images/icons/your-fighter-in-fight.png");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../images/fighter/default-skin/high-res.png */ "./source-code/client/images/fighter/default-skin/high-res.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/your-fighter-in-fight.png */ "./source-code/client/images/icons/your-fighter-in-fight.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../../images/fighter/default-skin/high-res.png */ "./source-code/client/images/fighter/default-skin/high-res.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -1314,33 +3663,17 @@ exports.push([module.i, ".next-fight__heading {\n  font-family: 'Bangers';\n  fo
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/manager-ui-global-styles/manager-ui-global.scss":
-/*!*******************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/manager-ui-global-styles/manager-ui-global.scss ***!
-  \*******************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.scss":
+/*!*************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.scss ***!
+  \*************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
-// Module
-exports.push([module.i, ".standard-button {\n  background: #1d6b7d;\n  color: white;\n  padding: 0.3rem 0.5rem;\n  border: 4px outset #2b849a;\n  border-radius: 2px;\n  font-size: 1.1rem; }\n\n.heading {\n  font-size: 1.1rem;\n  margin-bottom: 10px;\n  border-bottom: 1px solid grey;\n  padding-bottom: 5px;\n  width: 100%; }\n\nhr {\n  margin: 20px 0; }\n\n.warning-message {\n  color: #b32d2d;\n  font-style: italic; }\n\n.group-panel {\n  border: 1px outset #2b849a;\n  box-sizing: border-box;\n  background-color: #f5fcfff5;\n  vertical-align: top;\n  padding: 10px;\n  display: flex;\n  flex-direction: column; }\n  .group-panel .list {\n    overflow-y: scroll;\n    overflow-x: hidden;\n    display: flex;\n    flex-direction: column;\n    padding-right: 7px;\n    /* width */\n    /* Track */\n    /* Handle */ }\n    .group-panel .list::-webkit-scrollbar {\n      width: 10px; }\n    .group-panel .list::-webkit-scrollbar-track {\n      box-shadow: inset 0 0 5px grey;\n      border-radius: 10px; }\n    .group-panel .list::-webkit-scrollbar-thumb {\n      background: #344944;\n      border-radius: 10px; }\n    .group-panel .list__row {\n      display: flex;\n      margin-bottom: 5px;\n      align-items: center; }\n      .group-panel .list__row__image {\n        background-repeat: no-repeat;\n        flex: none;\n        margin-right: 5px; }\n      .group-panel .list__row__name {\n        flex: 1; }\n", ""]);
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/manager-ui.scss":
-/*!***********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/manager-ui.scss ***!
-  \***********************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../images/bg.jpg */ "./source-code/client/images/bg.jpg");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../images/bg.jpg */ "./source-code/client/images/bg.jpg");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1349,17 +3682,17 @@ exports.push([module.i, ".manager-ui {\n  height: 100%;\n  /* @media screen and 
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/action-points/action-points.scss":
-/*!*************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/action-points/action-points.scss ***!
-  \*************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.scss":
+/*!*******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.scss ***!
+  \*******************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/action-points.png */ "./source-code/client/images/icons/action-points.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/action-points.png */ "./source-code/client/images/icons/action-points.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1368,18 +3701,18 @@ exports.push([module.i, ".action-points {\n  background-image: url(" + ___CSS_LO
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss":
-/*!*****************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss ***!
-  \*****************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss":
+/*!***********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss ***!
+  \***********************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/fights.png */ "./source-code/client/images/icons/fights.png");
-var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../images/icons/wins.png */ "./source-code/client/images/icons/wins.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/fights.png */ "./source-code/client/images/icons/fights.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../../../images/icons/wins.png */ "./source-code/client/images/icons/wins.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
@@ -1389,15 +3722,15 @@ exports.push([module.i, ".fights, .wins {\n  display: inline-block;\n  font-size
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/info-box/info-box.scss":
-/*!***************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/info-box/info-box.scss ***!
-  \***************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.scss":
+/*!*********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.scss ***!
+  \*********************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 // Module
 exports.push([module.i, ".info-box {\n  box-sizing: border-box;\n  border-radius: 5px 5px 20px 20px;\n  box-shadow: 1px 1px 3px 0px grey;\n  overflow: hidden;\n  margin-bottom: 14px; }\n  .info-box__heading {\n    background-color: #5686b9;\n    color: white;\n    font-size: 1.1rem;\n    padding: 5px 10px; }\n  .info-box__content {\n    padding: 10px;\n    background-color: #e2f0ff; }\n    .info-box__content > * {\n      margin-bottom: 10px; }\n      .info-box__content > *:last-child {\n        margin-bottom: 0; }\n    .info-box__content .list {\n      line-height: 1.6rem;\n      display: flex; }\n      .info-box__content .list__labels {\n        text-align: right;\n        margin-right: 8px; }\n      .info-box__content .list__values {\n        flex: 1; }\n", ""]);
@@ -1405,17 +3738,17 @@ exports.push([module.i, ".info-box {\n  box-sizing: border-box;\n  border-radius
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/money/money.scss":
-/*!*********************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/money/money.scss ***!
-  \*********************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/money/money.scss":
+/*!***************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/money/money.scss ***!
+  \***************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../images/icons/money.png */ "./source-code/client/images/icons/money.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../../../images/icons/money.png */ "./source-code/client/images/icons/money.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
@@ -1424,23 +3757,62 @@ exports.push([module.i, ".money {\n  background-image: url(" + ___CSS_LOADER_URL
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/main-game/global.scss":
-/*!*******************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/main-game/global.scss ***!
-  \*******************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/partials/fight-ui/managers-bets.scss":
+/*!*****************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/partials/fight-ui/managers-bets.scss ***!
+  \*****************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Imports
-var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
-var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../images/icons/turn-phone.png */ "./source-code/client/images/icons/turn-phone.png");
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../../images/icons/manager1.png */ "./source-code/client/images/icons/manager1.png");
+var ___CSS_LOADER_URL_IMPORT_1___ = __webpack_require__(/*! ../../../images/icons/manager2.jpg */ "./source-code/client/images/icons/manager2.jpg");
+var ___CSS_LOADER_URL_IMPORT_2___ = __webpack_require__(/*! ../../../images/fighter/default-skin/high-res.png */ "./source-code/client/images/fighter/default-skin/high-res.png");
+exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
+var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
+var ___CSS_LOADER_URL_REPLACEMENT_1___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_1___);
+var ___CSS_LOADER_URL_REPLACEMENT_2___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_2___);
+// Module
+exports.push([module.i, ".managers-bets {\n  display: flex;\n  position: absolute;\n  bottom: 0;\n  z-index: 100000;\n  justify-content: center;\n  width: 100%; }\n  .managers-bets .managers-bet {\n    font-size: 1.5rem;\n    display: flex;\n    margin-right: 20px; }\n    .managers-bets .managers-bet .manager {\n      margin-right: 20px;\n      padding: 12px 10px 4px; }\n      .managers-bets .managers-bet .manager:last-child {\n        margin-right: 0; }\n      .managers-bets .managers-bet .manager__name {\n        text-align: center; }\n      .managers-bets .managers-bet .manager__image {\n        width: 70px;\n        height: 100px;\n        background-size: cover;\n        background-repeat: no-repeat;\n        margin-bottom: 5px; }\n        .managers-bets .managers-bet .manager__image--fat-man {\n          background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + "); }\n        .managers-bets .managers-bet .manager__image--sleazy-guy {\n          background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + "); }\n    .managers-bets .managers-bet .fighter-bet-on {\n      display: flex;\n      flex-direction: column;\n      position: relative;\n      text-align: center;\n      margin-right: 20px;\n      align-self: center; }\n      .managers-bets .managers-bet .fighter-bet-on:last-child {\n        margin-right: 0; }\n      .managers-bets .managers-bet .fighter-bet-on__name {\n        font-size: 1.3rem;\n        padding-top: 8px;\n        display: inline-block;\n        color: white;\n        position: absolute;\n        top: 0;\n        left: 0;\n        right: 0; }\n      .managers-bets .managers-bet .fighter-bet-on__image {\n        background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n        width: 80px;\n        height: 100px;\n        margin: 0 auto 5px;\n        border: 2px solid #1b4965;\n        border-radius: 6px;\n        background-position-y: 30px;\n        background-repeat: no-repeat;\n        background-color: #90d1e4ab;\n        background-size: cover; }\n", ""]);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/styles/global.scss":
+/*!***********************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/styles/global.scss ***!
+  \***********************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Imports
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+var ___CSS_LOADER_GET_URL_IMPORT___ = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/getUrl.js */ "./node_modules/css-loader/dist/runtime/getUrl.js");
+var ___CSS_LOADER_URL_IMPORT_0___ = __webpack_require__(/*! ../../images/icons/turn-phone.png */ "./source-code/client/images/icons/turn-phone.png");
 exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Nunito&display=swap);"]);
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Bangers&display=swap);"]);
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = ___CSS_LOADER_GET_URL_IMPORT___(___CSS_LOADER_URL_IMPORT_0___);
 // Module
 exports.push([module.i, "html {\n  font-size: 11px;\n  font-family: 'Nunito', sans-serif; }\n\nbody {\n  margin: 0;\n  height: 100vh; }\n\n#react-rendering-div {\n  height: 100vh; }\n\n* {\n  user-select: none; }\n\nbutton {\n  outline: none; }\n\n.turn-phone-message {\n  justify-content: center;\n  align-items: center;\n  height: 100%; }\n  .turn-phone-message .image {\n    background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n    width: 300px;\n    height: 300px;\n    padding: 100px 40px 0 150px;\n    background-repeat: no-repeat;\n    box-sizing: border-box;\n    font-size: 25px;\n    text-align: center; }\n", ""]);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/styles/manager-options-ui/manager-options-ui-global.scss":
+/*!*************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/styles/manager-options-ui/manager-options-ui-global.scss ***!
+  \*************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Imports
+var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+exports = module.exports = ___CSS_LOADER_API_IMPORT___(false);
+// Module
+exports.push([module.i, ".standard-button {\n  background: #1d6b7d;\n  color: white;\n  padding: 0.3rem 0.5rem;\n  border: 4px outset #2b849a;\n  border-radius: 2px;\n  font-size: 1.1rem; }\n\n.heading {\n  font-size: 1.1rem;\n  margin-bottom: 10px;\n  border-bottom: 1px solid grey;\n  padding-bottom: 5px;\n  width: 100%; }\n\nhr {\n  margin: 20px 0; }\n\n.warning-message {\n  color: #b32d2d;\n  font-style: italic; }\n\n.group-panel {\n  border: 1px outset #2b849a;\n  box-sizing: border-box;\n  background-color: #f5fcfff5;\n  vertical-align: top;\n  padding: 10px;\n  display: flex;\n  flex-direction: column; }\n  .group-panel .list {\n    overflow-y: scroll;\n    overflow-x: hidden;\n    display: flex;\n    flex-direction: column;\n    padding-right: 7px;\n    /* width */\n    /* Track */\n    /* Handle */ }\n    .group-panel .list::-webkit-scrollbar {\n      width: 10px; }\n    .group-panel .list::-webkit-scrollbar-track {\n      box-shadow: inset 0 0 5px grey;\n      border-radius: 10px; }\n    .group-panel .list::-webkit-scrollbar-thumb {\n      background: #344944;\n      border-radius: 10px; }\n    .group-panel .list__row {\n      display: flex;\n      margin-bottom: 5px;\n      align-items: center; }\n      .group-panel .list__row__image {\n        background-repeat: no-repeat;\n        flex: none;\n        margin-right: 5px; }\n      .group-panel .list__row__name {\n        flex: 1; }\n", ""]);
 
 
 /***/ }),
@@ -49662,15 +52034,45 @@ module.exports = yeast;
 
 /***/ }),
 
-/***/ "./source-code/client/components/display-manager-options/display-manager-options.scss":
-/*!********************************************************************************************!*\
-  !*** ./source-code/client/components/display-manager-options/display-manager-options.scss ***!
-  \********************************************************************************************/
+/***/ "./source-code/client/components/display-ui/display-fight-ui/display-fight-ui.tsx":
+/*!****************************************************************************************!*\
+  !*** ./source-code/client/components/display-ui/display-fight-ui/display-fight-ui.tsx ***!
+  \****************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const fight_ui_1 = __webpack_require__(/*! ../../fight-ui/fight-ui */ "./source-code/client/components/fight-ui/fight-ui.tsx");
+const managers_bet_1 = __webpack_require__(/*! ../../../global/partials/fight-ui/managers-bet */ "./source-code/client/global/partials/fight-ui/managers-bet.tsx");
+class DisplayFightUi extends React.Component {
+    render() {
+        const { fightUiData, managers } = this.props;
+        return (React.createElement("div", { className: 'display-fight-ui' },
+            React.createElement(managers_bet_1.default, { managers: managers.map(manager => {
+                    if (manager.bet)
+                        manager.bet.size = undefined;
+                    return manager;
+                }) }),
+            React.createElement(fight_ui_1.default, { fightUiData: fightUiData })));
+    }
+}
+exports.default = DisplayFightUi;
+
+
+/***/ }),
+
+/***/ "./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.scss":
+/*!*************************************************************************************************************!*\
+  !*** ./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.scss ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader/dist/cjs.js!../../../../node_modules/sass-loader/dist/cjs.js!./display-manager-options.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/display-manager-options/display-manager-options.scss");
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./display-manager-options-ui.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -49684,7 +52086,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -49692,10 +52094,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/display-manager-options/display-manager-options.tsx":
-/*!*******************************************************************************************!*\
-  !*** ./source-code/client/components/display-manager-options/display-manager-options.tsx ***!
-  \*******************************************************************************************/
+/***/ "./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.tsx":
+/*!************************************************************************************************************!*\
+  !*** ./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.tsx ***!
+  \************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49703,17 +52105,17 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./display-manager-options.scss */ "./source-code/client/components/display-manager-options/display-manager-options.scss");
-function DisplayManagerOptions({ timeLeft, managersReady, nextFightFighters, jobSeekers }) {
+__webpack_require__(/*! ./display-manager-options-ui.scss */ "./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.scss");
+function DisplayManagerOptionsUi({ timeLeft, managersDisplayInfo, nextFightFighters, jobSeekers }) {
     return (React.createElement("div", { className: 'game-display-manager-options' },
         React.createElement("div", { className: "game-display-manager-options__background" }),
         React.createElement("div", { className: "time-left" },
             "Time Left: ",
             timeLeft),
         React.createElement("div", { className: "heading" }, "Managers"),
-        React.createElement("div", { className: "managers-ready game-display-manager-options__group" }, managersReady.map(managerReady => React.createElement("div", { key: managerReady.name, className: `manager-ready ${managerReady.ready ? 'manager-ready--ready' : ''}` },
-            React.createElement("div", { className: `manager-ready__image manager-ready__image--${managerReady.imageType.split(' ').join('-').toLowerCase()}` }),
-            React.createElement("div", { className: "manager-ready__name" }, managerReady.name)))),
+        React.createElement("div", { className: "managers-ready game-display-manager-options__group" }, managersDisplayInfo.map((managerDisplayInfo) => React.createElement("div", { key: managerDisplayInfo.name, className: `manager-ready ${managerDisplayInfo.ready ? 'manager-ready--ready' : ''}` },
+            React.createElement("div", { className: `manager-ready__image manager-ready__image--${managerDisplayInfo.image.split(' ').join('-').toLowerCase()}` }),
+            React.createElement("div", { className: "manager-ready__name" }, managerDisplayInfo.name)))),
         React.createElement("div", { className: "heading" }, "Next Fight Fighters"),
         React.createElement("div", { className: "next-fight-fighters game-display-manager-options__group" }, nextFightFighters.map(nextFightFighter => React.createElement("div", { key: nextFightFighter, className: 'next-fight-fighter' },
             React.createElement("div", { className: "next-fight-fighter__image" }),
@@ -49725,7 +52127,50 @@ function DisplayManagerOptions({ timeLeft, managersReady, nextFightFighters, job
                 ":"),
             React.createElement("div", { className: "job-seeker__profession" }, jobSeeker.type))))));
 }
-exports.default = DisplayManagerOptions;
+exports.default = DisplayManagerOptionsUi;
+
+
+/***/ }),
+
+/***/ "./source-code/client/components/display-ui/game-ui-display.tsx":
+/*!**********************************************************************!*\
+  !*** ./source-code/client/components/display-ui/game-ui-display.tsx ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const root_1 = __webpack_require__(/*! react-hot-loader/root */ "./node_modules/react-hot-loader/root.js");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+const display_manager_options_ui_1 = __webpack_require__(/*! ./display-manager-options-ui/display-manager-options-ui */ "./source-code/client/components/display-ui/display-manager-options-ui/display-manager-options-ui.tsx");
+const display_fight_ui_1 = __webpack_require__(/*! ./display-fight-ui/display-fight-ui */ "./source-code/client/components/display-ui/display-fight-ui/display-fight-ui.tsx");
+exports.default = root_1.hot(class GameUiDisplay extends React.Component {
+    constructor(props) {
+        super(props);
+        const { receiveDisplayGameUiData } = this.props.updateCommunicatorUi;
+        receiveDisplayGameUiData.subscribe((displayGameUiData) => this.setState({ displayGameUiData }));
+    }
+    render() {
+        if (!this.state)
+            return React.createElement("span", null, "loading....");
+        const { updateCommunicatorUi } = this.props;
+        const { fightUiData, displayManagerUiData, roundStage, preFightNewsUiData } = this.state.displayGameUiData;
+        switch (roundStage) {
+            case 'Manager Options':
+                return React.createElement(display_manager_options_ui_1.default, Object.assign({}, displayManagerUiData));
+            case 'Pre Fight News':
+                return React.createElement("div", null, "Pre Fight News");
+            case 'Fight Day':
+                return React.createElement(display_fight_ui_1.default, { fightUiData: fightUiData, managers: displayManagerUiData.managersDisplayInfo });
+            case 'Post Fight Report':
+                return React.createElement("div", null, "Post Fight Report");
+            default:
+                return React.createElement("div", null, "no round stage, something went wrong");
+        }
+    }
+});
 
 
 /***/ }),
@@ -49977,10 +52422,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/game-ui-display.tsx":
-/*!***********************************************************!*\
-  !*** ./source-code/client/components/game-ui-display.tsx ***!
-  \***********************************************************/
+/***/ "./source-code/client/components/player-ui/game-ui-player.tsx":
+/*!********************************************************************!*\
+  !*** ./source-code/client/components/player-ui/game-ui-player.tsx ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49989,51 +52434,8 @@ if(false) {}
 Object.defineProperty(exports, "__esModule", { value: true });
 const root_1 = __webpack_require__(/*! react-hot-loader/root */ "./node_modules/react-hot-loader/root.js");
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const fight_ui_1 = __webpack_require__(/*! ./fight-ui/fight-ui */ "./source-code/client/components/fight-ui/fight-ui.tsx");
-const display_manager_options_1 = __webpack_require__(/*! ./display-manager-options/display-manager-options */ "./source-code/client/components/display-manager-options/display-manager-options.tsx");
-exports.default = root_1.hot(class GameUiDisplay extends React.Component {
-    constructor(props) {
-        super(props);
-        const { receiveDisplayGameUiData } = this.props.updateCommunicatorUi;
-        receiveDisplayGameUiData.subscribe((displayGameUiData) => this.setState({ displayGameUiData }));
-    }
-    render() {
-        if (!this.state)
-            return React.createElement("span", null, "loading....");
-        const { updateCommunicatorUi } = this.props;
-        const { fightUiData, displayManagerUiData, roundStage, preFightNewsUiData } = this.state.displayGameUiData;
-        switch (roundStage) {
-            case 'Manager Options':
-                return React.createElement(display_manager_options_1.default, Object.assign({}, displayManagerUiData));
-            case 'Pre Fight News':
-                return React.createElement("div", null, "Pre Fight News");
-            case 'Fight Day':
-                return React.createElement(fight_ui_1.default, { fightUiData: fightUiData });
-            case 'Post Fight Report':
-                return React.createElement("div", null, "Post Fight Report");
-            default:
-                return React.createElement("div", null, "no round stage, something went wrong");
-        }
-    }
-});
-
-
-/***/ }),
-
-/***/ "./source-code/client/components/game-ui-player.tsx":
-/*!**********************************************************!*\
-  !*** ./source-code/client/components/game-ui-player.tsx ***!
-  \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const root_1 = __webpack_require__(/*! react-hot-loader/root */ "./node_modules/react-hot-loader/root.js");
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const manager_ui_1 = __webpack_require__(/*! ./manager-ui/manager-ui */ "./source-code/client/components/manager-ui/manager-ui.tsx");
-const fight_ui_1 = __webpack_require__(/*! ./fight-ui/fight-ui */ "./source-code/client/components/fight-ui/fight-ui.tsx");
+const fight_ui_1 = __webpack_require__(/*! ../fight-ui/fight-ui */ "./source-code/client/components/fight-ui/fight-ui.tsx");
+const manager_options_ui_1 = __webpack_require__(/*! ./manager-options-ui/manager-options-ui */ "./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.tsx");
 exports.default = root_1.hot(class GameUiPlayer extends React.Component {
     constructor(props) {
         super(props);
@@ -50050,7 +52452,7 @@ exports.default = root_1.hot(class GameUiPlayer extends React.Component {
         const { playerManagerUiData, fightUiData, roundStage } = this.state.playerGameUiData;
         switch (roundStage) {
             case 'Manager Options':
-                return React.createElement(manager_ui_1.default, Object.assign({}, playerManagerUiData, { sendPlayerAction: updateCommunicatorUi.sendPlayerAction.bind(updateCommunicatorUi) }));
+                return React.createElement(manager_options_ui_1.default, Object.assign({}, playerManagerUiData, { sendPlayerAction: updateCommunicatorUi.sendPlayerAction.bind(updateCommunicatorUi) }));
             case 'Pre Fight News':
                 return React.createElement("div", null, "Pre Fight News");
             case 'Fight Day':
@@ -50066,15 +52468,15 @@ exports.default = root_1.hot(class GameUiPlayer extends React.Component {
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/ability-block/ability-block.scss":
-/*!*****************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/ability-block/ability-block.scss ***!
-  \*****************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.scss":
+/*!***********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.scss ***!
+  \***********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./ability-block.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/ability-block/ability-block.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./ability-block.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50088,7 +52490,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50096,10 +52498,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/ability-block/ability-block.tsx":
-/*!****************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/ability-block/ability-block.tsx ***!
-  \****************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.tsx":
+/*!**********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.tsx ***!
+  \**********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50107,8 +52509,8 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./ability-block.scss */ "./source-code/client/components/manager-ui/cards/ability-block/ability-block.scss");
-const ability_service_client_1 = __webpack_require__(/*! ../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
+__webpack_require__(/*! ./ability-block.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.scss");
+const ability_service_client_1 = __webpack_require__(/*! ../../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
 class AbilityBlock extends React.Component {
     render() {
         const { onSelected, abilityData, managerInfo, delayedExecutionAbilities } = this.props;
@@ -50125,15 +52527,15 @@ exports.default = AbilityBlock;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/ability-card/ability-card.scss":
-/*!***************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/ability-card/ability-card.scss ***!
-  \***************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.scss":
+/*!*********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.scss ***!
+  \*********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./ability-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/ability-card/ability-card.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./ability-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50147,7 +52549,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50155,10 +52557,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/ability-card/ability-card.tsx":
-/*!**************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/ability-card/ability-card.tsx ***!
-  \**************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.tsx":
+/*!********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.tsx ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50166,37 +52568,46 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const info_box_1 = __webpack_require__(/*! ./../../partials/info-box/info-box */ "./source-code/client/components/manager-ui/partials/info-box/info-box.tsx");
-__webpack_require__(/*! ./../modal-card.scss */ "./source-code/client/components/manager-ui/cards/modal-card.scss");
-__webpack_require__(/*! ./ability-card.scss */ "./source-code/client/components/manager-ui/cards/ability-card/ability-card.scss");
-const ability_service_client_1 = __webpack_require__(/*! ../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
-const modal_1 = __webpack_require__(/*! ../../main-components/modal/modal */ "./source-code/client/components/manager-ui/main-components/modal/modal.tsx");
-const select_list_1 = __webpack_require__(/*! ../select-list/select-list */ "./source-code/client/components/manager-ui/cards/select-list/select-list.tsx");
+__webpack_require__(/*! ../modal-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss");
+__webpack_require__(/*! ./ability-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.scss");
+const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.tsx");
+const modal_1 = __webpack_require__(/*! ../../main-components/modal/modal */ "./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.tsx");
+const ability_service_client_1 = __webpack_require__(/*! ../../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
+const select_list_1 = __webpack_require__(/*! ../select-list/select-list */ "./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.tsx");
 class AbilityCard extends React.Component {
     constructor() {
         super(...arguments);
         this.state = {
             abilityData: undefined,
             listOptions: undefined,
-            selectListType: undefined,
-            contractOfferValue: undefined
+            selectListType: undefined
         };
     }
     componentDidMount() {
-        const { abilityData, managerInfo, jobSeekers } = this.props;
+        const { abilityData, managerInfo } = this.props;
         this.clientAbility = ability_service_client_1.abilityServiceClient.abilities.find(ability => ability.name == abilityData.name);
         if (!abilityData.source)
             abilityData.source = ability_service_client_1.abilityServiceClient.getAppropriateSource(this.clientAbility, managerInfo);
+        if (this.clientAbility.name == 'Offer Contract')
+            this.setContractOffer(abilityData);
         this.setState({
-            abilityData: abilityData
+            abilityData: this.props.abilityData
         });
-        if (this.clientAbility.name == 'Offer Contract') {
+    }
+    setContractOffer(abilityData) {
+        const { managerInfo, jobSeekers } = this.props;
+        if (abilityData && abilityData.target) {
             let goalContract;
             if (abilityData.target.type == 'fighter owned by manager')
                 goalContract = managerInfo.fighters.find(fighter => fighter.name == abilityData.target.name).goalContract;
             else
                 goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == abilityData.target.name).goalContract;
-            this.setState({ contractOfferValue: goalContract.weeklyCost });
+            abilityData.additionalData = {
+                contractOffer: {
+                    numberOfWeeks: goalContract.numberOfWeeks,
+                    weeklyCost: goalContract.weeklyCost
+                }
+            };
         }
     }
     showSelectList(type) {
@@ -50206,27 +52617,13 @@ class AbilityCard extends React.Component {
             this.setState({ listOptions: ability_service_client_1.abilityServiceClient.getPossibleTargets(this.clientAbility, this.props.managerInfo, this.props.jobSeekers), selectListType: type });
     }
     confirmButtonClicked() {
-        const { abilityData, contractOfferValue } = this.state;
+        const { abilityData } = this.state;
         try {
             ability_service_client_1.abilityServiceClient.validateAbilityConfirm(this.clientAbility, this.props.managerInfo, abilityData, this.props.delayedExecutionAbilities);
         }
         catch (error) {
             alert(error);
             return;
-        }
-        if (abilityData.name == 'Offer Contract') {
-            let goalContract;
-            const jobSeeker = this.props.jobSeekers.find(jobSeeker => jobSeeker.name == abilityData.target.name);
-            if (!jobSeeker)
-                goalContract = this.props.managerInfo.fighters.find(fighter => fighter.name == abilityData.target.name).goalContract;
-            else
-                goalContract = jobSeeker.goalContract;
-            abilityData.additionalData = {
-                contractOffer: {
-                    numberOfWeeks: goalContract.numberOfWeeks,
-                    moneyPerWeek: contractOfferValue
-                }
-            };
         }
         const playerAction = {
             name: 'Ability Confirmed',
@@ -50245,16 +52642,22 @@ class AbilityCard extends React.Component {
             this.setState(prev => ({
                 abilityData: Object.assign(Object.assign({}, prev.abilityData), { source: item })
             }));
-        else if (type == 'target')
-            this.setState(prev => ({
-                abilityData: Object.assign(Object.assign({}, prev.abilityData), { target: item })
-            }));
+        else if (type == 'target') {
+            let abilityData = this.state.abilityData;
+            abilityData.target = item;
+            if (this.clientAbility.name == 'Offer Contract')
+                this.setContractOffer(abilityData);
+            this.setState({ abilityData });
+        }
         this.closeSelectList();
     }
     setContractOfferValue(inputElement) {
         let value = parseInt(inputElement.target.value);
         value = value >= 0 ? value : '';
-        this.setState({ contractOfferValue: value });
+        const contractOffer = Object.assign(Object.assign({}, this.state.abilityData.additionalData.contractOffer), { weeklyCost: value });
+        this.setState({
+            abilityData: Object.assign(Object.assign({}, this.state.abilityData), { additionalData: { contractOffer } })
+        });
     }
     handleEnterEvent(event) {
         if (event.key == 'Enter')
@@ -50265,7 +52668,7 @@ class AbilityCard extends React.Component {
             return React.createElement("div", null, "....loading");
         const { longDescription, possibleTargets, name, cost } = this.clientAbility;
         const { delayedExecutionAbilities, nextFightFighters, jobSeekers, managerInfo } = this.props;
-        const { listOptions, selectListType, abilityData, contractOfferValue } = this.state;
+        const { listOptions, selectListType, abilityData } = this.state;
         const { target, source, additionalData } = abilityData;
         let warningMessage;
         if (ability_service_client_1.abilityServiceClient.canOnlyBeTargetedOnceConflict(this.clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
@@ -50280,17 +52683,18 @@ class AbilityCard extends React.Component {
             });
         }
         let offerContractBox;
-        if (this.clientAbility.name == 'Offer Contract') {
+        if (this.clientAbility.name == 'Offer Contract' && abilityData.target) {
             let goalContract;
             if (abilityData.target.type == 'fighter owned by manager')
                 goalContract = managerInfo.fighters.find(fighter => fighter.name == abilityData.target.name).goalContract;
             else
                 goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == abilityData.target.name).goalContract;
+            const contractOffer = abilityData.additionalData.contractOffer;
             offerContractBox =
                 React.createElement(info_box_1.default, { heading: 'Contract Offer', list: [
                         { label: 'Goal money per week', value: goalContract.weeklyCost },
                         { label: 'Number of weeks', value: goalContract.numberOfWeeks },
-                        { label: 'Your money offer per week', value: React.createElement("input", { className: 'money-offer', type: "number", value: contractOfferValue, onChange: this.setContractOfferValue.bind(this), onKeyPress: this.handleEnterEvent.bind(this) })
+                        { label: 'Your money offer per week', value: React.createElement("input", { className: 'money-offer', type: "number", value: contractOffer.weeklyCost, onChange: this.setContractOfferValue.bind(this), onKeyPress: this.handleEnterEvent.bind(this) })
                         }
                     ] });
         }
@@ -50332,15 +52736,15 @@ exports.default = AbilityCard;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/employee-card/employee-card.scss":
-/*!*****************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/employee-card/employee-card.scss ***!
-  \*****************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.scss":
+/*!***********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.scss ***!
+  \***********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./employee-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/employee-card/employee-card.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./employee-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50354,7 +52758,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50362,10 +52766,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/employee-card/employee-card.tsx":
-/*!****************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/employee-card/employee-card.tsx ***!
-  \****************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.tsx":
+/*!**********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.tsx ***!
+  \**********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50373,19 +52777,19 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./employee-card.scss */ "./source-code/client/components/manager-ui/cards/employee-card/employee-card.scss");
-__webpack_require__(/*! ./../modal-card.scss */ "./source-code/client/components/manager-ui/cards/modal-card.scss");
-const ability_block_1 = __webpack_require__(/*! ../ability-block/ability-block */ "./source-code/client/components/manager-ui/cards/ability-block/ability-block.tsx");
-const ability_service_client_1 = __webpack_require__(/*! ../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
-const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/manager-ui/partials/info-box/info-box.tsx");
+__webpack_require__(/*! ./employee-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.scss");
+__webpack_require__(/*! ../modal-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss");
+const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.tsx");
+const ability_block_1 = __webpack_require__(/*! ../ability-block/ability-block */ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.tsx");
+const ability_service_client_1 = __webpack_require__(/*! ../../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
 class EmployeeCard extends React.Component {
     render() {
         const { employee, abilitySelected, managerInfo, delayedExecutionAbilities } = this.props;
-        const { costPerWeek, weeksRemaining } = employee.activeContract;
+        const { weeksRemaining, weeklyCost } = employee.activeContract;
         const employeeAbilities = ability_service_client_1.abilityServiceClient.abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name));
         const infoBoxList = [
             { label: 'Weeks remaining', value: weeksRemaining },
-            { label: 'Cost per week', value: costPerWeek }
+            { label: 'Cost per week', value: weeklyCost }
         ];
         return (React.createElement("div", { className: 'card employee-card' },
             React.createElement("div", { className: 'heading' }, employee.name),
@@ -50418,15 +52822,15 @@ exports.EmployeeCard = EmployeeCard;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.scss":
-/*!***************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.scss ***!
-  \***************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.scss":
+/*!*********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.scss ***!
+  \*********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./fighter-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./fighter-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50440,7 +52844,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50448,10 +52852,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.tsx":
-/*!**************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.tsx ***!
-  \**************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.tsx":
+/*!********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.tsx ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50459,13 +52863,13 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ability_block_1 = __webpack_require__(/*! ./../ability-block/ability-block */ "./source-code/client/components/manager-ui/cards/ability-block/ability-block.tsx");
-__webpack_require__(/*! ./fighter-card.scss */ "./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.scss");
-__webpack_require__(/*! ./../modal-card.scss */ "./source-code/client/components/manager-ui/cards/modal-card.scss");
-const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/manager-ui/partials/info-box/info-box.tsx");
-const ability_service_client_1 = __webpack_require__(/*! ../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
-const fights_1 = __webpack_require__(/*! ../../partials/fights-and-wins/fights */ "./source-code/client/components/manager-ui/partials/fights-and-wins/fights.tsx");
-const wins_1 = __webpack_require__(/*! ../../partials/fights-and-wins/wins */ "./source-code/client/components/manager-ui/partials/fights-and-wins/wins.tsx");
+__webpack_require__(/*! ./fighter-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.scss");
+__webpack_require__(/*! ../modal-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss");
+const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.tsx");
+const ability_block_1 = __webpack_require__(/*! ../ability-block/ability-block */ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.tsx");
+const ability_service_client_1 = __webpack_require__(/*! ../../../../../../game-components/abilities-reformed/ability-service-client */ "./source-code/game-components/abilities-reformed/ability-service-client.ts");
+const fights_1 = __webpack_require__(/*! ../../partials/fights-and-wins/fights */ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights.tsx");
+const wins_1 = __webpack_require__(/*! ../../partials/fights-and-wins/wins */ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/wins.tsx");
 class FighterCard extends React.Component {
     render() {
         const { selectedFighter, abilitySelected, managerInfo, delayedExecutionAbilities, jobSeekers } = this.props;
@@ -50563,15 +52967,15 @@ exports.FighterCard = FighterCard;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.scss":
-/*!*********************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.scss ***!
-  \*********************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.scss":
+/*!***************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.scss ***!
+  \***************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./job-seeker-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./job-seeker-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50585,7 +52989,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50593,10 +52997,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.tsx":
-/*!********************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.tsx ***!
-  \********************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.tsx":
+/*!**************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.tsx ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50604,10 +53008,10 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const ability_block_1 = __webpack_require__(/*! ../ability-block/ability-block */ "./source-code/client/components/manager-ui/cards/ability-block/ability-block.tsx");
-__webpack_require__(/*! ./job-seeker-card.scss */ "./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.scss");
-__webpack_require__(/*! ./../modal-card.scss */ "./source-code/client/components/manager-ui/cards/modal-card.scss");
-const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/manager-ui/partials/info-box/info-box.tsx");
+__webpack_require__(/*! ./job-seeker-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.scss");
+__webpack_require__(/*! ../modal-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss");
+const ability_block_1 = __webpack_require__(/*! ../ability-block/ability-block */ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-block/ability-block.tsx");
+const info_box_1 = __webpack_require__(/*! ../../partials/info-box/info-box */ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.tsx");
 class JobSeekerCard extends React.Component {
     render() {
         const { jobSeeker, abilitySelected, managerInfo, delayedExecutionAbilities } = this.props;
@@ -50647,15 +53051,15 @@ exports.JobSeekerCard = JobSeekerCard;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.scss":
-/*!*********************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.scss ***!
-  \*********************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.scss":
+/*!***************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.scss ***!
+  \***************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./loan-shark-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./loan-shark-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50669,7 +53073,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50677,10 +53081,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.tsx":
-/*!********************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.tsx ***!
-  \********************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.tsx":
+/*!**************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.tsx ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50688,7 +53092,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./loan-shark-card.scss */ "./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.scss");
+__webpack_require__(/*! ./loan-shark-card.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.scss");
 class LoanSharkCard extends React.Component {
     constructor() {
         super(...arguments);
@@ -50781,45 +53185,15 @@ exports.default = LoanSharkCard;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/modal-card.scss":
-/*!************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/modal-card.scss ***!
-  \************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss":
+/*!******************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./modal-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/modal-card.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./source-code/client/components/manager-ui/cards/select-list/select-list.scss":
-/*!*************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/select-list/select-list.scss ***!
-  \*************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./select-list.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/cards/select-list/select-list.scss");
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./modal-card.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/modal-card.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50841,10 +53215,40 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/cards/select-list/select-list.tsx":
-/*!************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/cards/select-list/select-list.tsx ***!
-  \************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.scss":
+/*!*******************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.scss ***!
+  \*******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./select-list.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.tsx":
+/*!******************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.tsx ***!
+  \******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50852,7 +53256,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./select-list.scss */ "./source-code/client/components/manager-ui/cards/select-list/select-list.scss");
+__webpack_require__(/*! ./select-list.scss */ "./source-code/client/components/player-ui/manager-options-ui/cards/select-list/select-list.scss");
 function SelectList(props) {
     const { type, itemSelected, list, nextFightFighters } = props;
     return (React.createElement("div", { className: "select-list" }, list.map(listItem => React.createElement("div", { key: listItem.name, className: `select-list__item`, onClick: () => itemSelected(listItem, type) },
@@ -50870,15 +53274,15 @@ exports.default = SelectList;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.scss":
-/*!*************************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.scss ***!
-  \*************************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.scss":
+/*!*******************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.scss ***!
+  \*******************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./activity-log-panel.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./activity-log-panel.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50892,7 +53296,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50900,10 +53304,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.tsx":
-/*!************************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.tsx ***!
-  \************************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.tsx":
+/*!******************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.tsx ***!
+  \******************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50911,7 +53315,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./activity-log-panel.scss */ "./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.scss");
+__webpack_require__(/*! ./activity-log-panel.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.scss");
 class ActivityLogPanel extends React.Component {
     render() {
         const reversedLog = [...this.props.log].reverse();
@@ -50929,15 +53333,15 @@ exports.default = ActivityLogPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/bet-box/bet-box.scss":
-/*!***************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/bet-box/bet-box.scss ***!
-  \***************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.scss":
+/*!*********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.scss ***!
+  \*********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./bet-box.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/bet-box/bet-box.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./bet-box.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -50951,7 +53355,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -50959,10 +53363,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/bet-box/bet-box.tsx":
-/*!**************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/bet-box/bet-box.tsx ***!
-  \**************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.tsx":
+/*!********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.tsx ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50970,8 +53374,8 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const game_configuration_1 = __webpack_require__(/*! ../../../../../game-components/game-configuration */ "./source-code/game-components/game-configuration.ts");
-__webpack_require__(/*! ./bet-box.scss */ "./source-code/client/components/manager-ui/main-components/bet-box/bet-box.scss");
+__webpack_require__(/*! ./bet-box.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.scss");
+const game_configuration_1 = __webpack_require__(/*! ../../../../../../game-components/game-configuration */ "./source-code/game-components/game-configuration.ts");
 class BetBox extends React.Component {
     placeBet(bet) {
         const { nextFightBet } = this.props.managerInfo;
@@ -51023,45 +53427,15 @@ exports.default = BetBox;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/employee-list.scss":
-/*!*************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/employee-list.scss ***!
-  \*************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./employee-list.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/employee-list.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.scss":
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss":
 /*!*******************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.scss ***!
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss ***!
   \*******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./employees-panel.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.scss");
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./employee-list.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51083,10 +53457,40 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.tsx":
-/*!******************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.tsx ***!
-  \******************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.scss":
+/*!*************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.scss ***!
+  \*************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./employees-panel.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.tsx":
+/*!************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.tsx ***!
+  \************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51094,8 +53498,8 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./../employee-list.scss */ "./source-code/client/components/manager-ui/main-components/employee-list.scss");
-__webpack_require__(/*! ./employees-panel.scss */ "./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.scss");
+__webpack_require__(/*! ../employee-list.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss");
+__webpack_require__(/*! ./employees-panel.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.scss");
 class EmployeesPanel extends React.Component {
     render() {
         const { employees, employeeSelected } = this.props;
@@ -51113,45 +53517,15 @@ exports.default = EmployeesPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/fighters-list.scss":
-/*!*************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/fighters-list.scss ***!
-  \*************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss":
+/*!*******************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss ***!
+  \*******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./fighters-list.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/fighters-list.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./source-code/client/components/manager-ui/main-components/headbar/headbar.scss":
-/*!***************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/headbar/headbar.scss ***!
-  \***************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./headbar.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/headbar/headbar.scss");
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./fighters-list.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51173,10 +53547,40 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/headbar/headbar.tsx":
-/*!**************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/headbar/headbar.tsx ***!
-  \**************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.scss":
+/*!*********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.scss ***!
+  \*********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./headbar.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.tsx":
+/*!********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.tsx ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51184,10 +53588,10 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./headbar.scss */ "./source-code/client/components/manager-ui/main-components/headbar/headbar.scss");
-const action_points_1 = __webpack_require__(/*! ../../partials/action-points/action-points */ "./source-code/client/components/manager-ui/partials/action-points/action-points.tsx");
-const money_1 = __webpack_require__(/*! ../../partials/money/money */ "./source-code/client/components/manager-ui/partials/money/money.tsx");
-const game_configuration_1 = __webpack_require__(/*! ../../../../../game-components/game-configuration */ "./source-code/game-components/game-configuration.ts");
+__webpack_require__(/*! ./headbar.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.scss");
+const game_configuration_1 = __webpack_require__(/*! ../../../../../../game-components/game-configuration */ "./source-code/game-components/game-configuration.ts");
+const money_1 = __webpack_require__(/*! ../../partials/money/money */ "./source-code/client/components/player-ui/manager-options-ui/partials/money/money.tsx");
+const action_points_1 = __webpack_require__(/*! ../../partials/action-points/action-points */ "./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.tsx");
 class Headbar extends React.Component {
     handleReadyToggle(e) {
         let ready = e.target.checked;
@@ -51218,10 +53622,10 @@ exports.default = Headbar;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/job-seekers-panel/job-seekers-panel.tsx":
-/*!**********************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/job-seekers-panel/job-seekers-panel.tsx ***!
-  \**********************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/job-seekers-panel/job-seekers-panel.tsx":
+/*!****************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/job-seekers-panel/job-seekers-panel.tsx ***!
+  \****************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51229,7 +53633,7 @@ exports.default = Headbar;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./../employee-list.scss */ "./source-code/client/components/manager-ui/main-components/employee-list.scss");
+__webpack_require__(/*! ../employee-list.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/employee-list.scss");
 class JobSeekersPanel extends React.Component {
     render() {
         const { jobSeekers, jobSeekerSelected, fighterSelected } = this.props;
@@ -51250,10 +53654,10 @@ exports.default = JobSeekersPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/known-fighters-panel/known-fighters-panel.tsx":
-/*!****************************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/known-fighters-panel/known-fighters-panel.tsx ***!
-  \****************************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/known-fighters-panel/known-fighters-panel.tsx":
+/*!**********************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/known-fighters-panel/known-fighters-panel.tsx ***!
+  \**********************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51261,7 +53665,7 @@ exports.default = JobSeekersPanel;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./../fighters-list.scss */ "./source-code/client/components/manager-ui/main-components/fighters-list.scss");
+__webpack_require__(/*! ../fighters-list.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss");
 class KnownFightersPanel extends React.Component {
     render() {
         const { fighters, fighterSelected } = this.props;
@@ -51278,10 +53682,10 @@ exports.default = KnownFightersPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/loan-shark-panel/loan-shark-panel.tsx":
-/*!********************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/loan-shark-panel/loan-shark-panel.tsx ***!
-  \********************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/loan-shark-panel/loan-shark-panel.tsx":
+/*!**************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/loan-shark-panel/loan-shark-panel.tsx ***!
+  \**************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51303,15 +53707,15 @@ exports.default = LoanSharkPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/modal/modal.scss":
-/*!***********************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/modal/modal.scss ***!
-  \***********************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.scss":
+/*!*****************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.scss ***!
+  \*****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./modal.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/modal/modal.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./modal.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51325,7 +53729,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -51333,10 +53737,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/modal/modal.tsx":
-/*!**********************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/modal/modal.tsx ***!
-  \**********************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.tsx":
+/*!****************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.tsx ***!
+  \****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51344,7 +53748,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./modal.scss */ "./source-code/client/components/manager-ui/main-components/modal/modal.scss");
+__webpack_require__(/*! ./modal.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.scss");
 class Modal extends React.Component {
     render() {
         const { children, closeModal } = this.props;
@@ -51360,15 +53764,15 @@ exports.default = Modal;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.scss":
-/*!*********************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.scss ***!
-  \*********************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.scss":
+/*!***************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.scss ***!
+  \***************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./next-fight-panel.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./next-fight-panel.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51382,7 +53786,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -51390,10 +53794,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.tsx":
-/*!********************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.tsx ***!
-  \********************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.tsx":
+/*!**************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.tsx ***!
+  \**************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51401,8 +53805,8 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./next-fight-panel.scss */ "./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.scss");
-const bet_box_1 = __webpack_require__(/*! ../bet-box/bet-box */ "./source-code/client/components/manager-ui/main-components/bet-box/bet-box.tsx");
+__webpack_require__(/*! ./next-fight-panel.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.scss");
+const bet_box_1 = __webpack_require__(/*! ../bet-box/bet-box */ "./source-code/client/components/player-ui/manager-options-ui/main-components/bet-box/bet-box.tsx");
 class NextFightPanel extends React.Component {
     render() {
         const { fighters, nextFightBet } = this.props.managerInfo;
@@ -51428,10 +53832,10 @@ exports.default = NextFightPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/main-components/your-fighters-panel/your-fighters-panel.tsx":
-/*!**************************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/main-components/your-fighters-panel/your-fighters-panel.tsx ***!
-  \**************************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/main-components/your-fighters-panel/your-fighters-panel.tsx":
+/*!********************************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/main-components/your-fighters-panel/your-fighters-panel.tsx ***!
+  \********************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51439,7 +53843,7 @@ exports.default = NextFightPanel;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./../fighters-list.scss */ "./source-code/client/components/manager-ui/main-components/fighters-list.scss");
+__webpack_require__(/*! ../fighters-list.scss */ "./source-code/client/components/player-ui/manager-options-ui/main-components/fighters-list.scss");
 class YourFightersPanel extends React.Component {
     render() {
         const { fighters, fighterSelected } = this.props;
@@ -51456,15 +53860,15 @@ exports.default = YourFightersPanel;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/manager-ui-global-styles/manager-ui-global.scss":
-/*!**************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/manager-ui-global-styles/manager-ui-global.scss ***!
-  \**************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.scss":
+/*!********************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.scss ***!
+  \********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./manager-ui-global.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/manager-ui-global-styles/manager-ui-global.scss");
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./manager-options-ui.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51486,40 +53890,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/manager-ui.scss":
-/*!******************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/manager-ui.scss ***!
-  \******************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader/dist/cjs.js!../../../../node_modules/sass-loader/dist/cjs.js!./manager-ui.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/manager-ui.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./source-code/client/components/manager-ui/manager-ui.tsx":
-/*!*****************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/manager-ui.tsx ***!
-  \*****************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.tsx":
+/*!*******************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.tsx ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51527,23 +53901,23 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./manager-ui.scss */ "./source-code/client/components/manager-ui/manager-ui.scss");
-__webpack_require__(/*! ./manager-ui-global-styles/manager-ui-global.scss */ "./source-code/client/components/manager-ui/manager-ui-global-styles/manager-ui-global.scss");
-const fighter_card_1 = __webpack_require__(/*! ./cards/fighter-card/fighter-card */ "./source-code/client/components/manager-ui/cards/fighter-card/fighter-card.tsx");
-const employee_card_1 = __webpack_require__(/*! ./cards/employee-card/employee-card */ "./source-code/client/components/manager-ui/cards/employee-card/employee-card.tsx");
-const job_seeker_card_1 = __webpack_require__(/*! ./cards/job-seeker-card/job-seeker-card */ "./source-code/client/components/manager-ui/cards/job-seeker-card/job-seeker-card.tsx");
-const loan_shark_card_1 = __webpack_require__(/*! ./cards/loan-shark-card/loan-shark-card */ "./source-code/client/components/manager-ui/cards/loan-shark-card/loan-shark-card.tsx");
-const ability_card_1 = __webpack_require__(/*! ./cards/ability-card/ability-card */ "./source-code/client/components/manager-ui/cards/ability-card/ability-card.tsx");
-const headbar_1 = __webpack_require__(/*! ./main-components/headbar/headbar */ "./source-code/client/components/manager-ui/main-components/headbar/headbar.tsx");
-const next_fight_panel_1 = __webpack_require__(/*! ./main-components/next-fight-panel/next-fight-panel */ "./source-code/client/components/manager-ui/main-components/next-fight-panel/next-fight-panel.tsx");
-const modal_1 = __webpack_require__(/*! ./main-components/modal/modal */ "./source-code/client/components/manager-ui/main-components/modal/modal.tsx");
-const your_fighters_panel_1 = __webpack_require__(/*! ./main-components/your-fighters-panel/your-fighters-panel */ "./source-code/client/components/manager-ui/main-components/your-fighters-panel/your-fighters-panel.tsx");
-const known_fighters_panel_1 = __webpack_require__(/*! ./main-components/known-fighters-panel/known-fighters-panel */ "./source-code/client/components/manager-ui/main-components/known-fighters-panel/known-fighters-panel.tsx");
-const job_seekers_panel_1 = __webpack_require__(/*! ./main-components/job-seekers-panel/job-seekers-panel */ "./source-code/client/components/manager-ui/main-components/job-seekers-panel/job-seekers-panel.tsx");
-const employees_panel_1 = __webpack_require__(/*! ./main-components/employees-panel/employees-panel */ "./source-code/client/components/manager-ui/main-components/employees-panel/employees-panel.tsx");
-const loan_shark_panel_1 = __webpack_require__(/*! ./main-components/loan-shark-panel/loan-shark-panel */ "./source-code/client/components/manager-ui/main-components/loan-shark-panel/loan-shark-panel.tsx");
-const activity_log_panel_1 = __webpack_require__(/*! ./main-components/activity-log-panel/activity-log-panel */ "./source-code/client/components/manager-ui/main-components/activity-log-panel/activity-log-panel.tsx");
-class ManagerUi extends React.Component {
+__webpack_require__(/*! ./manager-options-ui.scss */ "./source-code/client/components/player-ui/manager-options-ui/manager-options-ui.scss");
+__webpack_require__(/*! ../../../global/styles/manager-options-ui/manager-options-ui-global.scss */ "./source-code/client/global/styles/manager-options-ui/manager-options-ui-global.scss");
+const fighter_card_1 = __webpack_require__(/*! ./cards/fighter-card/fighter-card */ "./source-code/client/components/player-ui/manager-options-ui/cards/fighter-card/fighter-card.tsx");
+const employee_card_1 = __webpack_require__(/*! ./cards/employee-card/employee-card */ "./source-code/client/components/player-ui/manager-options-ui/cards/employee-card/employee-card.tsx");
+const job_seeker_card_1 = __webpack_require__(/*! ./cards/job-seeker-card/job-seeker-card */ "./source-code/client/components/player-ui/manager-options-ui/cards/job-seeker-card/job-seeker-card.tsx");
+const loan_shark_card_1 = __webpack_require__(/*! ./cards/loan-shark-card/loan-shark-card */ "./source-code/client/components/player-ui/manager-options-ui/cards/loan-shark-card/loan-shark-card.tsx");
+const ability_card_1 = __webpack_require__(/*! ./cards/ability-card/ability-card */ "./source-code/client/components/player-ui/manager-options-ui/cards/ability-card/ability-card.tsx");
+const headbar_1 = __webpack_require__(/*! ./main-components/headbar/headbar */ "./source-code/client/components/player-ui/manager-options-ui/main-components/headbar/headbar.tsx");
+const next_fight_panel_1 = __webpack_require__(/*! ./main-components/next-fight-panel/next-fight-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/next-fight-panel/next-fight-panel.tsx");
+const modal_1 = __webpack_require__(/*! ./main-components/modal/modal */ "./source-code/client/components/player-ui/manager-options-ui/main-components/modal/modal.tsx");
+const your_fighters_panel_1 = __webpack_require__(/*! ./main-components/your-fighters-panel/your-fighters-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/your-fighters-panel/your-fighters-panel.tsx");
+const known_fighters_panel_1 = __webpack_require__(/*! ./main-components/known-fighters-panel/known-fighters-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/known-fighters-panel/known-fighters-panel.tsx");
+const job_seekers_panel_1 = __webpack_require__(/*! ./main-components/job-seekers-panel/job-seekers-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/job-seekers-panel/job-seekers-panel.tsx");
+const employees_panel_1 = __webpack_require__(/*! ./main-components/employees-panel/employees-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/employees-panel/employees-panel.tsx");
+const loan_shark_panel_1 = __webpack_require__(/*! ./main-components/loan-shark-panel/loan-shark-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/loan-shark-panel/loan-shark-panel.tsx");
+const activity_log_panel_1 = __webpack_require__(/*! ./main-components/activity-log-panel/activity-log-panel */ "./source-code/client/components/player-ui/manager-options-ui/main-components/activity-log-panel/activity-log-panel.tsx");
+class ManagerOptionsUi extends React.Component {
     constructor() {
         super(...arguments);
         this.state = {
@@ -51710,20 +54084,20 @@ class ManagerUi extends React.Component {
                 React.createElement("div", { className: "image" }, "Turn your phone to portrait view"))));
     }
 }
-exports.default = ManagerUi;
+exports.default = ManagerOptionsUi;
 
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/action-points/action-points.scss":
-/*!********************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/action-points/action-points.scss ***!
-  \********************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.scss":
+/*!**************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.scss ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./action-points.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/action-points/action-points.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./action-points.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51737,7 +54111,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -51745,10 +54119,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/action-points/action-points.tsx":
-/*!*******************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/action-points/action-points.tsx ***!
-  \*******************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.tsx":
+/*!*************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.tsx ***!
+  \*************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51756,7 +54130,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./action-points.scss */ "./source-code/client/components/manager-ui/partials/action-points/action-points.scss");
+__webpack_require__(/*! ./action-points.scss */ "./source-code/client/components/player-ui/manager-options-ui/partials/action-points/action-points.scss");
 function ActionPoints({ actionPoints }) {
     return React.createElement("span", { className: 'action-points' }, actionPoints);
 }
@@ -51765,15 +54139,15 @@ exports.default = ActionPoints;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss":
-/*!************************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss ***!
-  \************************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss":
+/*!******************************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss ***!
+  \******************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./fights-and-wins.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./fights-and-wins.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51787,7 +54161,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -51795,10 +54169,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/fights-and-wins/fights.tsx":
-/*!**************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/fights-and-wins/fights.tsx ***!
-  \**************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights.tsx":
+/*!********************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights.tsx ***!
+  \********************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51806,7 +54180,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./fights-and-wins.scss */ "./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss");
+__webpack_require__(/*! ./fights-and-wins.scss */ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss");
 function Fights({ numberOfFights }) {
     return (React.createElement("span", { className: 'fights' },
         React.createElement("span", { className: 'icon' }, "Fights"),
@@ -51817,10 +54191,10 @@ exports.default = Fights;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/fights-and-wins/wins.tsx":
-/*!************************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/fights-and-wins/wins.tsx ***!
-  \************************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/wins.tsx":
+/*!******************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/wins.tsx ***!
+  \******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51828,7 +54202,7 @@ exports.default = Fights;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./fights-and-wins.scss */ "./source-code/client/components/manager-ui/partials/fights-and-wins/fights-and-wins.scss");
+__webpack_require__(/*! ./fights-and-wins.scss */ "./source-code/client/components/player-ui/manager-options-ui/partials/fights-and-wins/fights-and-wins.scss");
 function Wins({ numberOfWins }) {
     return (React.createElement("span", { className: 'wins' },
         React.createElement("span", { className: 'icon' }, "Wins"),
@@ -51839,15 +54213,15 @@ exports.default = Wins;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/info-box/info-box.scss":
-/*!**********************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/info-box/info-box.scss ***!
-  \**********************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.scss":
+/*!****************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.scss ***!
+  \****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./info-box.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/info-box/info-box.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./info-box.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51861,7 +54235,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -51869,10 +54243,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/info-box/info-box.tsx":
-/*!*********************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/info-box/info-box.tsx ***!
-  \*********************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.tsx":
+/*!***************************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.tsx ***!
+  \***************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51880,7 +54254,7 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./info-box.scss */ "./source-code/client/components/manager-ui/partials/info-box/info-box.scss");
+__webpack_require__(/*! ./info-box.scss */ "./source-code/client/components/player-ui/manager-options-ui/partials/info-box/info-box.scss");
 function InfoBox(props) {
     const { heading, info, list, children } = props;
     return (React.createElement("div", { className: "info-box" },
@@ -51901,15 +54275,15 @@ exports.default = InfoBox;
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/money/money.scss":
-/*!****************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/money/money.scss ***!
-  \****************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/money/money.scss":
+/*!**********************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/money/money.scss ***!
+  \**********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../node_modules/sass-loader/dist/cjs.js!./money.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/manager-ui/partials/money/money.scss");
+var content = __webpack_require__(/*! !../../../../../../../node_modules/css-loader/dist/cjs.js!../../../../../../../node_modules/sass-loader/dist/cjs.js!./money.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/components/player-ui/manager-options-ui/partials/money/money.scss");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -51923,7 +54297,7 @@ var options = {"hmr":true}
 options.transform = transform
 options.insertInto = undefined;
 
-var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+var update = __webpack_require__(/*! ../../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
 
 if(content.locals) module.exports = content.locals;
 
@@ -51931,10 +54305,10 @@ if(false) {}
 
 /***/ }),
 
-/***/ "./source-code/client/components/manager-ui/partials/money/money.tsx":
-/*!***************************************************************************!*\
-  !*** ./source-code/client/components/manager-ui/partials/money/money.tsx ***!
-  \***************************************************************************/
+/***/ "./source-code/client/components/player-ui/manager-options-ui/partials/money/money.tsx":
+/*!*********************************************************************************************!*\
+  !*** ./source-code/client/components/player-ui/manager-options-ui/partials/money/money.tsx ***!
+  \*********************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -51942,12 +54316,389 @@ if(false) {}
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-__webpack_require__(/*! ./money.scss */ "./source-code/client/components/manager-ui/partials/money/money.scss");
+__webpack_require__(/*! ./money.scss */ "./source-code/client/components/player-ui/manager-options-ui/partials/money/money.scss");
 function Money({ money }) {
     return React.createElement("span", { className: 'money' }, money);
 }
 exports.default = Money;
 
+
+/***/ }),
+
+/***/ "./source-code/client/components/pre-game/game-host.tsx":
+/*!**************************************************************!*\
+  !*** ./source-code/client/components/pre-game/game-host.tsx ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class GameHost extends React.Component {
+    handleCreateGame() {
+        const clientAction = {
+            name: 'Create Game',
+            args: null
+        };
+        this.props.sendClientAction(clientAction);
+    }
+    handleJoinGame(id) {
+        const clientAction = {
+            name: 'Join Game',
+            args: { gameId: id }
+        };
+        this.props.sendClientAction(clientAction);
+    }
+    handleLeaveGame(id) {
+        const clientAction = {
+            name: 'Leave Game',
+            args: { gameId: id }
+        };
+        this.props.sendClientAction(clientAction);
+    }
+    handleCancelGame(id) {
+        const clientAction = {
+            name: 'Cancel Game',
+            args: { gameId: id }
+        };
+        this.props.sendClientAction(clientAction);
+    }
+    handleStartGame(id) {
+        const clientAction = {
+            name: 'Start Game',
+            args: { gameId: id }
+        };
+        this.props.sendClientAction(clientAction);
+    }
+    handleReadyToggle(e, id) {
+        const readyValue = e.target.checked;
+        console.log('ready checked ', readyValue);
+        const clientAction = {
+            name: 'Ready To Start Game',
+            args: { gameId: id, readyValue: readyValue }
+        };
+        this.props.sendClientAction(clientAction);
+    }
+    submitGlobalChat(e) {
+        const message = e.target.value;
+        const clientAction = {
+            name: 'Submit Global Chat',
+            args: { message }
+        };
+        this.props.sendClientAction(clientAction);
+        e.target.value = '';
+    }
+    render() {
+        const { connectedPlayers, gameLobbies, globalChat } = this.props.mainGameData;
+        const thisClientId = localStorage.getItem('clientId');
+        const inGameLobby = gameLobbies.find((gameLobby) => gameLobby.clients.some((client) => client.id == thisClientId));
+        const borderWithPaddingStyle = {
+            border: '1px solid black',
+            padding: '0.5rem',
+            display: 'inline-block'
+        };
+        const modalBlackoutStyle = {
+            top: '0px',
+            right: '0px',
+            bottom: '0px',
+            left: '0px',
+            backgroundColor: 'rgba(0,0,0,0.8)',
+            position: 'absolute',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        };
+        const modalStyle = {
+            margin: 'auto',
+            width: '50%',
+            display: 'block',
+            border: '1px solid black',
+            padding: '0.5rem',
+            backgroundColor: 'white'
+        };
+        return (React.createElement("div", { id: 'game-lobby' },
+            React.createElement("div", { id: 'connected-players', style: borderWithPaddingStyle },
+                React.createElement("h4", null, "Connected Players"),
+                connectedPlayers.map(player => React.createElement("div", { className: 'connected-player', key: player.id }, player.name))),
+            React.createElement("button", { onClick: () => this.handleCreateGame() }, "Create Game"),
+            React.createElement("div", { id: 'available-games', style: borderWithPaddingStyle },
+                React.createElement("h4", null, "Available Games"),
+                gameLobbies.map((gameLobby) => React.createElement("div", { className: 'available-game', key: gameLobby.id },
+                    "creator: ",
+                    gameLobby.creator.name,
+                    React.createElement("br", null),
+                    "players: ",
+                    gameLobby.clients.length,
+                    React.createElement("br", null),
+                    React.createElement("button", { onClick: () => this.handleJoinGame(gameLobby.id) }, "Join Game")))),
+            inGameLobby &&
+                React.createElement("div", { id: 'modal-blackout', style: modalBlackoutStyle },
+                    React.createElement("div", { id: 'active-game-modal', style: modalStyle },
+                        React.createElement("h4", null,
+                            "Game Creator: ",
+                            inGameLobby.creator.name),
+                        React.createElement("h5", null, "Joined Players"),
+                        inGameLobby.clients.map((client) => React.createElement("div", { key: client.id },
+                            client.name,
+                            " -",
+                            React.createElement("input", { type: 'checkbox', checked: client.ready, disabled: true }))),
+                        React.createElement("br", null),
+                        "Ready?: ",
+                        React.createElement("input", { type: 'checkbox', onChange: e => this.handleReadyToggle(e, inGameLobby.id) }),
+                        React.createElement("br", null),
+                        React.createElement("br", null),
+                        inGameLobby.creator.id == thisClientId ? [
+                            React.createElement("button", { key: 'cancel-button', onClick: () => this.handleCancelGame(inGameLobby.id) }, "Cancel Game"),
+                            React.createElement("button", { key: 'start-button', onClick: () => this.handleStartGame(inGameLobby.id) }, "Start Game")
+                        ]
+                            :
+                                React.createElement("button", { key: 'leave-button', onClick: () => this.handleLeaveGame(inGameLobby.id) }, "Leave Game"))),
+            React.createElement("div", { id: 'global-chat', style: borderWithPaddingStyle },
+                React.createElement("h4", null, "Global Chat"),
+                globalChat.map((chatMessage, index) => React.createElement("div", { key: index },
+                    chatMessage.player && chatMessage.player.name + ': ',
+                    chatMessage.message)),
+                React.createElement("input", { onKeyPress: (e) => e.key == 'Enter' && this.submitGlobalChat(e) }))));
+    }
+}
+exports.default = GameHost;
+
+
+/***/ }),
+
+/***/ "./source-code/client/components/pre-game/pre-game.tsx":
+/*!*************************************************************!*\
+  !*** ./source-code/client/components/pre-game/pre-game.tsx ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+class PreGame extends React.Component {
+    render() {
+        const { tryToConnectToGameHost } = this.props;
+        let inputName;
+        const updateName = (e) => {
+            inputName = e.target.value;
+        };
+        const submitName = () => {
+            if (inputName != '') {
+                localStorage.setItem('name', inputName);
+                tryToConnectToGameHost();
+            }
+        };
+        function clientIsGameDisplay() {
+            tryToConnectToGameHost(true);
+        }
+        return (React.createElement("div", null,
+            React.createElement("p", null, "Is this client a game display?"),
+            React.createElement("button", { onClick: clientIsGameDisplay.bind(this) }, "This is a game display"),
+            React.createElement("hr", null),
+            React.createElement("p", null, "You must set your player name before you can connect."),
+            React.createElement("input", { id: "name-input", placeholder: "name", onInput: e => updateName(e) }),
+            React.createElement("button", { id: "submit-name-button", onClick: () => submitName() }, "Submit")));
+    }
+}
+exports.default = PreGame;
+
+
+/***/ }),
+
+/***/ "./source-code/client/different-build-modes/main-game/main-game.tsx":
+/*!**************************************************************************!*\
+  !*** ./source-code/client/different-build-modes/main-game/main-game.tsx ***!
+  \**************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+__webpack_require__(/*! ../../global/styles/global.scss */ "./source-code/client/global/styles/global.scss");
+const update_communicator_ui_websocket_1 = __webpack_require__(/*! ../../update-communicator-ui-websocket */ "./source-code/client/update-communicator-ui-websocket.ts");
+const game_host_1 = __webpack_require__(/*! ../../components/pre-game/game-host */ "./source-code/client/components/pre-game/game-host.tsx");
+const pre_game_1 = __webpack_require__(/*! ../../components/pre-game/pre-game */ "./source-code/client/components/pre-game/pre-game.tsx");
+const game_ui_player_1 = __webpack_require__(/*! ../../components/player-ui/game-ui-player */ "./source-code/client/components/player-ui/game-ui-player.tsx");
+const game_ui_display_1 = __webpack_require__(/*! ../../components/display-ui/game-ui-display */ "./source-code/client/components/display-ui/game-ui-display.tsx");
+class MainGame extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isGameDisplay: false,
+            mainGameData: undefined
+        };
+        this.props.updateCommunicatorUi.receiveMainGameData.subscribe((mainGameData) => this.setState({ mainGameData }));
+        this.tryToConnectToGameHost();
+    }
+    tryToConnectToGameHost(isGameDisplay) {
+        let name = localStorage.getItem('name');
+        if (!name && !isGameDisplay)
+            return;
+        if (isGameDisplay) {
+            name = 'Game Display';
+            this.setState({ isGameDisplay });
+        }
+        let clientId = localStorage.getItem('clientId');
+        if (clientId == null) {
+            clientId = new Date().getTime().toString();
+            localStorage.setItem('clientId', clientId);
+        }
+        const connectAction = {
+            name: 'Connect',
+            args: { name, clientId }
+        };
+        this.props.updateCommunicatorUi.sendClientAction(connectAction);
+    }
+    render() {
+        if (this.state.mainGameData == undefined)
+            return React.createElement(pre_game_1.default, { tryToConnectToGameHost: this.tryToConnectToGameHost.bind(this) });
+        const { inGame } = this.state.mainGameData;
+        if (inGame) {
+            return this.state.isGameDisplay ?
+                React.createElement(game_ui_display_1.default, { updateCommunicatorUi: this.props.updateCommunicatorUi }) :
+                React.createElement(game_ui_player_1.default, { updateCommunicatorUi: this.props.updateCommunicatorUi });
+        }
+        if (inGame == false)
+            return React.createElement(game_host_1.default, { mainGameData: this.state.mainGameData, sendClientAction: this.props.updateCommunicatorUi.sendClientAction.bind(this.props.updateCommunicatorUi) });
+    }
+}
+exports.default = MainGame;
+const reactRenderingTag = document.createElement('react');
+document.body.appendChild(reactRenderingTag);
+ReactDOM.render(React.createElement(MainGame, { updateCommunicatorUi: new update_communicator_ui_websocket_1.default() }), reactRenderingTag);
+window.addEventListener("load", function () {
+    setTimeout(function () {
+        // This hides the address bar:
+        window.scrollTo(0, 1);
+    }, 0);
+});
+
+
+/***/ }),
+
+/***/ "./source-code/client/global/partials/fight-ui/managers-bet.tsx":
+/*!**********************************************************************!*\
+  !*** ./source-code/client/global/partials/fight-ui/managers-bet.tsx ***!
+  \**********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = __webpack_require__(/*! React */ "./node_modules/React/index.js");
+__webpack_require__(/*! ./managers-bets.scss */ "./source-code/client/global/partials/fight-ui/managers-bets.scss");
+function ManagersBets(props) {
+    return (React.createElement("div", { className: "managers-bets" }, props.managers.map(manager => React.createElement("div", { className: 'managers-bet', key: manager.name },
+        React.createElement("div", { className: "manager" },
+            React.createElement("div", { className: `manager__image manager__image--${manager.image.split(' ').join('-').toLowerCase()}` }),
+            React.createElement("div", { className: "manager__name" }, manager.name)),
+        React.createElement("div", { className: "fighter-bet-on" },
+            React.createElement("div", { className: "fighter-bet-on__name" }, (manager.bet && manager.bet.fighterName) ? manager.bet.fighterName : 'No Bet'),
+            React.createElement("div", { className: "fighter-bet-on__image" }),
+            manager.bet && manager.bet.size &&
+                React.createElement("div", { className: "fighter-bet-on__amount" }, manager.bet.size))))));
+}
+exports.default = ManagersBets;
+;
+
+
+/***/ }),
+
+/***/ "./source-code/client/global/partials/fight-ui/managers-bets.scss":
+/*!************************************************************************!*\
+  !*** ./source-code/client/global/partials/fight-ui/managers-bets.scss ***!
+  \************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./managers-bets.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/partials/fight-ui/managers-bets.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./source-code/client/global/styles/global.scss":
+/*!******************************************************!*\
+  !*** ./source-code/client/global/styles/global.scss ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../node_modules/css-loader/dist/cjs.js!../../../../node_modules/sass-loader/dist/cjs.js!./global.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/styles/global.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./source-code/client/global/styles/manager-options-ui/manager-options-ui-global.scss":
+/*!********************************************************************************************!*\
+  !*** ./source-code/client/global/styles/manager-options-ui/manager-options-ui-global.scss ***!
+  \********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../node_modules/css-loader/dist/cjs.js!../../../../../node_modules/sass-loader/dist/cjs.js!./manager-options-ui-global.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/global/styles/manager-options-ui/manager-options-ui-global.scss");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
 
 /***/ }),
 
@@ -52857,337 +55608,6 @@ module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAlCAYAAAAw
 
 /***/ }),
 
-/***/ "./source-code/client/main-game/game-host.tsx":
-/*!****************************************************!*\
-  !*** ./source-code/client/main-game/game-host.tsx ***!
-  \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class GameHost extends React.Component {
-    handleCreateGame() {
-        const clientAction = {
-            name: 'Create Game',
-            args: null
-        };
-        this.props.sendClientAction(clientAction);
-    }
-    handleJoinGame(id) {
-        const clientAction = {
-            name: 'Join Game',
-            args: { gameId: id }
-        };
-        this.props.sendClientAction(clientAction);
-    }
-    handleLeaveGame(id) {
-        const clientAction = {
-            name: 'Leave Game',
-            args: { gameId: id }
-        };
-        this.props.sendClientAction(clientAction);
-    }
-    handleCancelGame(id) {
-        const clientAction = {
-            name: 'Cancel Game',
-            args: { gameId: id }
-        };
-        this.props.sendClientAction(clientAction);
-    }
-    handleStartGame(id) {
-        const clientAction = {
-            name: 'Start Game',
-            args: { gameId: id }
-        };
-        this.props.sendClientAction(clientAction);
-    }
-    handleReadyToggle(e, id) {
-        const readyValue = e.target.checked;
-        console.log('ready checked ', readyValue);
-        const clientAction = {
-            name: 'Ready To Start Game',
-            args: { gameId: id, readyValue: readyValue }
-        };
-        this.props.sendClientAction(clientAction);
-    }
-    submitGlobalChat(e) {
-        const message = e.target.value;
-        const clientAction = {
-            name: 'Submit Global Chat',
-            args: { message }
-        };
-        this.props.sendClientAction(clientAction);
-        e.target.value = '';
-    }
-    render() {
-        const { connectedPlayers, gameLobbies, globalChat } = this.props.mainGameData;
-        const thisClientId = localStorage.getItem('clientId');
-        const inGameLobby = gameLobbies.find((gameLobby) => gameLobby.clients.some((client) => client.id == thisClientId));
-        const borderWithPaddingStyle = {
-            border: '1px solid black',
-            padding: '0.5rem',
-            display: 'inline-block'
-        };
-        const modalBlackoutStyle = {
-            top: '0px',
-            right: '0px',
-            bottom: '0px',
-            left: '0px',
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            position: 'absolute',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-        };
-        const modalStyle = {
-            margin: 'auto',
-            width: '50%',
-            display: 'block',
-            border: '1px solid black',
-            padding: '0.5rem',
-            backgroundColor: 'white'
-        };
-        return (React.createElement("div", { id: 'game-lobby' },
-            React.createElement("div", { id: 'connected-players', style: borderWithPaddingStyle },
-                React.createElement("h4", null, "Connected Players"),
-                connectedPlayers.map(player => React.createElement("div", { className: 'connected-player', key: player.id }, player.name))),
-            React.createElement("button", { onClick: () => this.handleCreateGame() }, "Create Game"),
-            React.createElement("div", { id: 'available-games', style: borderWithPaddingStyle },
-                React.createElement("h4", null, "Available Games"),
-                gameLobbies.map((gameLobby) => React.createElement("div", { className: 'available-game', key: gameLobby.id },
-                    "creator: ",
-                    gameLobby.creator.name,
-                    React.createElement("br", null),
-                    "players: ",
-                    gameLobby.clients.length,
-                    React.createElement("br", null),
-                    React.createElement("button", { onClick: () => this.handleJoinGame(gameLobby.id) }, "Join Game")))),
-            inGameLobby &&
-                React.createElement("div", { id: 'modal-blackout', style: modalBlackoutStyle },
-                    React.createElement("div", { id: 'active-game-modal', style: modalStyle },
-                        React.createElement("h4", null,
-                            "Game Creator: ",
-                            inGameLobby.creator.name),
-                        React.createElement("h5", null, "Joined Players"),
-                        inGameLobby.clients.map((client) => React.createElement("div", { key: client.id },
-                            client.name,
-                            " -",
-                            React.createElement("input", { type: 'checkbox', checked: client.ready, disabled: true }))),
-                        React.createElement("br", null),
-                        "Ready?: ",
-                        React.createElement("input", { type: 'checkbox', onChange: e => this.handleReadyToggle(e, inGameLobby.id) }),
-                        React.createElement("br", null),
-                        React.createElement("br", null),
-                        inGameLobby.creator.id == thisClientId ? [
-                            React.createElement("button", { key: 'cancel-button', onClick: () => this.handleCancelGame(inGameLobby.id) }, "Cancel Game"),
-                            React.createElement("button", { key: 'start-button', onClick: () => this.handleStartGame(inGameLobby.id) }, "Start Game")
-                        ]
-                            :
-                                React.createElement("button", { key: 'leave-button', onClick: () => this.handleLeaveGame(inGameLobby.id) }, "Leave Game"))),
-            React.createElement("div", { id: 'global-chat', style: borderWithPaddingStyle },
-                React.createElement("h4", null, "Global Chat"),
-                globalChat.map((chatMessage, index) => React.createElement("div", { key: index },
-                    chatMessage.player && chatMessage.player.name + ': ',
-                    chatMessage.message)),
-                React.createElement("input", { onKeyPress: (e) => e.key == 'Enter' && this.submitGlobalChat(e) }))));
-    }
-}
-exports.default = GameHost;
-
-
-/***/ }),
-
-/***/ "./source-code/client/main-game/global.scss":
-/*!**************************************************!*\
-  !*** ./source-code/client/main-game/global.scss ***!
-  \**************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-
-var content = __webpack_require__(/*! !../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/sass-loader/dist/cjs.js!./global.scss */ "./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./source-code/client/main-game/global.scss");
-
-if(typeof content === 'string') content = [[module.i, content, '']];
-
-var transform;
-var insertInto;
-
-
-
-var options = {"hmr":true}
-
-options.transform = transform
-options.insertInto = undefined;
-
-var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
-
-if(content.locals) module.exports = content.locals;
-
-if(false) {}
-
-/***/ }),
-
-/***/ "./source-code/client/main-game/main-game.tsx":
-/*!****************************************************!*\
-  !*** ./source-code/client/main-game/main-game.tsx ***!
-  \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const ReactDOM = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-const pre_game_1 = __webpack_require__(/*! ./pre-game */ "./source-code/client/main-game/pre-game.tsx");
-const game_host_1 = __webpack_require__(/*! ./game-host */ "./source-code/client/main-game/game-host.tsx");
-__webpack_require__(/*! ./global.scss */ "./source-code/client/main-game/global.scss");
-const update_communicator_ui_websocket_1 = __webpack_require__(/*! ./update-communicator-ui-websocket */ "./source-code/client/main-game/update-communicator-ui-websocket.ts");
-const game_ui_display_1 = __webpack_require__(/*! ../components/game-ui-display */ "./source-code/client/components/game-ui-display.tsx");
-const game_ui_player_1 = __webpack_require__(/*! ../components/game-ui-player */ "./source-code/client/components/game-ui-player.tsx");
-class MainGame extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isGameDisplay: false,
-            mainGameData: undefined
-        };
-        this.props.updateCommunicatorUi.receiveMainGameData.subscribe((mainGameData) => this.setState({ mainGameData }));
-        this.tryToConnectToGameHost();
-    }
-    tryToConnectToGameHost(isGameDisplay) {
-        let name = localStorage.getItem('name');
-        if (!name && !isGameDisplay)
-            return;
-        if (isGameDisplay) {
-            name = 'Game Display';
-            this.setState({ isGameDisplay });
-        }
-        let clientId = localStorage.getItem('clientId');
-        if (clientId == null) {
-            clientId = new Date().getTime().toString();
-            localStorage.setItem('clientId', clientId);
-        }
-        const connectAction = {
-            name: 'Connect',
-            args: { name, clientId }
-        };
-        this.props.updateCommunicatorUi.sendClientAction(connectAction);
-    }
-    render() {
-        if (this.state.mainGameData == undefined)
-            return React.createElement(pre_game_1.default, { tryToConnectToGameHost: this.tryToConnectToGameHost.bind(this) });
-        const { inGame } = this.state.mainGameData;
-        if (inGame) {
-            return this.state.isGameDisplay ?
-                React.createElement(game_ui_display_1.default, { updateCommunicatorUi: this.props.updateCommunicatorUi }) :
-                React.createElement(game_ui_player_1.default, { updateCommunicatorUi: this.props.updateCommunicatorUi });
-        }
-        if (inGame == false)
-            return React.createElement(game_host_1.default, { mainGameData: this.state.mainGameData, sendClientAction: this.props.updateCommunicatorUi.sendClientAction.bind(this.props.updateCommunicatorUi) });
-    }
-}
-exports.default = MainGame;
-const reactRenderingTag = document.createElement('react');
-document.body.appendChild(reactRenderingTag);
-ReactDOM.render(React.createElement(MainGame, { updateCommunicatorUi: new update_communicator_ui_websocket_1.default() }), reactRenderingTag);
-window.addEventListener("load", function () {
-    setTimeout(function () {
-        // This hides the address bar:
-        window.scrollTo(0, 1);
-    }, 0);
-});
-
-
-/***/ }),
-
-/***/ "./source-code/client/main-game/pre-game.tsx":
-/*!***************************************************!*\
-  !*** ./source-code/client/main-game/pre-game.tsx ***!
-  \***************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const React = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-class PreGame extends React.Component {
-    render() {
-        const { tryToConnectToGameHost } = this.props;
-        let inputName;
-        const updateName = (e) => {
-            inputName = e.target.value;
-        };
-        const submitName = () => {
-            if (inputName != '') {
-                localStorage.setItem('name', inputName);
-                tryToConnectToGameHost();
-            }
-        };
-        function clientIsGameDisplay() {
-            tryToConnectToGameHost(true);
-        }
-        return (React.createElement("div", null,
-            React.createElement("p", null, "Is this client a game display?"),
-            React.createElement("button", { onClick: clientIsGameDisplay.bind(this) }, "This is a game display"),
-            React.createElement("hr", null),
-            React.createElement("p", null, "You must set your player name before you can connect."),
-            React.createElement("input", { id: "name-input", placeholder: "name", onInput: e => updateName(e) }),
-            React.createElement("button", { id: "submit-name-button", onClick: () => submitName() }, "Submit")));
-    }
-}
-exports.default = PreGame;
-
-
-/***/ }),
-
-/***/ "./source-code/client/main-game/update-communicator-ui-websocket.ts":
-/*!**************************************************************************!*\
-  !*** ./source-code/client/main-game/update-communicator-ui-websocket.ts ***!
-  \**************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const io = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js");
-const rxjs_1 = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
-class UpdateCommunicatorUiWebsocket {
-    constructor() {
-        this.receivePlayerGameUiData = new rxjs_1.Subject();
-        this.receiveDisplayGameUiData = new rxjs_1.Subject();
-        this.port = 33;
-        this.receiveMainGameData = new rxjs_1.Subject();
-        this.websocketAddress = '192.168.0.3';
-        this.setUpWebsockets();
-    }
-    setUpWebsockets() {
-        this.isConnected = true;
-        this.socket = io(`${this.websocketAddress}:${this.port}`, { transports: ['websocket'] });
-        this.socket.on('disconnect', e => {
-            console.log('e :', e);
-        });
-        this.socket.on('Main Game Data Update', (clientUIState) => this.receiveMainGameData.next(clientUIState));
-        this.socket.on('Player Game UI Update', (playerGameUiData) => this.receivePlayerGameUiData.next(playerGameUiData));
-        this.socket.on('Display Game UI Update', (displayGameUiData) => this.receiveDisplayGameUiData.next(displayGameUiData));
-    }
-    sendClientAction(clientAction) {
-        this.socket.emit('Action From Client', clientAction);
-    }
-    sendPlayerAction(playerAction) {
-        this.socket.emit('Action From Player', playerAction);
-    }
-}
-exports.default = UpdateCommunicatorUiWebsocket;
-
-
-/***/ }),
-
 /***/ "./source-code/client/sound-effects/block.mp3":
 /*!****************************************************!*\
   !*** ./source-code/client/sound-effects/block.mp3 ***!
@@ -53229,6 +55649,49 @@ module.exports = __webpack_require__.p + "sounds/dodge.mp3";
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "sounds/punch.mp3";
+
+/***/ }),
+
+/***/ "./source-code/client/update-communicator-ui-websocket.ts":
+/*!****************************************************************!*\
+  !*** ./source-code/client/update-communicator-ui-websocket.ts ***!
+  \****************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const io = __webpack_require__(/*! socket.io-client */ "./node_modules/socket.io-client/lib/index.js");
+const rxjs_1 = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm5/index.js");
+class UpdateCommunicatorUiWebsocket {
+    constructor() {
+        this.receivePlayerGameUiData = new rxjs_1.Subject();
+        this.receiveDisplayGameUiData = new rxjs_1.Subject();
+        this.port = 33;
+        this.receiveMainGameData = new rxjs_1.Subject();
+        this.websocketAddress = '192.168.0.3';
+        this.setUpWebsockets();
+    }
+    setUpWebsockets() {
+        this.isConnected = true;
+        this.socket = io(`${this.websocketAddress}:${this.port}`, { transports: ['websocket'] });
+        this.socket.on('disconnect', e => {
+            console.log('e :', e);
+        });
+        this.socket.on('Main Game Data Update', (clientUIState) => this.receiveMainGameData.next(clientUIState));
+        this.socket.on('Player Game UI Update', (playerGameUiData) => this.receivePlayerGameUiData.next(playerGameUiData));
+        this.socket.on('Display Game UI Update', (displayGameUiData) => this.receiveDisplayGameUiData.next(displayGameUiData));
+    }
+    sendClientAction(clientAction) {
+        this.socket.emit('Action From Client', clientAction);
+    }
+    sendPlayerAction(playerAction) {
+        this.socket.emit('Action From Player', playerAction);
+    }
+}
+exports.default = UpdateCommunicatorUiWebsocket;
+
 
 /***/ }),
 
@@ -53338,7 +55801,7 @@ const dopeFighter = {
     name: 'Dope Fighter',
     cost: { money: 40, actionPoints: 1 },
     possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
-    executes: 'Instantly',
+    executes: 'End Of Manager Options Stage',
     canOnlyTargetSameTargetOnce: true
 };
 exports.dopeFighterServer = Object.assign({ execute(abilityData, game) {
@@ -53516,7 +55979,7 @@ exports.offerContractServer = Object.assign({ execute(abilityData, game) {
             if (jobSeeker.type == 'Professional') {
                 const { abilities, profession, skillLevel, name } = jobSeeker;
                 const activeContract = {
-                    costPerWeek: contractOffer.moneyPerWeek,
+                    weeklyCost: contractOffer.weeklyCost,
                     weeksRemaining: contractOffer.numberOfWeeks,
                     numberOfWeeks: contractOffer.numberOfWeeks
                 };
@@ -53533,7 +55996,7 @@ exports.offerContractServer = Object.assign({ execute(abilityData, game) {
                 manager.fighters.push(fighter);
                 fighter.state.manager = manager;
                 const activeContract = {
-                    costPerWeek: contractOffer.moneyPerWeek,
+                    weeklyCost: contractOffer.weeklyCost,
                     weeksRemaining: contractOffer.numberOfWeeks,
                     numberOfWeeks: contractOffer.numberOfWeeks
                 };
@@ -53546,7 +56009,7 @@ exports.offerContractServer = Object.assign({ execute(abilityData, game) {
             const fighter = manager.fighters.find(fighter => fighter.name == abilityData.target.name);
             if (fighter) {
                 fighter.state.activeContract = {
-                    costPerWeek: contractOffer.moneyPerWeek,
+                    weeklyCost: contractOffer.weeklyCost,
                     weeksRemaining: contractOffer.numberOfWeeks,
                     numberOfWeeks: contractOffer.numberOfWeeks
                 };
@@ -53975,6 +56438,8 @@ exports.abilityServiceClient = (() => {
             sourceActionPoints = managerInfo.employees.find(employee => employee.name == abilityData.source.name).actionPoints;
         if (sourceActionPoints < clientAbility.cost.actionPoints)
             throw (`${abilityData.source.type} ${abilityData.source.name} does not have enough action points for ${clientAbility.name}`);
+        if ((clientAbility.name == 'Dope Fighter' || clientAbility.name == 'Poison Fighter') && !managerInfo.employees.some(employee => employee.profession == 'Drug Dealer'))
+            throw (`${clientAbility.name} can only be used unless if you have a Drug Dealer employed`);
         if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
             throw (`${abilityData.target.name} has already been targeted for ${clientAbility.name} and can not be the target of this ability again`);
     };
@@ -54039,7 +56504,7 @@ const gameConfiguration = {
     },
     stageDurations: {
         managerOptions: 120,
-        maxFightDuration: 120,
+        maxFightDuration: 120999,
         eachNewsSlide: 1,
         postFightReport: 1
     },
@@ -54167,18 +56632,6 @@ exports.getDirectionOfPosition2FromPosition1 = (pos1, pos2) => {
         directionOfPosition2FromPosition1 = 0;
     }
     return directionOfPosition2FromPosition1;
-};
-exports.convertFighterInfoToKnownFighter = (fighterInfo) => {
-    let knownStats = {};
-    for (let key in fighterInfo) {
-        if (key !== 'name' && key !== 'inNextFight')
-            knownStats[key] = fighterInfo[key];
-    }
-    const knownFighter = {
-        name: fighterInfo.name,
-        knownStats
-    };
-    return knownFighter;
 };
 
 
