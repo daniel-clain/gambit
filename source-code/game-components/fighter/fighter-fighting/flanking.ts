@@ -16,8 +16,8 @@ export default class Flanking {
 
   flankingEdgesInStikingRange(): Flanker[]{
 
-    const {flanked, proximity} = this.fighting
-    const closeFlankingEdges = flanked.flankingPairs.reduce(
+    const {proximity} = this.fighting
+    const closeFlankingEdges = proximity.flanked.flankingPairs.reduce(
       (closeFlankingEdges, flankingPair: FlankingPair) => {
         for(let key in flankingPair){
           const flanker: Flanker = flankingPair[key]
@@ -36,12 +36,12 @@ export default class Flanking {
 
   }
   getRetreatFromCorneredDirection(): Direction360{
-    const {flanked, proximity} = this.fighting
+    const {proximity} = this.fighting
     const edges = this.flankingEdgesInStikingRange()
     edges[0]
 
-    const enemyCoords = flanked.flankingPairs[0].flanker1.type == 'Fighter' ? 
-    flanked.flankingPairs[0].flanker1.coords : flanked.flankingPairs[0].flanker2.coords
+    const enemyCoords = proximity.flanked.flankingPairs[0].flanker1.type == 'Fighter' ? 
+    proximity.flanked.flankingPairs[0].flanker1.coords : proximity.flanked.flankingPairs[0].flanker2.coords
 
     const edge1AndEnemyDistace = getDistanceBetweenTwoPoints(edges[0].coords, enemyCoords)
 
@@ -94,8 +94,8 @@ export default class Flanking {
 
   getRetreatFromFlankedDirection(): Direction360 {
 
-    const { flanked, logistics, proximity, timers } = this.fighting
-    const { flanker1, flanker2 } = flanked.flankingPairs[0]
+    const { logistics, proximity, timers } = this.fighting
+    const { flanker1, flanker2 } = proximity.flanked.flankingPairs[0]
 
     const cornered = this.flankingEdgesInStikingRange().length == 2
     if(cornered && !this.retreatFromCorneredDirection){
@@ -213,13 +213,13 @@ export default class Flanking {
   }
 
   determineIfFlanked() {
-    const { movement, proximity, fighter } = this.fighting
+    const { movement, proximity, fighter, logistics } = this.fighting
     const flankingPairs: FlankingPair[] = []
     const modelWidth = proximity.getFighterModelDimensions(fighter, 'Idle').width
 
     const surroundingEnemies: Fighter[] = proximity.getSurroundingEnemies()
 
-    const closestEdges: EdgeCoordDistance[] = Octagon.getAllEdgeDistanceAndCoordOnClosestEdge(movement.coords, modelWidth).filter(edge => edge.distance < proximity.closeRange)
+    /* const closestEdges: EdgeCoordDistance[] = Octagon.getAllEdgeDistanceAndCoordOnClosestEdge(movement.coords, modelWidth).filter(edge => edge.distance < proximity.closeRange)
 
     const edges: Flanker[] = closestEdges.map(edge => ({
       type: 'Edge',
@@ -227,7 +227,7 @@ export default class Flanking {
       direction: getDirectionOfPosition2FromPosition1(movement.coords, edge.coords),
       distance: edge.distance,
       coords: edge.coords
-    }))
+    })) */
 
     const enemies: Flanker[] = surroundingEnemies.filter(enemy => proximity.getDistanceOfEnemyStrikingCenter(enemy) < proximity.nearbyRange).map(enemy => ({
       type: 'Fighter',
@@ -238,12 +238,13 @@ export default class Flanking {
       coords: enemy.fighting.movement.coords
     }))
 
-    const sortedEdges = proximity.sortFlankersByClosest(edges)
+    //const sortedEdges = proximity.sortFlankersByClosest(edges)
     const sortedEnemies = proximity.sortFlankersByClosest(enemies)
-    const allFlankersSorted = proximity.sortFlankersByClosest([...edges, ...enemies])
+    const allFlankersSorted = proximity.sortFlankersByClosest([/* ...edges, */ ...enemies])
 
     if(allFlankersSorted.length < 2){
-      this.fighting.flanked = undefined
+      proximity.flanked = undefined
+      return
     }
       
 
@@ -251,7 +252,7 @@ export default class Flanking {
     let pairCriticallity 
 
     
-    if(sortedEdges.length >= 1 && sortedEnemies.length >= 1){      
+    /* if(sortedEdges.length >= 1 && sortedEnemies.length >= 1){      
       pairCriticallity = this.isFlankedBy1EnemyAnd1Edge(sortedEnemies[0], sortedEdges[0])
       if(pairCriticallity){
         flankingPairs.push({flanker1: sortedEnemies[0], flanker2: sortedEdges[0]})
@@ -281,7 +282,7 @@ export default class Flanking {
         flankingPairs.push({flanker1: sortedEnemies[1], flanker2: sortedEdges[1]})
         criticality += pairCriticallity
       }
-    }
+    } */
 
 
     if(sortedEnemies.length >= 2){
@@ -307,16 +308,16 @@ export default class Flanking {
 
 
     if(criticality == 0)
-      this.fighting.flanked = undefined
+      proximity.flanked = undefined
     else
-      this.fighting.flanked = {
+      proximity.flanked = {
         flankingPairs,
         criticality
       }
   }
 
   getFlankingFighters(): Fighter[]{
-    return this.fighting.flanked.flankingPairs.reduce((fighters, flankingPair: FlankingPair) => {
+    return this.fighting.proximity.flanked.flankingPairs.reduce((fighters, flankingPair: FlankingPair) => {
       if(flankingPair.flanker1.type == 'Fighter' &&
       !fighters.some(fighter => fighter.name == flankingPair.flanker1.fighter.name))
         fighters.push(flankingPair.flanker1.fighter)

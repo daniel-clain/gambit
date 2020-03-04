@@ -12,4 +12,5 @@ export type AnimationName =
 'turning around' | 
 'moving a bit' |
 'recovering' | 
-'defending' 
+'defending' |
+'doing nothing'

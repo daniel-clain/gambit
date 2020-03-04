@@ -1,5 +1,4 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var sourceDir = `${__dirname}/../../source-code/client/different-build-modes/single-player-test`
 

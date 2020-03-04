@@ -30,9 +30,7 @@ export default class ManagerOptionsStage implements IStage {
 
     this.timeLeft = this.duration
     this.timeLeftInterval = setInterval(() => this.timeLeft --, 1000)
-    this.timesUpTimer = setTimeout(() => {
-      this.stageFinished.bind(this)
-    }, this.duration*1000);
+    this.timesUpTimer = setTimeout(this.stageFinished.bind(this), this.duration*1000);
     this.allManagersReadySubject.subscribe(this.stageFinished.bind(this))   
   }
 

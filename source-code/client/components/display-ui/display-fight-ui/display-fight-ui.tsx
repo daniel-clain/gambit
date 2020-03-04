@@ -2,7 +2,7 @@ import * as React from 'react';
 import FightUi from '../../fight-ui/fight-ui';
 import { FightUiData } from '../../../../interfaces/game/fight-ui-data';
 import { ManagerDisplayInfo } from '../../../../interfaces/game-ui-state.interface';
-import ManagersBets from '../../../global/partials/fight-ui/managers-bet';
+import ManagersBets from '../../../global/partials/fight-ui/managers-bets';
 
 interface DisplayFightUiProps{
   fightUiData: FightUiData,

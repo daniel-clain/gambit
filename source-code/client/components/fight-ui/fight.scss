@@ -3,6 +3,7 @@
 .fight-ui{
   height: 100%;
 
+
   
   &__count-down, &__winner, &__time-remaining{
     position: absolute;
@@ -68,7 +69,16 @@
         width: 782px;
         height: 355px;
         bottom: 223px;
-        left: 223px;    
+        left: 218px;   
+        
+        .point{
+          width: 4px;
+          height: 4px;
+          position: absolute;
+          background-color: red;
+          z-index: 10000;
+        }
+        
       }  
       
       .fight-explosion{

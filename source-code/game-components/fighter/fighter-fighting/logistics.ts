@@ -6,6 +6,7 @@ import { getDirectionOfPosition2FromPosition1 } from "../../../helper-functions/
 import { Closeness } from "../../../types/figher/closeness"
 import EdgeCoordDistance from "../../../interfaces/game/fighter/edge-coord-distance"
 import Direction360 from "../../../types/figher/direction-360"
+import Flanked from "../../../interfaces/game/fighter/flanked"
 
 export default class Logistics {
 

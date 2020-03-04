@@ -49,8 +49,8 @@ const gameConfiguration: GameConfiguration = {
     large: 50
   },
   stageDurations: {
-    managerOptions: 120,
-    maxFightDuration: 120999,
+    managerOptions: 180,
+    maxFightDuration: 120,
     eachNewsSlide: 1,
     postFightReport: 1
   },

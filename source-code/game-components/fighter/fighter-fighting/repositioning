@@ -17,3 +17,22 @@
 - put a timer on running the code so it only runs once within every 1 second
 - if in the process of doing it, dont run the check code, only the exectution code
 - for detection to edges, only run if within 200 of one of the corners, if is, run different code for diagonals vs sides/topbtm, when finding the closest point on the diagona, start at the nearest end point
+
+
+
+
+=== process for repositioning to outside of fight
+* if 2 fighters are opposite sides move away in furthest away angle
+* one of 2
+  - if hits a wall
+    * one of 2
+      - if not flanked move along edge thats most away from closest
+      -if flanked
+        * one of 2
+          - if on diagonal or side, defend and counter strike
+          - if on top or bottom, attack only
+  - if far enough away to no longer be flanked, do reposition action
+
+
+= reposition action is
+* pick the side with the least fighters and move to that side until hit wall or no fighters on that side of you anymore, then return to normal

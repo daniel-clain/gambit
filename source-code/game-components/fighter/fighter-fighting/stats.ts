@@ -85,7 +85,7 @@ export default class FighterStats {
 
   private updateBaseStamina(){
     this.baseStamina = Math.round(
-      3 +
+      2 +
       (this.strength ? this.strength*.7 : 0) + 
       (this.fitness ? this.fitness*.5 : 0)
     )

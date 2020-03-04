@@ -5,17 +5,11 @@ var sourceDir = `${__dirname}/../source-code/client/different-build-modes/fight-
 module.exports = {
   mode: 'development',
   entry: `${sourceDir}/fight-ui-test.tsx`,
-  /* output:{
-    path: compiledDir,
-    filename: 'fight-ui-test.js'
-  }, */
   devServer: {
-    /* contentBase: compiledDir,
-    filename: 'fight-ui-test.js', */
-    watchContentBase: true,
     liveReload: true,
     open: true,
-    port: 7788
+    port: 7788,
+    hot: true
   },
   devtool: 'source-map',
   module: {
@@ -34,9 +28,12 @@ module.exports = {
         use: ['style-loader', 'css-loader', 'sass-loader']
       },
       {
-        test: /\.(jpg|png)$/,        
-        use: {
-          loader: 'url-loader'
+        test: /\.(jpg|png)$/,
+        loader: 'url-loader',
+        options: {
+          limit: 100000,
+          fallback: 'file-loader',
+          name: '[name].[ext]'
         }
       },
       {
@@ -50,7 +47,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './source-code/client/base.html'
-    })
+      title: 'Gambit - Fight UI Test Dev',
+      meta:{viewport: "width=device-width, initial-scale=1.0"},
+      favicon: "./favicon.ico",
+    }),
   ]
 };

@@ -13,6 +13,7 @@ import Flanker from "../../../interfaces/game/fighter/flanker"
 import { defaultSkinModelImages } from "../../../client/images/fighter/default-skin/default-skin-model-images"
 import { muscleSkinModelImages } from "../../../client/images/fighter/muscle-skin/muscle-skin-model-images"
 import { fastSkinModelImages } from "../../../client/images/fighter/fast-skin/fast-skin-model-images"
+import Flanked from "../../../interfaces/game/fighter/flanked"
 
 
 interface Fighters{
@@ -33,7 +34,19 @@ export default class Proximity {
   nearbyRange = 150
   farRange = 250
 
+  
+  flanked: Flanked
+
   constructor(public fighting: FighterFighting){}
+
+
+  fightersAreOnEitherSide(): boolean{
+    return
+  }
+  
+  isAgainstAnEdge(): boolean{
+    return
+  }
   
   getEnemiesInfront(){
     const fightersInfront: Fighter[] = this.fighting.otherFightersInFight

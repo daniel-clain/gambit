@@ -13,6 +13,7 @@ import FighterTimers from "./fighter-timers";
 import FighterAnimation from "./fighter-animation";
 import FighterActions from "./fighter-actions";
 import Logistics from "./logistics";
+import FighterCombat from "./fighter-combat";
 
 export default class FighterFighting {
 
@@ -21,8 +22,6 @@ export default class FighterFighting {
   spirit: number
   knockedOut: boolean = false
   _facingDirection: FacingDirection
-  flanked: Flanked
-  trapped: boolean
   enemyTargetedForAttack: Fighter  
   rememberedEnemyBehind: Fighter
 
@@ -42,6 +41,7 @@ export default class FighterFighting {
   animation: FighterAnimation
   timers: FighterTimers
   logistics: Logistics
+  combat: FighterCombat
 
   constructor(public fighter: Fighter) {
     this.stats = new FighterStats(this)
@@ -52,6 +52,7 @@ export default class FighterFighting {
     this.animation = new FighterAnimation(this)
     this.timers = new FighterTimers(this)
     this.logistics = new Logistics(this)
+    this.combat = new FighterCombat(this)
   }
 
   start() {
@@ -76,7 +77,7 @@ export default class FighterFighting {
       soundsMade: this.soundsMade,
       onRampage: this.timers.activeTimers.some(timer => timer.name == 'on a rampage'),
       skin: this.fighter.skin,
-      flanked: this.flanked,
+      flanked: this.proximity.flanked,
       strikingCenters: {
         front: this.proximity.getFighterStrikingCenter(this.fighter),
         back: this.proximity.getFighterStrikingCenter(this.fighter, true)
@@ -85,7 +86,7 @@ export default class FighterFighting {
   }
 
   reset() {
-    this.flanked = undefined
+    this.proximity.flanked = undefined
     this.modelState = 'Idle'
     this.knockedOut = false
     this.spirit = this.stats.maxSpirit

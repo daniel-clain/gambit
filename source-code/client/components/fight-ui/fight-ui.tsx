@@ -5,6 +5,8 @@ import FighterFightState from '../../../interfaces/game/fighter-fight-state-info
 import FighterComponent from './fighter/fighter.component';
 import { wait } from '../../../helper-functions/helper-functions';
 import { FightUiData } from '../../../interfaces/game/fight-ui-data';
+import Octagon from '../../../game-components/fight/octagon';
+import Coords from '../../../interfaces/game/fighter/coords';
 
 type FightExplosionAnimationStages =
 'start' |
@@ -41,7 +43,13 @@ export default class FightUi extends React.Component<FightUiProps, FightUiState>
   }
   
   render(){
-    const {startCountdown, timeRemaining, fighters, report} = this.props.fightUiData                                
+    const {startCountdown, timeRemaining, fighters, report} = this.props.fightUiData      
+    
+    const cornerPoints = []
+
+    for(let key in Octagon.points){
+      cornerPoints.push(Octagon.points[key])
+    }
     
     return (
       <div className='fight-ui'>
@@ -58,6 +66,9 @@ export default class FightUi extends React.Component<FightUiProps, FightUiState>
             <div className="background-top"></div>
             <div className="background-bottom"></div>
             <div className="octagon">
+              {cornerPoints.map((point: Coords) => 
+                <div className="point" style={{left: point.x, bottom: point.y}}></div>
+              )}
               {fighters.map((fighter: FighterFightState, i) => 
                 <FighterComponent key={i} fighterFightState={fighter}/>
               )}

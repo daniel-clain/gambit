@@ -55,7 +55,7 @@ export default class Movement {
   }
 
   async turnAround(){
-    const {timers, animation, logistics} = this.fighting
+    const {timers, animation, flanking} = this.fighting
     return animation.start({
       name: 'turning around',
       duration: animation.speedModifier(100)
@@ -63,6 +63,7 @@ export default class Movement {
     .then(() => {      
       this.fighting.facingDirection = this.fighting.facingDirection == 'left' ? 'right' : 'left'
       timers.start('just turned around')
+      flanking.determineIfFlanked()
       return animation.cooldown(80)
     })
 

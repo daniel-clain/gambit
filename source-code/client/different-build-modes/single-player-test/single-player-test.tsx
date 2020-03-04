@@ -1,7 +1,7 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import '../../global.scss'
+import '../../global/styles/global.scss'
 import Game from '../../../game-components/game';
 import IUpdateCommunicatorUi from '../../../interfaces/update-communicator-ui.interface';
 import UpdateCommunicatorUiLocal from './update-communicator-ui-local';

@@ -9,12 +9,12 @@ import IUpdateCommunicatorUi from '../interfaces/update-communicator-ui.interfac
 export default class UpdateCommunicatorUiWebsocket implements IUpdateCommunicatorUi {
   receivePlayerGameUiData: Subject<PlayerGameUiData> = new Subject()
   receiveDisplayGameUiData: Subject<DisplayGameUiData> = new Subject()
-  port = 33 
   socket: SocketIOClient.Socket
   isConnected: boolean
   receiveMainGameData: Subject<MainGameData> = new Subject()
-
-  websocketAddress = '192.168.0.3'
+  
+  port = 33 
+  websocketAddress = '192.168.43.229'
 
   constructor(){
     this.setUpWebsockets()

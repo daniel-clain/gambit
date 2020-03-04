@@ -2,11 +2,12 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import FightUi from '../../components/fight-ui/fight-ui';
-import '../main-game/global.scss'
+import '../../global/styles/global.scss';
 import Fighter from '../../../game-components/fighter/fighter';
 import Fight from '../../../game-components/fight/fight';
 import { shuffle } from '../../../helper-functions/helper-functions';
 import { FightUiData } from '../../../interfaces/game/fight-ui-data';
+import gameConfiguration from '../../../game-components/game-configuration';
 
 export default class FighterUiTest extends React.Component{
   state = {
@@ -14,6 +15,7 @@ export default class FighterUiTest extends React.Component{
   }
 
   componentDidMount(){
+    gameConfiguration.stageDurations.maxFightDuration = 10000000
     const fighterDaniel = new Fighter('Daniel')
     const fighterBob = new Fighter('Bob')
     const fighterFred = new Fighter('Fred')
@@ -29,6 +31,7 @@ export default class FighterUiTest extends React.Component{
     const fighterStupid = new Fighter('Stupid')
     const fighterPassive = new Fighter('Passive')
     const fighterTest = new Fighter('Test')
+    const fighterTough = new Fighter('Tough')
 
     let fighters = [
       /* fighterDaniel,
@@ -41,30 +44,33 @@ export default class FighterUiTest extends React.Component{
       fighterJoe,
       fighterSteve,
       fighterFast, */
+      fighterTough,
       fighterIntelligent,
       //fighterAggressive,
       fighterStupid,
       fighterPassive,
-      fighterTest
+      //fighterTest
     ]
     fighters = shuffle(fighters)
     fighters.forEach(fighter => {      
-      fighter.fighting.stats.baseStrength = 3
-      fighter.fighting.stats.fitness = 3
-      fighter.fighting.stats.baseIntelligence = 3
-      fighter.fighting.stats.baseAggression = 3
+      fighter.fighting.stats.baseStrength = 2
+      fighter.fighting.stats.fitness = 2
+      fighter.fighting.stats.baseIntelligence = 2
+      fighter.fighting.stats.baseAggression = 2
       fighter.reset()
     })
 
 
     fighterFast.fighting.stats.baseSpeed = 10
-    fighterIntelligent.fighting.stats.baseIntelligence = 10
+    fighterTough.fighting.stats.baseStamina = 15
+    fighterIntelligent.fighting.stats.baseIntelligence = 5
     fighterAggressive.fighting.stats.baseAggression = 10
     fighterStupid.fighting.stats.baseIntelligence = 0
     fighterPassive.fighting.stats.baseAggression = 1
 
     fighterTest.fighting.stats.baseAggression = 10
     fighterTest.fighting.stats.baseSpeed = 10
+    
     fighterPassive.fighting.stats.baseAggression = 1
     fighterPassive.fighting.stats.baseStrength = 1
 
@@ -104,4 +110,6 @@ export default class FighterUiTest extends React.Component{
 }
 
 
-ReactDOM.render(<FighterUiTest/>, document.getElementById('react-rendering-div'))
+const reactRenderingTag = document.createElement('react')
+document.body.appendChild(reactRenderingTag)
+ReactDOM.render(<FighterUiTest/>, reactRenderingTag)

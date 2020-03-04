@@ -1,4 +1,4 @@
-import * as React from 'React';
+import * as React from 'react';
 import './managers-bets.scss'
 import { ManagerDisplayInfo } from '../../../../interfaces/game-ui-state.interface';
 

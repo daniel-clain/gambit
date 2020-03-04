@@ -10,13 +10,13 @@ export default class Octagon {
   static edgeKeys: Edge[] = ['left', 'topLeft', 'top', 'topRight', 'right', 'bottomRight', 'bottom', 'bottomLeft']
 
   static points = {
-    leftTop: { x: 11, y: 261 },
-    topLeft: { x: 243, y: 355 },
-    topRight: { x: 530, y: 355 },
-    rightTop: { x: 755, y: 265 },
-    rightBottom: { x: 782, y: 113 },
-    bottomRight: { x: 562, y: 0 },
-    bottomLeft: { x: 217, y: 0 },
+    leftTop: { x: 16, y: 261 },
+    topLeft: { x: 248, y: 355 },
+    topRight: { x: 535, y: 355 },
+    rightTop: { x: 760, y: 265 },
+    rightBottom: { x: 793, y: 113 },
+    bottomRight: { x: 567, y: 0 },
+    bottomLeft: { x: 223, y: 0 },
     leftBottom: { x: 0, y: 113 }
   }
   static edges: Edges = {
