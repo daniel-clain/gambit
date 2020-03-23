@@ -3,7 +3,6 @@ import { Professional } from "../../interfaces/game-ui-state.interface";
 
 export function doEndOfRoundReset(game: Game) {
   returnProfessionalJobSeekersToProfessionalsPool(game)
-  game.roundController.jobSeekers = []
   resetFighterAffects(game)
 };
 
@@ -16,6 +15,8 @@ function returnProfessionalJobSeekersToProfessionalsPool(game: Game){
   }))
 
   game.fighters.forEach(fighter => fighter.state.goalContract = null)
+  
+  game.roundController.jobSeekers = []
 }
 
 function resetFighterAffects(game: Game) {

@@ -1,9 +1,9 @@
 import * as io from 'socket.io-client'
 import { Subject } from "rxjs";
-import PlayerAction from "../interfaces/player-action";
-import ClientAction from "../interfaces/client-action";
 import { MainGameData, PlayerManagerUiData, PlayerGameUiData, DisplayGameUiData } from '../interfaces/game-ui-state.interface';
 import IUpdateCommunicatorUi from '../interfaces/update-communicator-ui.interface';
+import PreGameAction from '../interfaces/client-action';
+import ClientGameAction from '../types/client-game-actions';
 
 
 export default class UpdateCommunicatorUiWebsocket implements IUpdateCommunicatorUi {
@@ -12,15 +12,15 @@ export default class UpdateCommunicatorUiWebsocket implements IUpdateCommunicato
   socket: SocketIOClient.Socket
   isConnected: boolean
   receiveMainGameData: Subject<MainGameData> = new Subject()
-  
-  port = 33 
-  websocketAddress = '192.168.43.229'
+  port = process.env.WEBSOCKET_PORT
+  websocketAddress = 'localhost'//'192.168.43.229'
 
   constructor(){
+    console.log(process.env.WEBSOCKET_PORT);
     this.setUpWebsockets()
   }  
 
-  private setUpWebsockets(){    
+  private setUpWebsockets(){     
     this.isConnected = true
     this.socket = io(`${this.websocketAddress}:${this.port}`, {transports: ['websocket']}); 
     this.socket.on('disconnect', e => {
@@ -33,12 +33,12 @@ export default class UpdateCommunicatorUiWebsocket implements IUpdateCommunicato
     this.socket.on('Display Game UI Update', (displayGameUiData: DisplayGameUiData) => this.receiveDisplayGameUiData.next(displayGameUiData))
   }
 
-  sendClientAction(clientAction: ClientAction){
+  sendClientAction(clientAction: PreGameAction){
     this.socket.emit('Action From Client', clientAction)
   }
 
-  sendPlayerAction(playerAction: PlayerAction){
-    this.socket.emit('Action From Player', playerAction)
+  sendGameAction( gameAction: ClientGameAction){
+    this.socket.emit('Action From Player',  gameAction)
   }
 
   

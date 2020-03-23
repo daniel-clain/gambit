@@ -2,15 +2,13 @@ import FighterFighting from "./fighter-fighting";
 import DecideActionProbability from "./decide-action-probability";
 import Fighter from "../fighter";
 import { CombatAction, MoveAction, ActionName, AttackResponseAction } from "../../../types/figher/action-name";
-import selectRandomResponseBasedOnProbability from "./random-based-on-probability";
-import { wait, random } from "../../../helper-functions/helper-functions";
-import { AttackType } from "../../../types/figher/attack-types";
+import { wait } from "../../../helper-functions/helper-functions";
+import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability";
+
+/* const globalWindow: any = window
+globalWindow.debugFighterName = 'doink' */
 
 export default class FighterActions {
-  
-  
-
-  noCombatForAWhile = false
 
   decideActionProbability: DecideActionProbability
   
@@ -26,7 +24,12 @@ export default class FighterActions {
       return
     }
     
-
+    /* if(globalWindow && globalWindow.debugFighterName == fighter.name){
+      if(this.fighting.stamina < 2)
+        console.log(`debug break point for ${fighter.name}`);
+      
+    } */
+    
     
     //console.log(`${fighter.name} decide action`);
     
@@ -34,16 +37,16 @@ export default class FighterActions {
 
     let enemyWithinStrikingRange = closestEnemy && proximity.enemyWithinStrikingRange(closestEnemy)
     
-    //flanking.determineIfFlanked()
 
     const combatActions: CombatAction[] = ['punch', 'critical strike', 'defend']
-    const moveActions: MoveAction[] = ['move to attack', 'retreat', 'retreat from flanked', 'reposition', 'fast retreat', 'cautious retreat']
+    const moveActions: MoveAction[] = ['move to attack', 'retreat', 'retreat from flanked', 'fast retreat', 'cautious retreat', 'retreat around edge', 'reposition']
     const otherActions: ActionName[] = ['turn around', 'recover', 'do nothing']
 
 
     let decidedAction: ActionName
 
     const responseProbabilities: [ActionName, number][] = []
+    
 
     if(enemyWithinStrikingRange)
       responseProbabilities.push(
@@ -65,6 +68,7 @@ export default class FighterActions {
       )
     )
     const totalNum = responseProbabilities.reduce((count, rp) => count + rp[1], 0)
+    
 
     /* console.log(`${fighter.name}'s action probabilities are: ${responseProbabilities.map((rp: [ActionName, number]) => 
       `\n ${rp[0]}: ${Math.round(rp[1]/totalNum*100)}%`
@@ -78,7 +82,7 @@ export default class FighterActions {
     }
     else {
     
-      //console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
+      console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
 
       try{
         switch (decidedAction) {
@@ -92,6 +96,8 @@ export default class FighterActions {
           case 'fast retreat':
           case 'retreat':        
           case 'retreat from flanked':
+          case 'retreat around edge':
+          case 'reposition': 
             await  movement.doMoveAction(closestEnemy, decidedAction); break
           case 'recover':
             await this.startRecovering(); break
@@ -102,8 +108,7 @@ export default class FighterActions {
         }
       }
       catch(reason){
-        console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);
-      }
+        console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);      }
 
       await wait(5)
       if(logistics.allOtherFightersAreKnockedOut())
@@ -117,7 +122,7 @@ export default class FighterActions {
           debugger
         if(!this.fighting.fighter.name)
           debugger
-        console.log(`${this.fighting.fighter.name} did not start a new action after ${decidedAction} because ${this.fighting.animation.inProgress} is in progress`);
+        //console.log(`${this.fighting.fighter.name} did not start a new action after ${decidedAction} because ${this.fighting.animation.inProgress} is in progress`);
 
       }
     }           
@@ -135,7 +140,7 @@ export default class FighterActions {
       model: 'Recovering',
     })
     .then(() => {      
-      console.log(`${fighter.name} just recovered 1 stamina & spirit`);
+      //console.log(`${fighter.name} just recovered 1 stamina & spirit`);
       if(this.fighting.stamina < stats.maxStamina)
         this.fighting.stamina++
       else
@@ -147,17 +152,11 @@ export default class FighterActions {
 
   doNothing(): Promise<void>{
     const {animation, fighter} = this.fighting
-    console.log(`${fighter.name} DO NOTHING`);
     return animation.start({
       name: 'doing nothing',
       duration: 1000
     })
-    .then(() => {    
-      console.log(`${fighter.name} FINISH`);
-    })
-
   }
-
 
 
 };

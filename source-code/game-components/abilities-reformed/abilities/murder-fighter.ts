@@ -35,21 +35,25 @@ export const murderFighterServer: ServerAbility = {
     }
 
     let success
+    let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)
     if(guardLevel > 0){
       const randomNum = random(100, true)
-      if(randomNum > 85 + guardLevel * 5 - hitman.skillLevel * 5)
+      if(randomNum < 15 - guardLevel * 5 + hitman.skillLevel * 5)
         success = true
+      else
+        guardBlocked = true
     }
     else {
       const randomNum = random(100, true)
-      if(randomNum < 40 + hitman.skillLevel * 5)
+      if(randomNum < 65 + hitman.skillLevel * 5)
         success = true
     }
     if(success){
       removeFighterFromTheGame(fighter.name, game)
       game.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter murdered',
+        headline: `${fighter.name} Found Dead!`,
         message: `${fighter.name} was found in a pool of his own blood, he is dead.`
       })
       hitmansManager.addToLog({
@@ -57,11 +61,27 @@ export const murderFighterServer: ServerAbility = {
       })
       if(fightersManager)
         fightersManager.addToLog({type: 'critical', message: `Your fighter, ${fighter.name}, has been murdered`})
+        
+      hitmansManager.postFightReportItems.push({
+        type: 'employee outcome',
+        message: `Hitman ${hitman.name} has murdered fighter ${abilityData.target.name}`
+      })
     }
-    else
+    else if(guardBlocked){
       game.roundController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect frighter from being murdered',
+        headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${fighter.name} from an attempted murder`
+      })      
+      hitmansManager.postFightReportItems.push({
+        type: 'employee outcome',
+        message: `Hitman ${hitman.name} failed to murder target fighter ${abilityData.target.name} because he was guarded by thugs`
+      })
+    }
+    else
+      hitmansManager.postFightReportItems.push({
+        type: 'employee outcome', 
+        message: `Hitman ${hitman.name} failed to murder target fighter ${abilityData.target.name}`
       })
 
   },

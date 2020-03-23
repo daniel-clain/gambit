@@ -1,14 +1,12 @@
 
-import ServerWebsocketService from "./server-websocket.service";
 import ConnectedClient from './connected-client';
-import ConnectingClientData from '../interfaces/connecting-client-data';
 import GameLobbyClient from '../interfaces/game-lobby-client.interface';
 import ClientNameAndId from '../interfaces/client-name-and-id.interface';
 import ChatMessage from '../interfaces/chat-message.interface';
 import GameLobby from '../interfaces/game-lobby.interface';
-import ClientId from '../types/client-id.type';
 import { PlayerInfo } from '../interfaces/player-info.interface';
 import Game from "../game-components/game";
+import { Socket } from 'socket.io';
 
 
 export default class GameHost{
@@ -17,13 +15,9 @@ export default class GameHost{
   private activeGames: Game[] = []
   private globalChat: ChatMessage[] = []
 
-  constructor(private websocketService: ServerWebsocketService){
-    this.websocketService.clientConnected.subscribe(
-      (connectingClientData: ConnectingClientData) => this.handleConnectingClient(connectingClientData))    
-  }
 
-  private handleConnectingClient(connectingClientData: ConnectingClientData){
-    const {id, name, socket} = connectingClientData
+  handleConnectingClient(clientNameAndId: ClientNameAndId, socket: Socket){
+    const {name, id} = clientNameAndId
     if(name == undefined)
       throw 'connecting client name undefined'
     if(id == undefined)
@@ -31,10 +25,10 @@ export default class GameHost{
 
     if(this.connectedClients.some(
       (client: ConnectedClient) => client.id == id)){
-      console.log('error: connecting player id already existsxx');
+      console.log('error: connecting player id already exists');
       return
     }
-    const connectingClient: ConnectedClient = new ConnectedClient(socket, id, name, this)
+    const connectingClient: ConnectedClient = new ConnectedClient(id, name, socket, this)
 
     this.connectedClients.push(connectingClient)
     console.log(`${connectingClient.name} has connected to the game host`);
@@ -148,7 +142,7 @@ export default class GameHost{
     this.removeGameLobby(startedGameLobby)
   }
 
-  private getClientById(id: ClientId): ConnectedClient{
+  private getClientById(id: string): ConnectedClient{
     return this.connectedClients.find(
       (client: ConnectedClient) => client.id == id
     )

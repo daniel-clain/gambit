@@ -1,0 +1,2 @@
+=how does it calculate hit edge
+* every time fighter moves a bit, it checks each edge, calculates the formula for the edge, and checks what the y value of the line would be if its x value was on the line, then if the points y point minus the y if x was on the line is a negative number, then its considered outside the octagon

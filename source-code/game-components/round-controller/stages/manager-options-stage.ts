@@ -3,7 +3,7 @@ import { Subject, Subscription } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
 import { ManagerInfo } from "../../manager";
-import gameConfiguration from "../../game-configuration";
+import gameConfiguration from "../../../game-settings/game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stages";
 

@@ -33,11 +33,14 @@ export const poisonFighterServer: ServerAbility = {
     }
 
     let success
+    let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)
     if(guardLevel > 0){
       const randomNum = random(100, true)
-      if(randomNum > 85 + guardLevel * 5 - poisoner.skillLevel * 5)
+      if(randomNum < 15 - guardLevel * 5 + poisoner.skillLevel * 5)
         success = true
+      else
+        guardBlocked = true
     }
     else {
       const randomNum = random(100, true)
@@ -49,16 +52,28 @@ export const poisonFighterServer: ServerAbility = {
       fighter.state.poisoned = true
       game.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter was poisoned',
-        message: `${fighter.name} has been behaving in a delerious and nausious, he looks pale and weak, there is reason to belive he has been poisoned`
+        headline: `${fighter.name} Poisoned!`,
+        message: `${fighter.name} has been behaving in a delerious and nausious, there is reason to belive he has been poisoned`
       })
       poisonersManager.addToLog({
         message: `${poisoner.name} has successfully poisoned ${fighter.name}`
       })
     }
-    else
+    else if(guardBlocked){
       game.roundController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect fighter from being poisoned',
-        message: `Guards have found ${poisoner.name} behaving suspiciously around ${fighter.name} `
+        headline: `${fighter.name} Guarded from Assailant!`,
+        message: `Guards have stopped a suspicious man trying to poison ${fighter.name}`
+      })      
+      poisonersManager.postFightReportItems.push({
+        type: 'employee outcome',
+        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name} because he was guarded by thugs`
+      })
+    }
+    else
+      poisonersManager.postFightReportItems.push({
+        type: 'employee outcome', 
+        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name}`
       })
   },
   ...poisonFighter

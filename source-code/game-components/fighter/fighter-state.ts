@@ -58,7 +58,7 @@ export default class FighterState{
     if(value == true){      
       this.fighter.fighting.stats.speed += 2
       this.fighter.fighting.stats.strength += 2
-      this.fighter.fighting.stats.aggression += 3
+      this.fighter.fighting.stats.aggression += 2
     }
     this._doping = value
   }

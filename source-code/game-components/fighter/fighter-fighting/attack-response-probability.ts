@@ -2,6 +2,7 @@ import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
 import { AttackType } from "../../../types/figher/attack-types"
 import { ActionName, AttackResponseAction } from "../../../types/figher/action-name"
+import { isFacingAwayFromEnemy } from "./proximity"
 
 export default class AttackResponseProbability {
   
@@ -21,10 +22,10 @@ export default class AttackResponseProbability {
   getProbabilityToDodge(enemy: Fighter, attackType: AttackType): number {
 
     const {speed, intelligence} = this.fighting.stats
-    const {animation, proximity, logistics, spirit} = this.fighting
+    const {animation, fighter, movement, spirit} = this.fighting
     
     if(
-      proximity.isFacingAwayFromEnemy(enemy) ||
+      isFacingAwayFromEnemy(enemy, fighter) ||
       (animation.inProgress && animation.inProgress != 'defending' && animation.inProgress != 'recovering')
     )
       return 0
@@ -34,7 +35,7 @@ export default class AttackResponseProbability {
     if(animation.inProgress == 'defending')
       probability += 8
 
-    if(logistics.moveActionInProgress == 'cautious retreat')
+    if(movement.moveActionInProgress == 'cautious retreat')
       probability += 4
 
 
@@ -50,6 +51,10 @@ export default class AttackResponseProbability {
     if(this.hasLowStamina())
       probability ++
 
+      
+    if(animation.inProgress == 'recovering')
+      probability = probability * .3 + spirit
+
     
     if(probability < 0)
       probability = 0
@@ -60,11 +65,11 @@ export default class AttackResponseProbability {
 
   getProbabilityToBlock(enemy: Fighter, attackType: AttackType): number {
     const {strength, speed, intelligence} = this.fighting.stats
-    const {spirit, animation, proximity, logistics} = this.fighting
+    const {spirit, animation, fighter, movement} = this.fighting
 
     
     if(
-      proximity.isFacingAwayFromEnemy(enemy) ||
+      isFacingAwayFromEnemy(enemy, fighter) ||
       (animation.inProgress && animation.inProgress != 'defending' && animation.inProgress != 'recovering')
     )
       return 0
@@ -72,15 +77,12 @@ export default class AttackResponseProbability {
     let probability: number = 0
    
     if(animation.inProgress == 'defending')
-      probability += 10
+      probability += 10 + intelligence
 
-    if(logistics.moveActionInProgress == 'cautious retreat')
+    if(movement.moveActionInProgress == 'cautious retreat')
       probability += 8
 
-      
-    if(animation.inProgress == 'recovering')
-      probability -= 5
-    
+          
     probability += strength * 3 - enemy.fighting.stats.strength * 3
           
     probability += speed - enemy.fighting.stats.speed
@@ -94,6 +96,10 @@ export default class AttackResponseProbability {
       
     if(this.hasFullStamina())
       probability += 1
+
+      
+    if(animation.inProgress == 'recovering')
+      probability = probability * .3 + spirit
 
 
     if(probability < 0)

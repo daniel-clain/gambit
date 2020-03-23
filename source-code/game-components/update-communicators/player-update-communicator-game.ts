@@ -1,10 +1,10 @@
 
 import Manager from "../manager"
-import PlayerAction from "../../interfaces/player-action"
 import Game from "../game"
 import { AbilityProcessor } from "../abilities-reformed/ability-processor"
 import { AbilityData } from "../abilities-reformed/ability"
 import UpdateCommunicatorGame from "./update-communicator-game"
+import ClientGameAction from "../../types/client-game-actions"
 
 
 export default class PlayerUpdateCommunicatorGame extends UpdateCommunicatorGame{
@@ -19,19 +19,19 @@ export default class PlayerUpdateCommunicatorGame extends UpdateCommunicatorGame
     this.manager.managerUpdatedSubject.subscribe(this.sendUpdate.bind(this))
   }
   
-  receivePlayerAction(playerAction: PlayerAction): void {
-    const {args} = playerAction
-    switch(playerAction.name){
+  receivePlayerAction( gameAction: ClientGameAction): void {
+    const {data} =  gameAction
+    switch( gameAction.name){
       case 'Ability Confirmed': 
-        this.handleAbilitySelected(args); break;
+        this.handleAbilitySelected(data); break;
       case 'Bet On Fighter':
-        this.manager.nextFightBet = args; break;
+        this.manager.nextFightBet = data; break;
       case 'Borrow Money':
-        this.manager.borrowMoney(args.amount); break;
+        this.manager.borrowMoney(data.amount); break;
       case 'Payback Money':
-        this.manager.paybackMoney(args.amount); break;
+        this.manager.paybackMoney(data.amount); break;
       case 'Toggle Ready':
-        this.manager.readyForNextFight = args.ready; break;
+        this.manager.readyForNextFight = data.ready; break;
     }
   }
   private handleAbilitySelected(selectedAbility: AbilityData){

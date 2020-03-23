@@ -1,5 +1,5 @@
 import Game from "../game";
-import gameConfiguration from "../game-configuration";
+import gameConfiguration from "../../game-settings/game-configuration";
 import { shuffle, random } from "../../helper-functions/helper-functions";
 import { JobSeeker } from "../../interfaces/game-ui-state.interface";
 import { GoalContract } from "../../interfaces/game/contract.interface";
@@ -11,6 +11,11 @@ export function setupNewRound(game: Game){
   setRoundJobSeekers(game)
   setupRoundFight(game)
   addNewRoundToManagerLog(game)
+  clearOldNews(game)
+}
+
+function clearOldNews(game: Game){
+  game.roundController.preFightNewsStage.newsItems = []
 }
 
 function addNewRoundToManagerLog(game: Game){
@@ -97,12 +102,17 @@ function setupRoundFight(game: Game) {
   if (roundController.activeFight != null)
     roundController.activeFight.doTeardown()
 
-  let numOfFighters = gameConfiguration.numberOfFightersPerFight
+  let numOfFighters
 
   if(game.roundController.roundNumber < 8)
-    numOfFighters -= 1
-  if(game.roundController.roundNumber > 16)
-    numOfFighters += 1
+    numOfFighters = 2
+  else if(game.roundController.roundNumber < 16)
+    numOfFighters = 3
+  else
+    numOfFighters = 4
+
+    
+  //numOfFighters = 8
 
   
   const randomFighters: Fighter[] = []
@@ -140,7 +150,7 @@ function setupRoundFight(game: Game) {
     }
   }
 
-  game.roundController.activeFight = new Fight(randomFighters)
+  game.roundController.activeFight = new Fight(randomFighters, game)
 
   game.roundController.lastFightFighters = randomFighters.map(fighter => fighter.name)
 

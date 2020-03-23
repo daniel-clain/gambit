@@ -4,12 +4,13 @@ import {Bet} from '../interfaces/game/bet';
 import {Subject} from 'rxjs';
 import {FighterInfo, Employee, Loan, KnownFighter} from '../interfaces/game-ui-state.interface';
 import Fighter from "./fighter/fighter";
-import gameConfiguration from './game-configuration';
+import gameConfiguration from '../game-settings/game-configuration';
 import Game from './game';
 import { AbilityName } from './abilities-reformed/ability';
 import { ActivityLogItem } from '../types/game/activity-log-item';
 import { GoalContract } from '../interfaces/game/contract.interface';
 import { ManagerImage } from '../types/game/manager-image';
+import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
 
 export interface KnownManager{
   name: string
@@ -42,7 +43,8 @@ export default class Manager{
   private _loan: Loan = {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0}
   private _readyForNextFight: boolean
   private _retired: boolean
-  private activityLog: ActivityLogItem[] = []
+  private activityLog: ActivityLogItem[] = []  
+  postFightReportItems: PostFightReportItem[] = []
   
   image: ManagerImage = 'Fat Man'
 

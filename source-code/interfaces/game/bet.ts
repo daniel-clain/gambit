@@ -1,5 +1,5 @@
 
-import BetSize from '../../types/bet-size.type';
+import BetSize from '../../types/game/bet-size.type';
 
 export interface Bet{
   fighterName: string,

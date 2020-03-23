@@ -131,6 +131,12 @@ function addFightersToManagersKnownFightersList(game: Game){
             numberOfWins: undefined
           }
         })
+      else{
+        manager.knownFighters = manager.knownFighters.map(knownFighter => {
+          const fighterJobSeeker =  game.roundController.jobSeekers.find(fighterJobSeeker => fighterJobSeeker.name == knownFighter.name)
+          return {...knownFighter, goalContract: fighterJobSeeker ? fighterJobSeeker.goalContract : null}
+        })
+      }
 
       function managerDoesNotOwnRoundFighter(): boolean{
         return !manager.fighters.some(fighter => fighter.name == roundFighter.name)

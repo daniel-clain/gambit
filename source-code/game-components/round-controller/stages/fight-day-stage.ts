@@ -3,12 +3,12 @@ import RoundStages from "../../../types/game/round-stages";
 import { Subject } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
-import { FightUiData, FightReport } from "../../fight/fight";
 import Manager from "../../manager";
 import { Bet } from "../../../interfaces/game/bet";
-import gameConfiguration from "../../game-configuration";
+import gameConfiguration from "../../../game-settings/game-configuration";
 import Fighter from "../../fighter/fighter";
 import { ManagerWinnings } from "../../../interfaces/game/manager-winnings";
+import { FightReport } from "../../../interfaces/game/fight-report";
 
 export default class FightDayStage implements IStage {
   name: RoundStages = 'Fight Day'
@@ -62,6 +62,8 @@ export default class FightDayStage implements IStage {
           if (managersBet) {
             const betSizePercentage = gameConfiguration.betSizePercentages[managersBet.size]
             const managersBetAmount = Math.round(manager.money * betSizePercentage / 100)
+            
+          manager.addToLog({message: `You spent ${managersBetAmount} money on the last fight`})
             manager.money -= managersBetAmount
             if (managersBet.fighterName == winner.name) {
               winnings += Math.round(managersBetAmount * 2 + 150)
@@ -75,6 +77,13 @@ export default class FightDayStage implements IStage {
           }
           console.log(`${manager.name} just won ${winnings}`);
           manager.money += winnings
+
+          
+          
+
+
+          if(winnings)
+            manager.addToLog({message: `You made ${winnings} money in winnings from the last fight`})
 
           return {
             managerName: manager.name,

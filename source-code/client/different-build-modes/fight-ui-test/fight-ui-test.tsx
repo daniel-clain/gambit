@@ -1,13 +1,13 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import FightUi from '../../components/fight-ui/fight-ui';
-import '../../global/styles/global.scss';
+import '../../ui-components/global/styles/global.scss';
 import Fighter from '../../../game-components/fighter/fighter';
 import Fight from '../../../game-components/fight/fight';
 import { shuffle } from '../../../helper-functions/helper-functions';
 import { FightUiData } from '../../../interfaces/game/fight-ui-data';
-import gameConfiguration from '../../../game-components/game-configuration';
+import gameConfiguration from '../../../game-settings/game-configuration';
+import FightUi from '../../ui-components/global/main-components/fight-ui/fight-ui';
 
 export default class FighterUiTest extends React.Component{
   state = {
@@ -28,28 +28,40 @@ export default class FighterUiTest extends React.Component{
     const fighterFast = new Fighter('Fast')
     const fighterIntelligent = new Fighter('Intelligent')
     const fighterAggressive = new Fighter('Aggressive')
+    const fighterStrong = new Fighter('Strong')
+    const fighterFit = new Fighter('Fit')
+    const fighterAverage = new Fighter('Average')
     const fighterStupid = new Fighter('Stupid')
     const fighterPassive = new Fighter('Passive')
-    const fighterTest = new Fighter('Test')
+    const fighterHyper = new Fighter('Hyper')
     const fighterTough = new Fighter('Tough')
+    const fighterSuperman = new Fighter('Superman')
 
     let fighters = [
       /* fighterDaniel,
       fighterDave ,
-      fighterSam, */
-      /* fighterBob,
+      fighterSam, 
+      fighterHyper,*/
+
+      fighterBob,
       fighterFred,
       fighterJeff,
       fighterKevin,
       fighterJoe,
       fighterSteve,
-      fighterFast, */
-      fighterTough,
+
+      fighterFast, 
+      fighterTough, 
+      fighterStrong,
+      fighterFit,
       fighterIntelligent,
-      //fighterAggressive,
-      fighterStupid,
-      fighterPassive,
-      //fighterTest
+      fighterAggressive,
+      fighterAverage,
+
+      /* fighterStupid,
+      fighterPassive, */
+
+      //fighterSuperman
     ]
     fighters = shuffle(fighters)
     fighters.forEach(fighter => {      
@@ -63,15 +75,27 @@ export default class FighterUiTest extends React.Component{
 
     fighterFast.fighting.stats.baseSpeed = 10
     fighterTough.fighting.stats.baseStamina = 15
-    fighterIntelligent.fighting.stats.baseIntelligence = 5
-    fighterAggressive.fighting.stats.baseAggression = 10
-    fighterStupid.fighting.stats.baseIntelligence = 0
-    fighterPassive.fighting.stats.baseAggression = 1
 
-    fighterTest.fighting.stats.baseAggression = 10
-    fighterTest.fighting.stats.baseSpeed = 10
+    fighterStrong.fighting.stats.baseStrength = 10
+    fighterFit.fighting.stats.fitness = 10
+    fighterIntelligent.fighting.stats.baseIntelligence = 10
+    fighterAggressive.fighting.stats.baseAggression = 10
+
+    fighterAverage
+    
+    fighterAverage.fighting.stats.baseStrength = 5
+    fighterAverage.fighting.stats.fitness = 5
+    fighterAverage.fighting.stats.baseIntelligence = 5
+    fighterAverage.fighting.stats.baseAggression = 5
+
+    fighterStupid.fighting.stats.baseIntelligence = 0
+    fighterPassive.fighting.stats.baseAggression = 0
+
+    fighterHyper.fighting.stats.baseAggression = 10
+    fighterHyper.fighting.stats.fitness = 10
     
     fighterPassive.fighting.stats.baseAggression = 1
+    fighterPassive.fighting.stats.baseIntelligence = 1
     fighterPassive.fighting.stats.baseStrength = 1
 
     fighterDaniel.fighting.stats.baseStrength = 8
@@ -81,18 +105,25 @@ export default class FighterUiTest extends React.Component{
 
     
     fighterDave.fighting.stats.baseAggression = 8
-    fighterDave.fighting.stats.baseStrength = 8
+    fighterDave.fighting.stats.baseStrength = 10
     fighterDave.fighting.stats.baseIntelligence = 1
-    fighterDave.fighting.stats.fitness = 8
+    fighterDave.fighting.stats.fitness = 1
 
     
-    fighterSam.fighting.stats.baseAggression = 6
-    fighterSam.fighting.stats.fitness = 6
-    fighterSam.fighting.stats.baseIntelligence = 6
-    fighterSam.fighting.stats.baseAggression = 6
+    fighterSam.fighting.stats.baseStrength = 4
+    fighterSam.fighting.stats.fitness = 8
+    fighterSam.fighting.stats.baseIntelligence = 8
+    fighterSam.fighting.stats.baseAggression = 4
+    
+    
+    fighterSuperman.fighting.stats.baseStrength = 10
+    fighterSuperman.fighting.stats.fitness = 10
+    fighterSuperman.fighting.stats.baseIntelligence = 10
+    fighterSuperman.fighting.stats.baseAggression = 10
 
 
-    const fight = new Fight(fighters)
+
+    const fight = new Fight(fighters, undefined)
     fight.fightUiDataSubject.subscribe((fightUiData: FightUiData) => {
       this.setState({fightUiData})
     })

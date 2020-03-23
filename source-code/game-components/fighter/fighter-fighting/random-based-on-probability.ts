@@ -2,7 +2,7 @@
 import { random } from "../../../helper-functions/helper-functions";
 import { ActionName } from "../../../types/figher/action-name";
 
-const selectRandomResponseBasedOnProbability = (responseProbabilities: [ActionName, number][]): ActionName => {
+export function selectRandomResponseBasedOnProbability(responseProbabilities: [ActionName, number][]): ActionName {
 
   const totalProbability: number = responseProbabilities.reduce(
     (totalProbability, responseProbability) =>
@@ -26,5 +26,3 @@ const selectRandomResponseBasedOnProbability = (responseProbabilities: [ActionNa
       probabilityRange += responseProbability[1]
   }
 }
-
-export default selectRandomResponseBasedOnProbability

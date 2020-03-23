@@ -1,7 +1,10 @@
+import { ClientActionNamesPreGame } from "../types/client-pre-game-actions";
+import { ClientActionNamesGame } from "../types/client-game-actions";
 
-type ClientActionNames = 'Connect' | 'Join Game' | 'Create Game' | 'Cancel Game' | 'Leave Game' | 'Start Game' | 'Ready To Start Game' | 'Submit Global Chat'
+
+export type ClientActionNames = ClientActionNamesPreGame | ClientActionNamesGame
 
 export default interface ClientAction{
-  name: ClientActionNames
-  args: any
+  name: string
+  data: any
 }

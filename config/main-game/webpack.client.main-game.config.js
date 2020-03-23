@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 var webpack = require("webpack");
 var sourceDir = `${__dirname}/../../source-code/client/different-build-modes/main-game`
 var compiledDir = `${__dirname}/../../compiled-code/client/main-game`
-
+const Dotenv = require('dotenv-webpack');
 module.exports = {
   mode: 'development',
   entry: `${sourceDir}/main-game.tsx`,
@@ -47,6 +47,7 @@ module.exports = {
       title: 'Gambit - Main Game Dev',
       meta:{viewport: "width=device-width, initial-scale=1.0"}
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new Dotenv()
   ]
 };

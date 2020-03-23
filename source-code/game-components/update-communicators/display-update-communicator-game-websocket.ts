@@ -17,10 +17,11 @@ export default class DisplayUpdateCommunicatorGameWebsocket{
     },
     preFightNewsUiData: {newsItems: []},
     fightUiData: {
-      startCountdown: null,
-      timeRemaining: null,
+      startCountdown: undefined,
+      timeRemaining: undefined,
       fighters: [],
-      report: null
+      report: undefined,
+      managersBets: undefined
     },
   }
   
@@ -36,8 +37,14 @@ export default class DisplayUpdateCommunicatorGameWebsocket{
 
   handleManagerUiUpdate(){
 
-    const {displayManagerUiData} = this.displayGameUiData
-    const {managerOptionsTimeLeft, jobSeekers, activeFight} = this.game.roundController.roundState
+    const {displayManagerUiData, preFightNewsUiData} = this.displayGameUiData
+    const {roundState, preFightNewsStage} = this.game.roundController
+    const {managerOptionsTimeLeft, jobSeekers, activeFight, stage} = roundState
+
+    
+    
+    if(stage == 'Pre Fight News')
+      preFightNewsUiData.newsItems = preFightNewsStage.newsItems
 
     displayManagerUiData.timeLeft = managerOptionsTimeLeft
     displayManagerUiData.jobSeekers = jobSeekers.map((jobSeeker): JobSeekerInfo => ({name: jobSeeker.name, type: jobSeeker.type == 'Professional' ? jobSeeker.profession : 'Fighter'}))

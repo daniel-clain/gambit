@@ -1,0 +1,119 @@
+@import '../../global/styles/manager-options-ui/manager-options-ui-variables';
+
+.game-display-manager-options{
+  display: flex;
+  flex-direction: column; 
+  margin: auto;
+  font-size: 1.5rem;
+  position: relative;
+  padding: 30px;
+  color: white;
+  height: 100%;
+
+  .heading{
+    font-size: 2rem;
+  }
+
+  &__background{
+    background-image: url('../../../images/display-bg.jpg');
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    filter: grayscale(1) opacity(0.9) brightness(0.2) blur(2px);
+    background-position-x: center;
+  }
+  
+  &__group {
+    margin-bottom: 40px;
+  }
+
+  .time-left{
+    align-self: center;
+    font-size: 18px;
+  }
+
+  .managers-ready{
+    display: flex;
+    .manager-ready{
+      margin-right: 20px;
+      padding: 12px 10px 4px;
+      
+      &:last-child{
+        margin-right: 0;
+      }
+      &--ready{
+        background-color: #15b94c;
+      }
+      &__name{
+        text-align: center;
+      }
+      &__image{
+        width: 70px;
+        height: 100px;
+        background-size: cover;
+        background-repeat: no-repeat;
+        margin-bottom: 5px;
+        &--fat-man{
+          background-image: url('../../../images/icons/manager1.png');
+        }
+        &--sleazy-guy{
+          background-image: url('../../../images/icons/manager2.jpg');
+        }
+      }
+    }
+  }
+
+  .next-fight-fighters{
+    display: flex;
+    .next-fight-fighter{
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      text-align: center;
+      margin-right: 20px;
+      &:last-child{
+        margin-right: 0;
+      }
+      &__name{      
+        font-size: 1.3rem;
+        padding-top: 8px;
+        display: inline-block;
+        color: white;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+      }
+      
+      &__image{
+        background-image: url('../../../images/fighter/default-skin/high-res.png');    
+        width: 80px;
+        height: 100px;
+        margin: 0 auto 5px;
+        border: 2px solid #1b4965;
+        border-radius: 6px;
+        background-position-y: 30px;
+        background-repeat: no-repeat;
+        background-color: #90d1e4ab;
+        background-size: cover;
+      }
+    }
+  }
+
+  .job-seekers{
+    .job-seeker{
+      display: flex;
+      margin-bottom: 5px;
+      &:last-child{
+        margin-bottom: 0;
+      }
+      &__name{
+        margin-right: 10px;
+      }
+    }
+  }
+}

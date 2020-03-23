@@ -1,7 +1,5 @@
 import {PlayerInfo} from './../interfaces/player-info.interface';
 import { Socket } from 'socket.io';
-import ClientName from '../types/client-name.type';
-import ClientId from '../types/client-id.type';
 import { MainGameData } from '../interfaces/game-ui-state.interface';
 import ClientAction from '../interfaces/client-action';
 import GameHost from './game-host';
@@ -9,6 +7,7 @@ import GameLobbyClient from '../interfaces/game-lobby-client.interface';
 import GameLobby from '../interfaces/game-lobby.interface';
 import ChatMessage from '../interfaces/chat-message.interface';
 import ClientNameAndId from '../interfaces/client-name-and-id.interface';
+import { ClientPregameAction } from '../types/client-pre-game-actions';
 
 export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Update'
 
@@ -22,29 +21,26 @@ export default class ConnectedClient{
   }
 
 
-  constructor(private socket: Socket, private _id: ClientId, private _name: ClientName, private gameHost: GameHost){
-    this.socket.on('Action From Client', (actionFromClient: ClientAction) => this.handleActionFromClient(actionFromClient))
+  constructor(public id, public name, private socket: Socket, private gameHost: GameHost){
+
+    this.socket.on('Action From Client', (clientPregameAction: ClientPregameAction) => this.handleActionFromClient(clientPregameAction))
+
     this.socket.on('disconnect', (reason) => gameHost.clientDisconnected(this, reason))
   }
 
-  get id(){
-    return this._id
-  }
-  get name(){
-    return this._name
-  }
 
 
 
-  private handleActionFromClient(action: ClientAction){
-    switch(action.name){
+  private handleActionFromClient(clientPregameAction: ClientPregameAction){
+    const {name, data} = clientPregameAction
+    switch(name){
       case 'Create Game' : this.createGame(); break
-      case 'Cancel Game' : this.cancelGame(action.args.gameId); break
-      case 'Start Game' : this.startGame(action.args.gameId); break
-      case 'Join Game' : this.joinGame(action.args.gameId); break
-      case 'Ready To Start Game' : this.readyToStartGameToggled(action.args.gameId, action.args.readyValue); break
-      case 'Leave Game' : this.leaveGame(action.args.gameId); break 
-      case 'Submit Global Chat' : this.submitGlobalMessage(action.args.message); break 
+      case 'Cancel Game' : this.cancelGame(data.gameId); break
+      case 'Start Game' : this.startGame(data.gameId); break
+      case 'Join Game' : this.joinGame(data.gameId); break
+      case 'Ready To Start Game' : this.readyToStartGameToggled(data.gameId,data.readyValue); break
+      case 'Leave Game' : this.leaveGame(data.gameId); break 
+      case 'Submit Global Chat' : this.submitGlobalMessage(data.message); break 
     }
   }
   private createGame(){

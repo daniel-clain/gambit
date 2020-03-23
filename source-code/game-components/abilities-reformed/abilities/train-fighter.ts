@@ -3,7 +3,7 @@ import Game from "../../game"
 import Fighter from "../../fighter/fighter"
 import { random } from "../../../helper-functions/helper-functions"
 import Manager from "../../manager"
-import SkillLevel from "../../../types/skill-level.type"
+import SkillLevel from "../../../types/game/skill-level.type"
 import { Employee } from "../../../interfaces/game-ui-state.interface"
 
 
@@ -41,21 +41,29 @@ export const trainFighterServer: ServerAbility = {
 
     fighter.state.trainingProgress += sourceSkillLevel
 
+    let newsItemAdded
+    const trainedFighterInFight: boolean = game.roundController.activeFight.fighters.some(fighterInFight => fighterInFight.name == fighter.name)
+
     while(fighter.state.trainingProgress >= 2){
       fighter.state.trainingProgress -= 2
 
+      if(!newsItemAdded && trainedFighterInFight){        
+        game.roundController.preFightNewsStage.newsItems.push({
+          newsType: 'fighter has gone up in strength or fitness',
+          headline: `${fighter.name} training hard`,
+          message: `${fighter.name} has been training hard for the upcoming fight`
+        }) 
+        newsItemAdded = true
+      }
+
       const randomNum = random(1)
-      if(randomNum === 0 && fighter.fighting.stats.strength != 10){
+      if(randomNum === 0){
         fighter.fighting.stats.baseStrength ++
         manager.addToLog({message: `${fighter.name}'s strength has gone up by 1 as a result of being trained`})
       }
-      else if(randomNum === 1 && fighter.fighting.stats.fitness != 10){
+      else if(randomNum === 1){
         fighter.fighting.stats.fitness ++
         manager.addToLog({message: `${fighter.name}'s fitness has gone up by 1 as a result of being trained`})
-      }
-      else{
-        fighter.fighting.stats.intelligence ++
-        manager.addToLog({message: `${fighter.name}'s intelligence has gone up by 1 as a result of being trained`})
       }
     }
 

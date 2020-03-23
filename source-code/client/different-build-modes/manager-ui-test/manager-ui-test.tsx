@@ -1,30 +1,30 @@
-
+/* 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import ManagerUi from '../components/manager-ui/manager-ui';
-import { ManagerUiState } from '../../../interfaces/game-ui-state.interface';
-import UpdateCommunicatorUiLocal from '../../single-player-test/update-communicator-ui-local';
 import { Subject } from 'rxjs';
 import './../main-game/global.scss'
-import UpdateCommunicatorGame from '../../game-components/update-communicator-game';
 import Game from '../../../game-components/game';
-import Manager from '../../game-components/manager/manager';
+import UpdateCommunicatorGame from '../../../game-components/update-communicators/update-communicator-game';
+import Manager from '../../../game-components/manager';
+import UpdateCommunicatorUiLocal from '../single-player-test/update-communicator-ui-local';
+import { RoundController } from '../../../game-components/round-controller/round-controller';
 
 const mockGame = {
   roundController: {
     roundStateUpdateSubject: new Subject(),
-    fightStateUpdatedSubject: new Subject(),
     endOfRoundSubject: new Subject(),
     endOfManagerOptionsStageSubject: new Subject()
-  }
-}
+  } as RoundController
+} as Game
+
+
 const mockManager = {
   managerUpdatedSubject: new Subject()
 }
 
 class MockUpdateCommunicatorGame extends UpdateCommunicatorGame {
   constructor() {
-    super(mockGame as Game, mockManager as Manager)
+    super(mockGame)
   }
 }
 
@@ -101,9 +101,9 @@ export default class ManagerUiTest extends React.Component {
   render() {
     return <ManagerUi
       managerUiState={managerUiState}
-      sendPlayerAction={updateCommunicatorUi.sendPlayerAction.bind(updateCommunicatorUi)} />
+      sendGameAction={updateCommunicatorUi.sendGameAction.bind(updateCommunicatorUi)} />
   }
 }
 
 
-ReactDOM.render(<ManagerUiTest />, document.getElementById('react-rendering-div'))
+ReactDOM.render(<ManagerUiTest />, document.getElementById('react-rendering-div')) */

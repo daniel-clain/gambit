@@ -3,8 +3,9 @@ import Fighter from "../fighter"
 import { AttackType } from "../../../types/figher/attack-types"
 import { random } from "../../../helper-functions/helper-functions"
 import { AttackResponseAction, ActionName } from "../../../types/figher/action-name"
-import selectRandomResponseBasedOnProbability from "./random-based-on-probability"
 import AttackResponseProbability from "./attack-response-probability"
+import { isFacingAwayFromEnemy } from "./proximity"
+import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability"
 
 export default class FighterCombat {
 
@@ -17,8 +18,8 @@ export default class FighterCombat {
 
 
   async startDefending(enemy: Fighter) {   
-    const {proximity, animation, movement} = this.fighting
-      if(proximity.isFacingAwayFromEnemy(enemy))
+    const {fighter, animation, movement} = this.fighting
+      if(isFacingAwayFromEnemy(enemy, fighter))
         await movement.turnAround()
   
       return animation.start({      
@@ -35,27 +36,27 @@ export default class FighterCombat {
       
       this.fighting.enemyTargetedForAttack = enemy
       
-      if(proximity.isFacingAwayFromEnemy(enemy))
+      if(isFacingAwayFromEnemy(enemy, fighter))
         await movement.turnAround()
   
       await animation.start(
         attackType == 'punch' && {
           name: 'trying to punch',
           model: 'Punching',
-          duration: animation.speedModifier(100)
+          duration: animation.speedModifier(200)
         }
         ||
         attackType == 'critical strike' && {
           name: 'trying to critical strike',
           model: 'Kicking',
-          duration: animation.speedModifier(100)
+          duration: animation.speedModifier(300)
         }      
       )
       
       if(this.fighting.enemyTargetedForAttack.fighting.knockedOut)
       throw(`${this.fighting.enemyTargetedForAttack.name} is already knocked out`)
   
-      this.resetNoActionTimer()
+      timers.start('had action recently')
       timers.start('just did attack')
   
       let lanededAttack: boolean
@@ -69,15 +70,15 @@ export default class FighterCombat {
   
       if(lanededAttack && stillInRange){
         
-  
-        if(attackType == 'critical strike'){
-          const chanceToGoOnARampage = random(10)
-          if(chanceToGoOnARampage < this.fighting.stats.aggression)
-            timers.start('on a rampage')
-        }
         
         if(spirit < stats.maxSpirit)
           this.fighting.spirit ++  
+  
+        if(attackType == 'critical strike'){
+          const chanceToGoOnARampage = random(50)
+          if(chanceToGoOnARampage < this.fighting.stats.aggression * this.fighting.spirit)
+            timers.start('on a rampage')
+        }
   
         this.fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)
       
@@ -87,13 +88,13 @@ export default class FighterCombat {
             name: 'punching',
             sound: 'Punch',
             model: 'Punching',
-            duration: animation.speedModifier(600)
+            duration: animation.speedModifier(700)
           } ||
           attackType == 'critical strike' && {
             name: 'critical striking',
             sound: 'Critical Strike',
             model: 'Kicking',
-            duration: animation.speedModifier(700)
+            duration: animation.speedModifier(900)
           }
         )
         .then(() => animation.cooldown(
@@ -128,9 +129,9 @@ export default class FighterCombat {
     
   getAttacked(enemy: Fighter, attackType: AttackType): boolean {  
 
-    const {proximity, fighter} = this.fighting
+    const {proximity, fighter, timers} = this.fighting
 
-    this.resetNoActionTimer()
+    timers.start('had action recently')
 
     if(proximity.isEnemyBehind(enemy)){
       console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
@@ -144,6 +145,16 @@ export default class FighterCombat {
     )
   
     const result: ActionName = selectRandomResponseBasedOnProbability(responseProbabilities)
+
+    if(result == 'take hit'){
+      if(this.fighting.spirit != 0)
+        this.fighting.spirit --
+    }
+    else{
+      if(this.fighting.spirit < this.fighting.stats.maxSpirit)
+        this.fighting.spirit ++
+
+    }  
 
 
     switch(result){
@@ -202,20 +213,17 @@ export default class FighterCombat {
 
   async takeAHit(attackType: AttackType, attackingFighter: Fighter){    
 
-    let {spirit, stamina, fighter, animation} = this.fighting
+    let {stamina, fighter, animation} = this.fighting
     const {strength} = attackingFighter.fighting.stats
     
     let hitDamage = Math.round(
       (
         attackType == 'critical strike' ?
-        strength * .8 :
-        strength * .4
+        1 + (strength * .6) :
+        0.5 + strength * .3
       ) * 10
     ) / 10
 
-    
-    if(spirit != 0)
-    this.fighting.spirit --
       this.fighting.stamina = stamina - hitDamage
     console.log(`${fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
     
@@ -252,9 +260,4 @@ export default class FighterCombat {
     this.fighting.actions.decideAction()
   }
 
-  resetNoActionTimer(){
-    const {timers, logistics} = this.fighting
-    logistics.noCombatForAWhile = false
-    timers.start('no combat for a while')
-  }  
 };

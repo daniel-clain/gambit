@@ -47,7 +47,7 @@ export default class FighterTimers {
   }
 
   start(name: TimerName){
-    const {logistics, fighter, stats} = this.fighting
+    const {logistics, fighter, movement, proximity} = this.fighting
 
     let duration: number
     let afterEffect: () => void
@@ -80,26 +80,30 @@ export default class FighterTimers {
       }; break
       case 'on a rampage': {
         logistics.onARampage = true
+
         duration = 5000 
         afterEffect = () => logistics.onARampage = false
       }; break
-      case 'no combat for a while': {
-        logistics.noCombatForAWhile = true
-        duration = 2000 
-        afterEffect = () => logistics.noCombatForAWhile = false
+      case 'had action recently': {
+        logistics.hadActionRecently = true
+        duration = 5000 
+        afterEffect = () => logistics.hadActionRecently = false
       }; break
       case 'move action in progress': {
         duration = 2000 
-        afterEffect = () => logistics.moveActionInProgress = undefined
+        afterEffect = () => movement.moveActionInProgress = undefined
       }; break
-      case 'retreat from cornered': {
+      case 'retreat along edge': {        
         duration = 1000 
-        afterEffect = () => this.fighting.flanking.retreatFromCorneredDirection = undefined
+        afterEffect = () => logistics.directionAlongEdge = undefined
       }; break
       
       case 'memory of enemy behind': {
         duration = 3000
-        afterEffect = () => this.fighting.rememberedEnemyBehind = undefined
+        afterEffect = () => {
+          this.fighting.rememberedEnemyBehind = undefined          
+          proximity.flanked = undefined
+        }
       }; break
     }
 

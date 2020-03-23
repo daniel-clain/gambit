@@ -1,21 +1,22 @@
 
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
-import '../../global/styles/global.scss';
+import '../../ui-components/global/styles/global.scss';
 import { MainGameData } from '../../../interfaces/game-ui-state.interface';
 import UpdateCommunicatorUiWebsocket from '../../update-communicator-ui-websocket';
 import ClientAction from '../../../interfaces/client-action';
-import GameHost from '../../components/pre-game/game-host';
-import PreGame from '../../components/pre-game/pre-game';
-import GameUiPlayer from '../../components/player-ui/game-ui-player';
-import GameUiDisplay from '../../components/display-ui/game-ui-display'
+import GameUiPlayer from '../../ui-components/player-ui/game-ui-player';
+import GameUiDisplay from '../../ui-components/display-ui/game-ui-display'
+import GameHost from '../../ui-components/global/main-components/pre-game/game-host';
+import PreGame from '../../ui-components/global/main-components/pre-game/pre-game';
 
 interface MainGameState{
   isGameDisplay: boolean
   mainGameData: MainGameData
 }
 
-export default class MainGame extends React.Component<{updateCommunicatorUi: UpdateCommunicatorUiWebsocket}>{
+export default class MainGame extends React.Component<{updateCommunicatorUi: UpdateCommunicatorUiWebsocket}>
+{
   state: MainGameState = {
     isGameDisplay: false,
     mainGameData: undefined
@@ -48,8 +49,8 @@ export default class MainGame extends React.Component<{updateCommunicatorUi: Upd
       localStorage.setItem('clientId', clientId)
     }
     const connectAction: ClientAction = {      
-      name: 'Connect',
-      args: {name, clientId}    
+      name: 'Connect To Game Host',
+      data: {name, id: clientId}    
     }    
     this.props.updateCommunicatorUi.sendClientAction(connectAction)
   }
@@ -76,4 +77,5 @@ export default class MainGame extends React.Component<{updateCommunicatorUi: Upd
 const reactRenderingTag = document.createElement('react')
 document.body.appendChild(reactRenderingTag)
 ReactDOM.render(<MainGame updateCommunicatorUi={new UpdateCommunicatorUiWebsocket()}/>, reactRenderingTag)
+//ReactDOM.render(<div>test</div>, reactRenderingTag)
 

@@ -1,59 +1,50 @@
 import FighterFighting from "./fighter-fighting"
 import { MoveAction } from "../../../types/figher/action-name"
 import Fighter from "../fighter"
-import Octagon from "../../fight/octagon"
-import { getDirectionOfPosition2FromPosition1 } from "../../../helper-functions/helper-functions"
 import { Closeness } from "../../../types/figher/closeness"
-import EdgeCoordDistance from "../../../interfaces/game/fighter/edge-coord-distance"
 import Direction360 from "../../../types/figher/direction-360"
-import Flanked from "../../../interfaces/game/fighter/flanked"
 
 export default class Logistics {
 
-  noCombatForAWhile: boolean
+  hadActionRecently: boolean
   justTurnedAround: boolean
   justDidAttack: boolean
   justBlocked: boolean
   justDodged: boolean
   justTookHit: boolean
-  onARampage: boolean
+  private _onARampage: boolean
   memoryOfEnemyBehind: Fighter
   moveActionInProgress: MoveAction
+  directionAlongEdge: Direction360
 
 
   constructor(public fighting: FighterFighting){}
+
+  set onARampage(value: boolean){
+    const {stats} = this.fighting
+    if(value == true)
+      stats.aggression = stats.baseAggression * 2
+    else
+      stats.aggression = stats.baseAggression
+    
+    this._onARampage = value
+  }
+
+  get onARampage(): boolean{
+    return this._onARampage
+  }
   
   isARetreatInProgress(): boolean{
 
-    const retreatActions: MoveAction[] = ['retreat', 'cautious retreat', 'fast retreat', 'retreat from flanked']
+    const retreatActions: MoveAction[] = ['retreat', 'cautious retreat', 'fast retreat', 'retreat from flanked', 'reposition', 'retreat around edge']
     
     return retreatActions.some(moveAction => moveAction == this.moveActionInProgress)
   }
 
-  isRetreatingTowardCloseEdge(retreatingDirection: Direction360): EdgeCoordDistance{
-    const {proximity, movement, fighter} = this.fighting
-    const {width} = proximity.getFighterModelDimensions(fighter, 'Idle')
-    const nearestEdges: EdgeCoordDistance[] = proximity.sortEdgesByClosest(Octagon.getAllEdgeDistanceAndCoordOnClosestEdge(movement.coords, width))
-    
-    const retreatingTowardEdge = nearestEdges.find(edge => {
-      const edgeCloseness = proximity.getClosenessBasedOnDistance(edge.distance)
-      const directionTowardNearestEdge = getDirectionOfPosition2FromPosition1(movement.coords, edge.coords)
-      const retreatingInDirectionOfEdge = proximity.isDirectionWithin90DegreesOfDirection(retreatingDirection, directionTowardNearestEdge)
-  
-      if(retreatingInDirectionOfEdge && edgeCloseness == Closeness['striking range'])
-        return true
-    })
-    
-    return retreatingTowardEdge
-  }
 
   
 
-  flankingFighterIsInStrikingRange(): boolean{
-    const {proximity, flanking} = this.fighting
-    const closestFlankingFighter: Fighter = proximity.sortFightersByClosest(flanking.getFlankingFighters())[0]
-    return proximity.enemyWithinStrikingRange(closestFlankingFighter)
-  }
+
 
   enemyAttackingThisFighter(enemy: Fighter): boolean{
     const {name} = this.fighting.fighter
@@ -61,19 +52,19 @@ export default class Logistics {
     return enemyTargetedForAttack && enemyTargetedForAttack.name == name
   }
 
+  otherFightersStillFighting(): Fighter[]{
+    return this.fighting.otherFightersInFight.filter(fighter => !fighter.fighting.knockedOut)
+  }
+
 
   enemyIsAttackingOrDefending(enemy: Fighter){
-    const {logistics, animation} = enemy.fighting
+    const {movement, animation} = enemy.fighting
     return (
       animation.inProgress == 'punching' || 
       animation.inProgress == 'critical striking' ||
       animation.inProgress == 'defending' ||
-      logistics.moveActionInProgress == 'cautious retreat'
+      movement.moveActionInProgress == 'cautious retreat'
     )
-  }
-
-  hadNoCombatForAWhile(): boolean{
-    return this.fighting.actions.noCombatForAWhile
   }
 
   hasJustTurnedAround(): boolean{  
@@ -127,9 +118,6 @@ export default class Logistics {
     return this.fighting.otherFightersInFight.every((fighter: Fighter) => fighter.fighting.knockedOut)
   } 
   
-  otherFightersStillFighting(): Fighter[]{
-    return this.fighting.otherFightersInFight.filter(fighter => !fighter.fighting.knockedOut)
-  }
 
   hasRetreatOpportunity(enemy: Fighter): boolean{
     const enemyAction = enemy.fighting.animation.inProgress

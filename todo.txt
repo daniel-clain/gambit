@@ -1,3 +1,49 @@
+== High Level Priority ==
+1. make the game convenient to play with mates
+2. refactor the code to be presentable in interviews
+3. solve general problems
+4. add features
+
+=======================================================
+
+1. make the game convenient to play with mates
+*show each player post fight report info (rename to end round info)
+* don know if assault or poison was successful, add in pre fight news
+* dont know how much money was made, add post fight info
+* put fighter expiring each round at the top of teh log list
+* code for trapped
+* fighters have fights in & fihts won records each fighter at least 3 to 5 fights
+* extend hit boxes so fighters can strike when on diagonal edges
+* limit of permanent strength and fitness
+* doping permanently affects agression
+* poison small chance to kill
+* murder higher chance of success
+* markers on fighter bet panels for who is injured or poisoned
+* fight ui show fight promotion rating
+* should not have guard message if action failed without guard involvemnt
+
+
+=======================================================
+
+3. solve general problems
+* refactor fight-ui to be more logical, simpler, cleaner, separation of concerns, abstraction
+
+
+-------------------------------------------------------
+
+* end of manager phase and fight, save fight data obj file onto server, if server fails, you can recreate off saved game
+* throw validation errors back to the client, (id already exists, server is down, cant connect wrong port)
+* make client know when the server has crashed
+* determineIfFlanked is causing call stack exceeded error, too many calls, figure out what data is needed and the easiest way to get it
+* loan shark says overdue when owes 0
+* make the game work with public ip 
+* make all serverside socket event get handled in the same place and branch outward, use game id. (rather than socke.on happening for an arbitrary point within the game)
+* try to use babel to make ui look the same in Edge
+
+
+
+
+
 * generate fighter match history
 * when fighter wins, make money relative to their odds
 
@@ -7,6 +53,8 @@
 *phone only connects if on the wifi
 * know who you bet on and how much u made
 * handle disconnecting player
+
+*cornered enemy distance to edge should be based on base box edges, not center point (occurs most in leftBottom and rightBottom)
 
 *goal contract not showing in fighter card for job seeking fighters sometimes
 * preload images
@@ -64,6 +112,8 @@ Ideas
 * remove activity log, replace with pre post news updates
 * other managers panel, shows known info about other managers
 * discover fighter ability, finds fighters that are unknown with minimal stats
+* your fighter ability, 'take a dive', intentionally lose 
+*talent scout skill level influences offer contract success
 
 
 

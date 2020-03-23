@@ -20,6 +20,10 @@ module.exports = {
         options: {configFileName: 'config/tsconfig.json',
         reportFiles: [ `${sourceDir}/**/*`]},
       },
+      {
+        test: /\.scss$/,
+        use: ['style-loader', 'css-loader', 'sass-loader']
+      }
     ]
   },
   resolve: {

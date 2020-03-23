@@ -6,7 +6,8 @@ export type MoveAction =
 'cautious retreat' | 
 'fast retreat' |
 'move to attack' |
-'reposition'
+'reposition' |
+'retreat around edge'
 
 export type AttackResponseAction = 
 'block' |

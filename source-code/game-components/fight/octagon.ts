@@ -29,6 +29,8 @@ export default class Octagon {
     bottom: { point1: Octagon.points.bottomLeft, point2: Octagon.points.bottomRight },
     bottomLeft: { point1: Octagon.points.bottomLeft, point2: Octagon.points.leftBottom }
   }
+
+
   static checkIfPointIsWithinOctagon(point): boolean {
     for (let edgeKey in this.edges) {
       if (!this.checkInsideEdgeForPoint(edgeKey as Edge, this.edges[edgeKey], point)) {

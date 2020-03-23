@@ -9,7 +9,7 @@ import { JobSeeker, Employee } from "../../../interfaces/game-ui-state.interface
 const offerContract: Ability = {
   name: 'Offer Contract',
   cost: { money: 0, actionPoints: 1 },
-  possibleTargets: ['job seeker', 'recontracting fighter'],
+  possibleTargets: ['job seeker'],
   executes: 'End Of Round',
   canOnlyTargetSameTargetOnce: true
 }

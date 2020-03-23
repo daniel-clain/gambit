@@ -2,7 +2,7 @@ import IUpdateCommunicatorUi from "../../../interfaces/update-communicator-ui.in
 import { Subject } from "rxjs"
 import { DisplayGameUiData, PlayerGameUiData } from "../../../interfaces/game-ui-state.interface"
 import PlayerUpdateCommunicatorGame from "../../../game-components/update-communicators/player-update-communicator-game"
-import PlayerAction from "../../../interfaces/player-action"
+import ClientGameAction from "../../../types/client-game-actions"
 
 
 export default class UpdateCommunicatorUiLocal implements IUpdateCommunicatorUi {
@@ -12,7 +12,7 @@ export default class UpdateCommunicatorUiLocal implements IUpdateCommunicatorUi 
   constructor(private playerUpdateCommunicatorGame: PlayerUpdateCommunicatorGame){
     playerUpdateCommunicatorGame.sendGameUiStateUpdate.subscribe((gameUiState: PlayerGameUiData) => this.receivePlayerGameUiData.next(gameUiState))
   }
-  sendPlayerAction(playerAction: PlayerAction){
-    this.playerUpdateCommunicatorGame.receivePlayerAction(playerAction)
+  sendGameAction( gameAction: ClientGameAction){
+    this.playerUpdateCommunicatorGame.receivePlayerAction( gameAction)
   }
 };

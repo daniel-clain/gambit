@@ -1,7 +1,7 @@
 import PlayerNameAndId from './player-name-and-id';
 import GameLobby from './game-lobby.interface';
 import ChatMessage from './chat-message.interface';
-import SkillLevel from '../types/skill-level.type';
+import SkillLevel from '../types/game/skill-level.type';
 import { ActiveContract, GoalContract } from './game/contract.interface';
 import { ManagerInfo } from '../game-components/manager';
 import { Profession } from '../types/game/profession';
@@ -23,7 +23,7 @@ export interface MainGameData{
 export interface DisplayGameUiData{
   roundStage: RoundStages
   displayManagerUiData: DisplayManagerUiData
-  preFightNewsUiData: DisplayPreFightNewsUiData
+  preFightNewsUiData: PreFightNewsUiData
   fightUiData: FightUiData
 }
 
@@ -31,13 +31,13 @@ export interface PlayerGameUiData{
   roundStage: RoundStages
   playerPreManagerUiData: PlayerPreManagerUiData
   playerManagerUiData: PlayerManagerUiData
-  preFightNewsUiData: DisplayPreFightNewsUiData
+  preFightNewsUiData: PreFightNewsUiData
   fightUiData: FightUiData
 }
 
 
 
-interface DisplayPreFightNewsUiData{
+export interface PreFightNewsUiData{
   newsItems: NewsItem[]
 }
 

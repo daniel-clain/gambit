@@ -26,7 +26,8 @@ export default abstract class UpdateCommunicatorGame{
       startCountdown: null,
       timeRemaining: null,
       fighters: [],
-      report: null
+      report: null,
+      managersBets: []
     },
   }
   
@@ -41,7 +42,11 @@ export default abstract class UpdateCommunicatorGame{
 
   protected sendUpdate(){
     const {playerManagerUiData} = this.playerGameUiData
-    const {activeStage, activeFight, roundState} = this.game.roundController
+    const {activeStage, activeFight, roundState, preFightNewsStage} = this.game.roundController
+
+    
+    if(activeStage == 'Pre Fight News')
+      this.playerGameUiData.preFightNewsUiData.newsItems = preFightNewsStage.newsItems
 
 
     if(activeStage == 'Fight Day')

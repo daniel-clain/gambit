@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Bangers&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Tinos:700&display=swap');
+html{
+  font-size: 11px;
+  font-family: 'Nunito', sans-serif;
+}
+body{
+  margin: 0;
+  height: 100vh;
+}
+#react-rendering-div{
+  height: 100vh;
+}
+
+*{  
+  user-select: none;
+}
+
+
+button{
+  outline: none;
+}
+
+.turn-phone-message{
+  justify-content: center;
+  align-items: center;    
+  height: 100%;
+
+  .image{
+    background-image: url('../../../images/icons/turn-phone.png');
+    width:300px;
+    height: 300px;
+    padding: 100px 40px 0 150px;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    font-size: 25px;
+    text-align: center;
+  }
+}

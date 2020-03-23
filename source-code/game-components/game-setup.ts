@@ -1,12 +1,12 @@
 import { random, shuffle } from "../helper-functions/helper-functions";
 import { Professional } from "../interfaces/game-ui-state.interface";
 import Game from "./game";
-import gameConfiguration from "./game-configuration";
+import gameConfiguration from "../game-settings/game-configuration";
 import { PlayerInfo } from "../interfaces/player-info.interface";
 import Manager from "./manager";
 import Fighter from "./fighter/fighter";
 import { GameType } from "../types/game/game-type";
-import SkillLevel from "../types/skill-level.type";
+import SkillLevel from "../types/game/skill-level.type";
 import { Profession } from "../types/game/profession";
 import { getProfessionalsAbilities } from "./professionals";
 import { AbilityProcessor, getAbilityProcessor } from "./abilities-reformed/ability-processor";
@@ -67,10 +67,14 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
     const newFighters: Fighter[] = []
     for(;newFighters.length < amount;){
       const newFighter = new Fighter(shuffledNames.pop())
+      /* newFighter.fighting.stats.baseStrength = 1
+      newFighter.fighting.stats.fitness = 10
+      newFighter.fighting.stats.baseAggression = 0
+      newFighter.fighting.stats.baseIntelligence = 10 */
       newFighter.fighting.stats.baseStrength = random(5, true)
       newFighter.fighting.stats.fitness = random(5, true)
       newFighter.fighting.stats.baseAggression = random(5)
-      newFighter.fighting.stats.baseIntelligence = random(5)
+      newFighter.fighting.stats.baseIntelligence = random(10)
       newFighter.fighting.reset()
       newFighters.push(newFighter)
     }

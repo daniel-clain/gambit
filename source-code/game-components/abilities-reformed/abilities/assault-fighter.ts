@@ -34,11 +34,14 @@ export const assaultFighterServer: ServerAbility = {
     }
 
     let success
+    let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)
     if(guardLevel > 0){
       const randomNum = random(100, true)
-      if(randomNum > 85 + guardLevel * 5 - assaulter.skillLevel * 5)
+      if(randomNum < 15 - guardLevel * 5 + assaulter.skillLevel * 5)
         success = true
+      else
+        guardBlocked = true
     }
     else {
       const randomNum = random(100, true)
@@ -50,17 +53,30 @@ export const assaultFighterServer: ServerAbility = {
       fighter.state.injured = true
       game.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter was assaulted',
+        headline: `${fighter.name} Assaulted!`,
         message: `${fighter.name} has been assaulted, his injuries will affect his fight performance`
       })
       assaultersManager.addToLog({
         message: `${assaulter.name} has successfully assaulted ${fighter.name} and he is now injured`
       })
     }
-    else
+    else if(guardBlocked){
       game.roundController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect fighter from being assaulted',
-        message: `Guards have protected ${fighter.name} from an attempted assault, the culprits name is ${assaulter.name}`
+        headline: `${fighter.name} Guarded from Assailant!`,
+        message: `Guards have protected ${fighter.name} from an attempted assault`
+      })     
+      assaultersManager.postFightReportItems.push({
+        type: 'employee outcome',
+        message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name} because he was guarded by thugs`
       })
+    }
+    else
+      assaultersManager.postFightReportItems.push({
+        type: 'employee outcome', 
+        message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name}`
+      })
+      
 
 
   },

@@ -26,8 +26,8 @@ export default class FighterAnimation{
       await wait(5)
     }
     
-    if(!logSupressedActions.some(n => n == name))
-      console.log(`${this.fighting.fighter.name} started ${name} (${randomNum})`);
+    /* if(!logSupressedActions.some(n => n == name))
+      console.log(`${this.fighting.fighter.name} started ${name} (${randomNum})`); */
 
     this.inProgress = name  
 
@@ -43,8 +43,8 @@ export default class FighterAnimation{
     })
     .then(() => {      
       this.inProgress = null
-      if(!logSupressedActions.some(n => n == name))
-        console.log(`${this.fighting.fighter.name} finished ${name} (${randomNum})`);
+     /*  if(!logSupressedActions.some(n => n == name))
+        console.log(`${this.fighting.fighter.name} finished ${name} (${randomNum})`); */
       return
         
     })
@@ -52,9 +52,9 @@ export default class FighterAnimation{
       this.inProgress = null
       clearTimeout(timeoutRef)
 
-      if(!logSupressedActions.some(n => n == name)){
+      /* if(!logSupressedActions.some(n => n == name)){
         console.log(`${this.fighting.fighter.name}'s ${name} was cancled because ${reason} (${randomNum})`);
-      }
+      } */
       throw(reason)
     })
   }

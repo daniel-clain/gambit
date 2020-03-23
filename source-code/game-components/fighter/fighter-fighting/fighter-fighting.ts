@@ -3,11 +3,10 @@ import { random } from "../../../helper-functions/helper-functions";
 import FighterModelState from "../../../types/figher/fighter-model-states";
 import FighterFightState from "../../../interfaces/game/fighter-fight-state-info";
 import Movement from "./movement";
-import Proximity from "./proximity";
+import Proximity, { getFighterStrikingCenter } from "./proximity";
 import SoundTime from "../../../interfaces/game/fighter/sound-time";
 import FacingDirection from "../../../types/figher/facing-direction";
 import FighterStats from "./stats";
-import Flanked from "../../../interfaces/game/fighter/flanked";
 import Flanking from "./flanking";
 import FighterTimers from "./fighter-timers";
 import FighterAnimation from "./fighter-animation";
@@ -58,7 +57,7 @@ export default class FighterFighting {
   start() {
     this.fightStarted = true
     this.stamina = this.stats.maxStamina
-    this.spirit = this.stats.maxSpirit
+    this.spirit = 3
     this.otherFightersInFight = this.fighter.state.fight.fighters
       .filter(figher => figher.name != this.fighter.name)
     this.actions.decideAction()
@@ -77,11 +76,14 @@ export default class FighterFighting {
       soundsMade: this.soundsMade,
       onRampage: this.timers.activeTimers.some(timer => timer.name == 'on a rampage'),
       skin: this.fighter.skin,
-      flanked: this.proximity.flanked,
+      flanked: !!this.proximity.flanked,
       strikingCenters: {
-        front: this.proximity.getFighterStrikingCenter(this.fighter),
-        back: this.proximity.getFighterStrikingCenter(this.fighter, true)
-      }
+        front: getFighterStrikingCenter(this.fighter),
+        back: getFighterStrikingCenter(this.fighter, true)
+      },
+      spirit: this.spirit,
+      repositioning: this.movement.moveActionInProgress == 'reposition',
+      direction: this.movement.movingDirection
     }
   }
 
@@ -89,7 +91,7 @@ export default class FighterFighting {
     this.proximity.flanked = undefined
     this.modelState = 'Idle'
     this.knockedOut = false
-    this.spirit = this.stats.maxSpirit
+    this.spirit = 3
     this.otherFightersInFight = []
     this.stopFighting = false    
     this.facingDirection = !!random(2) ? 'left' : 'right'

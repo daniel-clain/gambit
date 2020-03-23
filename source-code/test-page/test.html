@@ -1,12 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-</head>
-<body>
+<style>
+  body{display: none}
+</style>
+<body onload="doDoink()">
   
+  
+  <section class="container">
+  </section>
+  
+
+  <script>
+    
+  function doDoink(){
+    console.log('doink');
+    const body = document.querySelector('body')
+    body.style.cssText = "display: block"
+  }
+  </script>
 </body>
-</html>

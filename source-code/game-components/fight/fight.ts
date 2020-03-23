@@ -1,13 +1,15 @@
 
 import { Subject, Subscription } from "rxjs"
 import Fighter from "../fighter/fighter"
-import gameConfiguration from "../game-configuration"
+import gameConfiguration from "../../game-settings/game-configuration"
 import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../helper-functions/helper-functions"
 import Octagon from "./octagon"
 import Coords from '../../interfaces/game/fighter/coords';
 import Direction360 from "../../types/figher/direction-360"
 import { FightReport } from "../../interfaces/game/fight-report"
 import { FightUiData } from "../../interfaces/game/fight-ui-data"
+import Game from "../game"
+import Manager from "../manager"
 
 
 
@@ -25,7 +27,7 @@ export default class Fight {
   private timesUpTimer
   private timeRemainingInterval
   
-  constructor(public fighters: Fighter[]) {    
+  constructor(public fighters: Fighter[], public game: Game ) {    
     fighters.forEach(fighter => fighter.getPutInFight(this))
   }
 
@@ -84,7 +86,7 @@ export default class Fight {
   }
 
   startFightUpdateLoop(){
-    this.fightUpdateLoop = setInterval(this.sendUiStateUpdate.bind(this), 10)
+    this.fightUpdateLoop = setInterval(this.sendUiStateUpdate.bind(this), 5)
   }
 
   set report(value: FightReport){
@@ -144,7 +146,14 @@ export default class Fight {
       startCountdown: this._startCountdown,
       timeRemaining: this.timeRemaining,
       report: this._report,
-      fighters: this.fighters.map(fighter => fighter.fighting.getState())
+      fighters: this.fighters.map(fighter => fighter.fighting.getState()),
+      managersBets: !this.game ? undefined : this.game.managers.map((manager: Manager): ManagersBet => {
+        return {
+          name: manager.name,
+          managerImage: manager.image,
+          bet: manager.nextFightBet
+        }
+      })
     }
   }
 

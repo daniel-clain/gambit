@@ -5,7 +5,7 @@ export type TimerName =
 'just did attack' |
 'just took a hit' |
 'on a rampage' |
-'no combat for a while' |
+'had action recently' |
 'memory of enemy behind' |
 'move action in progress' |
-'retreat from cornered'
+'retreat along edge'

@@ -1,7 +1,7 @@
-import {Bet} from './bet';
-import Manager from '../../game-components/manager/manager';
+import { Bet } from "./bet";
 
 export interface ManagersBet{
-  manager: Manager
+  name: string
   bet: Bet
+  managerImage: string
 }

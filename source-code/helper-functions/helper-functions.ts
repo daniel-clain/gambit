@@ -1,6 +1,7 @@
 import Coords from "../interfaces/game/fighter/coords";
 import Direction360 from "../types/figher/direction-360";
 import { FighterInfo, KnownFighter, KnownFighterStats } from "../interfaces/game-ui-state.interface";
+import { Angle } from "../types/game/angle";
 
 export function random(number: number, startAtOne?: boolean){return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
 
@@ -120,6 +121,46 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
   }
 
   return directionOfPosition2FromPosition1
+}
+
+export function getSmallestAngleBetween2Directions(direction1: Direction360, direction2: Direction360){
+  const {biggest, smallest} = direction1 > direction2 ? {biggest: direction1, smallest: direction2} : { biggest: direction2, smallest: direction1}
+  
+  if(biggest - smallest > 180)
+    return 360 - biggest + smallest
+  else
+    return biggest - smallest
+}
+
+export function subtractAngle2FromAngle1(angle1: Angle, angle2: Angle): Angle {
+  validateAngle(angle1)
+  validateAngle(angle2)
+  if(angle1 >= angle2)
+    return angle1 - angle2
+  else
+    return 360 + angle1 - angle2
+}
+
+export function add2Angles(angle1: Angle, angle2: Angle) {
+  validateAngle(angle1)
+  validateAngle(angle2)
+
+  let returnAngle
+  const addedAngles = angle1 + angle2
+  if(addedAngles >= 360)
+    returnAngle = addedAngles % 360
+  else
+    returnAngle = addedAngles
+  
+  validateAngle(returnAngle)
+  return returnAngle
+}
+
+export function validateAngle(angle: Angle): Angle{
+  if(angle >= 360 || angle < 0)
+    throw 'angle is invalid: ' + angle
+  
+  return angle
 }
 
 
