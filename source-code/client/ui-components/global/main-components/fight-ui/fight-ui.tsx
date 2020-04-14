@@ -7,6 +7,7 @@ import ManagersBets from './managers-bets/managers-bets';
 import Coords from '../../../../../interfaces/game/fighter/coords';
 import FighterFightState from '../../../../../interfaces/game/fighter-fight-state-info';
 import FighterComponent from './fighter/fighter.component';
+import FighterStates, { FighterStatesProps } from './fighter-states/fighter-states';
 
 
 type FightExplosionAnimationStages =
@@ -51,11 +52,23 @@ export default class FightUi extends React.Component<FightUiProps, FightUiState>
     for(let key in Octagon.points){
       cornerPoints.push(Octagon.points[key])
     }
+
+    const fighterStatesProps: FighterStatesProps = {
+      fighterStates: this.props.fightUiData.fighters.map(fighter => {
+        return {
+          name: fighter.name,
+          poisoned: fighter.poisoned,
+          injured: fighter.injured,
+          doped: fighter.doped,
+          managerKnownStats: fighter.managerKnownStats
+        }
+      })
+    }
     
     return (
       <div className='fight-ui'>
         
-        
+        <FighterStates fighterStates={fighterStatesProps.fighterStates} />
         {managersBets ? <ManagersBets managersBets={managersBets}/> : ''}
         <div className="fight-ui__content">
           

@@ -1,6 +1,4 @@
 import Coords from "../interfaces/game/fighter/coords";
-import Direction360 from "../types/figher/direction-360";
-import { FighterInfo, KnownFighter, KnownFighterStats } from "../interfaces/game-ui-state.interface";
 import { Angle } from "../types/game/angle";
 
 export function random(number: number, startAtOne?: boolean){return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
@@ -33,7 +31,7 @@ export const getDistanceBetweenTwoPoints = (point1: Coords, point2: Coords): num
   )
 }
 
-export function getPointGivenDistanceAndDirectionFromOtherPoint(point: Coords, distance: number, direction: Direction360): Coords{
+export function getPointGivenDistanceAndDirectionFromOtherPoint(point: Coords, distance: number, direction: Angle): Coords{
   const hypotenuse = distance
   let {x, y} = point
 
@@ -80,8 +78,8 @@ export function getPointGivenDistanceAndDirectionFromOtherPoint(point: Coords, d
 }
 
 
-export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords): Direction360 => {
-  let directionOfPosition2FromPosition1: Direction360
+export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords): Angle => {
+  let directionOfPosition2FromPosition1: Angle
   let xLength = pos2.x - pos1.x
   let yLength = pos2.y - pos1.y
   let adjacentSide
@@ -123,7 +121,7 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
   return directionOfPosition2FromPosition1
 }
 
-export function getSmallestAngleBetween2Directions(direction1: Direction360, direction2: Direction360){
+export function getSmallestAngleBetween2Directions(direction1: Angle, direction2: Angle){
   const {biggest, smallest} = direction1 > direction2 ? {biggest: direction1, smallest: direction2} : { biggest: direction2, smallest: direction1}
   
   if(biggest - smallest > 180)

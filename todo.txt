@@ -8,19 +8,16 @@
 
 1. make the game convenient to play with mates
 *show each player post fight report info (rename to end round info)
-* don know if assault or poison was successful, add in pre fight news
 * dont know how much money was made, add post fight info
 * put fighter expiring each round at the top of teh log list
-* code for trapped
+* -code for trapped
 * fighters have fights in & fihts won records each fighter at least 3 to 5 fights
-* extend hit boxes so fighters can strike when on diagonal edges
-* limit of permanent strength and fitness
-* doping permanently affects agression
 * poison small chance to kill
-* murder higher chance of success
-* markers on fighter bet panels for who is injured or poisoned
 * fight ui show fight promotion rating
-* should not have guard message if action failed without guard involvemnt
+* cant have 2 flanking pairs that are the same 2 fighters
+* arena zoom to fit screen size
+* bug where rememberedEnemyBehind doesnt clear (think its to do with timer not reseting it)
+* retreat from flanked, reposition and retreat around edge face direction of reterat
 
 
 =======================================================

@@ -4,6 +4,7 @@ import IUpdateCommunicatorUi from '../../../interfaces/update-communicator-ui.in
 import {  DisplayGameUiData } from '../../../interfaces/game-ui-state.interface';
 import DisplayManagerOptions from './display-manager-options-ui/display-manager-options-ui';
 import DisplayFightUi from './display-fight-ui/display-fight-ui';
+import { PreFightNews } from '../global/main-components/pre-fight-news/pre-fight-news';
 
 
 interface GameUiDisplayProps {
@@ -40,7 +41,7 @@ export default hot(class GameUiDisplay extends React.Component<GameUiDisplayProp
         
 
       case 'Pre Fight News':
-        return <div>Pre Fight News</div>
+        return <PreFightNews preFightNewsUiData={preFightNewsUiData}/>
 
       case 'Fight Day':
         return <DisplayFightUi fightUiData={fightUiData} />

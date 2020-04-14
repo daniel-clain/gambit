@@ -74,7 +74,7 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
       newFighter.fighting.stats.baseStrength = random(5, true)
       newFighter.fighting.stats.fitness = random(5, true)
       newFighter.fighting.stats.baseAggression = random(5)
-      newFighter.fighting.stats.baseIntelligence = random(10)
+      newFighter.fighting.stats.baseIntelligence = random(10, true)
       newFighter.fighting.reset()
       newFighters.push(newFighter)
     }

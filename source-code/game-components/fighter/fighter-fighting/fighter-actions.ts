@@ -31,9 +31,8 @@ export default class FighterActions {
     } */
     
     
-    //console.log(`${fighter.name} decide action`);
-    
     let closestEnemy: Fighter = proximity.getClosestRememberedEnemy()
+
 
     let enemyWithinStrikingRange = closestEnemy && proximity.enemyWithinStrikingRange(closestEnemy)
     
@@ -76,6 +75,10 @@ export default class FighterActions {
 
     decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
 
+    
+    if(this.fighting.proximity.flanked)
+      console.log(fighter.name + ' flanked');
+      
     if(!decidedAction){
       //console.log(`${fighter.name} had no decided action, wait half a sec then decide again`);
       wait(500).then(() => this.decideAction())
@@ -108,7 +111,10 @@ export default class FighterActions {
         }
       }
       catch(reason){
-        console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);      }
+        if(reason == "TypeError: Cannot read property 'fighting' of undefined")
+          debugger
+        console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);      
+      }
 
       await wait(5)
       if(logistics.allOtherFightersAreKnockedOut())

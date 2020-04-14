@@ -76,14 +76,19 @@ export default class FighterFighting {
       soundsMade: this.soundsMade,
       onRampage: this.timers.activeTimers.some(timer => timer.name == 'on a rampage'),
       skin: this.fighter.skin,
-      flanked: !!this.proximity.flanked,
+      retreatingFromFlanked: this.movement.moveActionInProgress == 'retreat from flanked',
+      trapped: this.proximity.trapped,
       strikingCenters: {
         front: getFighterStrikingCenter(this.fighter),
         back: getFighterStrikingCenter(this.fighter, true)
       },
       spirit: this.spirit,
       repositioning: this.movement.moveActionInProgress == 'reposition',
-      direction: this.movement.movingDirection
+      direction: this.movement.movingDirection,
+      poisoned: this.fighter.state.poisoned,
+      doped: this.fighter.state.doping,
+      injured: this.fighter.state.injured,
+      managerKnownStats: undefined
     }
   }
 
@@ -107,16 +112,19 @@ export default class FighterFighting {
 
   }
 
-  set facingDirection(direction: FacingDirection){    
+  set facingDirection(direction: FacingDirection){  
+
     if(this.fightStarted){
       const enemy: Fighter = this.proximity.getClosestEnemyInfront()
+      this._facingDirection = direction  
       if(enemy)
         this.proximity.rememberEnemyBehind(enemy)    
       else
         this.proximity.rememberEnemyBehind(null)   
-    } 
+    }
+    else
+      this._facingDirection = direction  
 
-    this._facingDirection = direction
   }
   get facingDirection(): FacingDirection{
     return this._facingDirection

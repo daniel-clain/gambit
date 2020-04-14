@@ -1,7 +1,8 @@
 import { Edge } from "../../interfaces/game/fighter/edge"
 import { Edges } from "../../interfaces/game/fighter/edges"
 import Coords from "../../interfaces/game/fighter/coords"
-import { getDistanceBetweenTwoPoints } from "../../helper-functions/helper-functions"
+import { getDistanceBetweenTwoPoints, getDirectionOfPosition2FromPosition1 } from "../../helper-functions/helper-functions"
+import { Angle } from "../../types/game/angle"
 
 const edgeKeys: Edge[] = ['left', 'topLeft', 'top', 'topRight', 'right', 'bottomRight', 'bottom', 'bottomLeft']
 
@@ -88,12 +89,40 @@ function getDistanceFromEdge(edgeName: Edge, point: Coords){
 
 }
 
+function getDirectionToClosestEdge(point: Coords): Angle{
+  const closestEdge = getClosestEdge(point)
+  const closestPointOnClosestEdge: Coords = getClosestCoordsOnAnEdgeFromAPoint(closestEdge, point)
+  return getDirectionOfPosition2FromPosition1(point, closestPointOnClosestEdge)   
+}
+
+
+function getClosestEdge(point): Edge{
+  let closestEdge: {edgeName: Edge, distance: number}
+  for(let edgeKey in edges){
+    const edgeName = edgeKey as Edge
+    const distance = getDistanceFromEdge(edgeName, point)
+    if(!closestEdge || distance < closestEdge.distance)
+      closestEdge = {edgeName, distance}
+  }
+  return closestEdge.edgeName
+}
+
+function getDistanceOfClosestEdge(point): number{
+  const closestEdge = getClosestEdge(point)
+  const closestPointOnEdge: Coords = getClosestCoordsOnAnEdgeFromAPoint(closestEdge, point)
+  return getDistanceBetweenTwoPoints(point, closestPointOnEdge)
+
+}
+
 
 export const octagon = {
   edgeKeys,
   edges,
+  getDistanceOfClosestEdge,
   getClosestCoordsOnASlopeFromAPoint,
   isPointOutsideOfEdge, 
   getDistanceFromEdge,
-  getClosestCoordsOnAnEdgeFromAPoint
+  getClosestCoordsOnAnEdgeFromAPoint,
+  getClosestEdge,
+  getDirectionToClosestEdge
 }

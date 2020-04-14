@@ -1,18 +1,18 @@
 import FighterFighting from "./fighter-fighting";
 import Fighter from "../fighter";
 import Coords from '../../../interfaces/game/fighter/coords';
-import Direction360 from "../../../types/figher/direction-360";
 import { Edge } from "../../../interfaces/game/fighter/edge";
 import { wait, getDirectionOfPosition2FromPosition1 } from "../../../helper-functions/helper-functions";
 import { MoveAction } from "../../../types/figher/action-name";
 import { octagon } from "../../fight/new-octagon";
 import { getFighterModelDimensions, getDirectionOfEnemyStrikingCenter, isFacingAwayFromEnemy } from "./proximity";
 import { getRepositionMoveDirection } from "./repositioning";
+import { Angle } from "../../../types/game/angle";
 
 export default class Movement {
 
   
-  movingDirection: Direction360
+  movingDirection: Angle
   coords: Coords = {x: 0, y: 0}
 
   reverseMoving: boolean
@@ -38,19 +38,19 @@ export default class Movement {
     moveAction == 'move to attack' ? enemy : null
 
     
-    if(proximity.againstEdge || moveAction == 'retreat around edge')
+    if(proximity.againstEdge && moveAction != 'move to attack' || moveAction == 'retreat around edge')
       this.movingDirection = proximity.getRetreatAroundEdgeDirection(enemy)
     else{
       if(moveAction == 'retreat from flanked')
         this.movingDirection = flanking.getRetreatFromFlankedDirection()
       else if(moveAction == 'reposition')
-        this.movingDirection = getRepositionMoveDirection(enemy, this.fighting.fighter) as Direction360
+        this.movingDirection = getRepositionMoveDirection(enemy, this.fighting.fighter)
       else
         this.movingDirection = getDirectionOfEnemyStrikingCenter(enemy, this.fighting.fighter, moveAction != 'move to attack')
     }
     
-
-    const moveActionFacesAway = ['fast retreat', 'retreat', 'reposition',].some(a => a == moveAction)   
+    const faceAwayMoveActions: MoveAction[] = ['fast retreat', 'retreat', 'reposition', 'retreat from flanked', 'retreat around edge']
+    const moveActionFacesAway = faceAwayMoveActions.some(a => a == moveAction)   
 
     const moveActionFacesToward = ['move to attack', 'cautious retreat'].some(a => a == moveAction)
 
@@ -69,12 +69,12 @@ export default class Movement {
     const {timers, animation, flanking} = this.fighting
     return animation.start({
       name: 'turning around',
-      duration: animation.speedModifier(100)
+      duration: animation.speedModifier(150)
     })
     .then(() => {      
       this.fighting.facingDirection = this.fighting.facingDirection == 'left' ? 'right' : 'left'
       timers.start('just turned around')
-      return animation.cooldown(80)
+      return animation.cooldown(100)
     })
 
   }
@@ -159,7 +159,7 @@ export default class Movement {
   }
 
 
-  private getNewMoveCoords(direction: Direction360, coords: Coords): Coords {
+  private getNewMoveCoords(direction: Angle, coords: Coords): Coords {
 
     if(isNaN(direction))
       debugger

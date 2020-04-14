@@ -29,5 +29,10 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js']
   },
-  plugins: [new HtmlWebpackPlugin({template: `${sourceDir}test.html`})]
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Gambit - Test Page',
+      favicon: "./favicon.ico",
+      template: `${sourceDir}test.html`
+    })]
 };

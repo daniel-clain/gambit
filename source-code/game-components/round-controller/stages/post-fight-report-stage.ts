@@ -4,6 +4,7 @@ import Game from "../../game";
 import { RoundController } from "../round-controller";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stages";
+import gameConfiguration from "../../../game-settings/game-configuration";
 
 export default class PostFightReportStage implements IStage {
   name: RoundStages = 'Post Fight Report'
@@ -14,7 +15,7 @@ export default class PostFightReportStage implements IStage {
 
   start(): void {
     this.finished = new Subject();
-    setTimeout(this.stageFinished.bind(this), 1000)  
+    setTimeout(this.stageFinished.bind(this), gameConfiguration.stageDurations.postFightReport)  
   }
 
   stageFinished(){

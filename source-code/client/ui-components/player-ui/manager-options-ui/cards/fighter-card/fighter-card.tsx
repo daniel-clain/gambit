@@ -45,8 +45,8 @@ export class FighterCard extends React.Component<FighterCardProps>{
     
     if(yourFighter && yourFighter.goalContract){
       goalContractInfo = [        
-      {label: 'Number of weeks', value: knownFighter.goalContract.numberOfWeeks},
-      {label: 'Weekly cost', value: knownFighter.goalContract.weeklyCost}
+      {label: 'Number of weeks', value: yourFighter.goalContract.numberOfWeeks},
+      {label: 'Weekly cost', value: yourFighter.goalContract.weeklyCost}
       ]
     }
 

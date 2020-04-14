@@ -18,6 +18,8 @@ export default class Game{
   playersUpdateCommunicators: PlayerUpdateCommunicatorGame[]
   displayUpdateCommunicators: DisplayUpdateCommunicatorGameWebsocket[]
 
+  paused: boolean
+
 	constructor(gameType: GameType = 'Websockets', playerInfo: PlayerInfo[]) {  
     this.roundController = new RoundController(this)
 
@@ -29,6 +31,10 @@ export default class Game{
   private startGame(){
     console.log('game started');
     this.roundController.startRound(1)
+  }
+
+  pauseGame(){
+    this.paused = true
   }
 
     

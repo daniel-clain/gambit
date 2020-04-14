@@ -1,37 +1,41 @@
 import Proximity from "./proximity";
 
-describe('isDirectionWithin90DegreesOfDirection', () => {
-  it('should return true for opposite angles within 90 degrees of eachother', () => {
+
+
+describe('isDirectionWithinDegreesOfDirection', () => {
+  it('should return true test angle within specified degrees of specified angle', () => {
     const proximity = new Proximity(null)
 
-    const test1 = proximity.isDirectionWithin90DegreesOfDirection(80, 260)
+    
+
+    const test1 = proximity.isDirectionWithinDegreesOfDirection(80, 90, 260)
     expect(test1).toBeFalsy()
     
-    const test2 = proximity.isDirectionWithin90DegreesOfDirection(80, 80)
+    const test2 = proximity.isDirectionWithinDegreesOfDirection(80, 90, 80)
     expect(test2).toBeTruthy()
     
-    const test3 = proximity.isDirectionWithin90DegreesOfDirection(180, 180)
+    const test3 = proximity.isDirectionWithinDegreesOfDirection(180, 90, 180)
     expect(test3).toBeTruthy()
     
-    const test4 = proximity.isDirectionWithin90DegreesOfDirection(220, 140)
-    expect(test4).toBeTruthy()
+    const test4 = proximity.isDirectionWithinDegreesOfDirection(220, 90, 140)
+    expect(test4).toBeFalsy()
     
-    const test5 = proximity.isDirectionWithin90DegreesOfDirection(350, 80)
-    expect(test5).toBeTruthy()
+    const test5 = proximity.isDirectionWithinDegreesOfDirection(350, 90, 80)
+    expect(test5).toBeFalsy()
     
-    const test6 = proximity.isDirectionWithin90DegreesOfDirection(20, 300)
+    const test6 = proximity.isDirectionWithinDegreesOfDirection(20, 180, 300)
     expect(test6).toBeTruthy()
     
-    const test7 = proximity.isDirectionWithin90DegreesOfDirection(359, 90)
+    const test7 = proximity.isDirectionWithinDegreesOfDirection(359, 90, 90)
     expect(test7).toBeFalsy()
     
-    const test8 = proximity.isDirectionWithin90DegreesOfDirection(90, 181)
+    const test8 = proximity.isDirectionWithinDegreesOfDirection(90, 90, 180)
     expect(test8).toBeFalsy()
 
-    const test9 = proximity.isDirectionWithin90DegreesOfDirection(270, 181)
+    const test9 = proximity.isDirectionWithinDegreesOfDirection(355, 40, 10)
     expect(test9).toBeTruthy()
 
-    const test10 = proximity.isDirectionWithin90DegreesOfDirection(275, 5)
+    const test10 = proximity.isDirectionWithinDegreesOfDirection(4, 20, 355)
     expect(test10).toBeTruthy()
   });
 });

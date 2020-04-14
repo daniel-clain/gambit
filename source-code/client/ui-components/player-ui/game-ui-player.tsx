@@ -5,6 +5,7 @@ import { PlayerGameUiData } from '../../../interfaces/game-ui-state.interface';
 import ManagerOptionsUi from './manager-options-ui/manager-options-ui';
 import FightUi from '../global/main-components/fight-ui/fight-ui';
 import { PreFightNews } from '../global/main-components/pre-fight-news/pre-fight-news';
+import PlayerFightUi from './player-fight-ui/player-fight-ui';
 
 
 
@@ -47,7 +48,7 @@ export default hot(class GameUiPlayer extends React.Component<GameUiProps, GameU
         return <PreFightNews preFightNewsUiData={preFightNewsUiData}/>
 
       case 'Fight Day':
-        return <FightUi fightUiData={fightUiData} />
+        return <PlayerFightUi fightUiData={fightUiData} />
 
       case 'Post Fight Report':
         return <div>Post Fight Report</div>

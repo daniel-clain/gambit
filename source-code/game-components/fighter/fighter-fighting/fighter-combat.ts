@@ -63,8 +63,9 @@ export default class FighterCombat {
   
       const stillInRange = proximity.enemyWithinStrikingRange(enemy)
       
-      if(stillInRange)
+      if(stillInRange){
         lanededAttack = enemy.fighting.combat.getAttacked(this.fighting.fighter, attackType)
+      }
       else
         console.log(`*** ${fighter.name} no longer in rage to attack ${enemy.name}`);
   
@@ -79,7 +80,7 @@ export default class FighterCombat {
           if(chanceToGoOnARampage < this.fighting.stats.aggression * this.fighting.spirit)
             timers.start('on a rampage')
         }
-  
+        console.log(`${this.fighting.fighter.name} will ${attackType} ${this.fighting.enemyTargetedForAttack.name}`);
         this.fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)
       
   
@@ -103,7 +104,7 @@ export default class FighterCombat {
         ))
       }
       else if(!lanededAttack || !stillInRange){
-        if(!lanededAttack && this.fighting.spirit != 0)
+        if(!lanededAttack && stillInRange && this.fighting.spirit != 0)
           this.fighting.spirit --
   
         await animation.start(
@@ -137,6 +138,7 @@ export default class FighterCombat {
       console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
       proximity.rememberEnemyBehind(enemy)
     }
+    console.log('after');
 
     const attackResponseActions: AttackResponseAction[] = ['dodge', 'block', 'take hit']
 

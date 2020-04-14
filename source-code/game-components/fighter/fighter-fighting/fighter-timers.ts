@@ -55,7 +55,7 @@ export default class FighterTimers {
     switch(name){
       case 'just turned around': { 
         logistics.justTurnedAround = true
-        duration = 2000 
+        duration = 3000 
         afterEffect = () => logistics.justTurnedAround = false
       } break;
       case 'just blocked': {

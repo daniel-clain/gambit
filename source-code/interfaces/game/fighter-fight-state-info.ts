@@ -3,7 +3,8 @@ import FacingDirection from '../../types/figher/facing-direction';
 import FighterModelState from '../../types/figher/fighter-model-states';
 import SoundTime from './fighter/sound-time';
 import { Skin } from '../../types/figher/skin';
-import Direction360 from '../../types/figher/direction-360';
+import { Angle } from '../../types/game/angle';
+import { KnownFighterStats } from '../game-ui-state.interface';
 
 export default interface FighterFightState{
   name: string
@@ -13,9 +14,14 @@ export default interface FighterFightState{
   soundsMade: SoundTime[]
   onRampage: boolean,
   skin: Skin,
-  flanked: boolean
+  retreatingFromFlanked: boolean
   strikingCenters: {front: Coords, back: Coords}
   spirit: number
   repositioning: boolean,
-  direction: Direction360
+  direction: Angle
+  trapped: boolean
+  poisoned: boolean
+  injured: boolean
+  doped: boolean
+  managerKnownStats: KnownFighterStats
 }

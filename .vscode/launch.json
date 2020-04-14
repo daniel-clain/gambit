@@ -23,7 +23,8 @@
       "type": "node",
       "request": "launch",
       "name": "test",
-      "args": [
+      "args": [        
+        "-c=config/jest.config.js",
         "--runInBand",
         "proximity"
       ],

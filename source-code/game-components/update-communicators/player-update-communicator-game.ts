@@ -11,10 +11,10 @@ export default class PlayerUpdateCommunicatorGame extends UpdateCommunicatorGame
  
   constructor(
     game: Game,
-    private manager: Manager,
+    protected manager: Manager,
     private abilityProcessor: AbilityProcessor
   ){
-    super(game)
+    super(game, manager)
     this.playerGameUiData.playerManagerUiData.managerInfo = manager.info
     this.manager.managerUpdatedSubject.subscribe(this.sendUpdate.bind(this))
   }

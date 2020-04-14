@@ -12,6 +12,7 @@ import { NewsItem } from '../types/game/news-item';
 import FighterFightState from './game/fighter-fight-state-info';
 import { FightUiData } from './game/fight-ui-data';
 import { Bet } from './game/bet';
+import { PostFightReportItem } from './game/post-fight-report-item';
 
 export interface MainGameData{
   inGame: boolean
@@ -29,7 +30,7 @@ export interface DisplayGameUiData{
 
 export interface PlayerGameUiData{
   roundStage: RoundStages
-  playerPreManagerUiData: PlayerPreManagerUiData
+  postFightReportData: PostFightReportData
   playerManagerUiData: PlayerManagerUiData
   preFightNewsUiData: PreFightNewsUiData
   fightUiData: FightUiData
@@ -41,8 +42,8 @@ export interface PreFightNewsUiData{
   newsItems: NewsItem[]
 }
 
-interface PlayerPreManagerUiData{
-  notifications: string[]
+export interface PostFightReportData{
+  notifications: PostFightReportItem[]
 }
 
 export interface ManagerDisplayInfo{

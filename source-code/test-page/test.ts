@@ -1,56 +1,66 @@
-import './test.scss'
-import gsap from 'gsap'
+import { Subject } from "rxjs";
 
-const newsItemsCount = 4
-const container = document.querySelector('.container')
+const pauseButton = document.querySelector('button')
+const countdownElem = document.querySelector('countdown')
+var paused = false
+const unpauseSubject = new Subject()
 
-for(let i = 0; i < newsItemsCount; i++){
-  const newsElem: HTMLImageElement = document.createElement('img')
-  newsElem.className += 'news-paper'
-  newsElem.id = 'news-paper'+i
-  newsElem.src = '/source-code/client/images/pre-fight/news-bg.jpg'
-  container.appendChild(newsElem)
+
+pauseButton.onclick = e => paused ? unpause() : pause()
+
+
+
+function pause(){
+  paused = true
+  pauseButton.innerText = 'Un-Pause'
 }
 
-const newItemAnimations =  gsap.timeline()
-
-for(let i = 0; i < newsItemsCount; i++){
-  console.log('add one');
-  newItemAnimations
-    .add(tumbleIntoView('news-paper'+i))
-    .add(waitForReadTime('news-paper'+i))
-    .add(getRidOfIt('news-paper'+i))
-}
-newItemAnimations.play()
-
-
-
-function tumbleIntoView(id){
-  console.log('ding');
-  return gsap.timeline()
-  .to('#'+id, {
-    display: 'block',
-    transform: 'scale(1)',
-    right: '0%',
-    top: '0%',
-    width: 500,
-    duration: .3  
-  }, "-=2")
-}
-function waitForReadTime(id){
-  return gsap.timeline().to('#'+id, {duration: 3})
-}
-function getRidOfIt(id){
-  console.log('get rid of it');
-  return gsap.timeline()
-  .to('#'+id, {
-    opacity: '0',
-    right: '-100%', 
-    transform: 'scale(.5)', 
-    duration: .5  
-  })
-  .to('#'+id, {
-    display: 'none'
-  })
+function unpause(){
+  paused = false
+  unpauseSubject.next()
+  pauseButton.innerText = 'Pause'
 
 }
+
+function waitForUnpause(): Promise<void>{
+  return new Promise(resolve => {
+    const subscription = unpauseSubject.subscribe(() => {
+      subscription.unsubscribe()
+      resolve()
+    })
+  });
+}
+
+function pausableTimer(seconds): Promise<void>{
+  return new Promise(timerFinished => {
+    let countDown = seconds * 100
+    wait1Second()
+
+    async function wait1Second(){
+      countdownElem.innerHTML = (countDown/100).toString()
+      if(countDown == 0)
+        timerFinished() 
+      else{
+        if(paused)
+          await waitForUnpause()
+        await new Promise(resolve => setTimeout(resolve, 10));
+        --countDown
+        wait1Second()
+      }
+    }
+  });
+}
+
+
+
+
+
+async function go(){
+  console.log('doing go');
+  setTimeout(pause, 2000);
+  setTimeout(unpause, 4000);
+  await pausableTimer(4)
+  console.log('4 sec timer finished');
+}
+
+go()

@@ -1,17 +1,70 @@
 import FighterFighting from "./fighter-fighting";
-import Direction360 from "../../../types/figher/direction-360";
-import { random } from "../../../helper-functions/helper-functions";
+import { random, getDirectionOfPosition2FromPosition1 } from "../../../helper-functions/helper-functions";
 import Fighter from "../fighter";
 import Flanker from "../../../interfaces/game/fighter/flanker";
 import FlankingPair from "../../../interfaces/game/fighter/flanking-pair";
 import { getDistanceOfEnemyStrikingCenter, closeRange, nearbyRange } from "./proximity";
+import { octagon } from "../../fight/new-octagon";
+import { Angle } from "../../../types/game/angle";
+import { Closeness } from "../../../types/figher/closeness";
 
 export default class Flanking {
   constructor(public fighting: FighterFighting) { }
 
-  retreatFromCorneredDirection: Direction360
+  retreatFromCorneredDirection: Angle
 
-  getRetreatFromFlankedDirection(): Direction360 {
+  determineIfTrapped(){
+    console.log(`${this.fighting.fighter.name} trapped? testx`);
+    const {proximity, movement} = this.fighting
+    const fighterIsBetween2CloseEnemies = this.areNearestFlankersClose()
+    const retreatFromFlankedDirection = this.getRetreatFromFlankedDirection()
+
+    if(fighterIsBetween2CloseEnemies){
+
+      const closestEnemiesSorted = proximity.sortFightersByClosest(proximity.getSurroundingEnemies())
+
+      if(closestEnemiesSorted.length >= 3){
+        const thirdClosestEnemyCoords = closestEnemiesSorted[2].fighting.movement.coords
+        const directionOf3rdClosetEnemy = getDirectionOfPosition2FromPosition1(movement.coords, thirdClosestEnemyCoords)      
+        const retreatFromFlankedIsToward3rdEnemy: boolean = proximity.isDirectionWithinDegreesOfDirection(retreatFromFlankedDirection, 90, directionOf3rdClosetEnemy)
+        const thirdEnemyCloseness: Closeness = proximity.getEnemyCombatCloseness(closestEnemiesSorted[2])
+
+        if(retreatFromFlankedIsToward3rdEnemy && thirdEnemyCloseness <= Closeness['close']){      
+          proximity.trapped = true
+          return
+        }
+      }
+        
+      const directionOfClosestEdge: number = octagon.getDirectionToClosestEdge(movement.coords)
+      const distanceOfEdge = octagon.getDistanceOfClosestEdge(movement.coords)
+      const retreatFromFlankedIsTowardCloseEdge: boolean = proximity.isDirectionWithinDegreesOfDirection(retreatFromFlankedDirection, 90, directionOfClosestEdge)
+      const closestEdgeCloseness = proximity.getClosenessBasedOnDistance(distanceOfEdge)
+
+
+      if(retreatFromFlankedIsTowardCloseEdge && closestEdgeCloseness <= Closeness['striking range'])
+        proximity.trapped = true
+      else        
+        proximity.trapped = false
+
+    }
+    else
+      proximity.trapped = false
+
+      
+
+  }
+
+  areNearestFlankersClose(): boolean{
+    const {proximity} = this.fighting
+    const {flanker1, flanker2} = proximity.flanked.flankingPairs[0]
+    const fighter1Closeness = proximity.getEnemyCombatCloseness(flanker1.fighter)
+    const fighter2Closeness = proximity.getEnemyCombatCloseness(flanker2.fighter)
+
+    return fighter1Closeness <= Closeness['close'] && fighter2Closeness <= Closeness['close']
+
+  }
+
+  getRetreatFromFlankedDirection(): Angle {
 
     const { proximity } = this.fighting
     const { flanker1, flanker2 } = proximity.flanked.flankingPairs[0]
@@ -93,11 +146,13 @@ export default class Flanking {
   }
 
   determineIfFlanked() {
+    
+    console.log(`${this.fighting.fighter.name} flanked? testx`);
     const { proximity, fighter } = this.fighting
 
     const surroundingEnemies: Fighter[] = proximity.getSurroundingEnemies()
 
-    const enemies: Flanker[] = surroundingEnemies.filter(enemy => getDistanceOfEnemyStrikingCenter(enemy, fighter) < nearbyRange).map(enemy => ({
+    const nearbyEnemyFlankers: Flanker[] = surroundingEnemies.filter(enemy => getDistanceOfEnemyStrikingCenter(enemy, fighter) < nearbyRange).map(enemy => ({
       type: 'Fighter',
       name: enemy.name,
       direction: proximity.getDirectionOfEnemyCenterPoint(enemy),
@@ -106,9 +161,9 @@ export default class Flanking {
       coords: enemy.fighting.movement.coords
     }))
 
-    const sortedEnemies = proximity.sortFlankersByClosest(enemies)
+    const sortedEnemies = proximity.sortFlankersByClosest(nearbyEnemyFlankers)
 
-    if(enemies.length < 2){
+    if(nearbyEnemyFlankers.length < 2){
       proximity.flanked = undefined
       return
     }
@@ -144,11 +199,20 @@ export default class Flanking {
       }
     }
 
-    //flankingPairs.push({flanker1: sortedEnemies[0], flanker2: sortedEnemies[1]})
-    //criticality = 1
+    if(
+      flankingPairs.length >= 2 && (
+        (flankingPairs[0].flanker1.name == flankingPairs[1].flanker1.name ||
+        flankingPairs[0].flanker1.name == flankingPairs[1].flanker2.name) &&
+        (flankingPairs[0].flanker2.name == flankingPairs[1].flanker1.name ||
+          flankingPairs[0].flanker2.name == flankingPairs[1].flanker2.name)
+      )
+    )
+      debugger
 
-    if(criticality == 0)
+    if(criticality == 0){
       proximity.flanked = undefined
+      proximity.trapped = false
+    }
     else
       proximity.flanked = {
         flankingPairs,

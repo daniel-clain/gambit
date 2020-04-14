@@ -38,10 +38,10 @@ export default class FighterUiTest extends React.Component{
     const fighterSuperman = new Fighter('Superman')
 
     let fighters = [
-      /* fighterDaniel,
+      /* */fighterDaniel,
       fighterDave ,
       fighterSam, 
-      fighterHyper,*/
+      fighterHyper,
 
       fighterBob,
       fighterFred,

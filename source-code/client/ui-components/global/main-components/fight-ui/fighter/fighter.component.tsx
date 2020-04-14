@@ -24,7 +24,7 @@ export default class FighterComponent extends React.Component<{fighterFightState
 	processedSounds = []
 
 	render() {
-		const {name, coords, modelState, facingDirection, flanked, soundsMade, onRampage, skin, strikingCenters, spirit, repositioning, direction} = this.props.fighterFightState
+		const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, repositioning, direction, trapped} = this.props.fighterFightState
 
 		const soundsToPlay = soundsMade.reduce((soundsToPlay, soundMade) => {
 			if(this.processedSounds.some(sound => sound.time == soundMade.time))
@@ -79,7 +79,7 @@ export default class FighterComponent extends React.Component<{fighterFightState
 		}
 		const fighterModelClass = `fighter__image--${skin.toLocaleLowerCase()}--${modelState.toLocaleLowerCase().split(' ').join('-')}`
 		let flankedStyle
-		if(flanked)
+		if(retreatingFromFlanked)
 			flankedStyle = {
 				bottom: fighterModelImage.dimensions.height - 10,
 			}
@@ -87,6 +87,12 @@ export default class FighterComponent extends React.Component<{fighterFightState
 		let repositioningStyle
 		if(repositioning)
 			repositioningStyle = {
+				bottom: fighterModelImage.dimensions.height - 10,
+			}
+
+		let trappedStyle			
+		if(trapped)
+			trappedStyle = {
 				bottom: fighterModelImage.dimensions.height - 10,
 			}
 
@@ -117,8 +123,9 @@ export default class FighterComponent extends React.Component<{fighterFightState
 
 					}</span>
 				</div>
-				{flanked && <div className='fighter__flanked' style={flankedStyle}></div>}
+				{retreatingFromFlanked && <div className='fighter__flanked' style={flankedStyle}></div>}
 				{repositioning && <div className='fighter__repositioning' style={repositioningStyle}></div>}
+				{trapped && <div className='fighter__trapped' style={trappedStyle}></div>}
 				
 				<div className='fighter__direction' style={directionStyle}></div>
 				<div 

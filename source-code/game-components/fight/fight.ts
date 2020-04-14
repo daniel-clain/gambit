@@ -5,11 +5,12 @@ import gameConfiguration from "../../game-settings/game-configuration"
 import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../helper-functions/helper-functions"
 import Octagon from "./octagon"
 import Coords from '../../interfaces/game/fighter/coords';
-import Direction360 from "../../types/figher/direction-360"
 import { FightReport } from "../../interfaces/game/fight-report"
 import { FightUiData } from "../../interfaces/game/fight-ui-data"
 import Game from "../game"
 import Manager from "../manager"
+import { ManagersBet } from "../../interfaces/game/managers-bet"
+import { Angle } from "../../types/game/angle"
 
 
 
@@ -61,6 +62,20 @@ export default class Fight {
     this.timeRemaining = maxFightDuration
     this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
     this.timesUpTimer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
+  }
+  
+  pauseFight(){
+    if(this.timesUpTimer != 0){
+      clearInterval(this.timeRemainingInterval)
+      clearTimeout(this.timesUpTimer)
+    }
+  }
+
+  unpauseFight(){
+    if(this.timesUpTimer != 0){
+      this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
+      this.timesUpTimer = setTimeout(() => this.timesUp(), this.timeRemaining * 1000)
+    }
   }
 
 
@@ -177,12 +192,13 @@ export default class Fight {
     }
 
     this.fighters.forEach((fighter: Fighter, index) => {
-      let angle: Direction360 = 90 + angleBetweenEachFighter * index as Direction360
+      let angle: Angle = 90 + angleBetweenEachFighter * index
       if(angle >= 360)
         angle -= 360
       fighter.fighting.movement.coords = getPointGivenDistanceAndDirectionFromOtherPoint(centerPoint, distanceFromCenter, angle)
     })
   }
+
 
 
 }
