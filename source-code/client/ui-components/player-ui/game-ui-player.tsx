@@ -6,10 +6,13 @@ import ManagerOptionsUi from './manager-options-ui/manager-options-ui';
 import FightUi from '../global/main-components/fight-ui/fight-ui';
 import { PreFightNews } from '../global/main-components/pre-fight-news/pre-fight-news';
 import PlayerFightUi from './player-fight-ui/player-fight-ui';
+import { DisconnectedPlayerModal } from '../global/partials/disconnected-player-modal';
+import PlayerNameAndId from '../../../interfaces/player-name-and-id';
 
 
 
 interface GameUiProps {
+  player: PlayerNameAndId
   updateCommunicatorUi: IUpdateCommunicatorUi
 }
 
@@ -18,12 +21,16 @@ interface GameUiState{
 }
 
 export default hot(class GameUiPlayer extends React.Component<GameUiProps, GameUiState>{
+
+  clientId: string
+
   state: GameUiState = {
     playerGameUiData: undefined
   }
 
   constructor(props) {
     super(props)
+    this.clientId = localStorage.getItem('clientid')
     const {receivePlayerGameUiData} = this.props.updateCommunicatorUi
     
     receivePlayerGameUiData.subscribe(
@@ -35,28 +42,45 @@ export default hot(class GameUiPlayer extends React.Component<GameUiProps, GameU
   render() {
     if (!this.state.playerGameUiData)
       return <span>loading....</span>
-    const { updateCommunicatorUi } = this.props
-    const { playerManagerUiData, fightUiData, roundStage, preFightNewsUiData } = this.state.playerGameUiData
+    const { updateCommunicatorUi, player } = this.props
+    const { playerManagerUiData, fightUiData, roundStage, preFightNewsUiData, disconnectedPlayerVotes } = this.state.playerGameUiData
+
+    let activeStageView
 
     switch (roundStage) {
 
       case 'Manager Options':
-        return <ManagerOptionsUi {...playerManagerUiData}
+        activeStageView = <ManagerOptionsUi {...playerManagerUiData}
           sendGameAction={updateCommunicatorUi.sendGameAction.bind(updateCommunicatorUi)} />
+          break;
 
       case 'Pre Fight News':
-        return <PreFightNews preFightNewsUiData={preFightNewsUiData}/>
+        activeStageView = <PreFightNews preFightNewsUiData={preFightNewsUiData}/>
+        break;
 
       case 'Fight Day':
-        return <PlayerFightUi fightUiData={fightUiData} />
+        activeStageView = <PlayerFightUi fightUiData={fightUiData} />
+        break;
 
       case 'Post Fight Report':
-        return <div>Post Fight Report</div>
+        activeStageView = <div>Post Fight Report</div>
+        break;
 
       default:
-        return <div>no round stage, something went wrong</div>
+        activeStageView = <div>no round stage, something went wrong</div>
 
     }
+
+    return <>
+      {disconnectedPlayerVotes.length > 0 ?
+        <DisconnectedPlayerModal 
+          disconnectedPlayerVotes={disconnectedPlayerVotes}
+          updateCommunicatorUi={updateCommunicatorUi}
+          player={player}
+        /> : ''
+      }
+      {activeStageView}
+    </>
 
   }
 })

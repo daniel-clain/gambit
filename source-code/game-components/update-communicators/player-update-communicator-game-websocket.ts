@@ -9,16 +9,28 @@ import { PlayerGameUiData } from "../../interfaces/game-ui-state.interface"
 export default class PlayerUpdateCommunicatorGameWebsocket 
 extends PlayerUpdateCommunicatorGame{    
   constructor(
-    private socket: Socket,
+    socket: Socket,
+    public name: string,
+    public id: string,
     game: Game,
     manager: Manager,
     abilityProcessor
   ){
     super(game, manager, abilityProcessor)
-    this.socket.on('Action From Player', this.receivePlayerAction.bind(this))
+    game.disconnectedPlayers.playerDisconnectedSubject.subscribe(this.handleDisconnectedPlayer.bind(this))
+    this.setupSocket(socket)
+  }  
+
+  setupSocket(socket: Socket){
+    socket.on('Action From Player', this.receivePlayerAction.bind(this))
 
     this.sendGameUiStateUpdate.subscribe((playerGameUiData: PlayerGameUiData) => 
-      this.socket.emit('Player Game UI Update', playerGameUiData)
+      socket.emit('Player Game UI Update', playerGameUiData)
     )
-  }  
+  }
+
+  handleDisconnectedPlayer(){
+    this.playerGameUiData.disconnectedPlayerVotes = this.game.disconnectedPlayers.disconnectedPlayerVotes
+    this.sendUpdate()
+  }
 }

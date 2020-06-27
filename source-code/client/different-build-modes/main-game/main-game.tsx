@@ -17,6 +17,9 @@ interface MainGameState{
 
 export default class MainGame extends React.Component<{updateCommunicatorUi: UpdateCommunicatorUiWebsocket}>
 {
+  clientId: string
+  playerName: string
+
   state: MainGameState = {
     isGameDisplay: false,
     mainGameData: undefined
@@ -34,23 +37,23 @@ export default class MainGame extends React.Component<{updateCommunicatorUi: Upd
   
 
   tryToConnectToGameHost(isGameDisplay?: boolean){
-    let name = localStorage.getItem('name')
-    if(!name && !isGameDisplay)
+    this.playerName = localStorage.getItem('name')
+    if(!this.playerName && !isGameDisplay)
       return
 
     if(isGameDisplay){
-      name = 'Game Display'  
+      this.playerName = 'Game Display'  
       this.setState({isGameDisplay})
     }
 
-    let clientId = localStorage.getItem('clientId')
-    if(clientId == null){
-      clientId = new Date().getTime().toString()
-      localStorage.setItem('clientId', clientId)
+    this.clientId = localStorage.getItem('clientId')
+    if(this.clientId == null){
+      this.clientId = new Date().getTime().toString()
+      localStorage.setItem('clientId', this.clientId)
     }
     const connectAction: ClientAction = {      
       name: 'Connect To Game Host',
-      data: {name, id: clientId}    
+      data: {name: this.playerName, id: this.clientId}    
     }    
     this.props.updateCommunicatorUi.sendClientAction(connectAction)
   }
@@ -59,11 +62,18 @@ export default class MainGame extends React.Component<{updateCommunicatorUi: Upd
       return <PreGame tryToConnectToGameHost={this.tryToConnectToGameHost.bind(this)}/>
 
 
-    const {inGame} = this.state.mainGameData
+    const {activeGames} = this.state.mainGameData
+    let clientId = localStorage.getItem('clientId')
+    
+    const inGame = activeGames.some(game => 
+      game.players.some(player => player.id == clientId) &&
+      !game.disconnectedPlayers.some(player => player.id == clientId)
+    )
+
     if(inGame){
       return this.state.isGameDisplay ?
       <GameUiDisplay updateCommunicatorUi={this.props.updateCommunicatorUi} /> :
-      <GameUiPlayer updateCommunicatorUi={this.props.updateCommunicatorUi}/> 
+      <GameUiPlayer player={{name: this.playerName, id: this.clientId}} updateCommunicatorUi={this.props.updateCommunicatorUi}/> 
     }
     
     if(inGame == false)

@@ -20,7 +20,7 @@ export default class PlayerUpdateCommunicatorGame extends UpdateCommunicatorGame
   }
   
   receivePlayerAction( gameAction: ClientGameAction): void {
-    const {data} =  gameAction
+    const {data} = gameAction
     switch( gameAction.name){
       case 'Ability Confirmed': 
         this.handleAbilitySelected(data); break;
@@ -32,6 +32,8 @@ export default class PlayerUpdateCommunicatorGame extends UpdateCommunicatorGame
         this.manager.paybackMoney(data.amount); break;
       case 'Toggle Ready':
         this.manager.readyForNextFight = data.ready; break;
+      case 'Toggle Drop Player':
+        this.game.disconnectedPlayers.playerVoteToggle(data.votingPlayer, data.disconnectedPlayer, data.vote); break;
     }
   }
   private handleAbilitySelected(selectedAbility: AbilityData){

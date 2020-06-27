@@ -18,8 +18,7 @@ function handleConnectingClient(socket: Socket) {
   socket.on('Action From Client', (actionFromClient: ClientPregameAction) => {  
     console.log('Server received action from client');
     if (actionFromClient.name == 'Connect To Game Host') {
-      const connecToGameHostAction = actionFromClient as ConnecToGameHostAction
-      gameHost.handleConnectingClient(connecToGameHostAction.data, socket)
+      gameHost.handleConnectingClient(actionFromClient.data, socket)
     }
   })
 }

@@ -9,19 +9,20 @@ import { AbilityName, AbilityData } from '../game-components/abilities-reformed/
 import RoundStages from '../types/game/round-stages';
 import { ManagerImage } from '../types/game/manager-image';
 import { NewsItem } from '../types/game/news-item';
-import FighterFightState from './game/fighter-fight-state-info';
 import { FightUiData } from './game/fight-ui-data';
 import { Bet } from './game/bet';
 import { PostFightReportItem } from './game/post-fight-report-item';
+import { GameInfo } from './game/game-info';
 
 export interface MainGameData{
-  inGame: boolean
   connectedPlayers: PlayerNameAndId[]
   gameLobbies: GameLobby[]
   globalChat: ChatMessage[]
+  activeGames: GameInfo[]
 }
 
 export interface DisplayGameUiData{
+  disconnectedPlayerVotes: DisconnectedPlayerVote[]
   roundStage: RoundStages
   displayManagerUiData: DisplayManagerUiData
   preFightNewsUiData: PreFightNewsUiData
@@ -29,11 +30,20 @@ export interface DisplayGameUiData{
 }
 
 export interface PlayerGameUiData{
+  disconnectedPlayerVotes: DisconnectedPlayerVote[]
   roundStage: RoundStages
   postFightReportData: PostFightReportData
   playerManagerUiData: PlayerManagerUiData
   preFightNewsUiData: PreFightNewsUiData
   fightUiData: FightUiData
+}
+
+export interface DisconnectedPlayerVote{
+  player: PlayerNameAndId
+  playerVotesToDrop: {
+    drop: boolean,
+    disconnectedPlayer: PlayerNameAndId
+  }[]
 }
 
 

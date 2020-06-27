@@ -43,6 +43,8 @@ export default class FightUi extends React.Component<FightUiProps, FightUiState>
     await wait(400)
     this.setState(({fightExplosionAnimationStage: 'removed '}))
   }
+
+  
   
   render(){
     const {startCountdown, timeRemaining, fighters, report, managersBets} = this.props.fightUiData      

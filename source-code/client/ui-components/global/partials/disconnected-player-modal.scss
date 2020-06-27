@@ -1,0 +1,91 @@
+.disconnected-player-modal{
+  
+  .modal-blackout{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 100000;
+  }
+
+  .modal-content{    
+    width: 400px;
+    background-color: white;
+    padding: 20px;
+    margin: 100px auto 0;
+
+    .heading{
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .details{
+      margin-bottom: 20px;
+    }
+
+    .top-row{
+      
+      display: flex;
+      border-bottom: 2px solid black;
+      background: #ffecec;
+      padding: 10px;
+
+      .top-row-heading{
+        width: 80px;
+        padding-right: 10px;
+        margin-right: 10px;
+        border-right: 2px solid black;
+      }
+  
+      .disconnected-player-names{
+  
+        .disconnected-player-name{
+          display: inline-block;
+          width: 80px;
+        }
+      }
+
+    }
+
+
+    .player-votes{
+      .player-vote-row{
+        border-bottom: 1px solid grey;
+        padding: 10px;
+
+        &--this-player{
+          background-color: #d9e9ff;
+          
+          .player-vote{            
+            box-shadow: 2px 3px 3px #4d4d4d;
+          }
+        }
+
+
+        .player-name{
+          display: inline-block;
+          width: 80px;
+          padding-right: 10px;
+          margin-right: 10px;
+          border-right: 2px solid black;
+        }
+        .player-vote{
+          display: inline-block;
+          padding: 6px 10px;
+
+          &--dont-drop{
+            background: #238523;
+            color: #e0ffe0;
+          }
+          &--drop{
+            background: #852323;
+            color: #ffe0e0;
+          }
+        }
+      }
+    }
+
+  }
+}

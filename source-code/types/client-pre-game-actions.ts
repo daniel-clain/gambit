@@ -1,7 +1,7 @@
 import ClientAction from "../interfaces/client-action"
 import ClientNameAndId from "../interfaces/client-name-and-id.interface"
 
-export type ClientActionNamesPreGame = 'Connect To Game Host' | 'Join Game' | 'Create Game' | 'Cancel Game' | 'Leave Game' | 'Start Game' | 'Ready To Start Game' | 'Submit Global Chat'
+export type ClientActionNamesPreGame = 'Connect To Game Host' | 'Join Game' | 'Create Game' | 'Cancel Game' | 'Leave Game' | 'Start Game' | 'Ready To Start Game' | 'Submit Global Chat' | 'Re-Join Game'
 
 
 export interface ClientPregameAction extends ClientAction{  

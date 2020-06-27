@@ -12,6 +12,7 @@ export default abstract class UpdateCommunicatorGame{
 
   playerGameUiData: PlayerGameUiData = {
     roundStage: 'Manager Options',
+    disconnectedPlayerVotes: [],
     postFightReportData: {
       notifications: []
     },

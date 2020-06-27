@@ -3,7 +3,7 @@ import * as React from 'react';
 import './manager-options-ui.scss'
 import '../../global/styles/manager-options-ui/manager-options-ui-global.scss'
 import { FighterCard, FighterCardProps } from './cards/fighter-card/fighter-card';
-import { EmployeeCard, EmployeeCardProps } from './cards/employee-card/employee-card';
+import { EmployeeCardProps, EmployeeCard } from './cards/employee-card/employee-card';
 import { JobSeekerCard, JobSeekerCardProps } from './cards/job-seeker-card/job-seeker-card';
 import LoanSharkCard, { LoanSharkCardProps } from './cards/loan-shark-card/loan-shark-card';
 import AbilityCard, { AbilityCardProps } from './cards/ability-card/ability-card';

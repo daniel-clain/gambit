@@ -19,7 +19,6 @@ function unpause(){
   paused = false
   unpauseSubject.next()
   pauseButton.innerText = 'Pause'
-
 }
 
 function waitForUnpause(): Promise<void>{

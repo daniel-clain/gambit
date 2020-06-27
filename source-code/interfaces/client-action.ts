@@ -5,6 +5,6 @@ import { ClientActionNamesGame } from "../types/client-game-actions";
 export type ClientActionNames = ClientActionNamesPreGame | ClientActionNamesGame
 
 export default interface ClientAction{
-  name: string
+  name: ClientActionNames
   data: any
 }

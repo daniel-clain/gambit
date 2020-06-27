@@ -1,13 +1,13 @@
 import Game from "../game"
-import UpdateCommunicatorGame from "./update-communicator-game"
 import { Socket } from "socket.io"
 import { DisplayGameUiData, JobSeekerInfo } from "../../interfaces/game-ui-state.interface"
-import { RoundState } from "../../interfaces/game/round-state"
+
 
 export default class DisplayUpdateCommunicatorGameWebsocket{
  
   displayGameUiData: DisplayGameUiData = {    
     roundStage: undefined,
+    disconnectedPlayerVotes: [],
     displayManagerUiData: {      
       roundStage: undefined,
       timeLeft: undefined,
@@ -26,6 +26,9 @@ export default class DisplayUpdateCommunicatorGameWebsocket{
   }
   
   constructor(private socket: Socket, private game: Game){
+    
+    game.disconnectedPlayers.playerDisconnectedSubject.subscribe(this.handleDisconnectedPlayer.bind(this))
+
     game.roundController.roundStateUpdateSubject.subscribe(this.handleManagerUiUpdate.bind(this))
     
     game.roundController.fightUiDataSubject.subscribe(this.handleFightUiUpdate.bind(this))
@@ -33,6 +36,12 @@ export default class DisplayUpdateCommunicatorGameWebsocket{
     game.managers.forEach(manager => 
       manager.managerUpdatedSubject.subscribe(this.handleManagerUiUpdate.bind(this))
     )
+  }
+
+  
+  handleDisconnectedPlayer(){
+    this.displayGameUiData.disconnectedPlayerVotes = this.game.disconnectedPlayers.disconnectedPlayerVotes
+    this.sendUpdate()
   }
 
   handleManagerUiUpdate(){

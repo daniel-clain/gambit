@@ -37,7 +37,7 @@ export default class UpdateCommunicatorUiWebsocket implements IUpdateCommunicato
     this.socket.emit('Action From Client', clientAction)
   }
 
-  sendGameAction( gameAction: ClientGameAction){
+  sendGameAction(gameAction: ClientGameAction){
     this.socket.emit('Action From Player',  gameAction)
   }
 

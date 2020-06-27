@@ -39,16 +39,19 @@ export const setupGame = (game: Game, gameType: GameType, playerInfo: PlayerInfo
   function setupPlayersAndManagers (playerInfo: PlayerInfo[], gameType: GameType) {
     const abilityProcessor: AbilityProcessor = getAbilityProcessor(game)
     game.managers = []
+    game.playersUpdateCommunicatorsWebsocket = []
     game.playersUpdateCommunicators = []
     playerInfo
     .filter(playerInfo => playerInfo.name != 'Game Display')
     .forEach((playerInfo: PlayerInfo, index) => { 
       const {socket, name, id} = playerInfo
-      const playersManager: Manager = new Manager(playerInfo.name, game)
+      const playersManager: Manager = new Manager(playerInfo.id, playerInfo.name, game)
       game.managers.push(playersManager)
       if(gameType == 'Websockets')
-        game.playersUpdateCommunicators.push(new PlayerUpdateCommunicatorGameWebsocket(
+        game.playersUpdateCommunicatorsWebsocket.push(new PlayerUpdateCommunicatorGameWebsocket(
           socket,
+          name,
+          id,
           game,
           playersManager,
           abilityProcessor

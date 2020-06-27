@@ -23,6 +23,9 @@ export default class Fight {
 
   fightFinishedSubject: Subject<FightReport> = new Subject()
   fightUiDataSubject: Subject<FightUiData> = new Subject()  
+
+  unpauseSubject: Subject<void> = new Subject()
+  paused = false
   
 
   private timesUpTimer
@@ -62,20 +65,32 @@ export default class Fight {
     this.timeRemaining = maxFightDuration
     this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
     this.timesUpTimer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
+    if(this.paused)
+      this.pause()
   }
   
-  pauseFight(){
-    if(this.timesUpTimer != 0){
-      clearInterval(this.timeRemainingInterval)
-      clearTimeout(this.timesUpTimer)
-    }
+  
+
+  pause(){
+    clearInterval(this.timeRemainingInterval)
+    clearTimeout(this.timesUpTimer)
+    this.paused = true
   }
 
-  unpauseFight(){
-    if(this.timesUpTimer != 0){
-      this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
-      this.timesUpTimer = setTimeout(() => this.timesUp(), this.timeRemaining * 1000)
-    }
+  unpause(){
+    this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
+    this.timesUpTimer = setTimeout(() => this.timesUp(), this.timeRemaining * 1000)
+    this.paused = false
+    this.unpauseSubject.next()
+  }
+
+  waitForUnpause(): Promise<void>{
+    return new Promise(resolve => {
+      const subscription = this.unpauseSubject.subscribe(() => {
+        subscription.unsubscribe()
+        resolve()
+      })
+    });
   }
 
 

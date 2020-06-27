@@ -52,7 +52,7 @@ export default class Manager{
   managerUpdatedSubject: Subject<ManagerInfo> = new Subject()
   managerErrorSubject: Subject<string> = new Subject()
 
-  constructor(public name: string, private game: Game){}
+  constructor(public id: string, public name: string, private game: Game){}
 
   get info(): ManagerInfo{
     return {

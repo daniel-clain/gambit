@@ -2,7 +2,7 @@
 import { Subject, Subscription } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
-import { ManagerInfo } from "../../manager";
+import Manager, { ManagerInfo } from "../../manager";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stages";
@@ -18,8 +18,9 @@ export default class ManagerOptionsStage implements IStage {
   private timeLeftInterval
   private timesUpTimer
   private duration
+  paused: boolean
 
-  constructor(private game: Game, private roundController: RoundController){
+  constructor(private game: Game){
     this.duration = gameConfiguration.stageDurations.managerOptions
   }
 
@@ -32,6 +33,8 @@ export default class ManagerOptionsStage implements IStage {
     this.timeLeftInterval = setInterval(() => this.timeLeft --, 1000)
     this.timesUpTimer = setTimeout(this.stageFinished.bind(this), this.duration*1000);
     this.allManagersReadySubject.subscribe(this.stageFinished.bind(this))   
+    if(this.paused)
+      this.pause()
   }
 
   set timeLeft(val: number){
@@ -41,6 +44,18 @@ export default class ManagerOptionsStage implements IStage {
 
   get timeLeft(){
     return this._timeLeft
+  }
+  
+  pause(){
+      clearInterval(this.timeLeftInterval)
+      clearTimeout(this.timesUpTimer)
+      this.paused = true
+  }
+
+  unpause(){
+      this.timeLeftInterval = setInterval(() => this.timeLeft--, 1000)
+      this.timesUpTimer = setTimeout(this.stageFinished.bind(this), this.timeLeft*1000);
+      this.paused = false
   }
 
   private stageFinished(){

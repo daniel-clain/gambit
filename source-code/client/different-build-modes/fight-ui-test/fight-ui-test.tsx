@@ -11,8 +11,10 @@ import FightUi from '../../ui-components/global/main-components/fight-ui/fight-u
 
 export default class FighterUiTest extends React.Component{
   state = {
-    fightUiData: null 
+    fightUiData: null
   }
+
+  fight: Fight
 
   componentDidMount(){
     gameConfiguration.stageDurations.maxFightDuration = 10000000
@@ -123,18 +125,37 @@ export default class FighterUiTest extends React.Component{
 
 
 
-    const fight = new Fight(fighters, undefined)
-    fight.fightUiDataSubject.subscribe((fightUiData: FightUiData) => {
+    this.fight = new Fight(fighters, undefined)
+    this.fight.fightUiDataSubject.subscribe((fightUiData: FightUiData) => {
       this.setState({fightUiData})
     })
 
-    fight.start()
+    this.fight.start()
+  }
+
+  
+
+  pause(){
+    this.fight.pause()
+  }
+
+  unpause(){
+    this.fight.unpause()
   }
 
   render(){
     const {fightUiData} = this.state
     if(fightUiData)
-      return <FightUi fightUiData={fightUiData}/>
+      return <>
+      <button onClick={
+        this.fight.paused ? 
+          this.unpause.bind(this) : 
+          this.pause.bind(this)}
+      >
+        {this.fight.paused ? 'Un-Pause' : 'Pause'}
+      </button>
+        <FightUi fightUiData={fightUiData}/>
+      </>
     else
       return <div>loading....</div>
   }

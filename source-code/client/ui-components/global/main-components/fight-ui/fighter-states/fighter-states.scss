@@ -5,16 +5,15 @@
   .fighter-state{    
     margin-bottom: 10px;
     display: grid;
-    grid-template-columns: 80px 1fr;
-    grid-template-rows: 28px 100px;
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 28px 50px;
     padding: 10px;
-    background: #b5b3b369;
+    background: rgba(181, 179, 179, 0.4);
 
     &__name{
       grid-row: 1;
       grid-column: 1;
       text-align: center;
-      font-size: 1.4rem;
     }
     &__image{
       grid-column: 1;

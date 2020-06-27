@@ -18,6 +18,10 @@ export default class FighterActions {
 
   async decideAction(){  
     const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
+    const {fight} = fighter.state
+
+    if(fight.paused)
+      await fight.waitForUnpause()
 
     if(knockedOut || stopFighting){
       console.log(`${fighter.name} did not decide an action`);

@@ -8,17 +8,13 @@ import GameLobby from '../interfaces/game-lobby.interface';
 import ChatMessage from '../interfaces/chat-message.interface';
 import ClientNameAndId from '../interfaces/client-name-and-id.interface';
 import { ClientPregameAction } from '../types/client-pre-game-actions';
+import Game from '../game-components/game';
+import { GameInfo } from '../interfaces/game/game-info';
 
 export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Update'
 
 
 export default class ConnectedClient{
-  private gameHostUiState: MainGameData = {
-    inGame: false,
-    connectedPlayers: [],
-    gameLobbies: [],
-    globalChat: []
-  }
 
 
   constructor(public id, public name, private socket: Socket, private gameHost: GameHost){
@@ -30,7 +26,6 @@ export default class ConnectedClient{
 
 
 
-
   private handleActionFromClient(clientPregameAction: ClientPregameAction){
     const {name, data} = clientPregameAction
     switch(name){
@@ -39,10 +34,17 @@ export default class ConnectedClient{
       case 'Start Game' : this.startGame(data.gameId); break
       case 'Join Game' : this.joinGame(data.gameId); break
       case 'Ready To Start Game' : this.readyToStartGameToggled(data.gameId,data.readyValue); break
+      case 'Re-Join Game' : this.rejoinGame(data.gameId); break
       case 'Leave Game' : this.leaveGame(data.gameId); break 
       case 'Submit Global Chat' : this.submitGlobalMessage(data.message); break 
     }
   }
+
+
+  private rejoinGame(gameId){
+    this.gameHost.playerRejoinGame(gameId, {name: this.name, id: this.id}, this.socket)
+  }
+
   private createGame(){
 
     const gameLobbyClient: GameLobbyClient = {
@@ -85,16 +87,10 @@ export default class ConnectedClient{
   }
 
 
-  private sendMainGameDataToClient(){
-    this.socket.emit('Main Game Data Update', this.gameHostUiState)
+  sendMainGameDataToClient(gameHostUiState: MainGameData){
+    this.socket.emit('Main Game Data Update', gameHostUiState)
   }
 
-  gameHostUiUpdate(connectedClients: ClientNameAndId[], gameLobbies: GameLobby[], globalChat: ChatMessage[]){
-    this.gameHostUiState.connectedPlayers = connectedClients  
-    this.gameHostUiState.gameLobbies = gameLobbies  
-    this.gameHostUiState.globalChat = globalChat    
-    this.sendMainGameDataToClient()
-  }
 
   getPlayerInfo(): PlayerInfo{
     return {
@@ -103,14 +99,6 @@ export default class ConnectedClient{
       id: this.id
     }
   }
-  gameStarted(){
-    this.gameHostUiState.inGame = true     
-    this.sendMainGameDataToClient()
-  }
 
-  gameFinished(){
-    this.gameHostUiState.inGame = false    
-    this.sendMainGameDataToClient()
-  }
 
 }
