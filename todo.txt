@@ -1,3 +1,4 @@
+change test for git
 == High Level Priority ==
 1. make the game convenient to play with mates
 2. refactor the code to be presentable in interviews
