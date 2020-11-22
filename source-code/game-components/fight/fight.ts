@@ -31,7 +31,7 @@ export default class Fight {
   private timesUpTimer
   private timeRemainingInterval
   
-  constructor(public fighters: Fighter[], public game: Game ) {    
+  constructor(public fighters: Fighter[], public managers: Manager[] ) {    
     fighters.forEach(fighter => fighter.getPutInFight(this))
   }
 
@@ -177,7 +177,7 @@ export default class Fight {
       timeRemaining: this.timeRemaining,
       report: this._report,
       fighters: this.fighters.map(fighter => fighter.fighting.getState()),
-      managersBets: !this.game ? undefined : this.game.managers.map((manager: Manager): ManagersBet => {
+      managersBets: this.managers.map((manager: Manager): ManagersBet => {
         return {
           name: manager.name,
           managerImage: manager.image,

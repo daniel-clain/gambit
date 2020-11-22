@@ -32,18 +32,11 @@ export class RoundController {
   postFightReportStage: PostFightReportStage
 
 
-  constructor(private game: Game) {
-    this.managerOptionsStage = new ManagerOptionsStage(game)
+  constructor(private game: Game, public triggerUpdate) {
+    this.managerOptionsStage = new ManagerOptionsStage(this, game.managers)
     this.preFightNewsStage = new PreFightNewsStage(game, this)
-    this.fightDayStage = new FightDayStage(game, this)
+    this.fightDayStage = new FightDayStage(this, game.managers)
     this.postFightReportStage = new PostFightReportStage(game, this)
-
-    merge(
-      this.managerOptionsStage.uIUpdateSubject,
-      this.preFightNewsStage.uIUpdateSubject,
-      this.fightDayStage.uIUpdateSubject,
-      this.postFightReportStage.uIUpdateSubject
-    ).subscribe(() => this.triggerRoundStateUpdate())
   }
 
   startRound(number) {
@@ -55,25 +48,22 @@ export class RoundController {
       .then(() => this.doStage(this.fightDayStage))
       .then(() => this.doStage(this.postFightReportStage))
       .then(() => this.endOfRoundSubject.next())
-      .then(() => doEndOfRoundReset(this.game))
+      .then(() => doEndOfRoundReset(this, this.game.fighters, this.game.professionals))
       .then(() => this.startRound(++number))
   }
 
   doStage(stage: IStage): Promise<any>{    
     console.log(`Stage: ${stage.name}`);
     this.activeStage = stage.name 
-    stage.start()
-    return new Promise(resolve => { 
-      stage.finished.subscribe(() => {
-        resolve()
-      })
-    });
+    
+    return stage.start()
   }
 
   private setUpRound(number) {
     this.roundNumber = number
-    setupNewRound(this.game)
-    updateManagersForNewRound(this.game)
+    const {managers, professionals, fighters} = this.game
+    setupNewRound(this, professionals, fighters, managers)
+    updateManagersForNewRound(this, professionals, fighters, managers)
     return Promise.resolve()
   }
 

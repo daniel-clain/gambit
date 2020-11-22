@@ -66,7 +66,7 @@ export default class DecideActionProbability {
     const { logistics } = this.fighting
 
 
-    let probability = 10
+    let probability = 20
 
     probability += this.getProbabilityForGeneralAttack(closestEnemy)
 
@@ -94,18 +94,29 @@ export default class DecideActionProbability {
       probability += intelligence
     }
 
-    if (isEnemyFacingAway(closestEnemy, fighter)){}
+    if (isEnemyFacingAway(closestEnemy, fighter)){
       probability += intelligence
+      probability += aggression
+    }
 
     if (logistics.enemyHasLowSpirit(closestEnemy))
-      probability += intelligence * 2
+      probability += intelligence
 
     if (logistics.enemyHasLowStamina(closestEnemy)) {
-      probability += 5
+      probability += 6
       probability += aggression
       probability += intelligence
     }
 
+    if(logistics.onARampage)
+      probability += 3
+
+    
+    if (logistics.hasFullSpirit()) {
+      probability += 1
+      probability += aggression
+      probability += intelligence
+    }
 
     if (probability < 0)
       probability = 0
@@ -128,8 +139,10 @@ export default class DecideActionProbability {
 
     probability -= aggression * 3
 
-    if(proximity.trapped)
-      probability -= intelligence * 3
+    if(proximity.trapped){
+      probability -= intelligence
+      probability -= aggression * 2
+    }
 
     if (isEnemyFacingAway(closestEnemy, fighter))
       probability -= intelligence * 8
@@ -143,10 +156,37 @@ export default class DecideActionProbability {
     if (logistics.enemyIsOnARampage(closestEnemy))
       probability + intelligence * 6
 
-    if (closestEnemy.fighting.stats.speed > speed)
-      probability += intelligence * 2
+    if (closestEnemy.fighting.stats.speed > speed + 3){
+      probability += intelligence * 3
+      if(closestEnemy.fighting.logistics.onARampage)
+        probability += intelligence * 2
+    }
+    
+    if (closestEnemy.fighting.stats.aggression > speed + 3){
+      probability += intelligence * 3
+      if(closestEnemy.fighting.logistics.onARampage)
+        probability += intelligence * 2
 
-    if (closestEnemy.fighting.stats.strength > strength)
+    }
+
+    
+    if (closestEnemy.fighting.stats.speed < speed){
+      probability -= intelligence
+      if(closestEnemy.fighting.logistics.onARampage)
+        probability -= intelligence
+
+      if(logistics.hasLowStamina()) {
+        probability -= intelligence * 2
+        
+        if (closestEnemy.fighting.stats.speed < speed - 3){
+          probability -= intelligence * 2
+        }
+      }
+      
+    }
+
+
+    if (rememberedEnemyBehind == null)
       probability += intelligence * 2
 
     
@@ -157,7 +197,7 @@ export default class DecideActionProbability {
     ){
       probability -= intelligence * 2
       if (closestEnemy.fighting.animation.inProgress == 'recovering')
-      probability -= 10 + intelligence * 6
+        probability -= 10 + intelligence * 6
     }
     else    
       probability += intelligence * 4
@@ -203,9 +243,7 @@ export default class DecideActionProbability {
     if (movement.moveActionInProgress == 'move to attack')
       probability += 500
 
-    if (
-      rememberedEnemyBehind &&
-      enemyBehindCloseness)
+    if (rememberedEnemyBehind &&  enemyBehindCloseness)
 
       if (logistics.isARetreatInProgress()) {
         probability += aggression
@@ -225,19 +263,32 @@ export default class DecideActionProbability {
       probability -= 5 + intelligence * 2
 
     if (isEnemyFacingAway(closestEnemy, fighter))
-      probability += intelligence * 3
+      probability += 5 + intelligence * 4 + aggression
 
     if (!logistics.hadActionRecently)
       probability += 10 + aggression * 2
 
     if (logistics.enemyHasLowStamina(closestEnemy)) {
-      probability += aggression * 2
-      probability += intelligence * 2
+      probability += aggression + intelligence * 2 
+      if(logistics.hasFullSpirit())
+        probability += 5
     }
     
     if (closestEnemy.fighting.animation.inProgress == 'recovering'){
       probability += aggression * 2
       probability += intelligence * 2
+      
+      if(logistics.hasFullSpirit())
+        probability += 5
+        
+      if (logistics.enemyHasLowStamina(closestEnemy))
+        probability += intelligence * 2
+
+      if(logistics.hasLowSpirit())
+        probability -= intelligence * 2
+        
+      if(logistics.hasLowStamina())
+        probability -= intelligence * 2
     }
 
       
@@ -324,8 +375,12 @@ export default class DecideActionProbability {
     if (rememberedEnemyBehind === undefined)
       probability -= intelligence * 2
 
-    if (rememberedEnemyBehind !== null && enemyBehindCloseness <= Closeness['nearby'])
-      probability -= intelligence * 2
+    if (rememberedEnemyBehind !== null && enemyBehindCloseness <= Closeness['nearby']){
+      if(rememberedEnemyBehind.fighting.animation.inProgress == 'recovering')
+        probability += intelligence * 2
+      else
+        probability -= intelligence * 2
+    }
 
     if (enemyInfront && enemyInfrontCloseness <= Closeness['nearby'])
       probability -= intelligence * 2
@@ -386,6 +441,13 @@ export default class DecideActionProbability {
       logistics.isEnemyTargetingThisFighter(rememberedEnemyBehind)
     )
       probability -= intelligence * 4
+    else{      
+      if (logistics.hasLowStamina())
+        probability += intelligence
+
+      if (logistics.hasLowSpirit())
+        probability += intelligence
+    }
 
 
     if (
@@ -412,19 +474,14 @@ export default class DecideActionProbability {
     const { proximity, movement, logistics} = this.fighting
     
 
-    const invalid: boolean =
-      (proximity.flanked && proximity.flanked.criticality > 5) ||
-      proximity.allEnemiesAreOnOneSide() ||      
-      proximity.getEnemyCombatCloseness(closestEnemy) == Closeness['striking range'] ||
-      logistics.onARampage ||
-      proximity.trapped
+    const invalid: boolean = logistics.onARampage
     
     if (invalid)
       return 0
 
     let probability = 0
 
-    probability += intelligence * 4
+    probability += intelligence * 6
 
     probability += proximity.getNumberOfEnemiesOnSideWithFewestNumberOfEnemies() * intelligence
 
@@ -436,9 +493,20 @@ export default class DecideActionProbability {
     if (
       movement.moveActionInProgress == 'reposition' ||
       logistics.isARetreatInProgress()
-    )
+    ){
       probability += 500
+    }
+ 
+    if(proximity.flanked && proximity.flanked.criticality > 5){
+      probability -= (100 + intelligence * 10)
+    }
 
+    if(proximity.allEnemiesAreOnOneSide())      
+      probability -= (200 + intelligence * 5)
+
+
+    if (probability < 0)
+      probability = 0
 
     return probability
   }
@@ -455,7 +523,7 @@ export default class DecideActionProbability {
       !!proximity.getNearestEdge() ||       
       logistics.onARampage ||
       logistics.hasFullStamina() ||
-      proximity.trapped
+      movement.moveActionInProgress == 'reposition'
 
     if (invalid)
       return 0
@@ -551,7 +619,7 @@ export default class DecideActionProbability {
       proximity.getEnemyCombatCloseness(closestEnemy) <= Closeness['close'] ||   
       logistics.onARampage ||
       logistics.hasFullStamina() ||
-      proximity.trapped
+      movement.moveActionInProgress == 'reposition'
 
     if (invalid)
       return 0
@@ -707,13 +775,13 @@ export default class DecideActionProbability {
     const { intelligence, speed, aggression } = this.fighting.stats
 
 
-    const invalid: boolean =  
-      proximity.trapped ||
-      logistics.onARampage ||
-      logistics.hasFullStamina()
+    const invalid: boolean =  logistics.onARampage 
 
     if (invalid)
       return 0
+
+    
+    const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
 
     let probability = 0
 
@@ -723,18 +791,32 @@ export default class DecideActionProbability {
     probability -= aggression    
 
 
-    if(logistics.enemyIsOnARampage(closestEnemy))
-      probability += 5 + intelligence * 4
+    if(logistics.enemyIsOnARampage(closestEnemy)){
+      probability += 5
+      if(closestEnemy.fighting.stats.speed < speed)
+        probability += intelligence
+      else
+        probability -= intelligence
+    }
 
 
     if (logistics.hasLowStamina() || logistics.hasLowSpirit())  {
+      if(enemyCloseness <= Closeness['nearby'] && enemyCloseness > Closeness['striking range']){
 
+        if (logistics.hasLowStamina()) {
+          probability += intelligence * 2
+        }
+          
+        if (logistics.hasLowSpirit()) {
+          probability += intelligence * 2
+        }
+      }
       
       if(
         closestEnemy.fighting.animation.inProgress == 'recovering' ||
         closestEnemy.fighting.animation.inProgress == 'doing cooldown'
       ){
-        probability += intelligence * 2
+        probability += intelligence
         probability -= aggression * 2
       }
 
@@ -745,12 +827,12 @@ export default class DecideActionProbability {
       if (logistics.hasLowStamina()) {
         probability += speed
         probability -= aggression
-        probability += (5 + intelligence * 6)
+        probability += (5 + intelligence * 4)
       }
 
       if (logistics.hasLowSpirit()) {
         probability += speed
-        probability += (5 + intelligence * 6)
+        probability += (5 + intelligence *4)
       }
       
       if (isEnemyFacingAway(closestEnemy, fighter))
@@ -759,7 +841,7 @@ export default class DecideActionProbability {
     }
     else {
       probability -= aggression
-
+      probability -= 5
       
     
       if(proximity.getEnemyCombatCloseness(closestEnemy) >= Closeness['nearby'])

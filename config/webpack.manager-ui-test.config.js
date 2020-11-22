@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 var sourceDir = `${__dirname}/../source-code/client/different-build-modes/manager-ui-test`
 
@@ -49,8 +50,8 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js']
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './source-code/client/base.html'
-    })
+    new HtmlWebpackPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new Dotenv()
   ]
 };

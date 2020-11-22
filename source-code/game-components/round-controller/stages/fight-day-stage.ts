@@ -9,41 +9,40 @@ import gameConfiguration from "../../../game-settings/game-configuration";
 import Fighter from "../../fighter/fighter";
 import { ManagerWinnings } from "../../../interfaces/game/manager-winnings";
 import { FightReport } from "../../../interfaces/game/fight-report";
+import { FightUiData } from "../../../interfaces/game/fight-ui-data";
 
 export default class FightDayStage implements IStage {
   name: RoundStages = 'Fight Day'
-  uIUpdateSubject: Subject<void> = new Subject()
-  finished: Subject<void> = new Subject();
+  endStage
   
-  constructor(private game: Game, private roundController: RoundController){}
+  constructor(private roundController: RoundController, private managers: Manager[]){}
 
-  start(): void {
+  start(): Promise<void> {
+    return new Promise(resolve => {
+      this.endStage = resolve
+
+      const {fightUiDataSubject, fightFinishedSubject} = this.roundController.activeFight
+
+
+      this.roundController.activeFight.start()
+
+      
+
+      fightFinishedSubject.subscribe(
+        (fightReport: FightReport) => {
+          console.log('fight finished');
+          this.processManagerBets(fightReport)
+          this.stageFinished()
+        }
+      )
+    })
     
-    this.finished = new Subject();
 
-
-    const {fightUiDataSubject, fightFinishedSubject} = this.roundController.activeFight
-    this.roundController.activeFight.start()
-
-    /* fightStateUpdatedSubject.subscribe(
-      (fightState: FightState) => {
-        this.uIUpdateSubject.next()
-      }
-    ) */
-
-    fightFinishedSubject.subscribe(
-      (fightReport: FightReport) => {
-        console.log('fight finished');
-        this.processManagerBets(fightReport)
-        this.stageFinished()
-      }
-    )
   }
 
   stageFinished(){
-    this.finished.next()
-    this.finished.complete()
     this.resetFighters()
+    this.endStage()
   }
 
   resetFighters() {
@@ -55,7 +54,7 @@ export default class FightDayStage implements IStage {
 
     if (winner) {
       const bonusFromPublicityRating = this.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * 10
-      const managerWinnings: ManagerWinnings[] = this.game.managers.map(
+      const managerWinnings: ManagerWinnings[] = this.managers.map(
         (manager: Manager) => {
           let winnings = 0
           const managersBet: Bet = manager.nextFightBet

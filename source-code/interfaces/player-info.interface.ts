@@ -1,6 +1,9 @@
 import {Socket} from 'socket.io';
-export interface PlayerInfo{
+import Manager from '../game-components/manager';
+export interface Player{
   name: string
   id: string
-  socket: Socket
+  socketObj: Socket
+  gameDisplayId?: string
+  manager?: Manager
 }

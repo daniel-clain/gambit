@@ -2,16 +2,17 @@
   "name": "gambit",
   "version": "1.0.0",
   "scripts": {
-    "single-player-dev": "webpack-dev-server --open --config config/single-player/webpack.single-player-dev.config.js",
-    "single-player-host": "webpack --config config/single-player/webpack.single-player-host.config.js",
     "fight-ui-test": "webpack-dev-server --config config/webpack.fight-ui-test.config.js",
     "compile.fight-ui-test": "webpack --config config/webpack.fight-ui-test.config.js",
-    "manager-ui-test": "webpack-dev-server --config config/webpack.manager-ui-test.config.js",
+    
     "main-game": "nodemon --inspect=0.0.0.0:1234 --require dotenv/config compiled-code/server/server.js ",
     "main-game-client-dev": "webpack-dev-server --config config/main-game/webpack.client.main-game.config.js",
     "main-game-client-host": "webpack --config config/main-game/webpack.client.main-game-host.config.js",
     "compile.server.main-game": "webpack --watch --config config/main-game/webpack.server.main-game.config.js",
-    "test-page": "webpack-dev-server --config config/webpack.test.config.js"
+
+    "NOT ACTIVE single-player-dev": "webpack-dev-server --open --config config/single-player/webpack.single-player-dev.config.js",
+    "NOT ACTIVE single-player-host": "webpack --config config/single-player/webpack.single-player-host.config.js",
+    "NOT ACTIVE manager-ui-test": "webpack-dev-server --config config/webpack.manager-ui-test.config.js"
   },
   "dependencies": {
     "express": "^4.17.1",

@@ -1,4 +1,4 @@
-/* 
+
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import { Subject } from 'rxjs';
@@ -106,4 +106,4 @@ export default class ManagerUiTest extends React.Component {
 }
 
 
-ReactDOM.render(<ManagerUiTest />, document.getElementById('react-rendering-div')) */
+ReactDOM.render(<ManagerUiTest />, document.getElementById('react-rendering-div'))

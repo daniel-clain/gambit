@@ -77,8 +77,10 @@ export default class FighterCombat {
   
         if(attackType == 'critical strike'){
           const chanceToGoOnARampage = random(50)
-          if(chanceToGoOnARampage < this.fighting.stats.aggression * this.fighting.spirit)
+          if(chanceToGoOnARampage < this.fighting.stats.aggression * this.fighting.spirit){
+            proximity.trapped = false
             timers.start('on a rampage')
+          }
         }
         console.log(`${this.fighting.fighter.name} will ${attackType} ${this.fighting.enemyTargetedForAttack.name}`);
         this.fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)

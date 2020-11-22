@@ -19,6 +19,8 @@ import { Employee, JobSeeker } from '../../interfaces/game-ui-state.interface';
 import { dopeFighterServer } from './abilities/dope-fighter';
 import { random } from '../../helper-functions/helper-functions';
 import { ContractOffer, GoalContract } from '../../interfaces/game/contract.interface';
+import { RoundController } from '../round-controller/round-controller';
+import Fighter from '../fighter/fighter';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]

@@ -82,7 +82,10 @@ export default class FighterTimers {
         logistics.onARampage = true
 
         duration = 5000 
-        afterEffect = () => logistics.onARampage = false
+        afterEffect = () => {
+          logistics.onARampage = false
+          proximity.trapped = false
+        }
       }; break
       case 'had action recently': {
         logistics.hadActionRecently = true

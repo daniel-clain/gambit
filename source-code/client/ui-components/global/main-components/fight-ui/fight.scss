@@ -76,6 +76,7 @@ $image-folder: '../../../../images';
         z-index: 500;
         
         .point{
+          display: none;
           width: 4px;
           height: 4px;
           position: absolute;

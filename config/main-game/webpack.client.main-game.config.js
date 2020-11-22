@@ -3,6 +3,9 @@ var webpack = require("webpack");
 var sourceDir = `${__dirname}/../../source-code/client/different-build-modes/main-game`
 var compiledDir = `${__dirname}/../../compiled-code/client/main-game`
 const Dotenv = require('dotenv-webpack');
+
+console.log('Main game client running at localhost:7744')
+
 module.exports = {
   mode: 'development',
   entry: `${sourceDir}/main-game.tsx`,

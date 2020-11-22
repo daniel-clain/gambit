@@ -1,4 +1,60 @@
-change test for git
+
+
+
+fixes
+
+* make log and employees bigger and make know fighters a button
+* fix not losing trapped status
+* news no events for non fighters
+* pros should have description of what they do before you offer contract
+* earn more min moey per num fighters
+* on draw, get 50% of ur money back
+* make base mechanics clear. eg how offering contract can be outbit or rejected, loan shark, how assasings/ thugs have chance of success, how skill level works, brackets after a number mean rounds since info was learnt
+* block assasin from killing non next fight fighter
+* make sure assault and poison make significant effect
+* make less delay attack and response (sound)
+* make fight scene work on portrait phone
+* make landing screen look good on phones
+* make fight scene bets and state all fit and look good
+* make ui scale on all phones
+* make after fight stage in private view show money made/lost and employees gained, fighters about to be lost, loan shark status* look through all for typos
+* initial know fighters should be only fighters in fight
+
+game imporvements
+* number of fights affects intellignce
+* doping perma affects aggression
+* audio for winner, knockout, draw, party music for winnings music and making money, jaws music intensity for loan shark weeks owed, include more loan shark info about paying back small amounts
+* you fight has take a dive ability
+* special mass fighters event
+* make private agent do more
+* make clear win condition
+* bad fighters retire
+
+
+
+
+
+
+
+
+
+
+
+
+
+pause unpause
+* when disconnected player goes back to pregame lobby, they wil see the active game highlighted with a rejoin game button
+* when the player rejoins, there will be a 3 sec countdown before the game resumes
+* drop player toggle
+* when all players leave a game, end the game instance
+
+
+server restart
+* when server restarts, client doesnt know, it still displays last state of last server instance. what should happent is client polls server to see if server ids match, if they dont, client browser refreshes
+*if client pols and theres not server instance, display server not running message. include button to start a server instance
+
+
+
 == High Level Priority ==
 1. make the game convenient to play with mates
 2. refactor the code to be presentable in interviews
@@ -25,6 +81,7 @@ change test for git
 
 3. solve general problems
 * refactor fight-ui to be more logical, simpler, cleaner, separation of concerns, abstraction
+* allow for multiple game displays
 
 
 -------------------------------------------------------

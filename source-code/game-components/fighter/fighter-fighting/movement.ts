@@ -49,14 +49,30 @@ export default class Movement {
         this.movingDirection = getDirectionOfEnemyStrikingCenter(enemy, this.fighting.fighter, moveAction != 'move to attack')
     }
     
-    const faceAwayMoveActions: MoveAction[] = ['fast retreat', 'retreat', 'reposition', 'retreat from flanked', 'retreat around edge']
+    const faceAwayMoveActions: MoveAction[] = ['fast retreat', 'retreat', 'retreat from flanked']
     const moveActionFacesAway = faceAwayMoveActions.some(a => a == moveAction)   
 
     const moveActionFacesToward = ['move to attack', 'cautious retreat'].some(a => a == moveAction)
 
     let interupted: boolean
-    if(moveActionFacesAway && !isFacingAwayFromEnemy(enemy, this.fighting.fighter) ||
-      moveActionFacesToward && isFacingAwayFromEnemy(enemy, this.fighting.fighter))
+    if(
+      (moveActionFacesAway && !isFacingAwayFromEnemy(enemy, this.fighting.fighter))
+      ||
+      (moveActionFacesToward && isFacingAwayFromEnemy(enemy, this.fighting.fighter)) 
+      ||
+      (
+        (
+          moveAction == 'retreat around edge' ||
+          moveAction == 'reposition'
+        ) 
+        && 
+        (
+          (this.fighting.facingDirection == 'left' && this.movingDirection < 180) 
+          ||
+          (this.fighting.facingDirection == 'right' && this.movingDirection >= 180)
+        )
+      )
+    )
       await this.turnAround().catch(() => interupted = true)
 
     if(!interupted)
@@ -201,7 +217,7 @@ export default class Movement {
 
   moveAawayFromEdge(){
     const {proximity} = this.fighting
-    const edge: Edge = proximity.getNearestEdge()
+    const edge: Edge = proximity.getNearestEdge().edgeName
     const coordsOnEdge: Coords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, this.coords)
     this.movingDirection = getDirectionOfPosition2FromPosition1(coordsOnEdge, this.coords)
     this.moveABit()

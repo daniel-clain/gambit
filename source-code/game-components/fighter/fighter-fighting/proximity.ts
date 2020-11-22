@@ -85,7 +85,7 @@ export default class Proximity {
       return this.getRetreatFromCorneredDirection(enemy)
       
     
-    const retreatingAlongEdge: Edge  = this.getNearestEdge()
+    const retreatingAlongEdge: Edge  = this.getNearestEdge().edgeName
     const initialDirection = this.getDirectionOfEnemyCenterPoint(enemy, true)
     const {point1, point2} = octagon.edges[retreatingAlongEdge]
     const direction1 = getDirectionOfPosition2FromPosition1(point1, point2)
@@ -134,7 +134,7 @@ export default class Proximity {
     return distanceFromEdges.filter(distanceFromEdge => distanceFromEdge.distance < strikingRange)
   }
 
-  getNearestEdge(): Edge{
+  getNearestEdge(): {edgeName: Edge, distance: number}{
     const distanceFromEdges: {edgeName: Edge, distance: number}[] = this.getNearEdgesWithDistance()
     
 
@@ -145,7 +145,7 @@ export default class Proximity {
         return nearestEdge
     }, undefined)
 
-    return nearestEdge && nearestEdge.distance < strikingRange ? nearestEdge.edgeName : undefined
+    return nearestEdge && nearestEdge.distance < strikingRange ? nearestEdge : undefined
   }
 
   

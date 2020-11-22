@@ -1,4 +1,4 @@
-import {PlayerInfo} from './../interfaces/player-info.interface';
+import {Player} from './../interfaces/player-info.interface';
 import { Socket } from 'socket.io';
 import { MainGameData } from '../interfaces/game-ui-state.interface';
 import ClientAction from '../interfaces/client-action';
@@ -17,11 +17,11 @@ export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Up
 export default class ConnectedClient{
 
 
-  constructor(public id, public name, private socket: Socket, private gameHost: GameHost){
+  constructor(public id, public name, private socketObject: Socket, private gameHost: GameHost){
 
-    this.socket.on('Action From Client', (clientPregameAction: ClientPregameAction) => this.handleActionFromClient(clientPregameAction))
+    this.socketObject.on('Action From Client', (clientPregameAction: ClientPregameAction) => this.handleActionFromClient(clientPregameAction))
 
-    this.socket.on('disconnect', (reason) => gameHost.clientDisconnected(this, reason))
+    this.socketObject.on('disconnect', (reason) => gameHost.clientDisconnected(this, reason))
   }
 
 
@@ -42,7 +42,7 @@ export default class ConnectedClient{
 
 
   private rejoinGame(gameId){
-    this.gameHost.playerRejoinGame(gameId, {name: this.name, id: this.id}, this.socket)
+    this.gameHost.playerRejoinGame(gameId, {name: this.name, id: this.id}, this.socketObject)
   }
 
   private createGame(){
@@ -88,13 +88,13 @@ export default class ConnectedClient{
 
 
   sendMainGameDataToClient(gameHostUiState: MainGameData){
-    this.socket.emit('Main Game Data Update', gameHostUiState)
+    this.socketObject.emit('Main Game Data Update', gameHostUiState)
   }
 
 
-  getPlayerInfo(): PlayerInfo{
+  getPlayerInfo(): Player{
     return {
-      socket: this.socket,
+      socketObj: this.socketObject,
       name: this.name,
       id: this.id
     }

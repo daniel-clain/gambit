@@ -26,29 +26,28 @@ export default class Flanking {
       if(closestEnemiesSorted.length >= 3){
         const thirdClosestEnemyCoords = closestEnemiesSorted[2].fighting.movement.coords
         const directionOf3rdClosetEnemy = getDirectionOfPosition2FromPosition1(movement.coords, thirdClosestEnemyCoords)      
-        const retreatFromFlankedIsToward3rdEnemy: boolean = proximity.isDirectionWithinDegreesOfDirection(retreatFromFlankedDirection, 90, directionOf3rdClosetEnemy)
+        const retreatFromFlankedIsToward3rdEnemy: boolean = proximity.isDirectionWithinDegreesOfDirection(retreatFromFlankedDirection, 120, directionOf3rdClosetEnemy)
         const thirdEnemyCloseness: Closeness = proximity.getEnemyCombatCloseness(closestEnemiesSorted[2])
 
         if(retreatFromFlankedIsToward3rdEnemy && thirdEnemyCloseness <= Closeness['close']){      
           proximity.trapped = true
+          this.fighting.timers.start('on a rampage')
           return
         }
       }
         
       const directionOfClosestEdge: number = octagon.getDirectionToClosestEdge(movement.coords)
-      const distanceOfEdge = octagon.getDistanceOfClosestEdge(movement.coords)
-      const retreatFromFlankedIsTowardCloseEdge: boolean = proximity.isDirectionWithinDegreesOfDirection(retreatFromFlankedDirection, 90, directionOfClosestEdge)
+       const distanceOfEdge = proximity.getNearestEdge()?.distance
+       if(!distanceOfEdge) return
+      const retreatFromFlankedIsTowardCloseEdge: boolean = proximity.isDirectionWithinDegreesOfDirection(retreatFromFlankedDirection, 120, directionOfClosestEdge)
       const closestEdgeCloseness = proximity.getClosenessBasedOnDistance(distanceOfEdge)
 
 
-      if(retreatFromFlankedIsTowardCloseEdge && closestEdgeCloseness <= Closeness['striking range'])
+      if(retreatFromFlankedIsTowardCloseEdge && closestEdgeCloseness <= Closeness['striking range']){
         proximity.trapped = true
-      else        
-        proximity.trapped = false
-
+        this.fighting.timers.start('on a rampage')
+      }
     }
-    else
-      proximity.trapped = false
 
       
 

@@ -7,21 +7,18 @@ import { NewsItem } from "../../../types/game/news-item";
 import gameConfiguration from "../../../game-settings/game-configuration";
 export default class PreFightNewsStage implements IStage {
   name: RoundStages = 'Pre Fight News'
-  uIUpdateSubject: Subject<void> = new Subject()
-  finished: Subject<void> = new Subject();
+  private endRound
   newsItems: NewsItem[] = []
   
   constructor(private game: Game, private roundController: RoundController){}
 
-  start(): void {
-    this.finished = new Subject();
-    const totalStageDuration = gameConfiguration.stageDurations.eachNewsSlide * 1000 * this.newsItems.length
-    setTimeout(this.stageFinished.bind(this), totalStageDuration)  
+  start(): Promise<void> {
+    return new Promise(resolve => {
+      this.endRound = resolve
+      const totalStageDuration = gameConfiguration.stageDurations.eachNewsSlide * 1000 * this.newsItems.length
+      setTimeout(this.endRound, totalStageDuration)  
+    })
   }
 
-  stageFinished(){
-    this.finished.next()
-    this.finished.complete()
-  } 
   
 };

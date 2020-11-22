@@ -5,12 +5,14 @@ import {Subject} from 'rxjs';
 import {FighterInfo, Employee, Loan, KnownFighter} from '../interfaces/game-ui-state.interface';
 import Fighter from "./fighter/fighter";
 import gameConfiguration from '../game-settings/game-configuration';
-import Game from './game';
 import { AbilityName } from './abilities-reformed/ability';
 import { ActivityLogItem } from '../types/game/activity-log-item';
 import { GoalContract } from '../interfaces/game/contract.interface';
 import { ManagerImage } from '../types/game/manager-image';
 import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
+import ClientAction from '../interfaces/client-action';
+import ClientGameAction from '../types/client-game-actions';
+import { Player } from '../interfaces/player-info.interface';
 
 export interface KnownManager{
   name: string
@@ -32,121 +34,101 @@ export interface ManagerInfo{
   activityLog: ActivityLogItem[]
   image: ManagerImage
 }
-export default class Manager{
-  private _money: number = gameConfiguration.manager.startingMoney
-  private _actionPoints: number = 1
-  fighters: Fighter[] = []
-  knownFighters: KnownFighter[] = []
-  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract']
-  private _nextFightBet: Bet
-  employees: Employee[] = []
-  private _loan: Loan = {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0}
-  private _readyForNextFight: boolean
-  private _retired: boolean
-  private activityLog: ActivityLogItem[] = []  
-  postFightReportItems: PostFightReportItem[] = []
-  
-  image: ManagerImage = 'Fat Man'
 
+export default interface Manager{  
+  name: string
+  money: number
+  abilities: AbilityName[]
+  actionPoints: number
+  fighters: Fighter[]
+  knownFighters: KnownFighter[]
+  loan: Loan
+  nextFightBet: Bet
+  employees: Employee[]
+  readyForNextFight: boolean
+  retired: boolean
+  activityLog: ActivityLogItem[]
+  otherManagers: KnownManager[]
+  image: ManagerImage
+  updateTrigger: Subject<Player>
+  getInfo(): ManagerInfo
+  addToLog(activityLogItem: ActivityLogItem): void
+  postFightReportItems: PostFightReportItem[]
+  receiveUpdate(clientAction: ClientAction)
+}
 
-  managerUpdatedSubject: Subject<ManagerInfo> = new Subject()
-  managerErrorSubject: Subject<string> = new Subject()
+export const createManager = (player): Manager => {
 
-  constructor(public id: string, public name: string, private game: Game){}
+  const manager: Manager = ({
+    name: player.name,
+    readyForNextFight: false,
+    abilities: ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract'],
+    money: gameConfiguration.manager.startingMoney,
+    actionPoints: 1,
+    fighters: [],
+    knownFighters: [],
+    employees: [],
+    activityLog: [],
+    postFightReportItems: [],
+    image: 'Fat Man',
+    nextFightBet: null,
+    otherManagers: [],
+    retired: false,
+    loan: undefined,
+    updateTrigger: new Subject<Player>(),
+    addToLog: function(activityLogItem: ActivityLogItem){    
+      this.activityLog.push(activityLogItem)
+      this.updateTrigger.next(player)
+    },
+    receiveUpdate,
+    getInfo: (): ManagerInfo => {
+      let {fighters, ...rest} = manager
 
-  get info(): ManagerInfo{
-    return {
-      name: this.name,
-      money: this._money,
-      abilities: this.abilities,
-      actionPoints: this._actionPoints,
-      fighters: this.fighters.map(fighter => fighter.getInfo()),
-      knownFighters: this.knownFighters,
-      nextFightBet: this._nextFightBet,
-      employees: this.employees,
-      loan: this._loan,
-      readyForNextFight: this._readyForNextFight,
-      retired: this._retired,
-      otherManagers: this.game.managers
-        .filter(manager => manager.name !== this.name)
-        .map(manager => ({name: manager.name})),
-      activityLog: this.activityLog,
-      image: this.image
+      return { 
+        ...rest, 
+        fighters: fighters.map(f => f.getInfo())
+      }
     }
-  }
 
-  set money(val: number){
-    this._money = val
-    this.sendUpdate()
-  }
-  get money(){
-    return this._money
-  }
-  set actionPoints(val){
-    this._actionPoints = val
-    this.sendUpdate()
-  }
-  get actionPoints(){
-    return this._actionPoints
-  }
+  })
 
-  set nextFightBet(bet: Bet){
-    this._nextFightBet = bet
-    this.sendUpdate()
-  }
-  get nextFightBet(): Bet{
-    return this._nextFightBet
-  }
+  player.manager = manager
+  return manager
 
-  set loan(value: Loan){
-    this._loan = value
-  }
-  get loan(): Loan{
-    return this._loan
-  }
-
-  set readyForNextFight(value: boolean){
-    this._readyForNextFight = value
-    this.sendUpdate()
+  function borrowMoney(amount: number){
+    manager.money += amount
+      this.loan = {
+        ...this.loan, 
+        debt: this.debt += amount,
+        amountPaidBackThisWeek: this.amountPaidBackThisWeek -= amount
+      }
+      manager.updateTrigger.next(player)
+      //addToLog({message: `Borrowed ${amount} from the loan shark`})
   }
   
-  get readyForNextFight(): boolean{
-    return this._readyForNextFight
-  }
-
-  sendUpdate(){
-    this.managerUpdatedSubject.next(this.info)
-  }
-
-
-
-  addToLog(activityLogItem: ActivityLogItem){    
-    this.activityLog.push(activityLogItem)
-    this.sendUpdate()
-  }
-  
-
-
-  borrowMoney(amount: number){
-    this.money += amount
+  function paybackMoney(amount: number){
+    manager.money -= amount
     this.loan = {
-      ...this._loan, 
-      debt: this._loan.debt += amount,
-      amountPaidBackThisWeek: this._loan.amountPaidBackThisWeek -= amount
+      ...this.loan, 
+      debt: this.debt -= amount,
+      amountPaidBackThisWeek: this.amountPaidBackThisWeek += amount
     }
-    this.sendUpdate()
-    //this.addToLog({message: `Borrowed ${amount} from the loan shark`})
-  }
-  paybackMoney(amount: number){
-    this.money -= amount
-    this.loan = {
-      ...this._loan, 
-      debt: this._loan.debt -= amount,
-      amountPaidBackThisWeek: this._loan.amountPaidBackThisWeek += amount
-    }
-    this.sendUpdate()
+    manager.updateTrigger.next(player)
   }
 
+  function receiveUpdate(gameAction: ClientGameAction){
+    console.log('gameAction', gameAction)
+    const {data} = gameAction
+    switch( gameAction.name){
+      case 'Bet On Fighter':
+        manager.nextFightBet = data; break;
+      case 'Borrow Money':
+        borrowMoney(data.amount); break;
+      case 'Payback Money':
+        paybackMoney(data.amount); break;
+      case 'Toggle Ready':
+        manager.readyForNextFight = data.ready; break;
+    }
+  }
 
-  
 }

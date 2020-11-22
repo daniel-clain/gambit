@@ -1,5 +1,4 @@
 
-* when fighters reteat against diagonal, they move out of range of the edge and are no longer flanked, then retread into range of edge, making a zig zag effect, instead make them run paralel to the diagonal edge
 
 * when a fighter walks past an enemy he should remember that that enemy is behind him but he doesnt
 

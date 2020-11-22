@@ -15,8 +15,7 @@ export default class PlayerUpdateCommunicatorGame extends UpdateCommunicatorGame
     private abilityProcessor: AbilityProcessor
   ){
     super(game, manager)
-    this.playerGameUiData.playerManagerUiData.managerInfo = manager.info
-    this.manager.managerUpdatedSubject.subscribe(this.sendUpdate.bind(this))
+    this.playerGameUiData.playerManagerUiData.managerInfo = manager.getInfo()
   }
   
   receivePlayerAction( gameAction: ClientGameAction): void {

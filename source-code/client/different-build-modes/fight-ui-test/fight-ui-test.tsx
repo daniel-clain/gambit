@@ -60,8 +60,8 @@ export default class FighterUiTest extends React.Component{
       fighterAggressive,
       fighterAverage,
 
-      /* fighterStupid,
-      fighterPassive, */
+      fighterStupid,
+      fighterPassive,
 
       //fighterSuperman
     ]
@@ -83,7 +83,6 @@ export default class FighterUiTest extends React.Component{
     fighterIntelligent.fighting.stats.baseIntelligence = 10
     fighterAggressive.fighting.stats.baseAggression = 10
 
-    fighterAverage
     
     fighterAverage.fighting.stats.baseStrength = 5
     fighterAverage.fighting.stats.fitness = 5
@@ -96,9 +95,6 @@ export default class FighterUiTest extends React.Component{
     fighterHyper.fighting.stats.baseAggression = 10
     fighterHyper.fighting.stats.fitness = 10
     
-    fighterPassive.fighting.stats.baseAggression = 1
-    fighterPassive.fighting.stats.baseIntelligence = 1
-    fighterPassive.fighting.stats.baseStrength = 1
 
     fighterDaniel.fighting.stats.baseStrength = 8
     fighterDaniel.fighting.stats.fitness = 8

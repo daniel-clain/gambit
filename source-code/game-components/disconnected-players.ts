@@ -4,7 +4,7 @@ import { DisconnectedPlayerVote } from "../interfaces/game-ui-state.interface"
 import { Subject } from "rxjs"
 import { Socket } from "socket.io"
 
- export default class DisconnectedPlayers {
+ export default class ConnectionManager {
 
   constructor(public game: Game){}
    
@@ -14,11 +14,11 @@ import { Socket } from "socket.io"
 
   
   playerDisconnected(disconnectingPlayer: PlayerNameAndId){
-    this.game.pauseGame()
+    this.game.pause()
 
     if(this.disconnectedPlayers.length == 0){
       this.disconnectedPlayerVotes =
-      this.game.playersUpdateCommunicatorsWebsocket
+      this.game.players
       .filter(player => player.id !== disconnectingPlayer.id)
       .map(player => {
         return  {
@@ -51,16 +51,16 @@ import { Socket } from "socket.io"
   }
   
   playerReconnected(reconnectingPlayer: PlayerNameAndId, socket: Socket){
-    const playersCommunicator = this.game.playersUpdateCommunicatorsWebsocket.find(player => player.id == reconnectingPlayer.id)
+    const player = this.game.players.find(player => player.id == reconnectingPlayer.id)
 
-    playersCommunicator.setupSocket(socket)
+    player.socketObj = socket
     const disconnectedPlayerIndex = this.disconnectedPlayers.findIndex(disconnectedPlayer => disconnectedPlayer.id == reconnectingPlayer.id)
     this.disconnectedPlayers.splice(disconnectedPlayerIndex, 1)
     
 
     if(this.disconnectedPlayers.length == 0){
       this.disconnectedPlayerVotes = []
-      this.game.unPauseGame()
+      this.game.unpause()
     }
     else{
       this.disconnectedPlayerVotes.forEach(playerVotes => {
@@ -124,7 +124,8 @@ import { Socket } from "socket.io"
   }
 
   dropDisconnectedPlayer(droppedPlayer: PlayerNameAndId){
-    const indexOfPlayerCommunicator = this.game.playersUpdateCommunicatorsWebsocket.findIndex(playerCommunicator => playerCommunicator.id == droppedPlayer.id)
+    /* const player = this.game.playersUpdateCommunicatorsWebsocket.findIndex(playerCommunicator => playerCommunicator.id == droppedPlayer.id)
+
     this.game.playersUpdateCommunicatorsWebsocket.splice(indexOfPlayerCommunicator, 1)
 
     const disconnectedPlayerIndex = this.disconnectedPlayers.findIndex(disconnectedPlayer => disconnectedPlayer.id == droppedPlayer.id)
@@ -142,7 +143,7 @@ import { Socket } from "socket.io"
     if(this.disconnectedPlayers.length == 0){
       this.disconnectedPlayerVotes = []
       this.game.unPauseGame()
-    }
+    } */
 
   }
 
