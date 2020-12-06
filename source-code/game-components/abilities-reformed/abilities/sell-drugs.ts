@@ -5,6 +5,7 @@ import Game from "../../game"
 const sellDrugs: Ability = {
   name: 'Sell Drugs',
   cost: { money: 200, actionPoints: 1 },
+  possibleSources: ['Drug Dealer'],
   possibleTargets: [],
   executes: 'End Of Round',
   canOnlyTargetSameTargetOnce: false

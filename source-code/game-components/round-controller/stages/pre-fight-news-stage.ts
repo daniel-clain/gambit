@@ -2,7 +2,7 @@ import IStage from "../../../interfaces/game/stage";
 import { Subject } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
-import RoundStages from "../../../types/game/round-stages";
+import RoundStages from "../../../types/game/round-stage.type";
 import { NewsItem } from "../../../types/game/news-item";
 import gameConfiguration from "../../../game-settings/game-configuration";
 export default class PreFightNewsStage implements IStage {

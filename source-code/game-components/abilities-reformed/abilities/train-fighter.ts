@@ -4,12 +4,13 @@ import Fighter from "../../fighter/fighter"
 import { random } from "../../../helper-functions/helper-functions"
 import Manager from "../../manager"
 import SkillLevel from "../../../types/game/skill-level.type"
-import { Employee } from "../../../interfaces/game-ui-state.interface"
+import { Employee } from "../../../interfaces/server-game-ui-state.interface"
 
 
 const trainFighter: Ability = {
   name: 'Train Fighter',
   cost: { money: 5, actionPoints: 1 },
+  possibleSources: ['Manager', 'Trainer'],
   possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true

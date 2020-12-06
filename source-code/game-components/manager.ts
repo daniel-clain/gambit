@@ -2,12 +2,11 @@
 
 import {Bet} from '../interfaces/game/bet';
 import {Subject} from 'rxjs';
-import {FighterInfo, Employee, Loan, KnownFighter} from '../interfaces/game-ui-state.interface';
+import {FighterInfo, Employee, Loan} from '../interfaces/server-game-ui-state.interface';
 import Fighter from "./fighter/fighter";
 import gameConfiguration from '../game-settings/game-configuration';
 import { AbilityName } from './abilities-reformed/ability';
 import { ActivityLogItem } from '../types/game/activity-log-item';
-import { GoalContract } from '../interfaces/game/contract.interface';
 import { ManagerImage } from '../types/game/manager-image';
 import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
 import ClientAction from '../interfaces/client-action';
@@ -16,22 +15,24 @@ import { Player } from '../interfaces/player-info.interface';
 
 export interface KnownManager{
   name: string
+  activityLogs: ActivityLogItem[]
+  image: ManagerImage
 }
 
-export interface ManagerInfo{
+export interface ManagerInfo extends KnownManager{
   name: string
   money: number
   abilities: AbilityName[]
   actionPoints: number
-  fighters: FighterInfo[]
-  knownFighters: KnownFighter[]
+  yourFighters: FighterInfo[]
+  knownFighters: FighterInfo[]
   loan: Loan
   nextFightBet: Bet
   employees: Employee[]
   readyForNextFight: boolean
   retired: boolean
   otherManagers: KnownManager[]
-  activityLog: ActivityLogItem[]
+  activityLogs: ActivityLogItem[]
   image: ManagerImage
 }
 
@@ -41,13 +42,13 @@ export default interface Manager{
   abilities: AbilityName[]
   actionPoints: number
   fighters: Fighter[]
-  knownFighters: KnownFighter[]
+  knownFighters: FighterInfo[]
   loan: Loan
   nextFightBet: Bet
   employees: Employee[]
   readyForNextFight: boolean
   retired: boolean
-  activityLog: ActivityLogItem[]
+  activityLogs: ActivityLogItem[]
   otherManagers: KnownManager[]
   image: ManagerImage
   updateTrigger: Subject<Player>
@@ -68,16 +69,16 @@ export const createManager = (player): Manager => {
     fighters: [],
     knownFighters: [],
     employees: [],
-    activityLog: [],
+    activityLogs: [],
     postFightReportItems: [],
     image: 'Fat Man',
     nextFightBet: null,
     otherManagers: [],
     retired: false,
-    loan: undefined,
+    loan: {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0},
     updateTrigger: new Subject<Player>(),
     addToLog: function(activityLogItem: ActivityLogItem){    
-      this.activityLog.push(activityLogItem)
+      this.activityLogs.push(activityLogItem)
       this.updateTrigger.next(player)
     },
     receiveUpdate,
@@ -86,7 +87,7 @@ export const createManager = (player): Manager => {
 
       return { 
         ...rest, 
-        fighters: fighters.map(f => f.getInfo())
+        yourFighters: fighters.map(f => f.getInfo())
       }
     }
 
@@ -97,10 +98,10 @@ export const createManager = (player): Manager => {
 
   function borrowMoney(amount: number){
     manager.money += amount
-      this.loan = {
-        ...this.loan, 
-        debt: this.debt += amount,
-        amountPaidBackThisWeek: this.amountPaidBackThisWeek -= amount
+    manager.loan = {
+        ...manager.loan, 
+        debt: manager.loan.debt += amount,
+        amountPaidBackThisWeek: manager.loan.amountPaidBackThisWeek -= amount
       }
       manager.updateTrigger.next(player)
       //addToLog({message: `Borrowed ${amount} from the loan shark`})
@@ -108,10 +109,10 @@ export const createManager = (player): Manager => {
   
   function paybackMoney(amount: number){
     manager.money -= amount
-    this.loan = {
-      ...this.loan, 
-      debt: this.debt -= amount,
-      amountPaidBackThisWeek: this.amountPaidBackThisWeek += amount
+    manager.loan = {
+      ...manager.loan, 
+      debt: manager.loan.debt -= amount,
+      amountPaidBackThisWeek: manager.loan.amountPaidBackThisWeek += amount
     }
     manager.updateTrigger.next(player)
   }

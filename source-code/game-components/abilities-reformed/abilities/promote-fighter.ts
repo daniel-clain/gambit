@@ -1,11 +1,12 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
-import { Professional, Employee } from "../../../interfaces/game-ui-state.interface"
+import { Professional, Employee } from "../../../interfaces/server-game-ui-state.interface"
 
 
 const promoteFighter: Ability = {
   name: 'Promote Fighter',
   cost: { money: 30, actionPoints: 1 },
+  possibleSources: ['Promoter'],
   possibleTargets: ['fighter owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true

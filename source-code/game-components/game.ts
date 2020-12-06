@@ -2,7 +2,7 @@
 import { RoundController } from "./round-controller/round-controller"
 import Fighter from "./fighter/fighter"
 import Manager, { createManager } from "./manager"
-import { Professional, PlayerGameUiData } from "../interfaces/game-ui-state.interface"
+import { Professional, ServerGameUIState } from "../interfaces/server-game-ui-state.interface"
 import { Player } from "../interfaces/player-info.interface"
 import { GameType } from "../types/game/game-type"
 import { GameInfo } from "../interfaces/game/game-info"
@@ -32,6 +32,8 @@ export interface Game_External_Interface{
   unpause()
   shutdown()
   getInfo()
+  getGameUiState(player: Player): ServerGameUIState
+
 }
 
 interface Game extends Game_External_Interface{
@@ -46,10 +48,10 @@ interface Game extends Game_External_Interface{
 
 export function createGame(
   {players, gameType, gameDisplays}: Game_Props
-): Game_External_Interface {
+): Game {
 
  
-  const messageSender = GameMessageSender(players, getGameUiState)
+  const messageSender = GameMessageSender(players, this)
 
   const game: Game = {
     id: new Date().getTime().toString(),   
@@ -64,6 +66,7 @@ export function createGame(
     unpause,
     shutdown,
     getInfo,
+    getGameUiState,
     connectionManager: null,
     roundController: null,
     abilityProcessor: null,
@@ -89,7 +92,7 @@ export function createGame(
   }
 
   
-  function getGameUiState(player: Player): PlayerGameUiData {
+  function getGameUiState(player: Player): ServerGameUIState{
     let {roundState, activeStage, preFightNewsStage} = game.roundController
     let {activeFight, managerOptionsTimeLeft, jobSeekers} = roundState
 
@@ -102,7 +105,7 @@ export function createGame(
         managerOptionsTimeLeft,
         jobSeekers,
         nextFightFighters: activeFight.fighters
-          .map(fighter => fighter.name),
+          .map(fighter => fighter.getInfo()),
         delayedExecutionAbilities: []
       },
       preFightNewsUiData: {newsItems: preFightNewsStage.newsItems},
@@ -142,14 +145,7 @@ export function createGame(
     
 
     
-  return {
-    id: game.id,
-    players: game.players,
-    gameType: game.gameType,
-    paused: game.paused,
-    getInfo, pause, unpause, shutdown,    
-    connectionManager
-  }
+  return game
   
 }
 

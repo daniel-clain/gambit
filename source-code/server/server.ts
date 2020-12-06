@@ -15,7 +15,7 @@ function handleConnectingClient(socket: Socket) {
 
   console.log('A client connected to the websocket server');
 
-  socket.on('Action From Client', (actionFromClient: ClientPregameAction) => {  
+  socket.on('To Server From Client', (actionFromClient: ClientPregameAction) => {  
     console.log('Server received action from client');
     if (actionFromClient.name == 'Connect To Game Host') {
       gameHost.handleConnectingClient(actionFromClient.data, socket)

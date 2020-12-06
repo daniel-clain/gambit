@@ -1,11 +1,12 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
-import { Employee } from "../../../interfaces/game-ui-state.interface"
+import { Employee } from "../../../interfaces/server-game-ui-state.interface"
 
 
 const guardFighter: Ability = {
   name: 'Guard Fighter',
   cost: { money: 5, actionPoints: 1 },
+  possibleSources: ['Thug'],
   possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
   executes: 'Instantly',
   canOnlyTargetSameTargetOnce: false

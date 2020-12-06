@@ -9,6 +9,7 @@ import Game from "../game";
 export interface Ability {
   name: AbilityName
   cost: Cost
+  possibleSources: AbilitySourceType[]
   possibleTargets: AbilityTargetType[]
   executes: ExecutesWhenOptions 
   canOnlyTargetSameTargetOnce: boolean
@@ -52,9 +53,11 @@ export type AbilityName =
 'Poison Fighter' |
 'Do Surveillance' |
 'Dope Fighter' |
-'Sue Manager' |
+'Prosecute Manager' |
 'Offer Contract' |
 'Sell Drugs' |
 'Gather Evidence' |
 'Murder Fighter' |
-'Promote Fighter'
+'Promote Fighter' |
+'Prepare For Prosecution' |
+'Try To Win'

@@ -1,6 +1,6 @@
 import Game from "./game"
 import PlayerNameAndId from "../interfaces/player-name-and-id"
-import { DisconnectedPlayerVote } from "../interfaces/game-ui-state.interface"
+import { DisconnectedPlayerVote } from "../interfaces/server-game-ui-state.interface"
 import { Subject } from "rxjs"
 import { Socket } from "socket.io"
 

@@ -3,12 +3,13 @@ import Game from "../../game"
 import Manager from "../../manager"
 import { ActiveContract, ContractOffer } from "../../../interfaces/game/contract.interface"
 import Fighter from "../../fighter/fighter"
-import { JobSeeker, Employee } from "../../../interfaces/game-ui-state.interface"
+import { JobSeeker, Employee } from "../../../interfaces/server-game-ui-state.interface"
 
 
 const offerContract: Ability = {
   name: 'Offer Contract',
   cost: { money: 0, actionPoints: 1 },
+  possibleSources: ['Manager', 'Talent Scout'],
   possibleTargets: ['job seeker'],
   executes: 'End Of Round',
   canOnlyTargetSameTargetOnce: true

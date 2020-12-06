@@ -1,7 +1,7 @@
 import Game from "../game";
 import Manager from "../manager";
 import Fighter from "../fighter/fighter";
-import { Employee, KnownFighter, KnownFighterStatValue, FighterInfo, Professional } from "../../interfaces/game-ui-state.interface";
+import { Employee, FighterInfo, KnownFighterStatValue, Professional } from "../../interfaces/server-game-ui-state.interface";
 import { loanSharkSettings } from "../../game-settings/loan-shark-settings";
 import { random } from "../../helper-functions/helper-functions";
 import { RoundController } from "./round-controller";
@@ -46,15 +46,14 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
       manager.knownFighters.push({
         name: fighter.name,
         goalContract: fighter.state.goalContract,
-        knownStats: {
-          strength: {lastKnownValue: strength, roundsSinceUpdated: 0},
-          fitness: {lastKnownValue: fitness, roundsSinceUpdated: 0},
-          intelligence: {lastKnownValue: intelligence, roundsSinceUpdated: 0},
-          aggression: {lastKnownValue: aggression, roundsSinceUpdated: 0},
-          manager: {lastKnownValue: undefined, roundsSinceUpdated: 0},
-          numberOfFights: {lastKnownValue: numberOfFights, roundsSinceUpdated: 0},
-          numberOfWins: {lastKnownValue: numberOfWins, roundsSinceUpdated: 0}
-        }
+        strength: {lastKnownValue: strength, roundsSinceUpdated: 0},
+        fitness: {lastKnownValue: fitness, roundsSinceUpdated: 0},
+        intelligence: {lastKnownValue: intelligence, roundsSinceUpdated: 0},
+        aggression: {lastKnownValue: aggression, roundsSinceUpdated: 0},
+        manager: {lastKnownValue: undefined, roundsSinceUpdated: 0},
+        numberOfFights: {lastKnownValue: numberOfFights, roundsSinceUpdated: 0},
+        numberOfWins: {lastKnownValue: numberOfWins, roundsSinceUpdated: 0},
+        activeContract: undefined
       })
     })
   }
@@ -91,10 +90,10 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
     })
   }
 
-  function updateNumberOfRoundsForKnowFighterStats(knownFighters: KnownFighter[]){
+  function updateNumberOfRoundsForKnowFighterStats(knownFighters: FighterInfo[]){
     knownFighters.forEach(knownFighter => {
-      for(let key in knownFighter.knownStats){
-        let stat: KnownFighterStatValue = knownFighter.knownStats[key]
+      for(let key in knownFighter){
+        let stat: KnownFighterStatValue = knownFighter[key]
         if(stat)
           stat.roundsSinceUpdated ++
       }
@@ -121,15 +120,14 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
           manager.knownFighters.push({
             name: roundFighter.name,
             goalContract: roundFighter.goalContract,
-            knownStats: {
-              strength: undefined,
-              fitness: undefined,
-              intelligence: undefined,
-              aggression: undefined,
-              manager: undefined,
-              numberOfFights: undefined,
-              numberOfWins: undefined
-            }
+            strength: undefined,
+            fitness: undefined,
+            intelligence: undefined,
+            aggression: undefined,
+            manager: undefined,
+            numberOfFights: undefined,
+            numberOfWins: undefined,
+            activeContract: undefined
           })
         else{
           manager.knownFighters = manager.knownFighters.map(knownFighter => {

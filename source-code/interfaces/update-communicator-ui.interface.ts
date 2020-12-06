@@ -1,5 +1,5 @@
 import { Subject } from "rxjs";
-import { PlayerGameUiData, DisplayGameUiData } from "./game-ui-state.interface";
+import { PlayerGameUiData, DisplayGameUiData } from "./server-game-ui-state.interface";
 import ClientGameAction from "../types/client-game-actions";
 
 

@@ -1,6 +1,6 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
-import { Employee } from "../../../interfaces/game-ui-state.interface"
+import { Employee } from "../../../interfaces/server-game-ui-state.interface"
 import Manager from "../../manager"
 import { random } from "../../../helper-functions/helper-functions"
 
@@ -8,6 +8,7 @@ import { random } from "../../../helper-functions/helper-functions"
 const poisonFighter: Ability = {
   name: 'Poison Fighter',
   cost: { money: 150, actionPoints: 1 },
+  possibleSources: ['Private Agent', 'Hitman'],
   possibleTargets: ['fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: false

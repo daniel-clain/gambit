@@ -1,6 +1,6 @@
 
 import FighterState from "./fighter-state";
-import { FighterInfo } from '../../interfaces/game-ui-state.interface';
+import { FighterInfo } from '../../interfaces/server-game-ui-state.interface';
 import Fight from '../fight/fight';
 import FighterFighting from './fighter-fighting/fighter-fighting';
 import { Skin } from '../../types/figher/skin';

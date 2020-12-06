@@ -2,7 +2,7 @@
 import { ActiveContract, GoalContract } from '../../interfaces/game/contract.interface';
 import Manager from '../manager';
 import Fight from "../fight/fight";
-import { Employee } from '../../interfaces/game-ui-state.interface';
+import { Employee } from '../../interfaces/server-game-ui-state.interface';
 import Fighter from './fighter';
 
 

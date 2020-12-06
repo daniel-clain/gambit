@@ -6,5 +6,5 @@ export type ClientActionNames = ClientActionNamesPreGame | ClientActionNamesGame
 
 export default interface ClientAction{
   name: ClientActionNames
-  data: any
+  data?: any
 }

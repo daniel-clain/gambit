@@ -5,6 +5,7 @@ import Game from "../../game"
 const gatherEvidence: Ability = {
   name: 'Gather Evidence',
   cost: { money: 20, actionPoints: 1 },
+  possibleSources: ['Private Agent'],
   possibleTargets: ['opponent manager'],
   executes: 'End Of Round',
   canOnlyTargetSameTargetOnce: true,

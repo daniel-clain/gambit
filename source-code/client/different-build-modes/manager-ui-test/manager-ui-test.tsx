@@ -11,7 +11,6 @@ import { RoundController } from '../../../game-components/round-controller/round
 
 const mockGame = {
   roundController: {
-    roundStateUpdateSubject: new Subject(),
     endOfRoundSubject: new Subject(),
     endOfManagerOptionsStageSubject: new Subject()
   } as RoundController
@@ -24,7 +23,7 @@ const mockManager = {
 
 class MockUpdateCommunicatorGame extends UpdateCommunicatorGame {
   constructor() {
-    super(mockGame)
+    super(mockGame, null)
   }
 }
 
@@ -40,7 +39,7 @@ const managerUiState: ManagerUiState = {
     money: 500,
     actionPoints: 2,
     otherManagers: [{name: 'Manager Dave'}],
-    activityLog: [],
+    activityLogs: [],
     fighters: [],
     knownFighters: [      
       {

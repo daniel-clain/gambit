@@ -1,7 +1,7 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData, AbilitySourceInfo } from "../ability"
 
 import Game from "../../game"
-import { KnownFighter, FighterInfo, Employee, KnownFighterStatValue } from "../../../interfaces/game-ui-state.interface"
+import { KnownFighter, FighterInfo, Employee, KnownFighterStatValue } from "../../../interfaces/server-game-ui-state.interface"
 import Manager from "../../manager"
 import SkillLevel from "../../../types/game/skill-level.type"
 import { AbilitySourceType } from "../../../types/game/ability-source-type"
@@ -11,6 +11,7 @@ import { random } from "../../../helper-functions/helper-functions"
 const researchFighter: Ability = {
   name: 'Research Fighter',
   cost: { money: 5, actionPoints: 1 },
+  possibleSources: ['Manager', 'Private Agent', 'Talent Scout'],
   possibleTargets: ['fighter not owned by manager'],
   executes: 'Instantly',
   canOnlyTargetSameTargetOnce: false

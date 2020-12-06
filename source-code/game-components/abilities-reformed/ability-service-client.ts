@@ -10,11 +10,11 @@ import { offerContractClient } from "./abilities/offer-contract"
 import { poisonFighterClient } from "./abilities/poison-fighter"
 import { promoteFighterClient } from "./abilities/promote-fighter"
 import { sellDrugsClient } from "./abilities/sell-drugs"
-import { sueManagerClient } from "./abilities/sue-manager"
+import { prosecuteManagerClient } from "./abilities/prosecute-manager"
 import { trainFighterClient } from "./abilities/train-fighter"
-import { Employee, JobSeeker } from "../../interfaces/game-ui-state.interface"
+import { Employee, JobSeeker } from "../../interfaces/server-game-ui-state.interface"
 import { dopeFighterClient } from "./abilities/dope-fighter"
-import Game from "../game"
+import {tryToWinGameClient} from './abilities/try-to-win-game'
 import { ManagerInfo } from "../manager"
 
 interface AbilityServiceClient {
@@ -48,9 +48,10 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
     promoteFighterClient,
     researchFighterClient,
     sellDrugsClient,
-    sueManagerClient,
+    prosecuteManagerClient,
     trainFighterClient,
-    dopeFighterClient
+    dopeFighterClient,
+    tryToWinGameClient
   ]
 
   const getPossibleSources = (ability: ClientAbility, managerInfo: ManagerInfo): AbilitySourceInfo[] => {
@@ -135,7 +136,7 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
       !clientAbility.possibleTargets.includes('fighter not owned by manager')
 
     )
-      if (managerInfo.fighters.length == 0)
+      if (managerInfo.yourFighters.length == 0)
         return false
 
     if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
@@ -209,7 +210,7 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
   function getPossibleTargets(clientAbility: ClientAbility, managerInfo: ManagerInfo, jobSeekers: JobSeeker[]): AbilityTargetInfo[] {
     const targetList: AbilityTargetInfo[] = []
     if (clientAbility.possibleTargets.includes('fighter owned by manager'))
-      targetList.push(...managerInfo.fighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter owned by manager' })))
+      targetList.push(...managerInfo.yourFighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter owned by manager' })))
     if (clientAbility.possibleTargets.includes('fighter not owned by manager'))
       targetList.push(...managerInfo.knownFighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter not owned by manager' })))
     if (clientAbility.possibleTargets.includes('opponent manager'))

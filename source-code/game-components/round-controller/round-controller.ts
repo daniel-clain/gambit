@@ -1,7 +1,7 @@
 import { Subject, merge } from 'rxjs';
-import RoundStages from '../../types/game/round-stages';
+import RoundStages from '../../types/game/round-stage.type';
 import Fight from '../fight/fight';
-import { JobSeeker } from '../../interfaces/game-ui-state.interface';
+import { JobSeeker } from '../../interfaces/server-game-ui-state.interface';
 import Game from '../game';
 import ManagerOptionsStage from './stages/manager-options-stage';
 import PreFightNewsStage from './stages/pre-fight-news-stage';
@@ -22,7 +22,6 @@ export class RoundController {
   lastFightFighters: string[] = []
 
   fightUiDataSubject: Subject<void> = new Subject()
-  roundStateUpdateSubject: Subject<RoundState> = new Subject()
   endOfRoundSubject: Subject<void> = new Subject()
   endOfManagerOptionsStageSubject: Subject<void> = new Subject()
 
@@ -69,15 +68,12 @@ export class RoundController {
 
   set activeStage(val){
     this._activeStage = val
-    this.triggerRoundStateUpdate()
+    this.game.messageSender.triggerUpdate()
   }
   get activeStage(){
     return this._activeStage
   }
 
-  triggerRoundStateUpdate(){
-    this.roundStateUpdateSubject.next(this.roundState)
-  }
 
 
   get roundState(): RoundState {

@@ -1,5 +1,5 @@
 import IStage from "../../../interfaces/game/stage";
-import RoundStages from "../../../types/game/round-stages";
+import RoundStages from "../../../types/game/round-stage.type";
 import { Subject } from "rxjs";
 import Game from "../../game";
 import { RoundController } from "../round-controller";
@@ -42,6 +42,9 @@ export default class FightDayStage implements IStage {
 
   stageFinished(){
     this.resetFighters()
+    if(!this.endStage){
+      debugger
+    }
     this.endStage()
   }
 

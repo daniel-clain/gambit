@@ -1,32 +1,26 @@
 
 import ConnectedClient from './connected-client';
-import GameLobbyClient from '../interfaces/game-lobby-client.interface';
+import GameCandidateClient from '../interfaces/game-candidate-client.interface';
 import ClientNameAndId from '../interfaces/client-name-and-id.interface';
 import ChatMessage from '../interfaces/chat-message.interface';
-import GameLobby from '../interfaces/game-lobby.interface';
 import { Player } from '../interfaces/player-info.interface';
-import Game, { createGame, Game_External_Interface } from "../game-components/game";
+import Game, { createGame } from "../game-components/game";
 import { Socket } from 'socket.io';
-import PlayerUpdateCommunicatorGameWebsocket from '../game-components/update-communicators/player-update-communicator-game-websocket';
-import PlayerUpdateCommunicatorGame from '../game-components/update-communicators/player-update-communicator-game';
-import { GameInfo } from '../interfaces/game/game-info';
-import { MainGameData } from '../interfaces/game-ui-state.interface';
+
 import PlayerNameAndId from '../interfaces/player-name-and-id';
+import { LobbyUiState } from '../client/front-end-state/front-end-state';
+import GameCandidate from '../interfaces/game-candidate.interface';
+import { GameInfo } from '../interfaces/game/game-info';
+
 
 
 export default class GameHost{
-  private connectedClients: ConnectedClient[] = []
-  private gameLobbies: GameLobby[] = []
-  private activeGames: Game_External_Interface[] = []
-  private globalChat: ChatMessage[] = []
 
   
-  private gameHostUiState: MainGameData = {
-    connectedPlayers: [],
-    gameLobbies: [],
-    globalChat: [],
-    activeGames: []
-  }
+  connectedClients: ConnectedClient[] = []
+  gameCandidates: GameCandidate[] = []
+  globalChat: ChatMessage[] = []
+  activeGames: Game[] = []
 
 
   handleConnectingClient(clientNameAndId: ClientNameAndId, socket: Socket){
@@ -36,7 +30,7 @@ export default class GameHost{
     if(id == undefined)
       throw 'connecting client id undefined'
 
-    if(this.connectedClients.some(
+    if(this.connectedClients?.some(
       (client: ConnectedClient) => client.id == id)){
       console.log('error: connecting player id already exists');
       return
@@ -55,102 +49,102 @@ export default class GameHost{
       this.connectedClients.splice(clientIndex, 1)
 
       this.cancelAnyGamesCreatedByClient(disconnectingClient)
-      this.leaveAnyGameLobbyClientIsIn(disconnectingClient)
+      this.leaveAnyGameCandidateClientIsIn(disconnectingClient)
       this.disconnectFromGameClientIsIn(disconnectingClient)
 
       this.sendGameHostUiUpdateToClients()
   }
 
 
-  clientCreatedGameLobby(createdGameLobby: GameLobby){    
-    const isCreatorInGame = this.gameLobbies.some((gameLobby: GameLobby) => 
-    gameLobby.clients.some(client => client.id == createdGameLobby.creator.id))
+  clientCreatedGameCandidate(createdGameCandidate: GameCandidate){    
+    const isCreatorInGame = this.gameCandidates.some((GameCandidate: GameCandidate) => 
+    GameCandidate.clients.some(client => client.id == createdGameCandidate.creator.id))
 
     if(isCreatorInGame)
       throw 'shouldnt be able to create game if already in one'
 
-    this.gameLobbies.push(createdGameLobby)
-    console.log(`${createdGameLobby.creator.name} created a game lobby`);
+    this.gameCandidates.push(createdGameCandidate)
+    console.log(`${createdGameCandidate.creator.name} created a game lobby`);
     this.sendGameHostUiUpdateToClients()
   }
 
-  clientJoinedGameLobby(joiningClient: ConnectedClient, gameLobbyId){
-    const gameLobby: GameLobby = this.gameLobbies.find(gameLobby => gameLobby.id == gameLobbyId)
-    if(gameLobby == undefined)
+  clientJoinedGameCandidate(joiningClient: ConnectedClient, GameCandidateId){
+    const GameCandidate: GameCandidate = this.gameCandidates.find(GameCandidate => GameCandidate.id == GameCandidateId)
+    if(GameCandidate == undefined)
       throw `${joiningClient.name} tried to join a game that could not be found`
 
-    if(gameLobby.creator.id == joiningClient.id)
+    if(GameCandidate.creator.id == joiningClient.id)
       throw `${joiningClient.name} trying to join a game that he created`
 
 
-    if(gameLobby.clients.some((clientInLobby: GameLobbyClient) => clientInLobby.id == joiningClient.id))
+    if(GameCandidate.clients.some((clientInLobby: GameCandidateClient) => clientInLobby.id == joiningClient.id))
       throw `${joiningClient.name} was trying to join a game that he is already in`
     
-    const joiningClientInfo: GameLobbyClient = {
+    const joiningClientInfo: GameCandidateClient = {
       name: joiningClient.name,
       id: joiningClient.id,
       ready: false
     }
-    gameLobby.clients.push(joiningClientInfo)
+    GameCandidate.clients.push(joiningClientInfo)
 
-    console.log(`${joiningClient.name} joined ${gameLobby.creator.name}'s game`);
+    console.log(`${joiningClient.name} joined ${GameCandidate.creator.name}'s game`);
     this.sendGameHostUiUpdateToClients()
   }
 
-  clientLeftGameLobby(leavingClient: ConnectedClient, gameLobbyId){    
-    const gameLobby = this.gameLobbies.find((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
-    const leavingClientIndex = gameLobby.clients.findIndex(
-      (gameLobbyClient: GameLobbyClient) => gameLobbyClient.id == leavingClient.id
+  clientLeftGameCandidate(leavingClient: ConnectedClient, GameCandidateId){    
+    const GameCandidate = this.gameCandidates.find((GameCandidate: GameCandidate) => GameCandidate.id == GameCandidateId)
+    const leavingClientIndex = GameCandidate.clients.findIndex(
+      (GameCandidateClient: GameCandidateClient) => GameCandidateClient.id == leavingClient.id
     )
-    gameLobby.clients.splice(leavingClientIndex, 1)
+    GameCandidate.clients.splice(leavingClientIndex, 1)
 
-    console.log(`${leavingClient.name} has left ${gameLobby.creator.name}'s game lobby`);
+    console.log(`${leavingClient.name} has left ${GameCandidate.creator.name}'s game lobby`);
     this.sendGameHostUiUpdateToClients()
   }
 
 
-  clientCanceledGameLobby(gameLobbyId){    
+  clientCanceledGameCandidate(GameCandidateId){    
 
-    const gameLobby: GameLobby = this.gameLobbies.find((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
+    const GameCandidate: GameCandidate = this.gameCandidates.find((GameCandidate: GameCandidate) => GameCandidate.id == GameCandidateId)
 
-    const canceldGameLobbyIndex = this.gameLobbies.findIndex((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
+    const canceldGameCandidateIndex = this.gameCandidates.findIndex((GameCandidate: GameCandidate) => GameCandidate.id == GameCandidateId)
 
-    if(canceldGameLobbyIndex == -1)
-      throw `canceled game lobby could not be found in gameLobbies array`
+    if(canceldGameCandidateIndex == -1)
+      throw `canceled game lobby could not be found in gameCandidates array`
 
-    console.log(`${gameLobby.creator.name} has canceled his game lobby`);
+    console.log(`${GameCandidate.creator.name} has canceled his game lobby`);
 
-    this.gameLobbies.splice(canceldGameLobbyIndex, 1)
+    this.gameCandidates.splice(canceldGameCandidateIndex, 1)
 
     this.sendGameHostUiUpdateToClients()
   }
 
-  clientToggledReadyInGameLobby(togglingClient: ConnectedClient, gameLobbyId, readyValue: boolean){  
+  clientToggledReadyInGameCandidate(togglingClient: ConnectedClient, GameCandidateId, readyValue: boolean){  
 
-    const gameLobby: GameLobby = this.gameLobbies.find((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
+    const GameCandidate: GameCandidate = this.gameCandidates.find((GameCandidate: GameCandidate) => GameCandidate.id == GameCandidateId)
 
-    const clientIndex = gameLobby.clients.findIndex((client: GameLobbyClient) => 
+    const clientIndex = GameCandidate.clients.findIndex((client: GameCandidateClient) => 
       client.id == togglingClient.id)
 
-    gameLobby.clients[clientIndex].ready = readyValue
+    GameCandidate.clients[clientIndex].ready = readyValue
     
-    console.log(`${togglingClient.name} set his ready state to ${readyValue} for ${gameLobby.creator.name}'s game lobby`);
+    console.log(`${togglingClient.name} set his ready state to ${readyValue} for ${GameCandidate.creator.name}'s game lobby`);
     this.sendGameHostUiUpdateToClients()
   }
 
   
 
-  clientStartedGameLobby(gameLobbyId){  
-    const startedGameLobby: GameLobby = this.gameLobbies.find((gameLobby: GameLobby) => gameLobby.id == gameLobbyId)
-    const gameClients: ConnectedClient[] = startedGameLobby.clients.map(client => this.getClientById(client.id))
+  clientStartedGameCandidate(GameCandidateId){  
+    const startedGameCandidate: GameCandidate = this.gameCandidates.find((GameCandidate: GameCandidate) => GameCandidate.id == GameCandidateId)
+    const gameClients: ConnectedClient[] = startedGameCandidate.clients.map(client => this.getClientById(client.id))
       
     const playerInfos: Player[] = gameClients.map(client => client.getPlayerInfo())
-    console.log(`${startedGameLobby.creator.name} has started his game lobby!`);
-    const newGame: Game_External_Interface = createGame({gameType: 'Websockets', players: playerInfos, gameDisplays: []})
+    console.log(`${startedGameCandidate.creator.name} has started his game lobby!`);
+    const newGame: Game = createGame({gameType: 'Websockets', players: playerInfos, gameDisplays: []})
     console.log('pushing new game', newGame)
 
     this.activeGames.push(newGame)
-    this.removeGameLobby(startedGameLobby)
+    this.removeGameCandidate(startedGameCandidate)
     this.sendGameHostUiUpdateToClients()
   }
 
@@ -161,9 +155,9 @@ export default class GameHost{
   }
 
 
-  private removeGameLobby(removedGameLobby: GameLobby){
-    const startedGameLobbyIndex = this.gameLobbies.findIndex((gameLobby: GameLobby) => gameLobby.id == removedGameLobby.id)
-    this.gameLobbies.splice(startedGameLobbyIndex, 1)
+  private removeGameCandidate(removedGameCandidate: GameCandidate){
+    const startedGameCandidateIndex = this.gameCandidates.findIndex((GameCandidate: GameCandidate) => GameCandidate.id == removedGameCandidate.id)
+    this.gameCandidates.splice(startedGameCandidateIndex, 1)
   }
 
   clientSubmittedGlobalMessage(client: ConnectedClient, message: string){
@@ -177,28 +171,28 @@ export default class GameHost{
 
 
   private cancelAnyGamesCreatedByClient(client: ConnectedClient){
-    const gameLobbyCreatedByClient: GameLobby = this.gameLobbies.find(
-      (gameLobby: GameLobby) => gameLobby.creator.id == client.id
+    const GameCandidateCreatedByClient: GameCandidate = this.gameCandidates.find(
+      (GameCandidate: GameCandidate) => GameCandidate.creator.id == client.id
     )
-    if(gameLobbyCreatedByClient !== undefined)
-      this.clientCanceledGameLobby(gameLobbyCreatedByClient.id)
+    if(GameCandidateCreatedByClient !== undefined)
+      this.clientCanceledGameCandidate(GameCandidateCreatedByClient.id)
     
     this.sendGameHostUiUpdateToClients()
   }
 
-  private leaveAnyGameLobbyClientIsIn(client: ConnectedClient){
-    const gameLobbyClientIsIn: GameLobby = this.gameLobbies.find(
-      (gameLobby: GameLobby) => gameLobby.clients.some((gameLobbyClient: GameLobbyClient) => gameLobbyClient.id == client.id)
+  private leaveAnyGameCandidateClientIsIn(client: ConnectedClient){
+    const GameCandidateClientIsIn: GameCandidate = this.gameCandidates.find(
+      (GameCandidate: GameCandidate) => GameCandidate.clients.some((GameCandidateClient: GameCandidateClient) => GameCandidateClient.id == client.id)
     )
-    if(gameLobbyClientIsIn != undefined)
-      this.clientLeftGameLobby(client, gameLobbyClientIsIn.id)
+    if(GameCandidateClientIsIn != undefined)
+      this.clientLeftGameCandidate(client, GameCandidateClientIsIn.id)
 
     this.sendGameHostUiUpdateToClients()
   }
 
   private disconnectFromGameClientIsIn(client: ConnectedClient){
-    const gameClientIsIn: Game_External_Interface = this.activeGames.find(
-      (game: Game_External_Interface) => game.players.some(player => player.id == client.id)
+    const gameClientIsIn: Game = this.activeGames.find(
+      game => game.players.some(player => player.id == client.id)
     )
     if(gameClientIsIn != undefined)
       gameClientIsIn.connectionManager.playerDisconnected({id: client.id, name: client.name})
@@ -207,24 +201,23 @@ export default class GameHost{
   }
 
   playerRejoinGame(gameId, player: PlayerNameAndId, socket: Socket){
-    const game: Game_External_Interface = this.activeGames.find((game: Game_External_Interface) => game.id == gameId)
+    const game: Game = this.activeGames.find(game => game.id == gameId)
     game.connectionManager.playerReconnected(player, socket)
     this.sendGameHostUiUpdateToClients()
   }
 
 
-  private sendGameHostUiUpdateToClients(){
-    const activeGames: GameInfo[] = this.activeGames.map((game: Game): GameInfo => game.getInfo())
-    
-    const clientNameAndIds: ClientNameAndId[] = this.connectedClients.map(client => ({name: client.name, id: client.id}))
-    
-    this.gameHostUiState.connectedPlayers = clientNameAndIds 
-    this.gameHostUiState.gameLobbies = this.gameLobbies  
-    this.gameHostUiState.globalChat = this.globalChat    
-    this.gameHostUiState.activeGames = activeGames 
+  private sendGameHostUiUpdateToClients(){    
+
+    const lobbyUiState: LobbyUiState = {
+      gameCandidates: this.gameCandidates,
+      globalChat: this.globalChat,
+      activeGames: this.activeGames.map(g => g.getInfo()),
+      connectedPlayers: this.connectedClients.map((c => ({id: c.id, name: c.name})))
+    }
 
     this.connectedClients.forEach(client => {
-      client.sendMainGameDataToClient(this.gameHostUiState)
+      client.sendLobbyUiStateToClient(lobbyUiState)
     })
   }
 

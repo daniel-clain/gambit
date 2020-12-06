@@ -4,7 +4,7 @@ import FighterModelState from '../../types/figher/fighter-model-states';
 import SoundTime from './fighter/sound-time';
 import { Skin } from '../../types/figher/skin';
 import { Angle } from '../../types/game/angle';
-import { KnownFighterStats } from '../game-ui-state.interface';
+import { KnownFighterStats } from '../server-game-ui-state.interface';
 
 export default interface FighterFightState{
   name: string

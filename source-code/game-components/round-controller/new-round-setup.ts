@@ -1,7 +1,7 @@
 import Game from "../game";
 import gameConfiguration from "../../game-settings/game-configuration";
 import { shuffle, random } from "../../helper-functions/helper-functions";
-import { JobSeeker, Professional } from "../../interfaces/game-ui-state.interface";
+import { JobSeeker, Professional } from "../../interfaces/server-game-ui-state.interface";
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
 import Fight from "../fight/fight";

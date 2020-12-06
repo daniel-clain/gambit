@@ -12,10 +12,10 @@ import { offerContractServer } from './abilities/offer-contract';
 import { poisonFighterServer } from './abilities/poison-fighter';
 import { promoteFighterServer } from './abilities/promote-fighter';
 import { sellDrugsServer } from './abilities/sell-drugs';
-import { sueManagerServer } from './abilities/sue-manager';
+import { prosecuteManagerServer } from './abilities/prosecute-manager';
 import { trainFighterServer } from './abilities/train-fighter';
 import Manager from '../manager';
-import { Employee, JobSeeker } from '../../interfaces/game-ui-state.interface';
+import { Employee, JobSeeker } from '../../interfaces/server-game-ui-state.interface';
 import { dopeFighterServer } from './abilities/dope-fighter';
 import { random } from '../../helper-functions/helper-functions';
 import { ContractOffer, GoalContract } from '../../interfaces/game/contract.interface';
@@ -40,7 +40,7 @@ export const getAbilityProcessor = (game: Game): AbilityProcessor => {
     promoteFighterServer,
     researchFighterServer,
     sellDrugsServer,
-    sueManagerServer,
+    prosecuteManagerServer,
     trainFighterServer,
     dopeFighterServer
   ]

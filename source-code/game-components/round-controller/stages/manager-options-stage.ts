@@ -5,7 +5,7 @@ import { RoundController } from "../round-controller";
 import Manager, { ManagerInfo } from "../../manager";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import IStage from "../../../interfaces/game/stage";
-import RoundStages from "../../../types/game/round-stages";
+import RoundStages from "../../../types/game/round-stage.type";
 
 export default class ManagerOptionsStage implements IStage {
 
@@ -27,6 +27,7 @@ export default class ManagerOptionsStage implements IStage {
     return new Promise(resolve => {
       this.endStage = resolve
       
+      
       this.timeLeft = this.duration
 
 
@@ -44,7 +45,7 @@ export default class ManagerOptionsStage implements IStage {
 
 
       this.timesUpTimer = setTimeout(
-        this.stageFinished, this.duration*1000
+        this.stageFinished.bind(this), this.duration*1000
       )
       
       
@@ -60,6 +61,10 @@ export default class ManagerOptionsStage implements IStage {
     this.timeLeft = null
     clearInterval(this.timesUpTimer)
     clearInterval(this.timeLeftInterval)
+    
+    if(!this.endStage){
+      debugger
+    }
     this.endStage()
   }
 

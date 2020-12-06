@@ -1,5 +1,5 @@
 import Game from "../game";
-import { Professional } from "../../interfaces/game-ui-state.interface";
+import { Professional } from "../../interfaces/server-game-ui-state.interface";
 import { random } from "../../helper-functions/helper-functions";
 import { RoundController } from "./round-controller";
 import Fighter from "../fighter/fighter";

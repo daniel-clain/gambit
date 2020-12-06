@@ -1,15 +1,10 @@
 import {Player} from './../interfaces/player-info.interface';
 import { Socket } from 'socket.io';
-import { MainGameData } from '../interfaces/game-ui-state.interface';
-import ClientAction from '../interfaces/client-action';
 import GameHost from './game-host';
-import GameLobbyClient from '../interfaces/game-lobby-client.interface';
-import GameLobby from '../interfaces/game-lobby.interface';
-import ChatMessage from '../interfaces/chat-message.interface';
-import ClientNameAndId from '../interfaces/client-name-and-id.interface';
+import GameLobbyClient from '../interfaces/game-candidate-client.interface';
 import { ClientPregameAction } from '../types/client-pre-game-actions';
-import Game from '../game-components/game';
-import { GameInfo } from '../interfaces/game/game-info';
+import GameCandidate from '../interfaces/game-candidate.interface';
+import { LobbyUiState } from '../client/front-end-state/front-end-state';
 
 export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Update'
 
@@ -19,7 +14,7 @@ export default class ConnectedClient{
 
   constructor(public id, public name, private socketObject: Socket, private gameHost: GameHost){
 
-    this.socketObject.on('Action From Client', (clientPregameAction: ClientPregameAction) => this.handleActionFromClient(clientPregameAction))
+    this.socketObject.on('To Server From Client', (clientPregameAction: ClientPregameAction) => this.handleActionFromClient(clientPregameAction))
 
     this.socketObject.on('disconnect', (reason) => gameHost.clientDisconnected(this, reason))
   }
@@ -53,33 +48,33 @@ export default class ConnectedClient{
       ready: false
     }
 
-    const createdGame: GameLobby = {
+    const createdGame: GameCandidate = {
       id: new Date().getTime().toString(),
       creator: gameLobbyClient,
       clients: [gameLobbyClient],
       gameChat: []
     }
-    this.gameHost.clientCreatedGameLobby(createdGame)
+    this.gameHost.clientCreatedGameCandidate(createdGame)
   }
 
   private joinGame(gameId){
-    this.gameHost.clientJoinedGameLobby(this, gameId)
+    this.gameHost.clientJoinedGameCandidate(this, gameId)
   }
 
   private cancelGame(gameId){
-    this.gameHost.clientCanceledGameLobby(gameId)
+    this.gameHost.clientCanceledGameCandidate(gameId)
   }
 
   private leaveGame(gameId){
-    this.gameHost.clientLeftGameLobby(this, gameId)
+    this.gameHost.clientLeftGameCandidate(this, gameId)
   }
 
   private readyToStartGameToggled(gameId, readyValue){
-    this.gameHost.clientToggledReadyInGameLobby(this, gameId, readyValue)
+    this.gameHost.clientToggledReadyInGameCandidate(this, gameId, readyValue)
   }
 
   private startGame(gameId){
-    this.gameHost.clientStartedGameLobby(gameId)
+    this.gameHost.clientStartedGameCandidate(gameId)
   }
 
   private submitGlobalMessage(message: string){
@@ -87,8 +82,10 @@ export default class ConnectedClient{
   }
 
 
-  sendMainGameDataToClient(gameHostUiState: MainGameData){
-    this.socketObject.emit('Main Game Data Update', gameHostUiState)
+  sendLobbyUiStateToClient(lobbyUiState: LobbyUiState){
+
+
+    this.socketObject.emit('To Client From Server - Lobby Ui', lobbyUiState)
   }
 
 
@@ -99,6 +96,7 @@ export default class ConnectedClient{
       id: this.id
     }
   }
+  
 
 
 }

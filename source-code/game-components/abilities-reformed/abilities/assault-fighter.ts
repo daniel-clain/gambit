@@ -1,13 +1,14 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import Game from "../../game"
 import { random } from "../../../helper-functions/helper-functions"
-import { Employee } from "../../../interfaces/game-ui-state.interface"
+import { Employee } from "../../../interfaces/server-game-ui-state.interface"
 import Manager from "../../manager"
 
 
 const assaultFighter: Ability = {
   name: 'Assault Fighter',
   cost: { money: 10, actionPoints: 1 },
+  possibleSources: ['Thug'],
   possibleTargets: ['fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: false
