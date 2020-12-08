@@ -1,6 +1,4 @@
 import PlayerNameAndId from './player-name-and-id';
-import GameLobby from './game-candidate.interface';
-import ChatMessage from './chat-message.interface';
 import SkillLevel from '../types/game/skill-level.type';
 import { ActiveContract, GoalContract } from './game/contract.interface';
 import { ManagerInfo } from '../game-components/manager';
@@ -43,7 +41,7 @@ export interface DisconnectedPlayerVote{
 
 
 export interface PreFightNewsUiData{
-  newsItems: NewsItem[]
+  newsItem: NewsItem
 }
 
 export interface PostFightReportData{
@@ -117,6 +115,7 @@ export interface FighterInfo{
   manager: KnownFighterStatValue
   activeContract: ActiveContract
   goalContract: GoalContract
+  poisoned
 }
 
 export interface PlayerManagerUiData{

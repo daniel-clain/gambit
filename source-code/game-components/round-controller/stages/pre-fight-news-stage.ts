@@ -11,13 +11,33 @@ export default class PreFightNewsStage implements IStage {
   newsItems: NewsItem[] = []
   
   constructor(private game: Game, private roundController: RoundController){}
+  slideDuration = gameConfiguration.stageDurations.eachNewsSlide * 1000
+  activNewsItemCount
+
+  activeNewsItem: NewsItem
 
   start(): Promise<void> {
     return new Promise(resolve => {
       this.endRound = resolve
-      const totalStageDuration = gameConfiguration.stageDurations.eachNewsSlide * 1000 * this.newsItems.length
-      setTimeout(this.endRound, totalStageDuration)  
+      if(!this.newsItems.length){
+        this.endRound()
+      }
+
+      this.activNewsItemCount = 0
+      this.activeNewsItem[this.activNewsItemCount]
+      const totalStageDuration = this.slideDuration * this.newsItems.length
+      const newsItemInterval = setInterval(this.showNextNewsItem, this.slideDuration)
+      setTimeout(() => {
+        clearInterval(newsItemInterval)
+        this.endRound()
+      }, totalStageDuration)  
     })
+  }
+
+  showNextNewsItem(){
+    this.activNewsItemCount ++
+    this.activeNewsItem[this.activNewsItemCount]
+    this.roundController.triggerUpdate()
   }
 
   

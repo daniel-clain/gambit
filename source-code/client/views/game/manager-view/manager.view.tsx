@@ -1,4 +1,4 @@
-import React from "react"
+import * as React from "react"
 import Headbar from './manager-view-components/main-components/headbar/headbar'
 import NextFightPanel from './manager-view-components/main-components/next-fight-panel/next-fight-panel'
 import EmployeesPanel from './manager-view-components/main-components/employees-panel/employees-panel'
@@ -16,6 +16,8 @@ import { Employee, FighterInfo, JobSeeker, Loan } from "../../../../interfaces/s
 import { ActivityLogItem } from "../../../../types/game/activity-log-item"
 import { frontEndService } from "../../../front-end-service/front-end-service"
 import { Bet } from "../../../../interfaces/game/bet"
+
+import './manager-view-style/manager-view.scss'
 
 
 interface ManagerViewProps{
@@ -54,30 +56,43 @@ const Manager_View = ({
   let {openModal} = frontEndService
 
 
-  return <>
-    <Headbar {...{actionPoints, money, managerOptionsTimeLeft, nextFightBet}} />
-    <NextFightPanel {...{yourFighters, nextFightBet, nextFightFighters}} />
-    <JobSeekersPanel {...{jobSeekers}} />
-    <div className="two-columns">
-      <YourFightersPanel {...{yourFighters}} />
-      <EmployeesPanel {...{employees}} />
-      <button onClick={() => openModal('Logs')}>Logs</button>
-      <button onClick={() => openModal('Loan Shark')}>Loan Shark</button>
-      <button onClick={() => openModal('Known Fighters')}>Known Fighters</button>
-      <button onClick={() => openModal('Managers')}>Other Managers</button>
-    </div>
+  return (
+  
+    <div className='manager-ui' >
+      <div className="manager-ui__content">
+        <Headbar {...{actionPoints, money, managerOptionsTimeLeft, nextFightBet}} />
+        <div className='main-content'>
+          <NextFightPanel {...{yourFighters, nextFightBet, nextFightFighters}} />
 
-    {(() => {
-      switch(activeModal){
-        case 'Logs': return <LogsCard {...{activityLogs}}  />
-        case 'Loan Shark': return <LoanSharkCard {...{loan, money}} />
-        case 'Known Fighters': return <KnownFightersCard fighters={knownFighters}  />
-        case 'Managers': return <ManagersCard {...{otherManagers}} />
-        case 'Ability': return <AbilityCard />
-      }
-    })()}
+          <div className="two-columns">
+            <div className='left-column'>
+              <YourFightersPanel {...{yourFighters}} />
+              <EmployeesPanel {...{employees}} />
+            </div>
+            <div className="right-column">
+              <JobSeekersPanel {...{jobSeekers}} />
+              <button onClick={() => openModal('Logs')}>Logs</button>
+            </div>
+          </div>
+
+          <button onClick={() => openModal('Loan Shark')}>Loan Shark</button>
+          <button onClick={() => openModal('Known Fighters')}>Known Fighters</button>
+          <button onClick={() => openModal('Managers')}>Other Managers</button>
+        </div>
         
-  </>
+      </div>
+
+      {(() => {
+        switch(activeModal){
+          case 'Logs': return <LogsCard {...{activityLogs}}  />
+          case 'Loan Shark': return <LoanSharkCard {...{loan, money}} />
+          case 'Known Fighters': return <KnownFightersCard fighters={knownFighters}  />
+          case 'Managers': return <ManagersCard {...{otherManagers}} />
+          case 'Ability': return <AbilityCard />
+        }
+      })()}
+    </div>      
+  )
 
 }
 

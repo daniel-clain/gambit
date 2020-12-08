@@ -24,7 +24,7 @@ const Game_View = ({
   const getActiveView = () => {
     switch (roundStage) {
       case 'Manager Options': return <Manager_View />
-      case 'Pre Fight News': return <PreFightNews_View/>
+      case 'Pre Fight News': return <PreFightNews_View />
       case 'Fight Day': return <Fight_View />
       case 'Post Fight Report': return <div>
         Post Fight Report</div>

@@ -1,12 +1,11 @@
-import { FighterInfo, JobSeeker, ServerGameUIState } from "../../interfaces/server-game-ui-state.interface";
+
+import { FighterInfo, JobSeeker, ServerGameUIState } from "../../interfaces/server-game-ui-state.interface"
 import Redux, { createStore } from 'redux'
-import ChatMessage from "../../interfaces/chat-message.interface";
-import { GameInfo } from "../../interfaces/game/game-info";
-import PlayerNameAndId from "../../interfaces/player-name-and-id";
-import GameCandidate from "../../interfaces/game-candidate.interface";
-import { AbilityData } from "../../game-components/abilities-reformed/ability";
-
-
+import ChatMessage from "../../interfaces/chat-message.interface"
+import { GameInfo } from "../../interfaces/game/game-info"
+import PlayerNameAndId from "../../interfaces/player-name-and-id"
+import GameCandidate from "../../interfaces/game-candidate.interface"
+import { AbilityData } from "../../game-components/abilities-reformed/ability"
 
 export interface LobbyUiState{
   connectedPlayers: PlayerNameAndId[]
@@ -68,10 +67,12 @@ export interface DispatchAction{
 let initialState: FrontEndState = {
   clientId: getClientid(),
   clientName: localStorage.getItem('name'),
+  clientType: localStorage.getItem('name') ? 'Player': undefined,
   inGame: false,
   connectedToGameHost: false,
-  ...lobbyUiState,
-  ...gameUiData
+  clientGameUIState: {},
+  lobbyUiState: undefined,
+  serverGameUIState: undefined,
 }
 
 function frontEndStoreReducer(
@@ -87,7 +88,13 @@ function frontEndStoreReducer(
     case 'Open Modal': return {...state, clientGameUIState: {...state.clientGameUIState, activeModal: action.payload}}
     case 'Update Lobby UI': return {
       ...state,
-      lobbyUiState: action.payload
+      lobbyUiState: action.payload as LobbyUiState,
+      connectedToGameHost: true
+    }
+    case 'Update Game UI': return {
+      ...state,
+      inGame: true,
+      serverGameUIState: action.payload as ServerGameUIState
     }
     default: return state
   }
@@ -96,5 +103,8 @@ function frontEndStoreReducer(
 
 
 export const setupFrontEndStore = (): Redux.Store<FrontEndState> => {
-  return createStore(frontEndStoreReducer)
+  return createStore(frontEndStoreReducer, 
+    window['__REDUX_DEVTOOLS_EXTENSION__'] && 
+    window['__REDUX_DEVTOOLS_EXTENSION__']()
+  )
 }

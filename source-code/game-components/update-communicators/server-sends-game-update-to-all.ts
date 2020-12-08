@@ -4,13 +4,13 @@ import { ServerGameUIState } from "../../interfaces/server-game-ui-state.interfa
 import Game from "../game"
 
 
-export const GameMessageSender = (players: Player[], game: Game)  => {
+export const GameMessageSender = (players: Player[], getGameUiState)  => {
   
   return{
     triggerUpdate: (player: Player) => {
 
       [...player ? [player] : players ].forEach(player => {
-        player.socketObj.emit('To Client From Server - Game Ui', game.getGameUiState(player))
+        player.socketObj.emit('To Client From Server - Game Ui', getGameUiState(player))
       })
 
     }

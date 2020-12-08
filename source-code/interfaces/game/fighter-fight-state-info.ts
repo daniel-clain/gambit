@@ -4,7 +4,7 @@ import FighterModelState from '../../types/figher/fighter-model-states';
 import SoundTime from './fighter/sound-time';
 import { Skin } from '../../types/figher/skin';
 import { Angle } from '../../types/game/angle';
-import { KnownFighterStats } from '../server-game-ui-state.interface';
+import { KnownManager } from '../../game-components/manager';
 
 export default interface FighterFightState{
   name: string
@@ -23,5 +23,5 @@ export default interface FighterFightState{
   poisoned: boolean
   injured: boolean
   doped: boolean
-  managerKnownStats: KnownFighterStats
+  managerKnownStats: KnownManager
 }

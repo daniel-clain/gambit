@@ -1,93 +1,49 @@
 import * as React from 'react'
 import './pre-fight-news.view.scss'
-
 import {connect} from 'react-redux'
-import { PreFightNewsUiData } from '../../../../interfaces/server-game-ui-state.interface'
+import { NewsType } from '../../../../types/game/news-type'
+import { NewsItem } from '../../../../types/game/news-item'
 import { FrontEndState } from '../../../front-end-state/front-end-state'
-import gameConfiguration from '../../../../game-settings/game-configuration'
 
 export interface PreFightNewsProps{
-  preFightNewsUiData: PreFightNewsUiData
+  newsItem: NewsItem
 }
 
 const PreFightNews_View = ({
-  preFightNewsUiData
+  newsItem
 }: PreFightNewsProps) => {
 
-  animateNewsItems()
-
-
+  if(!newsItem) return <div></div>
   return (
     <div className="pre-fight-news">
       <div className="pre-fight-news__background"></div>
-      {preFightNewsUiData.newsItems.map((newsItem, i) => {
-        const image = 
-          newsItem.newsType == 'fighter was assaulted' ? 'assaulted' :
-          newsItem.newsType == 'fighter murdered' ? 'murdered' :
-          newsItem.newsType == 'fighter was poisoned' ? 'poisoned' :
-          newsItem.newsType == 'fighter is doped up' ? 'doped' :
-          newsItem.newsType == 'fighter has gone up in strength or fitness' ? 'after-training' :
-          'guarded'
-
-
-        return <div id={'news-item'+i} key={i} className="news-item">
-          <div className="news-item__news-paper-heading">Fight News</div>
-          <div className="news-item__article-heading">{newsItem.headline}</div>
-          <div className="news-item__message">
-            {newsItem.message}
-          </div>
-          <div className={`news-item__image news-item__image--${image}`}></div>
-        </div>  
-      })}
+        
+      <div className="news-item">
+        <div  className="news-item__news-paper-heading">Fight News</div>
+        <div className="news-item__article-heading">{newsItem.headline}</div>
+        <div className="news-item__message">
+          {newsItem.message}
+        </div>
+        <div className={`news-item__image news-item__image--${getImage(newsItem.newsType)}`}></div>
+      </div>  
     </div>
   )
 
-  
-  function animateNewsItems(){
-    const holdDuration = gameConfiguration.stageDurations.eachNewsSlide - 1
-    const newItemAnimations =  gsap.timeline()
-
-    for(let i = 0; i < preFightNewsUiData.newsItems.length; i++){
-      const elementId = '#news-item'+i
-      newItemAnimations
-        .add(tumbleIntoView(elementId))
-        .add(waitForReadTime(elementId))
-        .add(getRidOfIt(elementId))
-    }
-    newItemAnimations.play()
-
-    function tumbleIntoView(id){
-      return gsap.timeline()
-      .to(id, {
-        display: 'block',
-        transform: 'scale(1)',
-        right: '0%',
-        top: '15%',
-        width: 500,
-        duration: .3  
-      })
-    }
-    function waitForReadTime(id){
-      return gsap.timeline().to(id, {duration: holdDuration})
-    }
-    function getRidOfIt(id){
-      return gsap.timeline()
-      .to(id, {
-        opacity: '0',
-        right: '-100%', 
-        transform: 'scale(.5)', 
-        duration: .3  
-      })
-      .to(id, {
-        display: 'none'
-      })
-    }
+  function getImage(newsType: NewsType): string{
+    return (
+      newsType == 'fighter was assaulted' ? 'assaulted' :
+      newsType == 'fighter murdered' ? 'murdered' :
+      newsType == 'fighter was poisoned' ? 'poisoned' :
+      newsType == 'fighter is doped up' ? 'doped' :
+      newsType == 'fighter has gone up in strength or fitness' ? 'after-training' :
+    'guarded'
+    )
   }
 }
 
-export default connect(({
-  serverGameUIState: {preFightNewsUiData}
-}: FrontEndState): PreFightNewsProps => ({
-  preFightNewsUiData
-}))
-(PreFightNews_View)
+const mapStateToProps = ({
+serverGameUIState: {preFightNewsUiData: {newsItem}}
+}: FrontEndState): PreFightNewsProps => ({newsItem})
+
+export default connect(mapStateToProps)(PreFightNews_View)
+  

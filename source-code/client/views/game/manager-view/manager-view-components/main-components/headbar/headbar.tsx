@@ -8,6 +8,7 @@ import gameConfiguration from '../../../../../../../game-settings/game-configura
 import { Bet } from '../../../../../../../interfaces/game/bet';
 import ClientGameAction from '../../../../../../../types/client-game-actions';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
+import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 
 export interface HeadbarProps{
   actionPoints: number
@@ -23,29 +24,34 @@ const Headbar = ({
   nextFightBet
 }: HeadbarProps) => {
 
+  let {sendUpdate} = frontEndService
+
   return (
     <div className='headbar' >
       <div className='headbar__left'>
         <div>Time left: {managerOptionsTimeLeft}</div>
       </div>
       <div className='headbar__right'>
-        <span className='finished-turn'>Finished Turn? 
-          <input type='checkbox' onChange={handleReadyToggle.bind(this)} />
+
+
+        <span className='finished-turn'>Finished Turn?
+          <input 
+            type='checkbox' 
+            onChange={e => 
+              sendUpdate({
+                name: 'Toggle Ready',
+                data: { ready: e.target.checked }
+              })
+            } 
+          />          
         </span>
+
+        
         <Money money={nextFightBet ? money - Math.round(gameConfiguration.betSizePercentages[nextFightBet.size]/100* money) : money} />
         <ActionPoints {...{actionPoints}} />
       </div>
     </div>
   )
-  
-  function handleReadyToggle(e) {
-    let ready: boolean = e.target.checked
-    const gameAction: ClientGameAction = {
-      name: 'Toggle Ready',
-      data: { ready }
-    }
-    this.props.sendGameAction( gameAction)
-  }
 }
 
 

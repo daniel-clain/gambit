@@ -13,7 +13,9 @@ const websocketAddress = 'localhost'//'192.168.43.229'
 const socket = io(`${websocketAddress}:${port}`, {transports: ['websocket']});
 
 export const backEndConnection: BackEndConnection = {
-  sendUpdate: update => socket.emit('To Server From Client', update),
+  sendUpdate: (update) => (
+    socket.emit('To Server From Client', update)
+  ),
   onUpdateReceived: (func: (name: string, data: any) => void) => {
     socket.on('To Client From Server - Lobby Ui', data => {
       func('To Client From Server - Lobby Ui', data)

@@ -51,7 +51,7 @@ export function createGame(
 ): Game {
 
  
-  const messageSender = GameMessageSender(players, this)
+  const messageSender = GameMessageSender(players, getGameUiState)
 
   const game: Game = {
     id: new Date().getTime().toString(),   
@@ -108,7 +108,7 @@ export function createGame(
           .map(fighter => fighter.getInfo()),
         delayedExecutionAbilities: []
       },
-      preFightNewsUiData: {newsItems: preFightNewsStage.newsItems},
+      preFightNewsUiData: {newsItem: preFightNewsStage.activeNewsItem},
       fightUiData: activeFight.fightUiData
     }
   }

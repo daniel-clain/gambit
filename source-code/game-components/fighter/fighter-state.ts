@@ -2,7 +2,7 @@
 import { ActiveContract, GoalContract } from '../../interfaces/game/contract.interface';
 import Manager from '../manager';
 import Fight from "../fight/fight";
-import { Employee } from '../../interfaces/server-game-ui-state.interface';
+import { Employee, KnownFighterStatValue } from '../../interfaces/server-game-ui-state.interface';
 import Fighter from './fighter';
 
 
@@ -22,8 +22,8 @@ export default class FighterState{
   
   publicityRating = 0
 
-  numberOfFights: number = 0
-  numberOfWins: number = 0
+  numberOfFights: KnownFighterStatValue = {lastKnownValue: undefined, roundsSinceUpdated: undefined}
+  numberOfWins: KnownFighterStatValue = {lastKnownValue: undefined, roundsSinceUpdated: undefined}
 
   private maxVal: 5
   private minVal: 1

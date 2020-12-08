@@ -1,7 +1,6 @@
 
 import { Subject } from "rxjs"
 import Game from "../game"
-import { PlayerGameUiData } from "../../interfaces/game-ui-state.interface"
 import Manager from "../manager"
 import FighterFightState from "../../interfaces/game/fighter-fight-state-info"
 

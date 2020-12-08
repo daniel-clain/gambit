@@ -92,10 +92,12 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
 
   function updateNumberOfRoundsForKnowFighterStats(knownFighters: FighterInfo[]){
     knownFighters.forEach(knownFighter => {
-      for(let key in knownFighter){
-        let stat: KnownFighterStatValue = knownFighter[key]
-        if(stat)
-          stat.roundsSinceUpdated ++
+
+      Object.keys(knownFighter).forEach(incrementStatRounds)
+
+      function incrementStatRounds(key){
+        let {lastKnownValue} = knownFighter[key]
+        lastKnownValue && lastKnownValue ++
       }
     })
   }

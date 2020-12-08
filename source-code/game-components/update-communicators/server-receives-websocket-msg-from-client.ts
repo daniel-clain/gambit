@@ -5,10 +5,10 @@ import { AbilityProcessor } from "../abilities-reformed/ability-processor"
 
 export const GameMessageReceiver = (players: Player[], abilityProcessor: AbilityProcessor) => {
   players.forEach(player => player.socketObj.on(
-    'Action From Player', (gameAcion: ClientGameAction) => {
+    'To Server From Client', (gameAcion: ClientGameAction) => {
       console.log('received action from player: ', gameAcion)
       switch(gameAcion.name){
-        case 'Ability Confirmed' : handleAbilitySelected(gameAcion.data)
+        case 'Ability Confirmed': handleAbilitySelected(gameAcion.data); break
         default: player.manager.receiveUpdate(gameAcion)
       }
     }

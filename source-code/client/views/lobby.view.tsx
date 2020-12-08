@@ -1,4 +1,4 @@
-
+import * as React from "react"
 import {connect} from 'react-redux'
 import ChatMessage from "../../interfaces/chat-message.interface"
 import GameCandidate from "../../interfaces/game-candidate.interface"
@@ -8,6 +8,7 @@ import { GameInfo } from "../../interfaces/game/game-info"
 import PlayerNameAndId from '../../interfaces/player-name-and-id'
 import { frontEndService } from "../front-end-service/front-end-service"
 import { FrontEndState } from "../front-end-state/front-end-state"
+import './lobby.view.scss'
 
 interface LobbyProps{
   connectedPlayers: PlayerNameAndId[]
@@ -23,72 +24,14 @@ const Lobby_View = ({
   activeGames
 }: LobbyProps) => {
 
-  let {sendUpdate} = frontEndService
-
-
-  function handleCreateGame() {
-    sendUpdate({name: 'Create Game'})
-  }
-
-  function handleJoinGame(id) {
-    sendUpdate({
-      name: 'Join Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleLeaveGame(id) {
-    sendUpdate({
-      name: 'Leave Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleCancelGame(id) {
-    sendUpdate({
-      name: 'Cancel Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleStartGame(id) {
-    sendUpdate({
-      name: 'Start Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleReadyToggle(e, id) {
-    const readyValue: boolean = e.target.checked
-    console.log('ready checked ', readyValue);
-
-    sendUpdate({
-      name: 'Ready To Start Game',
-      data: { gameId: id, readyValue: readyValue }
-    })
-  }
-
-  function handleReJoinGame(gameId) {
-    sendUpdate({
-      name: 'Re-Join Game',
-      data: { gameId }
-    })
-  }
-
-  function submitGlobalChat(e) {
-    const message = e.target.value
-    sendUpdate({
-      name: 'Submit Global Chat',
-      data: { message }
-    })
-    e.target.value = ''
-  }
 
   const thisClientId: string = localStorage.getItem('clientId')
 
   const inGameCandidate: GameCandidate = gameCandidates.find((gameLobby: GameCandidate) =>
     gameLobby.clients.some((client: GameCandidateClient) => client.id == thisClientId)
   )
+  
+  let {sendUpdate} = frontEndService
 
   return (
     <div className='game-host'>
@@ -173,16 +116,73 @@ const Lobby_View = ({
       }
     </div>
   )
+  
+  
+
+
+  function handleCreateGame() {
+    sendUpdate({name: 'Create Game'})
+  }
+
+  function handleJoinGame(id) {
+    sendUpdate({
+      name: 'Join Game',
+      data: { gameId: id }
+    })
+  }
+
+  function handleLeaveGame(id) {
+    sendUpdate({
+      name: 'Leave Game',
+      data: { gameId: id }
+    })
+  }
+
+  function handleCancelGame(id) {
+    sendUpdate({
+      name: 'Cancel Game',
+      data: { gameId: id }
+    })
+  }
+
+  function handleStartGame(id) {
+    sendUpdate({
+      name: 'Start Game',
+      data: { gameId: id }
+    })
+  }
+
+  function handleReadyToggle(e, id) {
+    const readyValue: boolean = e.target.checked
+    console.log('ready checked ', readyValue);
+
+    sendUpdate({
+      name: 'Ready To Start Game',
+      data: { gameId: id, readyValue: readyValue }
+    })
+  }
+
+  function handleReJoinGame(gameId) {
+    sendUpdate({
+      name: 'Re-Join Game',
+      data: { gameId }
+    })
+  }
+
+  function submitGlobalChat(e) {
+    const message = e.target.value
+    sendUpdate({
+      name: 'Submit Global Chat',
+      data: { message }
+    })
+    e.target.value = ''
+  }
 }
 
-const mapStateToProps = ({
-  serverGameUIState: {playerManagerUiData: {
-    managerInfo: {money, nextFightBet}
-  }}
-}: FrontEndState) => {
-  return {
-    
-  }
-} 
+const mapStateToProps = (
+  {lobbyUiState}: FrontEndState
+): LobbyProps => {
+  return lobbyUiState
+}
 
 export default connect(mapStateToProps)(Lobby_View)

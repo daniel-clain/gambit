@@ -32,17 +32,17 @@ const NextFightPanel = ({
               next-fight__fighter 
               ${!!nextFightBet && nextFightBet.fighterName == fighter.name && 'next-fight__fighter--bet-idle'}
             `} 
-            key={`next-fight-fighters-${fighter}`} 
+            key={`next-fight-fighters-${fighter.name}`} 
           >
             {isYourFighter(fighter) && 
               <span className='next-fight__fighter__yours'></span>
             }
             <span className='next-fight__fighter__image'
             onClick={() => fighterSelected(fighter)}>             
-              <span className='next-fight__fighter__name'>{fighter}</span>
+              <span className='next-fight__fighter__name'>{fighter.name}</span>
             </span>
             <BetBox
-              fighterName={fighter}
+              fighterName={fighter.name}
             />
           </div>
         )}
