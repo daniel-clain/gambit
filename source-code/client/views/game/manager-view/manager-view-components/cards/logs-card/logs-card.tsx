@@ -1,4 +1,4 @@
-import { Modal_Partial } from "../../partials/modal/modal.partial"
+import { Modal_Partial } from "../../partials/modal/modal"
 
 interface LogsCardProps{
   activityLogs
@@ -6,7 +6,7 @@ interface LogsCardProps{
 const LogsCard = ({activityLogs}: LogsCardProps) => {
   const reversedLog = [...activityLogs].reverse()
   return <Modal_Partial>
-      <div className='group-panel activity-log'>
+      <div className='panel activity-log'>
         <div className='heading'>Activity Log</div>
         <div className='list'>
           {reversedLog.map((logItem, index) => 

@@ -10,7 +10,7 @@ import ManagersCard from './manager-view-components/cards/managers-card/managers
 import JobSeekersPanel from './manager-view-components/main-components/job-seekers-panel/job-seekers-panel'
 import YourFightersPanel from './manager-view-components/main-components/your-fighters-panel/your-fighters-panel'
 import LogsCard from './manager-view-components/cards/logs-card/logs-card'
-import { FrontEndState, ModalName } from "../../../front-end-state/front-end-state"
+import { FrontEndState, CardName } from "../../../front-end-state/front-end-state"
 import {connect} from 'react-redux'
 import { Employee, FighterInfo, JobSeeker, Loan } from "../../../../interfaces/server-game-ui-state.interface"
 import { ActivityLogItem } from "../../../../types/game/activity-log-item"
@@ -21,7 +21,7 @@ import './manager-view-style/manager-view.scss'
 
 
 interface ManagerViewProps{
-  activeModal: ModalName
+  activeModal: CardName
   money: number
   loan: Loan
   activityLogs: ActivityLogItem[]
@@ -53,7 +53,7 @@ const Manager_View = ({
   employees
 }: ManagerViewProps) => {
 
-  let {openModal} = frontEndService
+  let {showCard} = frontEndService
 
 
   return (
@@ -71,15 +71,15 @@ const Manager_View = ({
             </div>
             <div className="right-column">
               <JobSeekersPanel {...{jobSeekers}} />
-              <button onClick={() => openModal('Logs')}>Logs</button>
+              <button onClick={() => showCard('Logs')}>Logs</button>
             </div>
           </div>
 
-          <button onClick={() => openModal('Loan Shark')}>Loan Shark</button>
-          <button onClick={() => openModal('Known Fighters')}>Known Fighters</button>
-          <button onClick={() => openModal('Managers')}>Other Managers</button>
+          <button onClick={() => showCard('Loan Shark')}>Loan Shark</button>
+          <button onClick={() => showCard('Known Fighters')}>Known Fighters</button>
+          <button onClick={() => showCard('Managers')}>Other Managers</button>
         </div>
-        
+
       </div>
 
       {(() => {

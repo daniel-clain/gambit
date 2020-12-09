@@ -15,7 +15,7 @@ const JobSeekersPanel = ({jobSeekers}: JobSeekersPanelProps) => {
   let {fighterSelected, jobSeekerSelected, getKnownFighter} = frontEndService
     
   return (
-    <div className='group-panel job-seekers'>
+    <div className='panel job-seekers'>
       <div className='heading'>Job Seekers</div>
       <div className='list employee-list'>
         {jobSeekers.map((jobSeeker, i) =>

@@ -13,6 +13,7 @@ import ConnectionManager from "./disconnected-players"
 import { GameMessageReceiver } from "./update-communicators/server-receives-websocket-msg-from-client"
 import {GameMessageSender} from './update-communicators/server-sends-game-update-to-all'
 import {AbilityProcessor, getAbilityProcessor} from './abilities-reformed/ability-processor'
+import { FighterStateData } from "../client/views/game/fight-view/fight-results-view-components/fighter-states/fighter-states"
 
 
 interface Game_Props{
@@ -58,7 +59,7 @@ export function createGame(
     messageSender,
     players,
     gameType,
-    managers: players.map(createManager),
+    managers: players.map(player => createManager(player, messageSender.triggerUpdate)),
     fighters: gameUtility.createFighters(),
     professionals: gameUtility.createProfessionals(),
     paused: false,
@@ -72,7 +73,6 @@ export function createGame(
     abilityProcessor: null,
     messageReceiver: null
   }
-  game.managers.forEach(manager => manager.updateTrigger)
   
   const disconnectedPlayers = new DisconnectedPlayers(game)
   const connectionManager = disconnectedPlayers
@@ -93,7 +93,7 @@ export function createGame(
 
   
   function getGameUiState(player: Player): ServerGameUIState{
-    let {roundState, activeStage, preFightNewsStage} = game.roundController
+    let {roundState, activeStage, preFightNewsStage, activeFight:{fighters}} = game.roundController
     let {activeFight, managerOptionsTimeLeft, jobSeekers} = roundState
 
     return {
@@ -109,7 +109,21 @@ export function createGame(
         delayedExecutionAbilities: []
       },
       preFightNewsUiData: {newsItem: preFightNewsStage.activeNewsItem},
-      fightUiData: activeFight.fightUiData
+      fightUiData: {...activeFight.fightUiData, knownFighterStates: getPlayerKnownFighterStats(player, fighters)}
+    }
+
+    function getPlayerKnownFighterStats({manager}:Player, fighers: Fighter[]): FighterStateData[]{
+      return fighers.map(fighter => {
+        const {poisoned, injured, doping} = fighter.state
+        const foundFighter = manager.knownFighters?.find(kf => kf.name == fighter.name)
+        if(foundFighter){
+          const {activeContract,  goalContract, name, ...knownFighterStats} = foundFighter
+
+          return {name, poisoned, injured, doping, ...knownFighterStats}
+        }
+        return {name: fighter.name, poisoned, injured, doping, fitness: undefined, strength: undefined, aggression: undefined, intelligence: undefined, numberOfFights: undefined, manager: undefined, numberOfWins: undefined}
+
+      })
     }
   }
   function getInfo(): GameInfo {

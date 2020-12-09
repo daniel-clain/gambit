@@ -2,13 +2,13 @@ import FighterFighting from "./fighter-fighting"
 
 export default class FighterStats {
   
-  private _baseStamina
-  private _baseSpirit
-  private _baseSpeed
-  private _baseStrength
-  private _baseIntelligence
-  private _baseAggression
-  private _fitness
+  private _baseStamina: number
+  private _baseSpirit: number
+  private _baseSpeed: number
+  private _baseStrength: number
+  private _baseIntelligence: number
+  private _baseAggression: number
+  private _fitness: number
  
   maxStamina
   maxSpirit

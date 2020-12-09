@@ -7,7 +7,6 @@ import Octagon from "./octagon"
 import Coords from '../../interfaces/game/fighter/coords';
 import { FightReport } from "../../interfaces/game/fight-report"
 import { FightUiData } from "../../interfaces/game/fight-ui-data"
-import Game from "../game"
 import Manager from "../manager"
 import { ManagersBet } from "../../interfaces/game/managers-bet"
 import { Angle } from "../../types/game/angle"
@@ -176,7 +175,7 @@ export default class Fight {
       startCountdown: this._startCountdown,
       timeRemaining: this.timeRemaining,
       report: this._report,
-      fighters: this.fighters.map(fighter => fighter.fighting.getState()),
+      fighterFightStates: this.fighters.map(fighter => fighter.fighting.getState()),
       managersBets: this.managers.map((manager: Manager): ManagersBet => {
         return {
           name: manager.name,

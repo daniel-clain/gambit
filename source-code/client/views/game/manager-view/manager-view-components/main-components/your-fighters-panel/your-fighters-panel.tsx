@@ -15,7 +15,7 @@ const YourFightersPanel = ({yourFighters}: YourFightersPanelProps) => {
   let {fighterSelected} = frontEndService
     
   return (
-    <div className='group-panel your-fighters'>
+    <div className='panel your-fighters'>
       <div className='heading'>Your Fighters</div>
       <div className='list fighter-list'>
         {yourFighters.map(fighter =>

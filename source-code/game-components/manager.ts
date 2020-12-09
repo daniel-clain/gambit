@@ -51,14 +51,13 @@ export default interface Manager{
   activityLogs: ActivityLogItem[]
   otherManagers: KnownManager[]
   image: ManagerImage
-  updateTrigger: Subject<Player>
   getInfo(): ManagerInfo
   addToLog(activityLogItem: ActivityLogItem): void
   postFightReportItems: PostFightReportItem[]
   receiveUpdate(clientAction: ClientAction)
 }
 
-export const createManager = (player): Manager => {
+export const createManager = (player: Player, triggerUpdate: (player: Player) => void): Manager => {
 
   const manager: Manager = ({
     name: player.name,
@@ -76,10 +75,9 @@ export const createManager = (player): Manager => {
     otherManagers: [],
     retired: false,
     loan: {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0},
-    updateTrigger: new Subject<Player>(),
     addToLog: function(activityLogItem: ActivityLogItem){    
       this.activityLogs.push(activityLogItem)
-      this.updateTrigger.next(player)
+      triggerUpdate(player)
     },
     receiveUpdate,
     getInfo: (): ManagerInfo => {
@@ -99,12 +97,10 @@ export const createManager = (player): Manager => {
   function borrowMoney(amount: number){
     manager.money += amount
     manager.loan = {
-        ...manager.loan, 
-        debt: manager.loan.debt += amount,
-        amountPaidBackThisWeek: manager.loan.amountPaidBackThisWeek -= amount
-      }
-      manager.updateTrigger.next(player)
-      //addToLog({message: `Borrowed ${amount} from the loan shark`})
+      ...manager.loan, 
+      debt: manager.loan.debt += amount,
+      amountPaidBackThisWeek: manager.loan.amountPaidBackThisWeek -= amount
+    }
   }
   
   function paybackMoney(amount: number){
@@ -114,7 +110,6 @@ export const createManager = (player): Manager => {
       debt: manager.loan.debt -= amount,
       amountPaidBackThisWeek: manager.loan.amountPaidBackThisWeek += amount
     }
-    manager.updateTrigger.next(player)
   }
 
   function receiveUpdate(gameAction: ClientGameAction){
@@ -130,6 +125,8 @@ export const createManager = (player): Manager => {
       case 'Toggle Ready':
         manager.readyForNextFight = data.ready; break;
     }
+    
+    triggerUpdate(player)
   }
 
 }

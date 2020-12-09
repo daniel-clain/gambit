@@ -1,11 +1,11 @@
 import * as React from 'react';
 import './bet-box.scss'
 import {connect} from 'react-redux'
-import gameConfiguration from '../../../../../../../game-settings/game-configuration';
-import { Bet } from '../../../../../../../interfaces/game/bet';
-import ClientGameAction from '../../../../../../../types/client-game-actions';
-import { frontEndService } from '../../../../../../front-end-service/front-end-service';
-import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
+import gameConfiguration from '../../../../../../../../game-settings/game-configuration';
+import { Bet } from '../../../../../../../../interfaces/game/bet';
+import ClientGameAction from '../../../../../../../../types/client-game-actions';
+import { frontEndService } from '../../../../../../../front-end-service/front-end-service';
+import { FrontEndState } from '../../../../../../../front-end-state/front-end-state';
 
 export interface BetBoxProps{
   fighterName: string

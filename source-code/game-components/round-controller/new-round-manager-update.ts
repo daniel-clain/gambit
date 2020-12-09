@@ -39,22 +39,10 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
 
     expiredFighters.forEach(fighter => fighter.state.activeContract = null)
 
-    expiredFighters.forEach(fighter => {
-      fighter.state.manager = undefined
-      fighter.state.goalContract = null
-      const {strength, fitness, intelligence, aggression, numberOfFights, numberOfWins} = fighter.getInfo()
-      manager.knownFighters.push({
-        name: fighter.name,
-        goalContract: fighter.state.goalContract,
-        strength: {lastKnownValue: strength, roundsSinceUpdated: 0},
-        fitness: {lastKnownValue: fitness, roundsSinceUpdated: 0},
-        intelligence: {lastKnownValue: intelligence, roundsSinceUpdated: 0},
-        aggression: {lastKnownValue: aggression, roundsSinceUpdated: 0},
-        manager: {lastKnownValue: undefined, roundsSinceUpdated: 0},
-        numberOfFights: {lastKnownValue: numberOfFights, roundsSinceUpdated: 0},
-        numberOfWins: {lastKnownValue: numberOfWins, roundsSinceUpdated: 0},
-        activeContract: undefined
-      })
+    expiredFighters.forEach(expiredFighter => {
+      expiredFighter.state.manager = undefined
+      expiredFighter.state.goalContract = null
+      manager.knownFighters.push(expiredFighter.getInfo())
     })
   }
 
@@ -96,8 +84,8 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
       Object.keys(knownFighter).forEach(incrementStatRounds)
 
       function incrementStatRounds(key){
-        let {lastKnownValue} = knownFighter[key]
-        lastKnownValue && lastKnownValue ++
+        let kf = knownFighter[key]
+        kf.lastKnownValue && kf.lastKnownValue ++
       }
     })
   }

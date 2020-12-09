@@ -16,7 +16,7 @@ const EmployeesPanel = (props: EmployeesPanelProps) => {
   let {employeeSelected} = frontEndService
   
   return (
-  <div className='group-panel employees'>
+  <div className='panel employees'>
     <div className='heading'>Employees</div>
     <div className='list employee-list'>
       {props.employees.map(employee =>

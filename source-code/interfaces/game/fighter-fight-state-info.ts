@@ -20,8 +20,4 @@ export default interface FighterFightState{
   repositioning: boolean,
   direction: Angle
   trapped: boolean
-  poisoned: boolean
-  injured: boolean
-  doped: boolean
-  managerKnownStats: KnownManager
 }

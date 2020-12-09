@@ -2,11 +2,11 @@ import * as React from 'react'
 import { KnownFighterStatValue } from '../../../../../../interfaces/server-game-ui-state.interface'
 import './fighter-states.scss'
 
-interface FighterStateData{  
+export interface FighterStateData{  
   name: string
   poisoned: boolean
   injured: boolean
-  doped: boolean
+  doping: boolean
   strength: KnownFighterStatValue
   intelligence: KnownFighterStatValue
   fitness: KnownFighterStatValue
@@ -56,7 +56,7 @@ export default function FighterStates({fighterStates}: FighterStatesProps){
         <div className='fighter-state__state'>
           {fighter.poisoned && <div className="fighter-state__state__poisoned-icon"></div>}
           {fighter.injured && <div className="fighter-state__state__injured-icon"></div>}
-          {fighter.doped && <div className="fighter-state__state__doped-icon"></div>}
+          {fighter.doping && <div className="fighter-state__state__doped-icon"></div>}
         </div>
       </div>
     )}

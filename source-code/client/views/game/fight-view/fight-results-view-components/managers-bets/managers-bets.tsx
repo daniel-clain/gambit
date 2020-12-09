@@ -8,7 +8,7 @@ interface ManagersBetProps{
   managersBets: ManagersBet[]
 }
 
-export default function ManagersBets(props: ManagersBetProps){
+export const ManagersBets = (props: ManagersBetProps) => {
   return (    
     <div className="managers-bets">
       {props.managersBets.map(manager =>

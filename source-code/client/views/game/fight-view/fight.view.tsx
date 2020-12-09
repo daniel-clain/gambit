@@ -7,11 +7,14 @@ import { FightUiData } from '../../../../interfaces/game/fight-ui-data';
 import FighterFightState from '../../../../interfaces/game/fighter-fight-state-info';
 import Coords from '../../../../interfaces/game/fighter/coords';
 import './fight.scss'
-import { FighterStatesProps } from './fight-results-view-components/fighter-states/fighter-states';
+import FighterStates, { FighterStateData, FighterStatesProps } from './fight-results-view-components/fighter-states/fighter-states';
 import { FighterInfo } from '../../../../interfaces/server-game-ui-state.interface';
 import { FightReport } from '../../../../interfaces/game/fight-report';
 import { Bet } from '../../../../interfaces/game/bet';
 import { ManagersBet } from '../../../../interfaces/game/managers-bet';
+import { ManagersBets } from './fight-results-view-components/managers-bets/managers-bets';
+import FighterComponent from './fight-results-view-components/fighter/fighter.component';
+import { FrontEndState } from '../../../front-end-state/front-end-state';
 
 
 type FightExplosionAnimationStages =
@@ -24,12 +27,13 @@ type FightExplosionAnimationStages =
 interface FightUiProps{
   startCountdown: number
   timeRemaining: number 
-  fighters: FighterFightState[]
+  fighterFightStates: FighterFightState[]
+  fighterStates: FighterStateData[]
   report: FightReport
   managersBets: ManagersBet[]
 }
 
-const Fight_View = ({startCountdown, timeRemaining, fighters, report, managersBets}:FightUiProps) => {
+const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, fighterStates}:FightUiProps) => {
 
   const [fightExplosionAnimationStage, setFightExplosionAnimationStage] = useState<FightExplosionAnimationStages>('removed')
 
@@ -41,28 +45,16 @@ const Fight_View = ({startCountdown, timeRemaining, fighters, report, managersBe
       cornerPoints.push(Octagon.points[key])
     }
 
-    const fighterStatesProps: FighterStatesProps = {
-      fighterStates: fighters.map(fighter => {
-        return {
-          name: fighter.name,
-          poisoned: fighter.poisoned,
-          injured: fighter.injured,
-          doped: fighter.doped,
-          strength: fighter.strength,
-          intelligence: fighter.intelligence,
-          fitness: fighter.fitness,
-          aggression: fighter.aggression
-          numberOfFights: fighter.numberOfFights
-          numberOfWins
-        }
-      })
-    }
     
   return (
     <div className='fight-ui'>
       
-      <FighterStates fighterStates={fighterStatesProps.fighterStates} />
-      {managersBets ? <ManagersBets managersBets={managersBets}/> : ''}
+      <FighterStates fighterStates={fighterStates} />
+
+      {managersBets && 
+        <ManagersBets managersBets={managersBets}/>
+      }
+
       <div className="fight-ui__content">
         
         <div className="container">
@@ -79,7 +71,7 @@ const Fight_View = ({startCountdown, timeRemaining, fighters, report, managersBe
             {cornerPoints.map((point: Coords, index) => 
               <div className="point" key={index} style={{left: point.x, bottom: point.y}}></div>
             )}
-            {fighters.map((fighter, i) => 
+            {fighterFightStates.map((fighter, i) => 
               <FighterComponent key={i} fighterFightState={fighter}/>
             )}
           </div>
@@ -108,4 +100,10 @@ const Fight_View = ({startCountdown, timeRemaining, fighters, report, managersBe
   }
 }
 
-export default connect()(Fight_View)
+const mapStateToProps = ({
+  serverGameUIState: {fightUiData: {
+    startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates
+  }}
+}: FrontEndState) => ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates})
+
+export default connect(mapStateToProps)(Fight_View)

@@ -1,13 +1,13 @@
 import React from 'react'
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface'
 import { frontEndService } from '../../../../../../front-end-service/front-end-service'
-import { Modal_Partial } from '../../partials/modal/modal.partial'
+import { Modal_Partial } from '../../partials/modal/modal'
 
 export const KnownFightersCard = ({fighters}: {fighters: FighterInfo[]}) => {
   return (
     <Modal_Partial>
     
-      <div className='group-panel known-fighters'>
+      <div className='panel known-fighters'>
         <div className='heading'>Known Fighters</div>
         <div className='list fighter-list'>
           {fighters.map(fighter =>

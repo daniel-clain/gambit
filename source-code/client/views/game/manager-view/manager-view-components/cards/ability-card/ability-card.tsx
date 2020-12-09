@@ -11,12 +11,12 @@ import ClientGameAction from '../../../../../../../types/client-game-actions';
 import { ListOption } from '../../../../../../../types/game/list-option';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
-import Modal from '../../main-components/modal/modal';
 import InfoBox from '../../partials/info-box/info-box';
 import '../modal-card.scss';
 import SelectList from '../select-list/select-list';
 import './ability-card.scss';
 import {connect} from 'react-redux'
+import { Modal } from '../../partials/modal/modal';
 
 
 
@@ -154,7 +154,7 @@ const AbilityCard = ({
       <button className='standard-button ability-card__button' onClick={confirmButtonClicked.bind(this)}>Confirm</button>
       
       {state.listOptions &&
-        <Modal closeModal={closeSelectList.bind(this)}>
+        <Modal onClose={resetSelectList}>
           <SelectList 
             nextFightFighters={nextFightFighters}
             list={state.listOptions} 
@@ -219,7 +219,7 @@ const AbilityCard = ({
     }   
   }
 
-  function closeSelectList(){
+  function resetSelectList(){
     setState({...state, listOptions: undefined, selectListType: undefined})
   }
 
@@ -235,7 +235,7 @@ const AbilityCard = ({
 
       setState({...state, activeAbility})
     }
-    closeSelectList()
+    resetSelectList()
   }
 
   function setContractOfferValue(inputElement){

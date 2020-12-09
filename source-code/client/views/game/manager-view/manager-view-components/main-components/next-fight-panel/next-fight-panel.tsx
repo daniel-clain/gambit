@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import './next-fight-panel.scss'
-import BetBox from '../bet-box/bet-box'
+import BetBox from './bet-box/bet-box'
 import {connect} from 'react-redux'
 import { Bet } from '../../../../../../../interfaces/game/bet';
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface';

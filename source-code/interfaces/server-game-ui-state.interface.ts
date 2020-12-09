@@ -1,7 +1,7 @@
 import PlayerNameAndId from './player-name-and-id';
 import SkillLevel from '../types/game/skill-level.type';
 import { ActiveContract, GoalContract } from './game/contract.interface';
-import { ManagerInfo } from '../game-components/manager';
+import { KnownManager, ManagerInfo } from '../game-components/manager';
 import { Profession } from '../types/game/profession';
 import { AbilityName, AbilityData } from '../game-components/abilities-reformed/ability';
 import RoundStages from '../types/game/round-stage.type';
@@ -112,10 +112,9 @@ export interface FighterInfo{
   aggression: KnownFighterStatValue
   numberOfFights: KnownFighterStatValue
   numberOfWins: KnownFighterStatValue
-  manager: KnownFighterStatValue
+  manager: KnownManager
   activeContract: ActiveContract
   goalContract: GoalContract
-  poisoned
 }
 
 export interface PlayerManagerUiData{

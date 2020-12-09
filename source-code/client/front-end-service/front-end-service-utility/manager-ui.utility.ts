@@ -1,7 +1,7 @@
 
 import { AbilityData } from '../../../game-components/abilities-reformed/ability';
 import { Employee, FighterInfo, JobSeeker } from '../../../interfaces/server-game-ui-state.interface';
-import { DispatchAction, ModalName } from '../../front-end-state/front-end-state';
+import { DispatchAction, CardName } from '../../front-end-state/front-end-state';
 import { FrontEndService } from '../front-end-service';
 
 export interface ManagerUIUtility{
@@ -11,7 +11,7 @@ export interface ManagerUIUtility{
   getKnownFighter(name: string): FighterInfo
   employeeSelected(employee: Employee): void
   closeModal(): void
-  openModal(name: ModalName): void
+  showCard(name: CardName): void
 }
 
 const getManagerUiUtility = (FES: FrontEndService ): ManagerUIUtility => {
@@ -22,10 +22,10 @@ const getManagerUiUtility = (FES: FrontEndService ): ManagerUIUtility => {
     abilitySelected,
     getKnownFighter,
     closeModal,
-    openModal
+    showCard
   }
 
-  function openModal(name: ModalName){    
+  function showCard(name: CardName){    
     const dispatchAction: DispatchAction = {
       type: 'Open Modal',
       payload: name

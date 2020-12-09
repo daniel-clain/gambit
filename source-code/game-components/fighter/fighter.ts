@@ -6,6 +6,8 @@ import FighterFighting from './fighter-fighting/fighter-fighting';
 import { Skin } from '../../types/figher/skin';
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import { random } from "../../helper-functions/helper-functions";
+import Manager, { KnownManager } from "../manager";
+import FighterStats from "./fighter-fighting/stats";
 
 
 export default class Fighter{
@@ -62,19 +64,36 @@ export default class Fighter{
 
 
   getInfo(): FighterInfo{
+    const {numberOfFights, numberOfWins, activeContract, goalContract, manager} = this.state
     return {
       name: this.name, 
-      strength: this.fighting.stats.strength,
-      fitness: this.fighting.stats.fitness,
-      intelligence: this.fighting.stats.intelligence,
-      aggression: this.fighting.stats.aggression,
-      numberOfFights: this.state.numberOfFights,
-      numberOfWins: this.state.numberOfWins,
-      manager: this.state.manager && this.state.manager.name,
-      activeContract: this.state.activeContract,
-      goalContract: this.state.goalContract,
+      ...getStats(this.fighting.stats),
+      numberOfFights: {roundsSinceUpdated: 0, lastKnownValue: numberOfFights},
+      numberOfWins: {roundsSinceUpdated: 0, lastKnownValue: numberOfWins},
+      manager: getKnownManagerInfo(manager),
+      activeContract,
+      goalContract
     }
+
+
+    function getStats({strength, fitness, intelligence, aggression}: FighterStats){
+      return {
+        strength: {roundsSinceUpdated: 0, lastKnownValue: strength}, 
+        fitness: {roundsSinceUpdated: 0, lastKnownValue: fitness}, 
+        intelligence: {roundsSinceUpdated: 0, lastKnownValue: intelligence}, 
+        aggression: {roundsSinceUpdated: 0, lastKnownValue: aggression}, 
+      }
+    }
+    
+    function getKnownManagerInfo(manager: Manager): KnownManager{
+      if(!manager) return
+      
+      const {name, activityLogs, image} = manager
+      return {name, activityLogs, image}
+    } 
   }
+
+
   startFighting(){
     this.fighting.start()
   }

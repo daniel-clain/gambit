@@ -33,13 +33,13 @@ export const lobbyUiState: LobbyUiState = {
 }
 
 
-export type ModalName = 'Logs' | 'Loan Shark' | 'Known Fighters' | 'Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager'
+export type CardName = 'Logs' | 'Loan Shark' | 'Known Fighters' | 'Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager'
 
 export interface ClientGameUIState{
   selectedFighter?: FighterInfo
   selectedAbility?: AbilityData
   selectedJobseeker?: JobSeeker
-  activeModal?: ModalName
+  activeModal?: CardName
 }
 
 function getClientid(){

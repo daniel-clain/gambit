@@ -22,11 +22,8 @@ export default class FighterState{
   
   publicityRating = 0
 
-  numberOfFights: KnownFighterStatValue = {lastKnownValue: undefined, roundsSinceUpdated: undefined}
-  numberOfWins: KnownFighterStatValue = {lastKnownValue: undefined, roundsSinceUpdated: undefined}
-
-  private maxVal: 5
-  private minVal: 1
+  numberOfFights: number = 0
+  numberOfWins: number = 0
 
   constructor(private fighter: Fighter){}
 
