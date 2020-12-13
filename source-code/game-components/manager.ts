@@ -2,7 +2,7 @@
 
 import {Bet} from '../interfaces/game/bet';
 import {Subject} from 'rxjs';
-import {FighterInfo, Employee, Loan} from '../interfaces/server-game-ui-state.interface';
+import {FighterInfo, Employee, Loan, KnownFighterStat} from '../interfaces/server-game-ui-state.interface';
 import Fighter from "./fighter/fighter";
 import gameConfiguration from '../game-settings/game-configuration';
 import { AbilityName } from './abilities-reformed/ability';

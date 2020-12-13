@@ -15,8 +15,10 @@ import InfoBox from '../../partials/info-box/info-box';
 import '../modal-card.scss';
 import SelectList from '../select-list/select-list';
 import './ability-card.scss';
-import {connect} from 'react-redux'
+import {connect, useDispatch} from 'react-redux'
 import { Modal } from '../../partials/modal/modal';
+import { Dispatch } from 'redux';
+import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
 
 
@@ -37,6 +39,8 @@ const AbilityCard = ({
   nextFightFighters
 }: AbilityCardProps) => {
 
+  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+
 
   const [state, setState] = useState({
     listOptions: [] as ListOption[],
@@ -44,7 +48,7 @@ const AbilityCard = ({
     activeAbility: abilityData
   })
 
-  let {fighterSelected, closeModal, sendUpdate} = frontEndService
+  let {sendUpdate} = frontEndService
   let {listOptions, selectListType, activeAbility} = state
 
 
@@ -211,11 +215,12 @@ const AbilityCard = ({
     }
     sendUpdate(clientGameAction)
 
-    closeModal()
+    dispatch({type: 'Close Modal'})
+
     if(activeAbility.name == 'Research Fighter'){
-      let {knownFighters} = frontEndService.frontEndStore.getState().serverGameUIState.playerManagerUiData.managerInfo
+      let {knownFighters} = frontEndService.frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUiData.managerInfo
       const fighter: FighterInfo = knownFighters.find(f => f.name == target.name)
-      fighterSelected(fighter) 
+      dispatch({type: 'Fighter Selected', payload: fighter})
     }   
   }
 
@@ -263,20 +268,22 @@ const AbilityCard = ({
 }
 
 const mapStateToProps = ({
-  clientGameUIState: {activeModal},
-  serverGameUIState: {
+  clientUIState: {clientGameUIState: {
+    clientManagerUIState: {activeCard}
+  }},
+  serverUIState: {serverGameUIState: {
     playerManagerUiData: {
       managerInfo,
       managerOptionsTimeLeft,
       jobSeekers,
       nextFightFighters
     }
-  }
+  }}
 }: FrontEndState) => ({
   managerInfo,
   managerOptionsTimeLeft,
   jobSeekers,
   nextFightFighters,
-  activeModal
+  activeCard
 })
 export default connect(mapStateToProps)(AbilityCard)

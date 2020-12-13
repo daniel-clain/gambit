@@ -1,7 +1,7 @@
 import Game from "../game";
 import Manager from "../manager";
 import Fighter from "../fighter/fighter";
-import { Employee, FighterInfo, KnownFighterStatValue, Professional } from "../../interfaces/server-game-ui-state.interface";
+import { Employee, FighterInfo, KnownFighterStat, Professional } from "../../interfaces/server-game-ui-state.interface";
 import { loanSharkSettings } from "../../game-settings/loan-shark-settings";
 import { random } from "../../helper-functions/helper-functions";
 import { RoundController } from "./round-controller";

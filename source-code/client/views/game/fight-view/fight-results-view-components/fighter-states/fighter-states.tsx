@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { KnownFighterStatValue } from '../../../../../../interfaces/server-game-ui-state.interface'
+import { KnownFighterStat } from '../../../../../../interfaces/server-game-ui-state.interface'
 import './fighter-states.scss'
 
 export interface FighterStateData{  
@@ -7,12 +7,12 @@ export interface FighterStateData{
   poisoned: boolean
   injured: boolean
   doping: boolean
-  strength: KnownFighterStatValue
-  intelligence: KnownFighterStatValue
-  fitness: KnownFighterStatValue
-  aggression: KnownFighterStatValue
-  numberOfFights: KnownFighterStatValue
-  numberOfWins: KnownFighterStatValue
+  strength: KnownFighterStat
+  intelligence: KnownFighterStat
+  fitness: KnownFighterStat
+  aggression: KnownFighterStat
+  numberOfFights: KnownFighterStat
+  numberOfWins: KnownFighterStat
 }
 
 export interface FighterStatesProps{

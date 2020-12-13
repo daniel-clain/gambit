@@ -34,7 +34,7 @@ const Game_View = ({
   }
 
   return <>
-    {disconnectedPlayerVotes.length > 0 ?
+    {disconnectedPlayerVotes?.length > 0 ?
       <DisconnectedPlayerModal /> : ''
     }
     {getActiveView()}
@@ -42,7 +42,9 @@ const Game_View = ({
 }
 
 const mapStateToProps = ({
-  serverGameUIState: {disconnectedPlayerVotes, roundStage}
+  serverUIState: { serverGameUIState: {
+    disconnectedPlayerVotes, roundStage
+  }}
 }: FrontEndState) => ({
   disconnectedPlayerVotes,
   roundStage

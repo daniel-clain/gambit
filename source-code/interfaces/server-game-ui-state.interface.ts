@@ -98,7 +98,7 @@ export interface Employee extends Professional{
   activeContract: ActiveContract
 }
 
-export interface KnownFighterStatValue{
+export interface KnownFighterStat{
   lastKnownValue: any,
   roundsSinceUpdated: number
 }
@@ -106,13 +106,13 @@ export interface KnownFighterStatValue{
 
 export interface FighterInfo{
   name: string
-  strength: KnownFighterStatValue
-  fitness: KnownFighterStatValue
-  intelligence: KnownFighterStatValue
-  aggression: KnownFighterStatValue
-  numberOfFights: KnownFighterStatValue
-  numberOfWins: KnownFighterStatValue
-  manager: KnownManager
+  strength: KnownFighterStat
+  fitness: KnownFighterStat
+  intelligence: KnownFighterStat
+  aggression: KnownFighterStat
+  numberOfFights: KnownFighterStat
+  numberOfWins: KnownFighterStat
+  manager: KnownFighterStat
   activeContract: ActiveContract
   goalContract: GoalContract
 }

@@ -15,12 +15,14 @@ interface MainGameProps{
   inGame: boolean
 }
 
-frontEndService.connectToGameHost()
 
 const MainGame = ({
   connectedToGameHost, inGame
 }: MainGameProps) => {
 
+  if(!connectedToGameHost){    
+    frontEndService.connectToGameHost()
+  }
 
   if(!connectedToGameHost)
     return <Login_View />
@@ -33,12 +35,15 @@ const MainGame = ({
   }    
 }
 
-const mapStateToProps = (
-  {connectedToGameHost, inGame}: FrontEndState
-): MainGameProps => ({connectedToGameHost, inGame})
+const mapStateToProps = ({
+  serverUIState: {serverPreGameUIState, serverGameUIState}
+}: FrontEndState
+): MainGameProps => ({connectedToGameHost: !!serverPreGameUIState, inGame: !!serverGameUIState})
 
 
-
+const test = state => {
+  console.log(state);
+}
 
 const reactRenderingTag = document.createElement('react')
 document.body.appendChild(reactRenderingTag)

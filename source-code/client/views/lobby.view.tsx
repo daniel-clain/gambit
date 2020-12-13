@@ -7,14 +7,10 @@ import GameLobbyClient from "../../interfaces/game-candidate-client.interface"
 import { GameInfo } from "../../interfaces/game/game-info"
 import PlayerNameAndId from '../../interfaces/player-name-and-id'
 import { frontEndService } from "../front-end-service/front-end-service"
-import { FrontEndState } from "../front-end-state/front-end-state"
+import { FrontEndState, ServerPreGameUIState } from "../front-end-state/front-end-state"
 import './lobby.view.scss'
 
-interface LobbyProps{
-  connectedPlayers: PlayerNameAndId[]
-  gameCandidates: GameCandidate[]
-  globalChat: ChatMessage[]
-  activeGames: GameInfo[]
+interface LobbyProps extends ServerPreGameUIState{
 }
 
 const Lobby_View = ({
@@ -179,10 +175,10 @@ const Lobby_View = ({
   }
 }
 
-const mapStateToProps = (
-  {lobbyUiState}: FrontEndState
-): LobbyProps => {
-  return lobbyUiState
+const mapStateToProps = ({
+  serverUIState: {serverPreGameUIState}
+}: FrontEndState): LobbyProps => {
+  return serverPreGameUIState
 }
 
 export default connect(mapStateToProps)(Lobby_View)

@@ -40,7 +40,7 @@ export default class ManagerOptionsStage implements IStage {
         ){
           this.stageFinished()
         }
-        this.roundController.triggerUpdate()
+        //this.roundController.triggerUpdate()
       }, 1000)
 
 
@@ -59,6 +59,7 @@ export default class ManagerOptionsStage implements IStage {
 
   private stageFinished(){
     this.timeLeft = null
+    this.roundController.triggerUpdate()
     clearInterval(this.timesUpTimer)
     clearInterval(this.timeLeftInterval)
     

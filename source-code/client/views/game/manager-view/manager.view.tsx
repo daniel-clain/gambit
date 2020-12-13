@@ -10,18 +10,20 @@ import ManagersCard from './manager-view-components/cards/managers-card/managers
 import JobSeekersPanel from './manager-view-components/main-components/job-seekers-panel/job-seekers-panel'
 import YourFightersPanel from './manager-view-components/main-components/your-fighters-panel/your-fighters-panel'
 import LogsCard from './manager-view-components/cards/logs-card/logs-card'
-import { FrontEndState, CardName } from "../../../front-end-state/front-end-state"
-import {connect} from 'react-redux'
+import { FrontEndState } from "../../../front-end-state/front-end-state"
+import {connect, useDispatch} from 'react-redux'
 import { Employee, FighterInfo, JobSeeker, Loan } from "../../../../interfaces/server-game-ui-state.interface"
 import { ActivityLogItem } from "../../../../types/game/activity-log-item"
 import { frontEndService } from "../../../front-end-service/front-end-service"
 import { Bet } from "../../../../interfaces/game/bet"
 
 import './manager-view-style/manager-view.scss'
+import { ActiveCard, ClientManagerUIAction } from "../../../front-end-state/reducers/manager-ui.reducer"
+import { Dispatch } from "redux"
+import FighterCard from "./manager-view-components/cards/fighter-card/fighter-card"
 
 
 interface ManagerViewProps{
-  activeModal: CardName
   money: number
   loan: Loan
   activityLogs: ActivityLogItem[]
@@ -34,6 +36,7 @@ interface ManagerViewProps{
   nextFightFighters: FighterInfo[]
   yourFighters: FighterInfo[]
   employees: Employee[]
+  activeCard: ActiveCard
 }
 
 
@@ -43,17 +46,17 @@ const Manager_View = ({
   activityLogs, 
   knownFighters, 
   otherManagers, 
-  activeModal,
   nextFightBet,
   managerOptionsTimeLeft,
   actionPoints,
   nextFightFighters,
   yourFighters,
   jobSeekers,
-  employees
+  employees,
+  activeCard
 }: ManagerViewProps) => {
 
-  let {showCard} = frontEndService
+  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
 
 
   return (
@@ -71,23 +74,24 @@ const Manager_View = ({
             </div>
             <div className="right-column">
               <JobSeekersPanel {...{jobSeekers}} />
-              <button onClick={() => showCard('Logs')}>Logs</button>
+              <button onClick={() => dispatch({type: 'Show Activity Log'})}>Logs</button>
             </div>
           </div>
 
-          <button onClick={() => showCard('Loan Shark')}>Loan Shark</button>
-          <button onClick={() => showCard('Known Fighters')}>Known Fighters</button>
-          <button onClick={() => showCard('Managers')}>Other Managers</button>
+          <button onClick={() => dispatch({type: 'Show Loan Shark Card'})}>Loan Shark</button>
+          <button onClick={() => dispatch({type: 'Show Known Fighters'})}>Known Fighters</button>
+          <button onClick={() => dispatch({type: 'Show Known Managers'})}>Other Managers</button>
         </div>
 
       </div>
 
       {(() => {
-        switch(activeModal){
-          case 'Logs': return <LogsCard {...{activityLogs}}  />
+        switch(activeCard?.name){
+          case 'Fighter': return <FighterCard />
+          case 'Activity Log': return <LogsCard {...{activityLogs}}  />
           case 'Loan Shark': return <LoanSharkCard {...{loan, money}} />
           case 'Known Fighters': return <KnownFightersCard fighters={knownFighters}  />
-          case 'Managers': return <ManagersCard {...{otherManagers}} />
+          case 'Known Managers': return <ManagersCard {...{otherManagers}} />
           case 'Ability': return <AbilityCard />
         }
       })()}
@@ -97,8 +101,10 @@ const Manager_View = ({
 }
 
 const mapStateToProps = ({
-  clientGameUIState: {activeModal},
-  serverGameUIState: {
+  clientUIState: { clientGameUIState: {
+    clientManagerUIState: {activeCard}
+  }},
+  serverUIState: { serverGameUIState: {
     playerManagerUiData: {
       managerInfo: {
         money, activityLogs, actionPoints, nextFightBet, 
@@ -108,8 +114,9 @@ const mapStateToProps = ({
       jobSeekers,
       nextFightFighters
     }
-  }
-}: FrontEndState): ManagerViewProps => ({
+  }}
+}: FrontEndState): 
+ManagerViewProps => ({
   money,
   actionPoints,
   activityLogs,
@@ -120,10 +127,11 @@ const mapStateToProps = ({
   jobSeekers,
   nextFightFighters,
   employees,
-  activeModal,
+  activeCard,
   knownFighters,
   yourFighters
 })
+
 
 export default connect(mapStateToProps)(Manager_View)
 

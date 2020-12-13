@@ -9,7 +9,7 @@ import AbilityBlock from '../ability-block/ability-block';
 import Fights from '../../partials/fights-and-wins/fights';
 import Wins from '../../partials/fights-and-wins/wins';
 import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
-import { ManagerInfo } from '../../../../../../../game-components/manager';
+import { KnownManager, ManagerInfo } from '../../../../../../../game-components/manager';
 import { JobSeeker, FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import { abilityServiceClient } from '../../../../../../../game-components/abilities-reformed/ability-service-client';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
@@ -20,16 +20,17 @@ import { frontEndService } from '../../../../../../front-end-service/front-end-s
 export interface FighterCardProps {
   jobSeekers: JobSeeker[]
   delayedExecutionAbilities: AbilityData[]
-  managerInfo: ManagerInfo  
   fighter: FighterInfo
+  thisPlayersName: string
 
 }
 
-const FighterCard = ({managerInfo, delayedExecutionAbilities, fighter}: FighterCardProps) => {
+const FighterCard = ({delayedExecutionAbilities, fighter, thisPlayersName}: FighterCardProps) => {
 
-  let {abilitySelected} = frontEndService
 
-  const isYourFighter = fighter.manager.lastKnownValue == managerInfo.name
+  console.log(fighter)
+  const {manager} = fighter
+  const isYourFighter = manager?.lastKnownValue == thisPlayersName
 
 
   let goalContractInfo: InfoBoxListItem[]
@@ -56,13 +57,13 @@ const FighterCard = ({managerInfo, delayedExecutionAbilities, fighter}: FighterC
   let infoBoxList: InfoBoxListItem[]
 
   if (isYourFighter) {
-    const {strength, fitness, intelligence, aggression, manager} = fighter
+    const {strength, fitness, intelligence, aggression} = fighter
     infoBoxList = [
       { label: 'Strength', value: strength.lastKnownValue },
       { label: 'Fitness', value: fitness.lastKnownValue },
       { label: 'Intelligence', value: intelligence.lastKnownValue },
       { label: 'Aggression', value: aggression.lastKnownValue },
-      { label: 'Manager', value: manager.lastKnownValue }
+      { label: 'Manager', value: thisPlayersName }
     ]
   }
   else {
@@ -145,7 +146,6 @@ const FighterCard = ({managerInfo, delayedExecutionAbilities, fighter}: FighterC
           (clientAbility: ClientAbility) => (
             <AbilityBlock
               key={clientAbility.name}
-              managerInfo={managerInfo}
               delayedExecutionAbilities={delayedExecutionAbilities}
               abilityData={{
                 name: clientAbility.name,
@@ -157,7 +157,6 @@ const FighterCard = ({managerInfo, delayedExecutionAbilities, fighter}: FighterC
                 },
                 source: undefined
               }}
-              onSelected={abilitySelected}
             />
           )
         )}
@@ -170,17 +169,21 @@ const FighterCard = ({managerInfo, delayedExecutionAbilities, fighter}: FighterC
 
 
 const mapStateToProps = ({
-  serverGameUIState: {playerManagerUiData: {
-    jobSeekers, delayedExecutionAbilities, managerInfo
+  serverUIState: {serverGameUIState: {
+    playerManagerUiData: {
+      jobSeekers, delayedExecutionAbilities
+    }
   }},
-  clientGameUIState: {
-    selectedFighter
+  clientUIState: {
+    clientPreGameUIState: {clientName},
+    clientGameUIState: {
+      clientManagerUIState: {activeCard: {data}}
+    }
   }
-
 }: FrontEndState): FighterCardProps => ({
-  jobSeekers, delayedExecutionAbilities, managerInfo, fighter: selectedFighter
+  jobSeekers, delayedExecutionAbilities, thisPlayersName: clientName, fighter: data
 })
 
 
-export default connect()
+export default connect(mapStateToProps)
 (FighterCard)

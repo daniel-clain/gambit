@@ -2,11 +2,13 @@
 import * as React from 'react';
 import './next-fight-panel.scss'
 import BetBox from './bet-box/bet-box'
-import {connect} from 'react-redux'
+import {connect, useDispatch} from 'react-redux'
 import { Bet } from '../../../../../../../interfaces/game/bet';
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
+import { Dispatch } from 'redux';
+import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
 export interface NextFightPanelProps{
   nextFightFighters: FighterInfo[]
@@ -20,7 +22,7 @@ const NextFightPanel = ({
   nextFightFighters
 }: NextFightPanelProps) => {
 
-  const {fighterSelected} = frontEndService
+  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
   
   return (
     <div className='next-fight'>
@@ -38,7 +40,7 @@ const NextFightPanel = ({
               <span className='next-fight__fighter__yours'></span>
             }
             <span className='next-fight__fighter__image'
-            onClick={() => fighterSelected(fighter)}>             
+            onClick={() => dispatch({type:'Fighter Selected', payload: fighter})}>             
               <span className='next-fight__fighter__name'>{fighter.name}</span>
             </span>
             <BetBox
@@ -57,10 +59,10 @@ const NextFightPanel = ({
 
 export default connect(
   ({
-    serverGameUIState: {playerManagerUiData: {
+    serverUIState: {serverGameUIState: {playerManagerUiData: {
       nextFightFighters,
       managerInfo: {yourFighters, nextFightBet}
-    }}
+    }}}
   }: FrontEndState)
   : NextFightPanelProps => {
     return {

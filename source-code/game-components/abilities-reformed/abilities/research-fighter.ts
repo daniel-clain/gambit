@@ -1,7 +1,7 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData, AbilitySourceInfo } from "../ability"
 
 import Game from "../../game"
-import { KnownFighter, FighterInfo, Employee, KnownFighterStatValue } from "../../../interfaces/server-game-ui-state.interface"
+import { KnownFighter, FighterInfo, Employee, KnownFighterStat } from "../../../interfaces/server-game-ui-state.interface"
 import Manager from "../../manager"
 import SkillLevel from "../../../types/game/skill-level.type"
 import { AbilitySourceType } from "../../../types/game/ability-source-type"
@@ -65,7 +65,7 @@ const getRandomStatsFromFighter = (sourceType: AbilitySourceType, skillLevel: Sk
     const alreadyHasThatStat = !!returnStatsObj[randomKey]
     const alreadyDiscoveredThatStatThisTurn = existingFighter.knownStats[randomKey] && existingFighter.knownStats[randomKey].roundsSinceUpdated === 0
     if(!alreadyHasThatStat && !alreadyDiscoveredThatStatThisTurn)
-      returnStatsObj[randomKey] = <KnownFighterStatValue>{lastKnownValue: fighterInfo[randomKey], roundsSinceUpdated: 0}
+      returnStatsObj[randomKey] = <KnownFighterStat>{lastKnownValue: fighterInfo[randomKey], roundsSinceUpdated: 0}
     
   }
   return returnStatsObj

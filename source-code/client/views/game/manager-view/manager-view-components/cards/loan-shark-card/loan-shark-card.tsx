@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Loan } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import ClientGameAction from '../../../../../../../types/client-game-actions';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
+import { Modal } from '../../partials/modal/modal';
 
 export interface LoanSharkCardProps{
   loan: Loan
@@ -30,59 +31,61 @@ export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
 
 
   return (
-    <div className='card loan-shark-card'>
-      <div className='heading'>Loan Shark</div>
-      <div className="card__two-columns">
+    <Modal>
+      <div className='card loan-shark-card'>
+        <div className='heading'>Loan Shark</div>
+        <div className="card__two-columns">
 
-        <div className='loan-shark-card__image card__two-columns__left'></div>
+          <div className='loan-shark-card__image card__two-columns__left'></div>
 
-        <div className='card__two-columns__right'>
-          <div className='loan-shark-card__info'>
-            Hey buddy, ill loan you money, but each week you don't pay me back you build up intrest, 10% of what you owe added on each week. If you owe me more than 500 and you dont pay me back in 3 weeks...... well, you'll find out what happens, and you wont like it.....
-          </div>            
+          <div className='card__two-columns__right'>
+            <div className='loan-shark-card__info'>
+              Hey buddy, ill loan you money, but each week you don't pay me back you build up intrest, 10% of what you owe added on each week. If you owe me more than 500 and you dont pay me back in 3 weeks...... well, you'll find out what happens, and you wont like it.....
+            </div>            
+          </div>
         </div>
-      </div>
-      <div className='loan-shark-card__debt'>
-        Your Debt is: {debt}
-      </div>
-      {weeksOverdue > 0 && 
         <div className='loan-shark-card__debt'>
-          You are <strong>{weeksOverdue}</strong> week{weeksOverdue > 1 && 's'} overdue!
+          Your Debt is: {debt}
         </div>
-      }
-      
-      <div className='loan-shark-card__loan-tool'>
-        <div className='loan-shark-card__loan-tool__left'>
-          <div className='loan-shark-card__loan-tool__heading'>Pay Off Debt</div>
-          <div className='pay-back-input'>
-            Pay back amount: 
-            <input 
-              value={paybackAmount > 0 ? paybackAmount : ''} 
-              onChange={e => updatePaybackAmount(e.target.value)} 
-              onKeyPress={handleEnterEvent}
-              type='number' step='10' min='0' max='500' 
-            />
-            <button className='standard-button payback-money-submit' onClick={paybackMoney}>Submit</button>
+        {weeksOverdue > 0 && 
+          <div className='loan-shark-card__debt'>
+            You are <strong>{weeksOverdue}</strong> week{weeksOverdue > 1 && 's'} overdue!
           </div>
-        </div>
+        }
         
-        <div className='loan-shark-card__loan-tool__right'>
-          <div className='loan-shark-card__loan-tool__heading'>Get Loan</div>
-          <div className='get-loan-input'>
-            Borrow amount: 
-            <input 
-              value={borrowAmount > 0 ? borrowAmount : ''} 
-              onChange={updateBorrowAmount}  
-              onKeyPress={handleEnterEvent}
-              type='number' step='10' min='0' max='500' 
-            />
+        <div className='loan-shark-card__loan-tool'>
+          <div className='loan-shark-card__loan-tool__left'>
+            <div className='loan-shark-card__loan-tool__heading'>Pay Off Debt</div>
+            <div className='pay-back-input'>
+              Pay back amount: 
+              <input 
+                value={paybackAmount > 0 ? paybackAmount : ''} 
+                onChange={e => updatePaybackAmount(e.target.value)} 
+                onKeyPress={handleEnterEvent}
+                type='number' step='10' min='0' max='500' 
+              />
+              <button className='standard-button payback-money-submit' onClick={paybackMoney}>Submit</button>
+            </div>
           </div>
-          <button className='standard-button borrow-money-submit'
-            onClick={borrowMoney}>Submit</button>
-        </div>
+          
+          <div className='loan-shark-card__loan-tool__right'>
+            <div className='loan-shark-card__loan-tool__heading'>Get Loan</div>
+            <div className='get-loan-input'>
+              Borrow amount: 
+              <input 
+                value={borrowAmount > 0 ? borrowAmount : ''} 
+                onChange={updateBorrowAmount}  
+                onKeyPress={handleEnterEvent}
+                type='number' step='10' min='0' max='500' 
+              />
+            </div>
+            <button className='standard-button borrow-money-submit'
+              onClick={borrowMoney}>Submit</button>
+          </div>
 
-      </div>        
-    </div>
+        </div>        
+      </div>
+    </Modal>
   )
   
 

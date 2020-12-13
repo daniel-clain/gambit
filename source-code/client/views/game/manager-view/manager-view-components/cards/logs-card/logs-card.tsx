@@ -1,11 +1,12 @@
-import { Modal_Partial } from "../../partials/modal/modal"
+import { Modal } from "../../partials/modal/modal"
+import * as React from "react"
 
 interface LogsCardProps{
   activityLogs
 }
 const LogsCard = ({activityLogs}: LogsCardProps) => {
   const reversedLog = [...activityLogs].reverse()
-  return <Modal_Partial>
+  return <Modal>
       <div className='panel activity-log'>
         <div className='heading'>Activity Log</div>
         <div className='list'>
@@ -21,7 +22,7 @@ const LogsCard = ({activityLogs}: LogsCardProps) => {
           )}
         </div>
       </div>
-  </Modal_Partial>
+  </Modal>
 }
 
 export default LogsCard

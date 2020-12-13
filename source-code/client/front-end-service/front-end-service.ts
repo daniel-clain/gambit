@@ -5,14 +5,12 @@ import { DispatchAction, FrontEndState, setupFrontEndStore } from "../front-end-
 
 import {BackEndConnection, backEndConnection} from './front-end-service-utility/backend-connection.utility'
 import getPreGameUIUtility, { PreGameUIUtility } from './front-end-service-utility/pre-game-ui.utility'
-import getManagerUiUtility, { ManagerUIUtility } from './front-end-service-utility/manager-ui.utility'
 
 
 export interface FrontEndService 
   extends 
     BackEndConnection, 
-    PreGameUIUtility,
-    ManagerUIUtility  
+    PreGameUIUtility 
 {
   frontEndStore: Redux.Store<FrontEndState>
 }
@@ -30,7 +28,6 @@ export const setupFrontEndService = (): FrontEndService => {
 
   frontEndServiceInstance = {
     ...frontEndServiceInstance, 
-    ...getManagerUiUtility(frontEndServiceInstance),
     ...getPreGameUIUtility(frontEndServiceInstance)
   } as FrontEndService
 

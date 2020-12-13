@@ -91,9 +91,9 @@ const BetBox = ({
 
 
 function mapStateToProps({
-  serverGameUIState: {playerManagerUiData: {
+  serverUIState: { serverGameUIState: {playerManagerUiData: {
     managerInfo: {money, nextFightBet}
-  }}
+  }}}
 }: FrontEndState) {
   return {
     money,

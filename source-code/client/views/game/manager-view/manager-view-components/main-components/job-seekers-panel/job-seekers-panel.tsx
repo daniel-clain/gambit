@@ -1,18 +1,21 @@
 
 import * as React from 'react';
-import { JobSeeker } from '../../../../../../../interfaces/server-game-ui-state.interface';
+import { FighterInfo, JobSeeker } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import '../employee-list.scss'
-import {connect} from 'react-redux'
+import {connect, useDispatch} from 'react-redux'
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
+import { Dispatch } from 'redux';
+import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
 export interface JobSeekersPanelProps{
   jobSeekers: JobSeeker[]
+  knownFighters: FighterInfo[]
 }
 
-const JobSeekersPanel = ({jobSeekers}: JobSeekersPanelProps) => {
+const JobSeekersPanel = ({jobSeekers, knownFighters}: JobSeekersPanelProps) => {
 
-  let {fighterSelected, jobSeekerSelected, getKnownFighter} = frontEndService
+  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
     
   return (
     <div className='panel job-seekers'>
@@ -23,9 +26,12 @@ const JobSeekersPanel = ({jobSeekers}: JobSeekersPanelProps) => {
             className={'list__row'} 
             key={`${jobSeeker.name}${i}`} 
             onClick={() => jobSeeker.type == 'Fighter' ?
-            fighterSelected(getKnownFighter(jobSeeker.name)) :
-            jobSeekerSelected(jobSeeker)
-          }
+              dispatch({
+                type: 'Fighter Selected', 
+                payload: knownFighters.find(f => f.name == jobSeeker.name)
+              }) :
+              dispatch({type: 'Fighter Selected', payload: jobSeeker})
+            }
           >
             <span className='list__row__image'></span>
             <span className='list__row__name'>{jobSeeker.name}</span>
@@ -42,6 +48,6 @@ const JobSeekersPanel = ({jobSeekers}: JobSeekersPanelProps) => {
   
 };
 const mapStateToProps = ({
-  serverGameUIState: {playerManagerUiData: {jobSeekers}}
-}: FrontEndState): JobSeekersPanelProps => ({jobSeekers})
+  serverUIState:{ serverGameUIState: {playerManagerUiData: {jobSeekers, managerInfo: {knownFighters}}}}
+}: FrontEndState): JobSeekersPanelProps => ({jobSeekers, knownFighters})
 export default connect(mapStateToProps)(JobSeekersPanel)

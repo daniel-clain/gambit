@@ -54,22 +54,21 @@ const Headbar = ({
   )
 }
 
+const mapStateToProps = ({
+  serverUIState: {serverGameUIState: {playerManagerUiData: {
+    managerOptionsTimeLeft,
+    managerInfo: {actionPoints, money, nextFightBet}
+  }}}
+}: FrontEndState) : HeadbarProps => {
+  return {
+    managerOptionsTimeLeft,
+    money,
+    nextFightBet,
+    actionPoints
+  } 
+}
 
-export default connect(
-  ({
-    serverGameUIState: {playerManagerUiData: {
-      managerOptionsTimeLeft,
-      managerInfo: {actionPoints, money, nextFightBet}
-    }}
-  }: FrontEndState)
-  : HeadbarProps => {
-    return {
-      managerOptionsTimeLeft,
-      money,
-      nextFightBet,
-      actionPoints
-    } 
-  }
-)
-(Headbar);
+
+
+export default connect(mapStateToProps)(Headbar);
 

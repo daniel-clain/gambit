@@ -84,11 +84,7 @@ export default class FighterFighting {
       },
       spirit: this.spirit,
       repositioning: this.movement.moveActionInProgress == 'reposition',
-      direction: this.movement.movingDirection,
-      poisoned: this.fighter.state.poisoned,
-      doped: this.fighter.state.doping,
-      injured: this.fighter.state.injured,
-      managerKnownStats: undefined
+      direction: this.movement.movingDirection
     }
   }
 
