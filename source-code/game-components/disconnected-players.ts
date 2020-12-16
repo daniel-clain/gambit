@@ -1,30 +1,30 @@
 import Game from "./game"
-import PlayerNameAndId from "../interfaces/player-name-and-id"
 import { DisconnectedPlayerVote } from "../interfaces/server-game-ui-state.interface"
 import { Subject } from "rxjs"
 import { Socket } from "socket.io"
+import { ClientNameAndID } from "../server/game-host"
 
  export default class ConnectionManager {
 
   constructor(public game: Game){}
    
-  disconnectedPlayers: PlayerNameAndId[] = []
+  disconnectedPlayers: ClientNameAndID[] = []
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
   playerDisconnectedSubject: Subject<void> = new Subject()
 
   
-  playerDisconnected(disconnectingPlayer: PlayerNameAndId){
+  clientDisconnected(disconnectingClient: ClientNameAndID){
     this.game.pause()
 
     if(this.disconnectedPlayers.length == 0){
       this.disconnectedPlayerVotes =
       this.game.players
-      .filter(player => player.id !== disconnectingPlayer.id)
+      .filter(player => player.id !== disconnectingClient.id)
       .map(player => {
         return  {
           player: {name: player.name, id: player.id},
           playerVotesToDrop: [{
-            disconnectedPlayer: disconnectingPlayer,
+            disconnectedPlayer: disconnectingClient,
             drop: false
           }]
         }
@@ -32,12 +32,12 @@ import { Socket } from "socket.io"
     }
     
     if(this.disconnectedPlayers.length > 0){
-      const disconnectingPlayerIndex = this.disconnectedPlayerVotes.findIndex(playerVotes => playerVotes.player.id == disconnectingPlayer.id)
-      this.disconnectedPlayerVotes.splice(disconnectingPlayerIndex, 1)
+      const disconnectingClientIndex = this.disconnectedPlayerVotes.findIndex(playerVotes => playerVotes.player.id == disconnectingClient.id)
+      this.disconnectedPlayerVotes.splice(disconnectingClientIndex, 1)
 
       this.disconnectedPlayerVotes.forEach(playerVotes => {
         playerVotes.playerVotesToDrop.push({
-          disconnectedPlayer: disconnectingPlayer,
+          disconnectedPlayer: disconnectingClient,
           drop: false
         })
       })
@@ -45,12 +45,12 @@ import { Socket } from "socket.io"
     }
 
     
-    this.disconnectedPlayers.push(disconnectingPlayer)
+    this.disconnectedPlayers.push(disconnectingClient)
 
     this.playerDisconnectedSubject.next()
   }
   
-  playerReconnected(reconnectingPlayer: PlayerNameAndId, socket: Socket){
+  playerReconnected(reconnectingPlayer: ClientNameAndID, socket: Socket){
     const player = this.game.players.find(player => player.id == reconnectingPlayer.id)
 
     player.socketObj = socket
@@ -84,7 +84,7 @@ import { Socket } from "socket.io"
 
   }
 
-  playerVoteToggle(votingPlayer: PlayerNameAndId, disconnectedPlayer: PlayerNameAndId, vote: boolean){
+  playerVoteToggle(votingPlayer: ClientNameAndID, disconnectedPlayer: ClientNameAndID, vote: boolean){
 
     const playerVote = this.disconnectedPlayerVotes.find(playerVotes => playerVotes.player.id == votingPlayer.id)
 
@@ -100,7 +100,7 @@ import { Socket } from "socket.io"
 
   checkIfAllPlayersDropDisconnectedPlayer(){
     const disconnectedPlayersVotedOut: {
-      disconnectedPlayer: PlayerNameAndId,
+      disconnectedPlayer: ClientNameAndID,
       allVoteToDrop: boolean
     }[] = this.disconnectedPlayerVotes[0].playerVotesToDrop.map(disconnectedPlayerVote => ({disconnectedPlayer: disconnectedPlayerVote.disconnectedPlayer, allVoteToDrop: disconnectedPlayerVote.drop}))
 
@@ -123,7 +123,7 @@ import { Socket } from "socket.io"
 
   }
 
-  dropDisconnectedPlayer(droppedPlayer: PlayerNameAndId){
+  dropDisconnectedPlayer(droppedPlayer: ClientNameAndID){
     /* const player = this.game.playersUpdateCommunicatorsWebsocket.findIndex(playerCommunicator => playerCommunicator.id == droppedPlayer.id)
 
     this.game.playersUpdateCommunicatorsWebsocket.splice(indexOfPlayerCommunicator, 1)

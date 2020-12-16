@@ -2,7 +2,6 @@ import * as React from 'react'
 import {useDispatch} from 'react-redux'
 import { Dispatch } from 'redux'
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface'
-import { frontEndService } from '../../../../../../front-end-service/front-end-service'
 import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer'
 import { Modal } from '../../partials/modal/modal'
 

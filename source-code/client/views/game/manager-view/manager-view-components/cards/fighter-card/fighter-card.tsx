@@ -5,16 +5,15 @@ import {connect} from 'react-redux'
 import './fighter-card.scss';
 import '../modal-card.scss';
 import InfoBox from '../../partials/info-box/info-box';
-import AbilityBlock from '../ability-block/ability-block';
+import AbilityBlock from '../../partials/ability-block/ability-block';
 import Fights from '../../partials/fights-and-wins/fights';
 import Wins from '../../partials/fights-and-wins/wins';
 import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
-import { KnownManager, ManagerInfo } from '../../../../../../../game-components/manager';
 import { JobSeeker, FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import { abilityServiceClient } from '../../../../../../../game-components/abilities-reformed/ability-service-client';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
-import { frontEndService } from '../../../../../../front-end-service/front-end-service';
+import { Modal } from '../../partials/modal/modal';
 
 
 export interface FighterCardProps {
@@ -89,80 +88,82 @@ const FighterCard = ({delayedExecutionAbilities, fighter, thisPlayersName}: Figh
 
 
   return (
-    <div className='card fighter-card'>
-      <div className='card__heading heading'>{fighter.name}</div>
-      <div className="card__two-columns">
-        <div className='card__two-columns__left fighter-card__image'></div>
-        <div className='card__two-columns__right'>
-          {isYourFighter ?
-            <div className='fighter-card__fight-experience'>
-              <Fights numberOfFights={fighter.numberOfFights.lastKnownValue}/>
-              <Wins numberOfWins={fighter.numberOfWins.lastKnownValue}/>
-            </div>
-            :
-            <div className='fighter-card__fight-experience'>                
-              <Fights 
-                numberOfFights={
-                  fighter.numberOfFights ?
-                  `${fighter.numberOfFights.lastKnownValue} 
-                  (${fighter.numberOfFights.roundsSinceUpdated})`
-                  : '?'
-                }
+    <Modal>
+      <div className='card fighter-card'>
+        <div className='card__heading heading'>{fighter.name}</div>
+        <div className="card__two-columns">
+          <div className='card__two-columns__left fighter-card__image'></div>
+          <div className='card__two-columns__right'>
+            {isYourFighter ?
+              <div className='fighter-card__fight-experience'>
+                <Fights numberOfFights={fighter.numberOfFights.lastKnownValue}/>
+                <Wins numberOfWins={fighter.numberOfWins.lastKnownValue}/>
+              </div>
+              :
+              <div className='fighter-card__fight-experience'>                
+                <Fights 
+                  numberOfFights={
+                    fighter.numberOfFights ?
+                    `${fighter.numberOfFights.lastKnownValue} 
+                    (${fighter.numberOfFights.roundsSinceUpdated})`
+                    : '?'
+                  }
+                />
+                <Wins 
+                  numberOfWins={
+                    fighter.numberOfWins ?
+                    `${fighter.numberOfWins.lastKnownValue} 
+                    (${fighter.numberOfWins.roundsSinceUpdated})`
+                    : '?'
+                  }
+                />
+              </div>
+            }
+            <div className='fighter-card__stats'>
+              <InfoBox
+                heading={`${!isYourFighter ? 'Known ' : ''}Stats`}
+                list={infoBoxList}
               />
-              <Wins 
-                numberOfWins={
-                  fighter.numberOfWins ?
-                  `${fighter.numberOfWins.lastKnownValue} 
-                  (${fighter.numberOfWins.roundsSinceUpdated})`
-                  : '?'
-                }
-              />
             </div>
-          }
-          <div className='fighter-card__stats'>
-            <InfoBox
-              heading={`${!isYourFighter ? 'Known ' : ''}Stats`}
-              list={infoBoxList}
-            />
+            {goalContractInfo && 
+              <InfoBox 
+                heading={'Goal Contract'}
+                list={goalContractInfo}
+              />
+            }
+            {fighter.activeContract &&
+              <InfoBox 
+                heading={'Active Contract'}
+                list={contractInfo}
+              />
+            }
           </div>
-          {goalContractInfo && 
-            <InfoBox 
-              heading={'Goal Contract'}
-              list={goalContractInfo}
-            />
-          }
-          {fighter.activeContract &&
-            <InfoBox 
-              heading={'Active Contract'}
-              list={contractInfo}
-            />
-          }
         </div>
-      </div>
 
-      <div className='heading'>Options</div>
-      <div className='card__options'>
-        {abilitiesFighterCanBeTheTargetOf.map(
-          (clientAbility: ClientAbility) => (
-            <AbilityBlock
-              key={clientAbility.name}
-              delayedExecutionAbilities={delayedExecutionAbilities}
-              abilityData={{
-                name: clientAbility.name,
-                target: {
-                  name: fighter.name,
-                  type: fighter ?
-                    'fighter owned by manager' :
-                    'fighter not owned by manager'
-                },
-                source: undefined
-              }}
-            />
-          )
-        )}
-      </div>
+        <div className='heading'>Options</div>
+        <div className='card__options'>
+          {abilitiesFighterCanBeTheTargetOf.map(
+            (clientAbility: ClientAbility) => (
+              <AbilityBlock
+                key={clientAbility.name}
+                delayedExecutionAbilities={delayedExecutionAbilities}
+                abilityData={{
+                  name: clientAbility.name,
+                  target: {
+                    name: fighter.name,
+                    type: fighter ?
+                      'fighter owned by manager' :
+                      'fighter not owned by manager'
+                  },
+                  source: undefined
+                }}
+              />
+            )
+          )}
+        </div>
 
-    </div >
+      </div >
+    </Modal>
   )
 }
 

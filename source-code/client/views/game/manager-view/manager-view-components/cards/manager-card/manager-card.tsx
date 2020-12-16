@@ -1,5 +1,4 @@
 import * as React from "react"
-import { Manager } from "socket.io-client"
 import { KnownManager, ManagerInfo } from "../../../../../../../game-components/manager"
 import { InfoBoxListItem } from "../../../../../../../interfaces/game/info-box-list"
 import InfoBox from "../../partials/info-box/info-box"

@@ -1,9 +1,10 @@
-import PlayerNameAndId from "../player-name-and-id";
+import { ClientNameAndID } from "../../server/game-host";
+
 
 export interface GameInfo{
   id: string
-  players: PlayerNameAndId[]
+  players: ClientNameAndID[]
   paused: boolean
   round: number
-  disconnectedPlayers: PlayerNameAndId[]
+  disconnectedClients: ClientNameAndID[]
 }

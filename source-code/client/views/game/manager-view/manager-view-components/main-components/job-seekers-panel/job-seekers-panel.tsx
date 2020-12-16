@@ -25,13 +25,13 @@ const JobSeekersPanel = ({jobSeekers, knownFighters}: JobSeekersPanelProps) => {
           <div 
             className={'list__row'} 
             key={`${jobSeeker.name}${i}`} 
-            onClick={() => jobSeeker.type == 'Fighter' ?
+            onClick={() => {console.log(jobSeeker); jobSeeker.type == 'Fighter' ?
               dispatch({
                 type: 'Fighter Selected', 
                 payload: knownFighters.find(f => f.name == jobSeeker.name)
               }) :
-              dispatch({type: 'Fighter Selected', payload: jobSeeker})
-            }
+              dispatch({type: 'Jobseeker Selected', payload: jobSeeker})
+            }}
           >
             <span className='list__row__image'></span>
             <span className='list__row__name'>{jobSeeker.name}</span>

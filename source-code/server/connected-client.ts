@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 import GameHost from './game-host';
 import GameLobbyClient from '../interfaces/game-candidate-client.interface';
 import { ClientPregameAction } from '../types/client-pre-game-actions';
-import GameCandidate from '../interfaces/game-candidate.interface';
+import GameBeingCreated from '../interfaces/game-candidate.interface';
 import { LobbyUiState } from '../client/front-end-state/front-end-state';
 
 export type GameHostUpdateNames = 'Connected Clients Update' | 'Games Lobbies Update'
@@ -48,7 +48,7 @@ export default class ConnectedClient{
       ready: false
     }
 
-    const createdGame: GameCandidate = {
+    const createdGame: GameBeingCreated = {
       id: new Date().getTime().toString(),
       creator: gameLobbyClient,
       clients: [gameLobbyClient],

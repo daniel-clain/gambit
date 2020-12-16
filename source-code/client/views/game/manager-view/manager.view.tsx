@@ -4,6 +4,8 @@ import NextFightPanel from './manager-view-components/main-components/next-fight
 import EmployeesPanel from './manager-view-components/main-components/employees-panel/employees-panel'
 import { LoanSharkCard } from "./manager-view-components/cards/loan-shark-card/loan-shark-card"
 import AbilityCard from "./manager-view-components/cards/ability-card/ability-card"
+import JobSeekerCard from "./manager-view-components/cards/job-seeker-card/job-seeker-card"
+import EmployeeCard from "./manager-view-components/cards/employee-card/employee-card"
 import { KnownManager } from "../../../../game-components/manager"
 import { KnownFightersCard } from "./manager-view-components/cards/known-fighters-card/known-fighters-card"
 import ManagersCard from './manager-view-components/cards/managers-card/managers-card'
@@ -21,6 +23,7 @@ import './manager-view-style/manager-view.scss'
 import { ActiveCard, ClientManagerUIAction } from "../../../front-end-state/reducers/manager-ui.reducer"
 import { Dispatch } from "redux"
 import FighterCard from "./manager-view-components/cards/fighter-card/fighter-card"
+import jobSeekerCard from "./manager-view-components/cards/job-seeker-card/job-seeker-card"
 
 
 interface ManagerViewProps{
@@ -88,6 +91,8 @@ const Manager_View = ({
       {(() => {
         switch(activeCard?.name){
           case 'Fighter': return <FighterCard />
+          case 'Job Seeker': return <JobSeekerCard/>
+          case 'Employee': return <EmployeeCard/>
           case 'Activity Log': return <LogsCard {...{activityLogs}}  />
           case 'Loan Shark': return <LoanSharkCard {...{loan, money}} />
           case 'Known Fighters': return <KnownFightersCard fighters={knownFighters}  />

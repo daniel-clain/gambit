@@ -18,14 +18,14 @@ import './ability-card.scss';
 import {connect, useDispatch} from 'react-redux'
 import { Modal } from '../../partials/modal/modal';
 import { Dispatch } from 'redux';
-import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
+import { ActiveCard, ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
 
 
 export interface AbilityCardProps{
   delayedExecutionAbilities: AbilityData[]
   abilityData: AbilityData
-  nextFightFighters: string[]
+  nextFightFighters: FighterInfo[]
   managerInfo: ManagerInfo
   jobSeekers: JobSeeker[]
   
@@ -49,7 +49,7 @@ const AbilityCard = ({
   })
 
   let {sendUpdate} = frontEndService
-  let {listOptions, selectListType, activeAbility} = state
+  let {activeAbility} = state
 
 
 
@@ -105,70 +105,71 @@ const AbilityCard = ({
   }
 
   return (
-    <div className='ability-card card'>
-      <div className=' card_heading heading'>{name}</div>
-      <div className="card__two-columns">
-        <div className={`card__two-columns__left ability-card__image ${'ability-card__image__'+activeAbility.name.toLocaleLowerCase().split(' ').join('-')}`}
-        ></div>
-        <div className='card__two-columns__right'>
-          <InfoBox 
-              heading={'Ability Info'}
-              info={longDescription}
-          />
-          {clientAbility.cost.money > 0 && 
+    <Modal>
+      <div className='ability-card card'>
+        <div className=' card_heading heading'>{name}</div>
+        <div className="card__two-columns">
+          <div className={`card__two-columns__left ability-card__image ${'ability-card__image__'+activeAbility.name.toLocaleLowerCase().split(' ').join('-')}`}
+          ></div>
+          <div className='card__two-columns__right'>
             <InfoBox 
-              heading={'Ability Requirements'}
-              list={abilityRequirementsInfo}
+                heading={'Ability Info'}
+                info={longDescription}
             />
-          }
-          {warningMessage ? 
-            <div className="warning-message">{warningMessage}</div> : ''
-          }
-        </div>
-      </div>
-      {offerContractBox}
-
-      <hr/>
-    
-      <div className='ability-card__variables'>
-        {possibleTargets.length ?
-          <div className='target'>
-            <label className='target__label'>Target:</label>
-            {target ?
-              <div className="target__value">{target.name}</div> :
-              <div className="target__value target__value--required">target required</div>
+            {clientAbility.cost.money > 0 && 
+              <InfoBox 
+                heading={'Ability Requirements'}
+                list={abilityRequirementsInfo}
+              />
             }
-            <button className='standard-button target__set-button' 
-            onClick={() => showSelectList('target')}>Set Target</button>
-          </div> : ''
-        }
-        <div className='source'>
-          <label className='source__label'>Source:</label>
-          {source ?
-            <div className="source__value">{source.name}</div> :
-            <div className="source__value source__value--required">source required</div>
-          }
-          <button className='standard-button source__set-button' 
-          onClick={() => showSelectList('source')}>Set Source</button>
+            {warningMessage ? 
+              <div className="warning-message">{warningMessage}</div> : ''
+            }
+          </div>
         </div>
-      </div>
+        {offerContractBox}
 
-      <hr/>
+        <hr/>
       
-      <button className='standard-button ability-card__button' onClick={confirmButtonClicked.bind(this)}>Confirm</button>
-      
-      {state.listOptions &&
-        <Modal onClose={resetSelectList}>
-          <SelectList 
-            nextFightFighters={nextFightFighters}
-            list={state.listOptions} 
-            type={state.selectListType}
-            itemSelected={listItemSelected.bind(this)}
-          />
-        </Modal>
-      }
-    </div>
-    
+        <div className='ability-card__variables'>
+          {possibleTargets.length ?
+            <div className='target'>
+              <label className='target__label'>Target:</label>
+              {target ?
+                <div className="target__value">{target.name}</div> :
+                <div className="target__value target__value--required">target required</div>
+              }
+              <button className='standard-button target__set-button' 
+              onClick={() => showSelectList('target')}>Set Target</button>
+            </div> : ''
+          }
+          <div className='source'>
+            <label className='source__label'>Source:</label>
+            {source ?
+              <div className="source__value">{source.name}</div> :
+              <div className="source__value source__value--required">source required</div>
+            }
+            <button className='standard-button source__set-button' 
+            onClick={() => showSelectList('source')}>Set Source</button>
+          </div>
+        </div>
+
+        <hr/>
+        
+        <button className='standard-button ability-card__button' onClick={confirmButtonClicked.bind(this)}>Confirm</button>
+        
+        {state.listOptions &&
+          <Modal onClose={resetSelectList}>
+            <SelectList 
+              nextFightFighters={nextFightFighters.map(f => f.name)}
+              list={state.listOptions} 
+              type={state.selectListType}
+              itemSelected={listItemSelected.bind(this)}
+            />
+          </Modal>
+        }
+      </div>
+    </Modal>
   )
   
   function setContractOffer(activeAbility: AbilityData){
@@ -274,16 +275,16 @@ const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
     playerManagerUiData: {
       managerInfo,
-      managerOptionsTimeLeft,
+      delayedExecutionAbilities,
       jobSeekers,
       nextFightFighters
     }
   }}
-}: FrontEndState) => ({
+}: FrontEndState): AbilityCardProps => ({
   managerInfo,
-  managerOptionsTimeLeft,
+  delayedExecutionAbilities,
   jobSeekers,
   nextFightFighters,
-  activeCard
+  abilityData: activeCard.data
 })
 export default connect(mapStateToProps)(AbilityCard)

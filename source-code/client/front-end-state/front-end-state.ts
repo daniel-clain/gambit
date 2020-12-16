@@ -3,10 +3,11 @@ import { ServerGameUIState } from "../../interfaces/server-game-ui-state.interfa
 import Redux, { combineReducers, createStore } from 'redux'
 import ChatMessage from "../../interfaces/chat-message.interface"
 import { GameInfo } from "../../interfaces/game/game-info"
-import PlayerNameAndId from "../../interfaces/player-name-and-id"
-import GameCandidate from "../../interfaces/game-candidate.interface"
+
+import GameBeingCreated from "../../interfaces/game-candidate.interface"
 import { ClientManagerUIActionType, clientManagerUIReducer, ClientManagerUIState } from "./reducers/manager-ui.reducer"
 import { clientPreGameUIReducer, ClientPreGameUIState, ClientPreUIGameActionType } from "./reducers/pre-game-ui.reducer"
+import { ClientNameAndID, GameBeingCreated } from "../../server/game-host"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
@@ -19,8 +20,8 @@ export interface ServerUIState{
 }
 
 export interface ServerPreGameUIState{
-  connectedPlayers: PlayerNameAndId[]
-  gameCandidates: GameCandidate[]
+  connectedClients: ClientNameAndID[]
+  gamesBeingCreated: GameBeingCreated[]
   globalChat: ChatMessage[]
   activeGames: GameInfo[]
 }

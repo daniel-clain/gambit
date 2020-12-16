@@ -2,34 +2,41 @@
 import * as React from 'react';
 import './employee-card.scss'
 import '../modal-card.scss';
+import {connect, useDispatch} from 'react-redux'
 import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
 import { abilityServiceClient } from '../../../../../../../game-components/abilities-reformed/ability-service-client';
 import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { Employee } from '../../../../../../../interfaces/server-game-ui-state.interface';
-import AbilityBlock from '../ability-block/ability-block';
+import AbilityBlock from '../../partials/ability-block/ability-block';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import InfoBox from '../../partials/info-box/info-box';
+import { Modal } from '../../partials/modal/modal';
+import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
+import { Dispatch } from 'redux';
+import { ActiveCard, ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
 export interface EmployeeCardProps{
   delayedExecutionAbilities: AbilityData[]
   employee: Employee
   managerInfo: ManagerInfo
-  abilitySelected(abilityData: AbilityData)
 }
 
-export class EmployeeCard extends React.Component<EmployeeCardProps>{
+const EmployeeCard = ({
+  delayedExecutionAbilities, employee, managerInfo
+}:EmployeeCardProps) => {
 
-  render(){
-    const {employee, abilitySelected, managerInfo, delayedExecutionAbilities} = this.props
-    const {weeksRemaining, weeklyCost} = employee.activeContract
-    const employeeAbilities: ClientAbility[] = abilityServiceClient.abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))
-    
-    const infoBoxList: InfoBoxListItem[] = [
-      {label: 'Weeks remaining', value: weeksRemaining},
-      {label: 'Cost per week', value: weeklyCost}
-    ]
+  const {weeksRemaining, weeklyCost} = employee.activeContract
+  const employeeAbilities: ClientAbility[] = abilityServiceClient.abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))
 
-    return (
+  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  
+  const infoBoxList: InfoBoxListItem[] = [
+    {label: 'Weeks remaining', value: weeksRemaining},
+    {label: 'Cost per week', value: weeklyCost}
+  ]
+
+  return (
+    <Modal>
       <div className='card employee-card'>
         <div className='heading'>{employee.name}</div>
         <div className="card__two-columns">
@@ -60,12 +67,26 @@ export class EmployeeCard extends React.Component<EmployeeCardProps>{
                 },
                 target: undefined
               }} 
-              onSelected={abilitySelected} 
+              onSelected={dispatch({type: 'Ability Selected', payload: employeeAbility})} 
             />
           ))}      
         </div>
         
       </div>
-    )
-  }
+    </Modal>
+  )
 }
+
+
+const mapStateToProps = ({
+  serverUIState: {serverGameUIState: {
+    playerManagerUiData: {
+      managerInfo,
+      delayedExecutionAbilities
+    }
+  }},
+  clientUIState: {clientGameUIState: {clientManagerUIState: {activeCard}}}
+}: FrontEndState): EmployeeCardProps => ({
+  delayedExecutionAbilities, managerInfo, employee: activeCard.data
+})
+export default connect(mapStateToProps)(EmployeeCard)

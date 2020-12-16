@@ -1,11 +1,10 @@
 import * as React from "react"
 import {connect} from 'react-redux'
 import ChatMessage from "../../interfaces/chat-message.interface"
-import GameCandidate from "../../interfaces/game-candidate.interface"
+import GameBeingCreated from "../../interfaces/game-candidate.interface"
 import GameCandidateClient from '../../interfaces/game-candidate-client.interface'
 import GameLobbyClient from "../../interfaces/game-candidate-client.interface"
 import { GameInfo } from "../../interfaces/game/game-info"
-import PlayerNameAndId from '../../interfaces/player-name-and-id'
 import { frontEndService } from "../front-end-service/front-end-service"
 import { FrontEndState, ServerPreGameUIState } from "../front-end-state/front-end-state"
 import './lobby.view.scss'
@@ -14,8 +13,8 @@ interface LobbyProps extends ServerPreGameUIState{
 }
 
 const Lobby_View = ({
-  connectedPlayers, 
-  gameCandidates, 
+  connectedClients, 
+  gamesBeingCreated, 
   globalChat, 
   activeGames
 }: LobbyProps) => {
@@ -23,7 +22,7 @@ const Lobby_View = ({
 
   const thisClientId: string = localStorage.getItem('clientId')
 
-  const inGameCandidate: GameCandidate = gameCandidates.find((gameLobby: GameCandidate) =>
+  const inGameCandidate: GameBeingCreated = gamesBeingCreated.find((gameLobby: GameBeingCreated) =>
     gameLobby.clients.some((client: GameCandidateClient) => client.id == thisClientId)
   )
   
@@ -32,13 +31,12 @@ const Lobby_View = ({
   return (
     <div className='game-host'>
       <div className="main-container">
-        <div className="top-container">
-          <div className='create-game-button' onClick={() => handleCreateGame()}>Create Game</div>
-          <div className="lists">
+        <div className='create-game-button' onClick={() => handleCreateGame()}>Create Game</div>
+        <div className="lists">
             <div className='connected-players box list'>
               <div className='box__heading'>Connected Players</div>
               <div className="list__items">
-                {connectedPlayers.map(player =>
+                {connectedClients.map(player =>
                   <div className='connected-player' key={player.id}>{player.name}</div>
                 )}
               </div>
@@ -46,7 +44,7 @@ const Lobby_View = ({
             <div className='available-games box list'>
               <div className='box__heading'>Available Games</div>
               <div className="list__items">
-                {gameCandidates.map((gameCandidate) =>
+                {gamesBeingCreated.map((gameCandidate) =>
                   <div className='available-game' key={inGameCandidate.id}>
                     creator: {inGameCandidate.creator.name}<br />
                     players: {inGameCandidate.clients.length}<br />
@@ -62,15 +60,13 @@ const Lobby_View = ({
                   <div className='available-game' key={game.id}>
                     <div>game id: {game.id}</div>
                     <div>players: {game.players.map(player => <div key={player.id}>{player.name}</div>)}</div>
-                    {game.disconnectedPlayers.some(player => player.id == thisClientId) ?
+                    {game. disconnectedClients.some(player => player.id == thisClientId) ?
                       <button onClick={() => handleReJoinGame(game.id)}>Re-Join Game</button> : ''}
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </div>
-
         <div className='global-chat box'>
           <div className='box__heading'>Global Chat</div>
           <input onKeyPress={(e) => e.key == 'Enter' && submitGlobalChat(e)} />
@@ -83,7 +79,6 @@ const Lobby_View = ({
             )}
           </div>
         </div>
-
       </div>
 
       {inGameCandidate &&

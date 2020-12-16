@@ -1,4 +1,4 @@
-import { KnownManager, ManagerInfo } from "../../../../../../../game-components/manager";
+import { KnownManager } from "../../../../../../../game-components/manager";
 import {connect} from 'react-redux'
 import { FrontEndState } from "../../../../../../front-end-state/front-end-state";
 import ManagerCard from '../manager-card/manager-card'
@@ -19,9 +19,10 @@ const ManagersCard = ({
 )
 
 const mapStateToProps = (({
-  clientName, serverGameUIState: {
+  serverUIState: {serverGameUIState: {
     playerManagerUiData: {managerInfo}
-  }
+  }},
+  clientUIState: {clientPreGameUIState: {clientName}}
 }: FrontEndState): ManagersCardProps => ({
   managers: [managerInfo, ...managerInfo.otherManagers], clientName
 }))

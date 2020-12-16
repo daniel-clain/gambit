@@ -4,9 +4,10 @@ import ClientNameAndId from "../interfaces/client-name-and-id.interface"
 export type ClientActionNamesPreGame = 'Connect To Game Host' | 'Join Game' | 'Create Game' | 'Cancel Game' | 'Leave Game' | 'Start Game' | 'Ready To Start Game' | 'Submit Global Chat' | 'Re-Join Game'
 
 
-export interface ClientPregameAction extends ClientAction{  
+export type ClientPregameAction = ClientAction & {  
   name: ClientActionNamesPreGame
 }
+
 
 export class ConnecToGameHostAction implements ClientPregameAction{
   name:  'Connect To Game Host'

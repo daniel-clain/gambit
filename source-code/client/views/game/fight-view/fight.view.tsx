@@ -6,7 +6,7 @@ import { wait } from '../../../../helper-functions/helper-functions';
 import { FightUiData } from '../../../../interfaces/game/fight-ui-data';
 import FighterFightState from '../../../../interfaces/game/fighter-fight-state-info';
 import Coords from '../../../../interfaces/game/fighter/coords';
-import './fight.scss'
+import './fight.view.scss'
 import FighterStates, { FighterStateData, FighterStatesProps } from './fight-results-view-components/fighter-states/fighter-states';
 import { FighterInfo } from '../../../../interfaces/server-game-ui-state.interface';
 import { FightReport } from '../../../../interfaces/game/fight-report';
@@ -28,16 +28,18 @@ interface FightUiProps{
   startCountdown: number
   timeRemaining: number 
   fighterFightStates: FighterFightState[]
-  fighterStates: FighterStateData[]
+  knownFighterStates: FighterStateData[]
   report: FightReport
   managersBets: ManagersBet[]
 }
 
-const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, fighterStates}:FightUiProps) => {
+const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates}:FightUiProps) => {
+
+  console.log('derp');
 
   const [fightExplosionAnimationStage, setFightExplosionAnimationStage] = useState<FightExplosionAnimationStages>('removed')
 
-    doFightExplosionAnimation() 
+    //doFightExplosionAnimation() 
     
     const cornerPoints = []
 
@@ -49,7 +51,7 @@ const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, 
   return (
     <div className='fight-ui'>
       
-      <FighterStates fighterStates={fighterStates} />
+      <FighterStates fighterStates={knownFighterStates} />
 
       {managersBets && 
         <ManagersBets managersBets={managersBets}/>
@@ -101,9 +103,9 @@ const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, 
 }
 
 const mapStateToProps = ({
-  serverGameUIState: {fightUiData: {
+  serverUIState: {serverGameUIState: {fightUiData: {
     startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates
-  }}
-}: FrontEndState) => ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates})
+  }}}
+}: FrontEndState): FightUiProps => ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates})
 
 export default connect(mapStateToProps)(Fight_View)

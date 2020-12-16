@@ -2,13 +2,13 @@
 import * as React from 'react';
 import './job-seeker-card.scss'
 import '../modal-card.scss';
-import {connect, useDispatch} from 'react-redux'
+import {connect} from 'react-redux'
+import AbilityBlock from '../../partials/ability-block/ability-block';
 import { AbilityData } from '../../../../../../../game-components/abilities-reformed/ability';
 import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { JobSeeker } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import InfoBox from '../../partials/info-box/info-box';
-import AbilityBlock from '../ability-block/ability-block';
 import { Modal } from '../../partials/modal/modal';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
 
@@ -19,6 +19,8 @@ export interface JobSeekerCardProps{
 }
 
 const JobSeekerCard = ({delayedExecutionAbilities, jobSeeker, managerInfo}:JobSeekerCardProps) => {
+
+  console.log('blerg')
 
   const abilityData: AbilityData = {      
     name: 'Offer Contract',
@@ -73,7 +75,7 @@ const JobSeekerCard = ({delayedExecutionAbilities, jobSeeker, managerInfo}:JobSe
 export default connect(({
   clientUIState: {clientGameUIState: {
     clientManagerUIState: {activeCard}
-}},
+  }},
   serverUIState: {serverGameUIState: {playerManagerUiData: {
     delayedExecutionAbilities, managerInfo
   }}}

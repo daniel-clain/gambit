@@ -3,14 +3,12 @@
 export interface ClientPreGameUIState{
   clientId: string
   clientName: string
-  clientType: 'Player' | 'Display'
 }
 
 
 const initialPreGameUIState: ClientPreGameUIState = {
   clientId: getClientid(),
-  clientName: localStorage.getItem('name'),
-  clientType: localStorage.getItem('name') ? 'Player': undefined
+  clientName: localStorage.getItem('name')
 }
 
 function getClientid(){
@@ -23,16 +21,26 @@ function getClientid(){
   }
 }
 
-export type ClientPreUIGameActionType = 'Set Name'
+export type ClientPreUIGameActionType = 'Set Name' | 'Set Client Is Game Display'
 
-interface PreGameUIAction {
-  type: ClientPreUIGameActionType,
+export interface PreGameUIAction {
+  type: ClientPreUIGameActionType
   payload?: any
 }
 
 export const clientPreGameUIReducer = (clientPreGameUIState: ClientPreGameUIState = initialPreGameUIState, {type, payload}: PreGameUIAction): ClientPreGameUIState => {
   switch (type){
-    case 'Set Name': return {...clientPreGameUIState, clientName: payload}
+    case 'Set Name': {      
+      if(payload && payload != ''){
+        localStorage.setItem('name', payload)
+        return {...clientPreGameUIState, clientName: payload}
+      }
+    }
+    case 'Set Client Is Game Display': return {
+      ...clientPreGameUIState, 
+      clientName: 'Game Display'
+    }
+
     default: return clientPreGameUIState
   }
 }

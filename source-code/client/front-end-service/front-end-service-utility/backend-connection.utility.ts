@@ -21,7 +21,7 @@ export const backEndConnection: BackEndConnection = {
       func('To Client From Server - Lobby Ui', data)
     })
     socket.on('To Client From Server - Game Ui', data => {
-      console.log('game update', data)
+      console.log('game update')
       func('To Client From Server - Game Ui', data)
     })
   }

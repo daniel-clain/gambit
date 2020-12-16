@@ -1,4 +1,4 @@
-import GameHost from './game-host';
+import {GameHost} from './game-host';
 import ServerWebsocketService from './server-websocket-service';
 import { Socket } from 'socket.io';
 import { ClientPregameAction } from '../types/client-pre-game-actions';
@@ -6,7 +6,6 @@ import { ClientPregameAction } from '../types/client-pre-game-actions';
 console.log('process.pid :', process.pid);
 
 const websocketService = new ServerWebsocketService()
-const gameHost = new GameHost()
 
 websocketService.clientConnectedSubject.subscribe(handleConnectingClient)
 
@@ -17,8 +16,8 @@ function handleConnectingClient(socket: Socket) {
   socket.on('To Server From Client', (actionFromClient: ClientPregameAction) => {  
     console.log('To Server From Client: ', actionFromClient.name);
     if (actionFromClient.name == 'Connect To Game Host') {
-      console.warn('Connect To Game Host')
-      gameHost.handleConnectingClient(actionFromClient.data, socket)
+      const {name, id} = actionFromClient.data
+      GameHost.handleConnectingClient(actionFromClient.data, socket)
     }
   })
 }

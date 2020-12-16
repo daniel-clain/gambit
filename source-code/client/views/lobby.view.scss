@@ -3,42 +3,18 @@
   height: 100%;
   background-size: cover;
   background-position-x: center;
+  padding: 20px;
+  max-width: 800px;
+  box-sizing: border-box;
+  min-width: 250px;
 
   
   .main-container {
-    
-    max-width: 800px;
     margin: auto;
-    padding: 20px;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
-  }
-
-
-  .list{
-    &__items{      
-      height: 110px;
-      overflow-y: auto;
-    }
-  }
-
-  .box{
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 10px;
-    width: 150px;
-    height: min-content;
-    color: white;
-    padding: 10px;
-
-    &__heading{
-      font-size: 1.3rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #67e7ff;
-    }
   }
 
   .create-game-button{
@@ -53,9 +29,44 @@
     box-sizing: border-box;
     width: 200px;
     margin-bottom: 20px;
+    flex-shrink: 0;
   }
 
+  .lists{
+    max-height: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+
+  .list{
+    margin: 0 auto 20px;
+    &__items{
+      
+      max-height: 120px;
+      overflow-y: auto;
+    }
+  }
+
+  .box{
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    width: 150px;
+    box-sizing: border-box;
+    color: white;
+
+    &__heading{
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #67e7ff;
+    }
+  }
+
+
   .global-chat {
+    min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -104,29 +115,20 @@
 
 
 
+
   @media (min-width: 600px){
     .lists{        
       display: flex;
       justify-content: space-between;
     }
-  }
 
-  @media (max-width: 600px){
+
     .top-container{
+      flex: 1;
       display: flex;
       flex-direction: column;
-
     }
-
-    .lists{
-      .box{
-        margin: 0 auto 20px
-      }
-    }
-    .global-chat__messages{
-      height: 120px;
-    }
-    
   }
+
 }
 

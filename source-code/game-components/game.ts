@@ -14,6 +14,7 @@ import { GameMessageReceiver } from "./update-communicators/server-receives-webs
 import {GameMessageSender} from './update-communicators/server-sends-game-update-to-all'
 import {AbilityProcessor, getAbilityProcessor} from './abilities-reformed/ability-processor'
 import { FighterStateData } from "../client/views/game/fight-view/fight-results-view-components/fighter-states/fighter-states"
+import GameUtility from "./game-setup"
 
 
 interface Game_Props{
@@ -26,6 +27,7 @@ interface Game_Props{
 export interface Game_External_Interface{
   id
   players: Player[]
+  displays
   gameType: GameType
   paused: boolean
   connectionManager: ConnectionManager
@@ -37,22 +39,15 @@ export interface Game_External_Interface{
 
 }
 
-interface Game extends Game_External_Interface{
-  managers: Manager[]
-  fighters: Fighter[]
-  professionals: Professional[]
-  roundController: RoundController
-  abilityProcessor
-  messageSender
-  messageReceiver
-}
+export class Game{
 
-export function createGame(
-  {players, gameType, gameDisplays}: Game_Props
-): Game {
+  constructor(public players: Player[], public gameType: GameType, gameDisplays: GameDisplay[]){
 
+  }
+/* 
  
   const messageSender = GameMessageSender(players, getGameUiState)
+  const gameUtility = new GameUtility()
 
   const game: Game = {
     id: new Date().getTime().toString(),   
@@ -125,15 +120,15 @@ export function createGame(
 
       })
     }
-  }
-  function getInfo(): GameInfo {
+  } */
+  getInfo(): GameInfo {
     return {
-      id: game.id,
-      players: game.players.map(p => 
+      id: this.id,
+      players: this.players.map(p => 
         ({name: p.name, id: p.id})),
-      paused: game.paused,
-      round: game.roundController.roundNumber,
-      disconnectedPlayers: disconnectedPlayers.disconnectedPlayers
+      paused: this.paused,
+      round: this.roundController.roundNumber,
+      disconnectedPlayers: this.disconnectedPlayers.disconnectedPlayers
     }
   }
   
