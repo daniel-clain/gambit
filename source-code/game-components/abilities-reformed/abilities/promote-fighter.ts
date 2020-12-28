@@ -14,10 +14,10 @@ const promoteFighter: Ability = {
 
 export const promoteFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
     let promoter: Employee
-    for(let manager of game.managers){
-      promoter = manager.employees.find(employee => employee.name == abilityData.source.name)
+    for(let manager of game.has.managers){
+      promoter = manager.has.employees.find(employee => employee.name == abilityData.source.name)
       if(promoter)
         break
     }

@@ -5,7 +5,7 @@ import { ManagersBet } from "./managers-bet";
 import { FighterStateData } from "../../client/views/game/fight-view/fight-results-view-components/fighter-states/fighter-states";
 
 
-export interface FightUiData{
+export interface FightUIState{
   startCountdown: number
   timeRemaining: number
   report: FightReport

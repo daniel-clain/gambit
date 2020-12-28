@@ -2,14 +2,13 @@ import * as React from 'react';
 import './disconnected-player-modal.scss'
 import { DisconnectedPlayerVote } from '../../../../interfaces/server-game-ui-state.interface';
 import ClientGameAction from '../../../../types/client-game-actions';
-import PlayerNameAndId from '../../../../interfaces/player-name-and-id';
-import IUpdateCommunicatorUi from '../../../../interfaces/update-communicator-ui.interface';
 import {connect} from 'react-redux'
 import { FrontEndState } from '../../../front-end-state/front-end-state';
 import { frontEndService } from '../../../front-end-service/front-end-service';
+import { ClientNameAndID } from '../../../../server/game-host.types';
 
 interface DisconnectedPlayerModalProps{
-  player: PlayerNameAndId
+  player: ClientNameAndID
   disconnectedPlayerVotes: DisconnectedPlayerVote[]
 }
 
@@ -17,23 +16,12 @@ const DisconnectedPlayerModal = ({
   disconnectedPlayerVotes, player
 }: DisconnectedPlayerModalProps) => {
 
-  let {sendUpdate} = frontEndService
+  let {toggleDropPlayer} = frontEndService().sendUpdate
 
   console.log('disconnectedPlayerVotes :', disconnectedPlayerVotes);
 
   const disconnectedPlayers = disconnectedPlayerVotes[0].playerVotesToDrop.map(playerVote => playerVote.disconnectedPlayer)  
 
-  const dropVoteToggle = (votingPlayer: PlayerNameAndId, disconnectedPlayer: PlayerNameAndId, vote: boolean) => {
-    const gameAction: ClientGameAction = {
-      name: 'Toggle Drop Player',
-      data: {
-        votingPlayer,
-        disconnectedPlayer,
-        vote
-      }
-    }
-    sendUpdate(gameAction)
-  }
 
   return (
     <div className='disconnected-player-modal'>
@@ -57,7 +45,11 @@ const DisconnectedPlayerModal = ({
                     <div 
                       className={`player-vote player-vote--${disconnectedPlayerVote.drop ? 'drop' : 'dont-drop'}`} 
                       key={disconnectedPlayerVote.disconnectedPlayer.id}
-                      onClick={() => dropVoteToggle(playerVote.player, disconnectedPlayerVote.disconnectedPlayer, !disconnectedPlayerVote.drop)}
+                      onClick={() => toggleDropPlayer({
+                        votingPlayer: playerVote.player, 
+                        disconnectedPlayer: disconnectedPlayerVote.disconnectedPlayer, 
+                        vote: !disconnectedPlayerVote.drop
+                      })}
                     >
                       {disconnectedPlayerVote.drop ? 'Drop' : `Don't Drop`}
                     </div>
@@ -73,8 +65,8 @@ const DisconnectedPlayerModal = ({
 }
 
 const mapStateToProps = ({
-  clientId, clientName,
-  serverGameUIState: {disconnectedPlayerVotes, roundStage}
+  serverUIState: {serverGameUIState: {disconnectedPlayerVotes}},
+  clientUIState: {clientPreGameUIState: {clientId, clientName}}
 }: FrontEndState): DisconnectedPlayerModalProps => ({
   player: {id: clientId, name: clientName},
   disconnectedPlayerVotes,

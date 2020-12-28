@@ -1,46 +1,38 @@
-import PlayerNameAndId from './player-name-and-id';
 import SkillLevel from '../types/game/skill-level.type';
 import { ActiveContract, GoalContract } from './game/contract.interface';
-import { KnownManager, ManagerInfo } from '../game-components/manager';
+import { ManagerInfo } from '../game-components/manager';
 import { Profession } from '../types/game/profession';
 import { AbilityName, AbilityData } from '../game-components/abilities-reformed/ability';
 import RoundStages from '../types/game/round-stage.type';
 import { ManagerImage } from '../types/game/manager-image';
 import { NewsItem } from '../types/game/news-item';
-import { FightUiData } from './game/fight-ui-data';
+import { FightUIState } from './game/fight-ui-data';
 import { Bet } from './game/bet';
 import { PostFightReportItem } from './game/post-fight-report-item';
+import { ClientNameAndID } from '../server/game-host.types';
 
 
-export interface oldDisplayGameUiData{
-  disconnectedPlayerVotes: DisconnectedPlayerVote[]
-  roundStage: RoundStages
-  displayManagerUiData: DisplayManagerUiData
-  preFightNewsUiData: PreFightNewsUiData
-  fightUiData: FightUiData
-}
-
-export interface ServerGameUIState{
-  disconnectedPlayerVotes: DisconnectedPlayerVote[]
-  roundStage: RoundStages
+export class ServerGameUIState{
+  disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
+  roundStage: RoundStages = null
   postFightReportData: PostFightReportData
-  displayManagerUiData?: DisplayManagerUiData
-  playerManagerUiData?: PlayerManagerUiData
-  preFightNewsUiData: PreFightNewsUiData
-  fightUiData: FightUiData
+  displayManagerUIState?: ManagerUIState
+  playerManagerUIState?: ManagerUIState
+  preFightNewsUIState: PreFightNewsUIState
+  FightUIState: FightUIState
 }
 
 export interface DisconnectedPlayerVote{
-  player: PlayerNameAndId
+  player: ClientNameAndID
   playerVotesToDrop: {
     drop: boolean,
-    disconnectedPlayer: PlayerNameAndId
+    disconnectedPlayer: ClientNameAndID
   }[]
 }
 
 
 
-export interface PreFightNewsUiData{
+export interface PreFightNewsUIState{
   newsItem: NewsItem
 }
 
@@ -117,7 +109,7 @@ export interface FighterInfo{
   goalContract: GoalContract
 }
 
-export interface PlayerManagerUiData{
+export interface ManagerUIState{
   managerInfo: ManagerInfo  
   managerOptionsTimeLeft: number
   jobSeekers: JobSeeker[]

@@ -7,18 +7,16 @@ import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { GoalContract, ContractOffer } from '../../../../../../../interfaces/game/contract.interface';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { FighterInfo, JobSeeker } from '../../../../../../../interfaces/server-game-ui-state.interface';
-import ClientGameAction from '../../../../../../../types/client-game-actions';
 import { ListOption } from '../../../../../../../types/game/list-option';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
-import InfoBox from '../../partials/info-box/info-box';
 import '../modal-card.scss';
 import SelectList from '../select-list/select-list';
 import './ability-card.scss';
 import {connect, useDispatch} from 'react-redux'
 import { Modal } from '../../partials/modal/modal';
 import { Dispatch } from 'redux';
-import { ActiveCard, ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
+import { InfoBox } from '../../partials/info-box/info-box';
 
 
 
@@ -39,8 +37,8 @@ const AbilityCard = ({
   nextFightFighters
 }: AbilityCardProps) => {
 
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
 
+  const {closeModal, showFighter} = frontEndService().setClientState
 
   const [state, setState] = useState({
     listOptions: [] as ListOption[],
@@ -48,7 +46,7 @@ const AbilityCard = ({
     activeAbility: abilityData
   })
 
-  let {sendUpdate} = frontEndService
+  let {sendUpdate} = frontEndService()
   let {activeAbility} = state
 
 
@@ -87,7 +85,7 @@ const AbilityCard = ({
   if(clientAbility.name == 'Offer Contract' && activeAbility.target){
     let goalContract: GoalContract
     if(activeAbility.target.type == 'fighter owned by manager')
-      goalContract = managerInfo.yourFighters.find(fighter => fighter.name == activeAbility.target.name).goalContract
+      goalContract = managerInfo.knownFighters.find(fighter => fighter.name == activeAbility.target.name).goalContract
     else
       goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == activeAbility.target.name).goalContract
     const contractOffer: ContractOffer = activeAbility.additionalData.contractOffer
@@ -158,7 +156,7 @@ const AbilityCard = ({
         
         <button className='standard-button ability-card__button' onClick={confirmButtonClicked.bind(this)}>Confirm</button>
         
-        {state.listOptions &&
+        {state.selectListType &&
           <Modal onClose={resetSelectList}>
             <SelectList 
               nextFightFighters={nextFightFighters.map(f => f.name)}
@@ -175,10 +173,10 @@ const AbilityCard = ({
   function setContractOffer(activeAbility: AbilityData){
 
 
-    if(activeAbility && activeAbility.target){
+    if(activeAbility?.target){
       let goalContract: GoalContract
       if(activeAbility.target.type == 'fighter owned by manager')
-        goalContract = managerInfo.yourFighters.find(fighter => fighter.name == activeAbility.target.name).goalContract
+        goalContract = managerInfo.knownFighters.find(fighter => fighter.name == activeAbility.target.name).goalContract
       else
         goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == activeAbility.target.name).goalContract
       
@@ -203,25 +201,21 @@ const AbilityCard = ({
   function confirmButtonClicked(){
     try{
       abilityServiceClient.validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities)
+      sendUpdate.abilityConfirmed(activeAbility)
     }
     catch(error){
+      console.log(error)
       alert(error)
-      return
     }
     
 
-    const clientGameAction: ClientGameAction = {
-      name: 'Ability Confirmed',
-      data: activeAbility
-    }
-    sendUpdate(clientGameAction)
-
-    dispatch({type: 'Close Modal'})
+    closeModal()
 
     if(activeAbility.name == 'Research Fighter'){
-      let {knownFighters} = frontEndService.frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUiData.managerInfo
+      let {knownFighters} = frontEndService().frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
       const fighter: FighterInfo = knownFighters.find(f => f.name == target.name)
-      dispatch({type: 'Fighter Selected', payload: fighter})
+      
+      showFighter(fighter)
     }   
   }
 
@@ -273,7 +267,7 @@ const mapStateToProps = ({
     clientManagerUIState: {activeCard}
   }},
   serverUIState: {serverGameUIState: {
-    playerManagerUiData: {
+    playerManagerUIState: {
       managerInfo,
       delayedExecutionAbilities,
       jobSeekers,

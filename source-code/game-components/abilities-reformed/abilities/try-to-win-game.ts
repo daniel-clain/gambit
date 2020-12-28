@@ -16,12 +16,12 @@ const tryToWinGame: Ability = {
 
 export const tryToWinGameServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
     
     let assaulter: Employee
     let assaultersManager: Manager
-    for(let manager of game.managers){
-      assaulter = manager.employees.find(employee => employee.name == abilityData.source.name)
+    for(let manager of game.has.managers){
+      assaulter = manager.has.employees.find(employee => employee.name == abilityData.source.name)
       if(assaulter){
         assaultersManager = manager
         break
@@ -30,7 +30,7 @@ export const tryToWinGameServer: ServerAbility = {
 
     
     if(fighter.state.dead){
-      assaultersManager.addToLog({message: `Attempt to assault ${abilityData.target.name} failed beacuse he was already found dead`})
+      assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed beacuse he was already found dead`})
       return
     }
 
@@ -52,28 +52,28 @@ export const tryToWinGameServer: ServerAbility = {
     }
     if(success){
       fighter.state.injured = true
-      game.roundController.preFightNewsStage.newsItems.push({
+      game.has.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter was assaulted',
         headline: `${fighter.name} Assaulted!`,
         message: `${fighter.name} has been assaulted, his injuries will affect his fight performance`
       })
-      assaultersManager.addToLog({
+      assaultersManager.functions.addToLog({
         message: `${assaulter.name} has successfully assaulted ${fighter.name} and he is now injured`
       })
     }
     else if(guardBlocked){
-      game.roundController.preFightNewsStage.newsItems.push({
+      game.has.roundController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect fighter from being assaulted',
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${fighter.name} from an attempted assault`
       })     
-      assaultersManager.postFightReportItems.push({
+      assaultersManager.has.postFightReportItems.push({
         type: 'employee outcome',
         message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name} because he was guarded by thugs`
       })
     }
     else
-      assaultersManager.postFightReportItems.push({
+      assaultersManager.has.postFightReportItems.push({
         type: 'employee outcome', 
         message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name}`
       })

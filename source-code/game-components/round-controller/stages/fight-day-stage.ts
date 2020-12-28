@@ -1,15 +1,12 @@
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stage.type";
-import { Subject } from "rxjs";
-import Game from "../../game";
 import { RoundController } from "../round-controller";
-import Manager from "../../manager";
 import { Bet } from "../../../interfaces/game/bet";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import Fighter from "../../fighter/fighter";
 import { ManagerWinnings } from "../../../interfaces/game/manager-winnings";
 import { FightReport } from "../../../interfaces/game/fight-report";
-import { FightUiData } from "../../../interfaces/game/fight-ui-data";
+import { Manager } from "../../manager";
 
 export default class FightDayStage implements IStage {
   name: RoundStages = 'Fight Day'
@@ -36,8 +33,15 @@ export default class FightDayStage implements IStage {
         }
       )
     })
-    
 
+  }
+
+
+  pause(){
+    this.roundController.activeFight.pause()
+  }
+  unpause(){
+    this.roundController.activeFight.unpause()
   }
 
   stageFinished(){
@@ -60,35 +64,35 @@ export default class FightDayStage implements IStage {
       const managerWinnings: ManagerWinnings[] = this.managers.map(
         (manager: Manager) => {
           let winnings = 0
-          const managersBet: Bet = manager.nextFightBet
+          const managersBet: Bet = manager.has.nextFightBet
           if (managersBet) {
             const betSizePercentage = gameConfiguration.betSizePercentages[managersBet.size]
-            const managersBetAmount = Math.round(manager.money * betSizePercentage / 100)
+            const managersBetAmount = Math.round(manager.has.money * betSizePercentage / 100)
             
-          manager.addToLog({message: `You spent ${managersBetAmount} money on the last fight`})
-            manager.money -= managersBetAmount
+          manager.functions.addToLog({message: `You spent ${managersBetAmount} money on the last fight`})
+            manager.has.money -= managersBetAmount
             if (managersBet.fighterName == winner.name) {
               winnings += Math.round(managersBetAmount * 2 + 150)
               winnings += bonusFromPublicityRating
             }
           }
-          const managersFighter = manager.fighters.find((f: Fighter) => f.name == winner.name)
+          const managersFighter = manager.has.fighters.find((f: Fighter) => f.name == winner.name)
           if (managersFighter) {
             winnings += 100
             winnings += Math.round(winnings *(managersFighter.state.publicityRating * 2) / 100)
           }
-          console.log(`${manager.name} just won ${winnings}`);
-          manager.money += winnings
+          console.log(`${manager.has.name} just won ${winnings}`);
+          manager.has.money += winnings
 
           
           
 
 
           if(winnings)
-            manager.addToLog({message: `You made ${winnings} money in winnings from the last fight`})
+            manager.functions.addToLog({message: `You made ${winnings} money in winnings from the last fight`})
 
           return {
-            managerName: manager.name,
+            managerName: manager.has.name,
             winnings
           }
         })

@@ -36,7 +36,7 @@ describe('sponsor fighter', () => {
   const fighterBob = new Fighter('Bob')
   manager.sponsorFighter(fighterBob)
   it('should add fighter to the list of manager fighters', () => {
-    expect(manager.fighters.some(fighter => fighter.name == 'Bob')).toBeTruthy()    
+    expect(manager.has.fighters.some(fighter => fighter.name == 'Bob')).toBeTruthy()    
   });
   it('should set the fighters manager to this manager', () => {
     expect(fighterBob.manager.name === 'Manager Jim').toBeTruthy()

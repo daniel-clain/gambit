@@ -2,18 +2,17 @@
 import * as React from 'react';
 import './employee-card.scss'
 import '../modal-card.scss';
-import {connect, useDispatch} from 'react-redux'
+import {connect} from 'react-redux'
 import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
 import { abilityServiceClient } from '../../../../../../../game-components/abilities-reformed/ability-service-client';
 import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { Employee } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import AbilityBlock from '../../partials/ability-block/ability-block';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
-import InfoBox from '../../partials/info-box/info-box';
 import { Modal } from '../../partials/modal/modal';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
-import { Dispatch } from 'redux';
-import { ActiveCard, ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
+import { frontEndService } from '../../../../../../front-end-service/front-end-service';
+import { InfoBox } from '../../partials/info-box/info-box';
 
 export interface EmployeeCardProps{
   delayedExecutionAbilities: AbilityData[]
@@ -28,7 +27,7 @@ const EmployeeCard = ({
   const {weeksRemaining, weeklyCost} = employee.activeContract
   const employeeAbilities: ClientAbility[] = abilityServiceClient.abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))
 
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  const { showAbility } = frontEndService().setClientState
   
   const infoBoxList: InfoBoxListItem[] = [
     {label: 'Weeks remaining', value: weeksRemaining},
@@ -67,7 +66,7 @@ const EmployeeCard = ({
                 },
                 target: undefined
               }} 
-              onSelected={dispatch({type: 'Ability Selected', payload: employeeAbility})} 
+              onSelected={() => showAbility(employeeAbility)} 
             />
           ))}      
         </div>
@@ -80,7 +79,7 @@ const EmployeeCard = ({
 
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
-    playerManagerUiData: {
+    playerManagerUIState: {
       managerInfo,
       delayedExecutionAbilities
     }

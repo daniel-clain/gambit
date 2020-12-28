@@ -1,11 +1,10 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData, AbilitySourceInfo } from "../ability"
-
-import Game from "../../game"
-import { KnownFighter, FighterInfo, Employee, KnownFighterStat } from "../../../interfaces/server-game-ui-state.interface"
-import Manager from "../../manager"
+import { FighterInfo, Employee, KnownFighterStat } from "../../../interfaces/server-game-ui-state.interface"
 import SkillLevel from "../../../types/game/skill-level.type"
 import { AbilitySourceType } from "../../../types/game/ability-source-type"
 import { random } from "../../../helper-functions/helper-functions"
+import { Game } from "../../game"
+import { Manager } from "../../manager"
 
 
 const researchFighter: Ability = {
@@ -17,20 +16,23 @@ const researchFighter: Ability = {
   canOnlyTargetSameTargetOnce: false
 }
 
+
 export const researchFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighterInfo: FighterInfo = game.fighters.find(fighter => fighter.name == abilityData.target.name).getInfo()
+    const fighterInfo: FighterInfo = game.has.fighters.find(fighter => fighter.name == abilityData.target.name).getInfo()
 
     const manager: Manager = determineSourceManager(abilityData, game)
     const skillLevel: SkillLevel = determineSkillLevel(abilityData.source, game)
     
-    const existingFighter: KnownFighter = manager.knownFighters.find(fighter => fighter.name == abilityData.target.name)
+    const existingFighter: FighterInfo = manager.has.knownFighters.find(fighter => fighter.name == abilityData.target.name)
 
-    const knownStatsKeys = Object.getOwnPropertyNames(existingFighter.knownStats)
+    const knownStatsKeys = Object.getOwnPropertyNames(existingFighter)
     const researchedStats = getRandomStatsFromFighter(abilityData.source.type, skillLevel, fighterInfo, knownStatsKeys, existingFighter)
 
     for(let key in researchedStats){
-      existingFighter.knownStats[key] = researchedStats[key]
+      if(invalidKey(key)) continue
+      console.log(key)
+      existingFighter[key] = researchedStats[key]
     }
 
     console.log(`${abilityData.source.type} ${abilityData.source.name} used research fighter and found out the following stats about ${abilityData.target.name}`, researchedStats);
@@ -47,7 +49,7 @@ export const researchFighterClient: ClientAbility = {
 
 
 
-const getRandomStatsFromFighter = (sourceType: AbilitySourceType, skillLevel: SkillLevel, fighterInfo: FighterInfo, knownStatsKeys: string[], existingFighter: KnownFighter): any => {
+const getRandomStatsFromFighter = (sourceType: AbilitySourceType, skillLevel: SkillLevel, fighterInfo: FighterInfo, knownStatsKeys: string[], existingFighter: FighterInfo): any => {
   const returnStatsObj = {}
   let numberOfStats
   switch (sourceType) {
@@ -62,24 +64,28 @@ const getRandomStatsFromFighter = (sourceType: AbilitySourceType, skillLevel: Sk
     loops < 20
   ;loops ++){
     const randomKey = knownStatsKeys[random(knownStatsKeys.length - 1)]
+
+    if(invalidKey(randomKey)) continue
+
     const alreadyHasThatStat = !!returnStatsObj[randomKey]
-    const alreadyDiscoveredThatStatThisTurn = existingFighter.knownStats[randomKey] && existingFighter.knownStats[randomKey].roundsSinceUpdated === 0
+    const alreadyDiscoveredThatStatThisTurn = existingFighter[randomKey] && existingFighter[randomKey]?.roundsSinceUpdated === 0
     if(!alreadyHasThatStat && !alreadyDiscoveredThatStatThisTurn)
       returnStatsObj[randomKey] = <KnownFighterStat>{lastKnownValue: fighterInfo[randomKey], roundsSinceUpdated: 0}
     
   }
   return returnStatsObj
+
 }
 
 const determineSkillLevel = (sourceInfo: AbilitySourceInfo, game: Game): SkillLevel => {
   if(sourceInfo.type == 'Manager')
     return 1
 
-  const employee = game.managers.reduce((foundEmployee: Employee, manager) => {
+  const employee = game.has.managers.reduce((foundEmployee: Employee, manager) => {
     if(foundEmployee)
       return foundEmployee
     
-    return manager.employees.find(employee => employee.name == sourceInfo.name)
+    return manager.has.employees.find(employee => employee.name == sourceInfo.name)
   }, undefined)
 
   return employee.skillLevel
@@ -87,9 +93,13 @@ const determineSkillLevel = (sourceInfo: AbilitySourceInfo, game: Game): SkillLe
 }
 const determineSourceManager = (abilityData: AbilityData, game: Game): Manager => {
   if(abilityData.source.type == 'Manager'){
-    return game.managers.find(manager => manager.name == abilityData.source.name)
+    return game.has.managers.find(manager => manager.has.name == abilityData.source.name)
   }
   else{
-    return game.managers.find(manager => manager.employees.some(employee => employee.name == abilityData.source.name))
+    return game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
   }
+}
+
+const invalidKey = key => {
+  return !['strength', 'fitness', 'intelligence', 'aggression', 'numberOfFights', 'numberOfWins', 'manager'].includes(key)
 }

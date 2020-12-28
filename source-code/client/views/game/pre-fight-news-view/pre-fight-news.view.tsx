@@ -42,7 +42,7 @@ const PreFightNews_View = ({
 }
 
 const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {preFightNewsUiData: {newsItem}}}
+  serverUIState: {serverGameUIState: {preFightNewsUIState: {newsItem}}}
 }: FrontEndState): PreFightNewsProps => ({newsItem})
 
 export default connect(mapStateToProps)(PreFightNews_View)

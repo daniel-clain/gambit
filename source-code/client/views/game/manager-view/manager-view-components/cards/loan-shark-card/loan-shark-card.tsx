@@ -24,7 +24,7 @@ export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
     borrowAmount: undefined
   })
 
-  const {sendUpdate} = frontEndService
+  const {sendUpdate} = frontEndService()
 
   const {debt, weeksOverdue} = loan    
   const {borrowAmount, paybackAmount} = state
@@ -111,11 +111,7 @@ export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
       alert(`you loan can't be bigger than 500`)
       return
     }
-    const gameAction: ClientGameAction = {
-      name: 'Borrow Money',
-      data: { amount: state.borrowAmount }
-    }
-    sendUpdate(gameAction)
+    sendUpdate.borrowMoney(state.borrowAmount)
     setState({...state, borrowAmount: 0})
   }
 
@@ -133,11 +129,7 @@ export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
       alert(`you can't pay back more than what you owe`)
       return
     }
-    const gameAction: ClientGameAction = {
-      name: 'Payback Money',
-      data: { amount: state.paybackAmount }
-    }
-    sendUpdate(gameAction)
+    sendUpdate.payBackMoney(state.paybackAmount)
     setState({...state, paybackAmount: 0})
   }
 

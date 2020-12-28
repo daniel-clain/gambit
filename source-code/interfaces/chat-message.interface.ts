@@ -1,6 +1,6 @@
-import PlayerNameAndId from './player-name-and-id';
+import { ConnectedClient } from '../server/game-host';
 
 export default interface ChatMessage{
-  player: PlayerNameAndId
+  player: ConnectedClient
   message: string
 }

@@ -1,60 +1,60 @@
-import Game from "../game";
-import Manager from "../manager";
+
 import Fighter from "../fighter/fighter";
 import { Employee, FighterInfo, KnownFighterStat, Professional } from "../../interfaces/server-game-ui-state.interface";
 import { loanSharkSettings } from "../../game-settings/loan-shark-settings";
 import { random } from "../../helper-functions/helper-functions";
 import { RoundController } from "./round-controller";
+import { Manager } from "../manager";
 
 
 export const updateManagersForNewRound = (roundController: RoundController, professionals: Professional[], fighters: Fighter[], managers: Manager[]) => {
   
   managers.forEach((manager: Manager) => {
-    manager.nextFightBet = null
-    manager.readyForNextFight = false
-    manager.actionPoints = 3
+    manager.has.nextFightBet = null
+    manager.state.readyForNextFight = false
+    manager.has.actionPoints = 3
     returnEmployeesAndFightersWithExpiredContracts(manager)
     updateEmployeeAndFighterWeeksLeft(manager)
     payEmployeeAndFighterWages(manager)
-    resetEmployeeActionPoints(manager.employees)
-    updateNumberOfRoundsForKnowFighterStats(manager.knownFighters)
+    resetEmployeeActionPoints(manager.has.employees)
+    updateNumberOfRoundsForKnowFighterStats(manager.has.knownFighters)
     addFightersToManagersKnownFightersList()
     updateLoanSharkData()
   })
 
   function returnEmployeesAndFightersWithExpiredContracts(manager: Manager){
-    const expiredEmployees: Employee[] = manager.employees.filter(employee => employee.activeContract.weeksRemaining == 0)
+    const expiredEmployees: Employee[] = manager.has.employees.filter(employee => employee.activeContract.weeksRemaining == 0)
 
-    manager.employees = manager.employees.filter(employee => employee.activeContract.weeksRemaining != 0)
+    manager.has.employees = manager.has.employees.filter(employee => employee.activeContract.weeksRemaining != 0)
 
-    expiredEmployees.forEach(employee => {
+    expiredEmployees?.forEach(employee => {
       const {activeContract, actionPoints, ...rest} = employee
       professionals.push(rest)
     })
 
     
-    const expiredFighters: Fighter[] = manager.fighters.filter(fighter => fighter.state.activeContract.weeksRemaining == 0)
+    const expiredFighters: Fighter[] = manager.has.fighters.filter(fighter => fighter.state.activeContract.weeksRemaining == 0)
 
-    manager.fighters = manager.fighters.filter(fighter => fighter.state.activeContract.weeksRemaining != 0)
+    manager.has.fighters = manager.has.fighters?.filter(fighter => fighter.state.activeContract.weeksRemaining != 0)
 
-    expiredFighters.forEach(fighter => fighter.state.activeContract = null)
+    expiredFighters?.forEach(fighter => fighter.state.activeContract = null)
 
-    expiredFighters.forEach(expiredFighter => {
+    expiredFighters?.forEach(expiredFighter => {
       expiredFighter.state.manager = undefined
       expiredFighter.state.goalContract = null
-      manager.knownFighters.push(expiredFighter.getInfo())
+      manager.has.knownFighters.push(expiredFighter.getInfo())
     })
   }
 
   function payEmployeeAndFighterWages(manager: Manager){
-    const employeeExpenses = manager.employees.reduce(
+    const employeeExpenses = manager.has.employees?.reduce(
       (count, employee) => count + employee.activeContract.weeklyCost
     , 0)
-    const fighterExpenses = manager.fighters.reduce(
+    const fighterExpenses = manager.has.fighters.reduce(
       (count, fighter) => count + fighter.state.activeContract.weeklyCost
     , 0)
-    manager.money -= (employeeExpenses + fighterExpenses)
-    manager.addToLog({message: `Spent ${employeeExpenses} on employee wage`})
+    manager.has.money -= (employeeExpenses + fighterExpenses)
+    manager.functions.addToLog({message: `Spent ${employeeExpenses} on employee wage`})
   }
 
   function resetEmployeeActionPoints(employees: Employee[]){
@@ -64,17 +64,17 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
 
 
   function updateEmployeeAndFighterWeeksLeft(manager: Manager){
-    manager.fighters.forEach(fighter => {
+    manager.has.fighters.forEach(fighter => {
       fighter.state.activeContract.weeksRemaining --
       if(fighter.state.activeContract.weeksRemaining == 0){
         fighter.determineGoalContract()
-        manager.addToLog({message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
+        manager.functions.addToLog({message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
       }
     })
-    manager.employees.forEach(employee => {
+    manager.has.employees.forEach(employee => {
       employee.activeContract.weeksRemaining --
       if(employee.activeContract.weeksRemaining == 0)
-        manager.addToLog({message: `Your employee ${employee.name}'s contract expires after this round`})
+        manager.functions.addToLog({message: `Your employee ${employee.name}'s contract expires after this round`})
     })
   }
 
@@ -84,8 +84,8 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
       Object.keys(knownFighter).forEach(incrementStatRounds)
 
       function incrementStatRounds(key){
-        let kf = knownFighter[key]
-        kf.lastKnownValue && kf.lastKnownValue ++
+        let knownFighterProperty = knownFighter[key]
+        knownFighterProperty?.lastKnownValue && knownFighterProperty.lastKnownValue ++
       }
     })
   }
@@ -107,7 +107,7 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
           managerDoesNotOwnRoundFighter() &&
           managerDoesNotKnowRoundFighter()
         )
-          manager.knownFighters.push({
+          manager.has.knownFighters.push({
             name: roundFighter.name,
             goalContract: roundFighter.goalContract,
             strength: undefined,
@@ -120,17 +120,17 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
             activeContract: undefined
           })
         else{
-          manager.knownFighters = manager.knownFighters.map(knownFighter => {
+          manager.has.knownFighters = manager.has.knownFighters.map(knownFighter => {
             const fighterJobSeeker =  roundController.jobSeekers.find(fighterJobSeeker => fighterJobSeeker.name == knownFighter.name)
             return {...knownFighter, goalContract: fighterJobSeeker ? fighterJobSeeker.goalContract : null}
           })
         }
 
         function managerDoesNotOwnRoundFighter(): boolean{
-          return !manager.fighters.some(fighter => fighter.name == roundFighter.name)
+          return !manager.has.fighters.some(fighter => fighter.name == roundFighter.name)
         }
         function managerDoesNotKnowRoundFighter(): boolean{
-          return !manager.knownFighters.some(knownFighter => knownFighter.name == roundFighter.name)
+          return !manager.has.knownFighters.some(knownFighter => knownFighter.name == roundFighter.name)
         }
       })
     })
@@ -139,12 +139,12 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
   function updateLoanSharkData(){
     managers.forEach(manager => {
 
-      if(manager.loan?.debt){
-        manager.loan.weeksOverdue ++
+      if(manager.has.loan?.debt){
+        manager.has.loan.weeksOverdue ++
         addInterestToLoan()
 
         if(managerHasPaidBackTheMinimumAmountThisWeek())
-          manager.loan = {...manager.loan, weeksOverdue: 0}
+          manager.has.loan = {...manager.has.loan, weeksOverdue: 0}
 
         else if(dayBeforeOverdue())
           sendWarning()
@@ -152,36 +152,36 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
         else if(managerHasNotMadeRepaymentInSpecifiedNumberOfWeeks())
           loanSharkAssaultsOneOfManagersFighters()
 
-        manager.loan.amountPaidBackThisWeek = 0
+        manager.has.loan.amountPaidBackThisWeek = 0
 
       }
 
 
       function sendWarning(){
-        manager.addToLog({type: 'critical', message: `you have not a repayment in ${manager.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
+        manager.functions.addToLog({type: 'critical', message: `you have not a repayment in ${manager.has.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
       }
       function dayBeforeOverdue(): boolean{
-        return manager.loan.weeksOverdue == loanSharkSettings.weeksOfNoPaybackUntilRespond - 1
+        return manager.has.loan.weeksOverdue == loanSharkSettings.weeksOfNoPaybackUntilRespond - 1
       }
 
       function managerHasPaidBackTheMinimumAmountThisWeek(): boolean{
-        return manager.loan.amountPaidBackThisWeek >= loanSharkSettings.minimumAmountToPayBackEachWeek
+        return manager.has.loan.amountPaidBackThisWeek >= loanSharkSettings.minimumAmountToPayBackEachWeek
       }
 
       function addInterestToLoan(){
-        const addedAmount = Math.round(manager.loan.debt * loanSharkSettings.interestAddedPerWeek)
-        manager.loan.debt += addedAmount
-        manager.addToLog({message: `You loan debt has incresed by ${addedAmount} because of ${loanSharkSettings.interestAddedPerWeek * 100}% interest, you now owe ${manager.loan.debt}`})
+        const addedAmount = Math.round(manager.has.loan.debt * loanSharkSettings.interestAddedPerWeek)
+        manager.has.loan.debt += addedAmount
+        manager.functions.addToLog({message: `You loan debt has incresed by ${addedAmount} because of ${loanSharkSettings.interestAddedPerWeek * 100}% interest, you now owe ${manager.has.loan.debt}`})
 
       }
       function managerHasNotMadeRepaymentInSpecifiedNumberOfWeeks(): boolean{
-        return manager.loan.weeksOverdue >= loanSharkSettings.weeksOfNoPaybackUntilRespond
+        return manager.has.loan.weeksOverdue >= loanSharkSettings.weeksOfNoPaybackUntilRespond
       }
       function loanSharkAssaultsOneOfManagersFighters(){
-        if(manager.fighters.length == 0)
+        if(manager.has.fighters.length == 0)
           return
         
-        const randomFighter = manager.fighters[random(manager.fighters.length - 1)]
+        const randomFighter = manager.has.fighters[random(manager.has.fighters.length - 1)]
 
         let randomStat
         let failSafeTries = 0
@@ -195,7 +195,7 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
 
         randomFighter.fighting.stats[randomStat] --
 
-        manager.addToLog({type: 'critical', message: `The loan shark is mad that you didnt pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat} has been reduced by 1`})
+        manager.functions.addToLog({type: 'critical', message: `The loan shark is mad that you didnt pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat} has been reduced by 1`})
 
 
       }

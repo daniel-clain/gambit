@@ -2,10 +2,10 @@ import * as React from "react"
 import './modal.scss'
 import {useDispatch} from 'react-redux'
 import { Dispatch } from "redux"
-import { ClientManagerUIAction } from "../../../../../../front-end-state/reducers/manager-ui.reducer"
+import { frontEndService } from "../../../../../../front-end-service/front-end-service"
 
 export const Modal = ({children, onClose = undefined}) =>  {
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  const {closeModal} = frontEndService().setClientState
   return (
     <div className='modal'>
       <div className='modal__blackout'></div>
@@ -14,10 +14,7 @@ export const Modal = ({children, onClose = undefined}) =>  {
       </div>
       <button 
         className='modal__close-button' 
-        onClick={() => (
-          dispatch({type: 'Close Modal'}), 
-          onClose?.()
-        )}
+        onClick={() => (closeModal(), onClose?.())}
       >Close</button>
     </div>   
   )

@@ -8,7 +8,7 @@ export interface ClientPreGameUIState{
 
 const initialPreGameUIState: ClientPreGameUIState = {
   clientId: getClientid(),
-  clientName: localStorage.getItem('name')
+  clientName: localStorage.getItem('clientName')
 }
 
 function getClientid(){
@@ -21,26 +21,33 @@ function getClientid(){
   }
 }
 
-export type ClientPreUIGameActionType = 'Set Name' | 'Set Client Is Game Display'
+export type SetStatePreGameUIFunctionName = 'setName'
 
-export interface PreGameUIAction {
-  type: ClientPreUIGameActionType
-  payload?: any
+export type SetStatePreGameUIAction = {
+  type: SetStatePreGameUIFunctionName
+  payload?
 }
 
-export const clientPreGameUIReducer = (clientPreGameUIState: ClientPreGameUIState = initialPreGameUIState, {type, payload}: PreGameUIAction): ClientPreGameUIState => {
-  switch (type){
-    case 'Set Name': {      
-      if(payload && payload != ''){
-        localStorage.setItem('name', payload)
-        return {...clientPreGameUIState, clientName: payload}
-      }
-    }
-    case 'Set Client Is Game Display': return {
-      ...clientPreGameUIState, 
-      clientName: 'Game Display'
-    }
+export type SetStatePreGameUI = {
+  setName(name: string)
+}
 
-    default: return clientPreGameUIState
+const setStatePreGameUI: SetStatePreGameUI ={
+  setName: clientName => {
+    localStorage.setItem('clientName', clientName)
+    return {clientName}
   }
 }
+
+
+
+export interface SetStateePreGameUIAction {
+  type: SetStatePreGameUIFunctionName
+  payload?: any
+}
+export const clientPreGameUIReducer = (
+  clientPreGameUIState: ClientPreGameUIState = initialPreGameUIState, 
+  {type, payload }: SetStatePreGameUIAction
+): ClientPreGameUIState => setStatePreGameUI?.[type] ? ({
+  ...clientPreGameUIState, ...setStatePreGameUI[type](payload)
+}) : clientPreGameUIState

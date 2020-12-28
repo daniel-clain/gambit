@@ -8,12 +8,12 @@ $images: '../../../../images';
 
   &__content{
     background-color: #e0e0f9;
-    max-width: 500px;
     margin:auto;
     position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow-y: auto;
 
     .headbar{
       height: 31px;
@@ -28,7 +28,7 @@ $images: '../../../../images';
       overflow: hidden;
       background-image: url('#{$images}/bg.jpg');
       background-size: cover;
-      background-position-x: right;
+      background-position: right center;
 
       .next-fight{
         margin-bottom: 8px;
@@ -78,4 +78,17 @@ $images: '../../../../images';
       display: flex;
     }
   } */
+
+  @media (min-width: 600px){
+    
+    .main-content{
+      flex-direction: row;
+
+      .next-fight {
+        margin-bottom: 8px;
+        padding-right: 40px;
+        width: 30%;
+      }
+    }
+  }
 }

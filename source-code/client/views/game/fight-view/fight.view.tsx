@@ -3,7 +3,6 @@ import {connect} from 'react-redux'
 import { useState } from 'react';
 import Octagon from '../../../../game-components/fight/octagon';
 import { wait } from '../../../../helper-functions/helper-functions';
-import { FightUiData } from '../../../../interfaces/game/fight-ui-data';
 import FighterFightState from '../../../../interfaces/game/fighter-fight-state-info';
 import Coords from '../../../../interfaces/game/fighter/coords';
 import './fight.view.scss'
@@ -35,7 +34,6 @@ interface FightUiProps{
 
 const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates}:FightUiProps) => {
 
-  console.log('derp');
 
   const [fightExplosionAnimationStage, setFightExplosionAnimationStage] = useState<FightExplosionAnimationStages>('removed')
 
@@ -71,14 +69,14 @@ const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, 
           <div className="background-bottom"></div>
           <div className="octagon">
             {cornerPoints.map((point: Coords, index) => 
-              <div className="point" key={index} style={{left: point.x, bottom: point.y}}></div>
+              <div className="point" key={Math.round(point.x + point.y)} style={{left: point.x, bottom: point.y}}></div>
             )}
             {fighterFightStates.map((fighter, i) => 
               <FighterComponent key={i} fighterFightState={fighter}/>
             )}
           </div>
         </div>
-        {report && report.winner && 
+        {report?.winner && 
           <div className='fight-ui__winner'>{report.winner.name} Wins!</div>
         }
         {timeRemaining == 0 && report && !report.winner &&
@@ -103,7 +101,7 @@ const Fight_View = ({startCountdown, timeRemaining, fighterFightStates, report, 
 }
 
 const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {fightUiData: {
+  serverUIState: {serverGameUIState: {FightUIState: {
     startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates
   }}}
 }: FrontEndState): FightUiProps => ({startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates})

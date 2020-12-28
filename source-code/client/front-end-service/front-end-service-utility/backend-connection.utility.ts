@@ -6,6 +6,7 @@ import ClientAction from '../../../interfaces/client-action';
 export interface BackEndConnection{
   onUpdateReceived(func): void
   sendUpdate<T extends ClientAction>(update: T): void
+  sendMessage
 }
 
 const port = process.env.WEBSOCKET_PORT
@@ -21,8 +22,10 @@ export const backEndConnection: BackEndConnection = {
       func('To Client From Server - Lobby Ui', data)
     })
     socket.on('To Client From Server - Game Ui', data => {
-      console.log('game update')
       func('To Client From Server - Game Ui', data)
     })
+  },
+  sendMessage: (key, data?) => {
+    socket.emit(key, data)
   }
 }

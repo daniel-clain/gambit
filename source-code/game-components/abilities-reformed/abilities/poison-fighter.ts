@@ -16,12 +16,12 @@ const poisonFighter: Ability = {
 
 export const poisonFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
     
     let poisoner: Employee
     let poisonersManager: Manager
-    for(let manager of game.managers){
-      poisoner = manager.employees.find(employee => employee.name == abilityData.source.name)
+    for(let manager of game.has.managers){
+      poisoner = manager.has.employees.find(employee => employee.name == abilityData.source.name)
       if(poisoner){
         poisonersManager = manager
         break
@@ -29,7 +29,7 @@ export const poisonFighterServer: ServerAbility = {
     }    
     
     if(fighter.state.dead){
-      poisonersManager.addToLog({message: `Attempt to poison ${abilityData.target.name} failed beacuse he was already found dead`})
+      poisonersManager.functions.addToLog({message: `Attempt to poison ${abilityData.target.name} failed beacuse he was already found dead`})
       return
     }
 
@@ -51,28 +51,28 @@ export const poisonFighterServer: ServerAbility = {
     }
     if(success){
       fighter.state.poisoned = true
-      game.roundController.preFightNewsStage.newsItems.push({
+      game.has.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter was poisoned',
         headline: `${fighter.name} Poisoned!`,
         message: `${fighter.name} has been behaving in a delerious and nausious, there is reason to belive he has been poisoned`
       })
-      poisonersManager.addToLog({
+      poisonersManager.functions.addToLog({
         message: `${poisoner.name} has successfully poisoned ${fighter.name}`
       })
     }
     else if(guardBlocked){
-      game.roundController.preFightNewsStage.newsItems.push({
+      game.has.roundController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect fighter from being poisoned',
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have stopped a suspicious man trying to poison ${fighter.name}`
       })      
-      poisonersManager.postFightReportItems.push({
+      poisonersManager.has.postFightReportItems.push({
         type: 'employee outcome',
         message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name} because he was guarded by thugs`
       })
     }
     else
-      poisonersManager.postFightReportItems.push({
+      poisonersManager.has.postFightReportItems.push({
         type: 'employee outcome', 
         message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name}`
       })

@@ -13,11 +13,11 @@ const sellDrugs: Ability = {
 
 export const sellDrugsServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const manager = game.managers.find(manager => manager.employees.some(employee => employee.name == abilityData.source.name))
-    const drugDealer = manager.employees.find(employee => employee.name == abilityData.source.name)
+    const manager = game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
+    const drugDealer = manager.has.employees.find(employee => employee.name == abilityData.source.name)
     const moneyFromDrugDealing =  50 * drugDealer.skillLevel + 200
     manager.money += moneyFromDrugDealing
-    manager.addToLog({message: `${abilityData.source.name} has made ${moneyFromDrugDealing} money from selling drugs`})
+    manager.functions.addToLog({message: `${abilityData.source.name} has made ${moneyFromDrugDealing} money from selling drugs`})
   },
   ...sellDrugs
 }

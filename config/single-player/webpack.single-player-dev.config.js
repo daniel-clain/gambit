@@ -1,6 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+var webpack = require("webpack");
 var sourceDir = `${__dirname}/../../source-code/client/different-build-modes/single-player-test`
+
+console.log('Single player game client running at localhost:7799')
 
 module.exports = {
   mode: 'development',
@@ -50,5 +52,6 @@ module.exports = {
       title: 'Gambit - Single Player Dev',
       meta:{viewport: "width=device-width, initial-scale=1.0"}
     }),
+    new webpack.HotModuleReplacementPlugin()
   ]
 };

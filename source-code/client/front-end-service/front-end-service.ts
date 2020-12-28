@@ -1,57 +1,95 @@
 
 
 import Redux from 'redux'
-import { DispatchAction, FrontEndState, setupFrontEndStore } from "../front-end-state/front-end-state"
+import { Subscription } from 'rxjs'
+import { FromClientToHost } from '../../server/game-host.types'
+import { GameType } from '../../types/game/game-type'
+import { FrontEndState, setupFrontEndStore } from "../front-end-state/front-end-state"
+import { SetStateManagerUI } from '../front-end-state/reducers/manager-ui.reducer'
+import { SetStatePreGameUI } from '../front-end-state/reducers/pre-game-ui.reducer'
+import { FromClientToGame, SetState, SetStateFunctionName } from './front-end-service-types'
 
-import {BackEndConnection, backEndConnection} from './front-end-service-utility/backend-connection.utility'
-import getPreGameUIUtility, { PreGameUIUtility } from './front-end-service-utility/pre-game-ui.utility'
+import { singlePlayer } from './single-player-service'
+import { WebsocketService } from './websocket-service'
 
 
-export interface FrontEndService 
-  extends 
-    BackEndConnection, 
-    PreGameUIUtility 
-{
-  frontEndStore: Redux.Store<FrontEndState>
+export class FrontEndService{
+  sendUpdate: FromClientToHost & FromClientToGame
+  frontEndStore: Redux.Store<FrontEndState> = setupFrontEndStore()
+  connectToGameHost
+
+  constructor(type: GameType){
+    if(type == 'Local'){
+      this.sendUpdate = singlePlayer.sendUpdate
+      this.frontEndStore.dispatch({
+        type: 'setName', payload: 'Single Player'
+      })
+      singlePlayer.onServerGameUIStateUpdate.subscribe(
+        serverGameUIState => this.frontEndStore.dispatch(
+          {type:'Update Game UI', payload: serverGameUIState}
+        )
+      )
+    }
+
+    if(type == 'Websockets'){
+      const websocketService = new WebsocketService()
+      this.sendUpdate = websocketService.sendUpdate
+      this.connectToGameHost = websocketService.connectToGameHost
+      websocketService.onServerPreGameUIStateUpdate.subscribe(
+        serverPreGameUIState => this.frontEndStore.dispatch(
+          {type:'Update Lobby UI', payload: serverPreGameUIState}
+        )
+      )
+      websocketService.onServerGameUIStateUpdate.subscribe(
+        serverGameUIState => this.frontEndStore.dispatch(
+          {type:'Update Game UI', payload: serverGameUIState}
+        )
+      )
+    }
+
+  }
+
+  private setStatePreGameUIFunctions: SetStatePreGameUI = {
+    setName: clientName => this.dispatch('setName', clientName)
+  }
+
+  private setStateManagerUIFunctions: SetStateManagerUI = {
+    showFighter: fighter => this.dispatch('showFighter', fighter),
+    showEmployee: employee => this.dispatch('showEmployee', employee),
+    showjobSeeker: jobSeeker => this.dispatch('showjobSeeker', jobSeeker),
+    showAbility: ability => this.dispatch('showAbility', ability),
+    showActivityLog: () => this.dispatch('showActivityLog'),
+    showLoanShark: () => this.dispatch('showLoanShark'),
+    showKnownFighters: () => this.dispatch('showKnownFighters'),
+    showOtherManagers: () => this.dispatch('showOtherManagers'),
+    closeModal: () => this.dispatch('closeModal'),
+    closeSelectList: () => this.dispatch('closeSelectList')
+  }
+
+  setClientState: SetState = {
+    ...this.setStatePreGameUIFunctions,
+    ...this.setStateManagerUIFunctions
+  }
+
+
+  private dispatch = (functionName: SetStateFunctionName, data?) => {
+    this.frontEndStore.dispatch({
+      type: functionName, payload: data
+    })
+  }
 }
 
-let frontEndServiceInstance: FrontEndService
+
+let frontEndServiceInstance
 
 
-
-export const setupFrontEndService = (): FrontEndService => {
-
-  frontEndServiceInstance = {
-    ...backEndConnection,
-    frontEndStore: setupFrontEndStore(),
-  } as any
-
-  frontEndServiceInstance = {
-    ...frontEndServiceInstance, 
-    ...getPreGameUIUtility(frontEndServiceInstance)
-  } as FrontEndService
-
-  frontEndServiceInstance.onUpdateReceived((type, data) => {
-    switch(type){
-      case 'To Client From Server - Lobby Ui': {
-        frontEndServiceInstance.frontEndStore.dispatch({
-          type: 'Update Lobby UI',
-          payload: data
-        })
-      }; break
-      case 'To Client From Server - Game Ui': {
-        frontEndServiceInstance.frontEndStore.dispatch({
-          type: 'Update Game UI',
-          payload: data
-        })
-      }
-    }
-  })
-
-
+export const frontEndService = (type?: GameType): FrontEndService => {
+  if(frontEndServiceInstance)
+  return frontEndServiceInstance
+  else 
+  frontEndServiceInstance = new FrontEndService(type)
   return frontEndServiceInstance
 }
 
-export const frontEndService = frontEndServiceInstance ? frontEndServiceInstance : setupFrontEndService()
 
 

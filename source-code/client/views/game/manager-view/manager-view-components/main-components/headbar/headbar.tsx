@@ -9,6 +9,7 @@ import { Bet } from '../../../../../../../interfaces/game/bet';
 import ClientGameAction from '../../../../../../../types/client-game-actions';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
+import { Socket } from 'socket.io-client';
 
 export interface HeadbarProps{
   actionPoints: number
@@ -24,7 +25,11 @@ const Headbar = ({
   nextFightBet
 }: HeadbarProps) => {
 
-  let {sendUpdate} = frontEndService
+  let {sendUpdate} = frontEndService()
+
+
+  
+  
 
   return (
     <div className='headbar' >
@@ -37,12 +42,7 @@ const Headbar = ({
         <span className='finished-turn'>Finished Turn?
           <input 
             type='checkbox' 
-            onChange={e => 
-              sendUpdate({
-                name: 'Toggle Ready',
-                data: { ready: e.target.checked }
-              })
-            } 
+            onChange={sendUpdate.toggleReady} 
           />          
         </span>
 
@@ -55,7 +55,7 @@ const Headbar = ({
 }
 
 const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {playerManagerUiData: {
+  serverUIState: {serverGameUIState: {playerManagerUIState: {
     managerOptionsTimeLeft,
     managerInfo: {actionPoints, money, nextFightBet}
   }}}

@@ -13,17 +13,15 @@ import JobSeekersPanel from './manager-view-components/main-components/job-seeke
 import YourFightersPanel from './manager-view-components/main-components/your-fighters-panel/your-fighters-panel'
 import LogsCard from './manager-view-components/cards/logs-card/logs-card'
 import { FrontEndState } from "../../../front-end-state/front-end-state"
-import {connect, useDispatch} from 'react-redux'
+import {connect} from 'react-redux'
 import { Employee, FighterInfo, JobSeeker, Loan } from "../../../../interfaces/server-game-ui-state.interface"
 import { ActivityLogItem } from "../../../../types/game/activity-log-item"
 import { frontEndService } from "../../../front-end-service/front-end-service"
 import { Bet } from "../../../../interfaces/game/bet"
 
 import './manager-view-style/manager-view.scss'
-import { ActiveCard, ClientManagerUIAction } from "../../../front-end-state/reducers/manager-ui.reducer"
-import { Dispatch } from "redux"
+import { ActiveCard } from "../../../front-end-state/reducers/manager-ui.reducer"
 import FighterCard from "./manager-view-components/cards/fighter-card/fighter-card"
-import jobSeekerCard from "./manager-view-components/cards/job-seeker-card/job-seeker-card"
 
 
 interface ManagerViewProps{
@@ -37,7 +35,7 @@ interface ManagerViewProps{
   actionPoints: number
   jobSeekers: JobSeeker[]
   nextFightFighters: FighterInfo[]
-  yourFighters: FighterInfo[]
+  fighters: FighterInfo[]
   employees: Employee[]
   activeCard: ActiveCard
 }
@@ -53,13 +51,18 @@ const Manager_View = ({
   managerOptionsTimeLeft,
   actionPoints,
   nextFightFighters,
-  yourFighters,
+  fighters,
   jobSeekers,
   employees,
   activeCard
 }: ManagerViewProps) => {
 
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  const {
+    showActivityLog, 
+    showLoanShark,
+    showKnownFighters,
+    showOtherManagers
+  } = frontEndService().setClientState
 
 
   return (
@@ -68,38 +71,39 @@ const Manager_View = ({
       <div className="manager-ui__content">
         <Headbar {...{actionPoints, money, managerOptionsTimeLeft, nextFightBet}} />
         <div className='main-content'>
-          <NextFightPanel {...{yourFighters, nextFightBet, nextFightFighters}} />
+          <NextFightPanel {...{fighters, nextFightBet, nextFightFighters}} />
 
           <div className="two-columns">
             <div className='left-column'>
-              <YourFightersPanel {...{yourFighters}} />
+              <YourFightersPanel {...{fighters}} />
               <EmployeesPanel {...{employees}} />
             </div>
             <div className="right-column">
               <JobSeekersPanel {...{jobSeekers}} />
-              <button onClick={() => dispatch({type: 'Show Activity Log'})}>Logs</button>
+              <button onClick={showActivityLog}>Logs</button>
+              <button onClick={showLoanShark}>Loan Shark</button>
+              <button onClick={showKnownFighters}>Known Fighters</button>
+              <button onClick={showOtherManagers}>Other Managers</button>
             </div>
           </div>
 
-          <button onClick={() => dispatch({type: 'Show Loan Shark Card'})}>Loan Shark</button>
-          <button onClick={() => dispatch({type: 'Show Known Fighters'})}>Known Fighters</button>
-          <button onClick={() => dispatch({type: 'Show Known Managers'})}>Other Managers</button>
         </div>
 
       </div>
 
       {(() => {
-        switch(activeCard?.name){
-          case 'Fighter': return <FighterCard />
-          case 'Job Seeker': return <JobSeekerCard/>
-          case 'Employee': return <EmployeeCard/>
-          case 'Activity Log': return <LogsCard {...{activityLogs}}  />
-          case 'Loan Shark': return <LoanSharkCard {...{loan, money}} />
-          case 'Known Fighters': return <KnownFightersCard fighters={knownFighters}  />
-          case 'Known Managers': return <ManagersCard {...{otherManagers}} />
-          case 'Ability': return <AbilityCard />
-        }
-      })()}
+        if(activeCard)
+          switch(activeCard.name){
+            case 'Fighter': return <FighterCard />
+            case 'Job Seeker': return <JobSeekerCard/>
+            case 'Employee': return <EmployeeCard/>
+            case 'Activity Log': return <LogsCard {...{activityLogs}}  />
+            case 'Loan Shark': return <LoanSharkCard {...{loan, money}} />
+            case 'Known Fighters': return <KnownFightersCard fighters={knownFighters}  />
+            case 'Known Managers': return <ManagersCard {...{otherManagers}} />
+            case 'Ability': return <AbilityCard />
+          }
+        })()}
     </div>      
   )
 
@@ -110,10 +114,10 @@ const mapStateToProps = ({
     clientManagerUIState: {activeCard}
   }},
   serverUIState: { serverGameUIState: {
-    playerManagerUiData: {
+    playerManagerUIState: {
       managerInfo: {
         money, activityLogs, actionPoints, nextFightBet, 
-        otherManagers, loan, employees, knownFighters, yourFighters
+        otherManagers, loan, employees, knownFighters, fighters
       },
       managerOptionsTimeLeft,
       jobSeekers,
@@ -134,7 +138,7 @@ ManagerViewProps => ({
   employees,
   activeCard,
   knownFighters,
-  yourFighters
+  fighters
 })
 
 

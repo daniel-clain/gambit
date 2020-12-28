@@ -1,6 +1,4 @@
 import IStage from "../../../interfaces/game/stage";
-import { Subject } from "rxjs";
-import Game from "../../game";
 import { RoundController } from "../round-controller";
 import RoundStages from "../../../types/game/round-stage.type";
 import { NewsItem } from "../../../types/game/news-item";
@@ -10,7 +8,7 @@ export default class PreFightNewsStage implements IStage {
   private endRound
   newsItems: NewsItem[] = []
   
-  constructor(private game: Game, private roundController: RoundController){}
+  constructor(private roundController: RoundController){}
   slideDuration = gameConfiguration.stageDurations.eachNewsSlide * 1000
   activNewsItemCount
 
@@ -34,10 +32,13 @@ export default class PreFightNewsStage implements IStage {
     })
   }
 
+  pause(){console.log('no implemented')}
+  unpause(){console.log('no implemented')}
+
   showNextNewsItem(){
     this.activNewsItemCount ++
     this.activeNewsItem[this.activNewsItemCount]
-    this.roundController.triggerUpdate()
+    this.roundController.triggerUIUpdate()
   }
 
   

@@ -1,12 +1,10 @@
 import * as React from 'react'
-import {useDispatch} from 'react-redux'
-import { Dispatch } from 'redux'
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface'
-import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer'
+import { frontEndService } from '../../../../../../front-end-service/front-end-service'
 import { Modal } from '../../partials/modal/modal'
 
 export const KnownFightersCard = ({fighters}: {fighters: FighterInfo[]}) => {
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  const {showFighter} = frontEndService().setClientState
   return (
     <Modal>    
       <div className='panel known-fighters'>
@@ -16,7 +14,7 @@ export const KnownFightersCard = ({fighters}: {fighters: FighterInfo[]}) => {
             <div 
               className={'list__row'} 
               key={fighter.name} 
-              onClick={() => dispatch({type: 'Fighter Selected', payload: fighter})}
+              onClick={() => showFighter(fighter)}
             >           
               <span className='list__row__image'></span>
               <span className='list__row__name'>{fighter.name}</span>

@@ -1,22 +1,21 @@
-import { Subject, merge } from 'rxjs';
+import { Subject } from 'rxjs';
 import RoundStages from '../../types/game/round-stage.type';
 import Fight from '../fight/fight';
 import { JobSeeker } from '../../interfaces/server-game-ui-state.interface';
-import Game from '../game';
 import ManagerOptionsStage from './stages/manager-options-stage';
 import PreFightNewsStage from './stages/pre-fight-news-stage';
 import IStage from '../../interfaces/game/stage';
 import FightDayStage from './stages/fight-day-stage';
 import PostFightReportStage from './stages/post-fight-report-stage';
-import { RoundState } from '../../interfaces/game/round-state';
+import { RoundUIState } from '../../interfaces/game/round-state';
 import { updateManagersForNewRound } from './new-round-manager-update';
 import { doEndOfRoundReset } from './end-of-round-reset';
 import { setupNewRound } from './new-round-setup';
-
+import { Game } from '../game';
 
 export class RoundController {
   roundNumber: number
-  private _activeStage: RoundStages
+  activeStage: IStage
   jobSeekers: JobSeeker[]
   activeFight: Fight
   lastFightFighters: string[] = []
@@ -31,55 +30,52 @@ export class RoundController {
   postFightReportStage: PostFightReportStage
 
 
-  constructor(private game: Game, public triggerUpdate) {
-    this.managerOptionsStage = new ManagerOptionsStage(this, game.managers)
-    this.preFightNewsStage = new PreFightNewsStage(game, this)
-    this.fightDayStage = new FightDayStage(this, game.managers)
-    this.postFightReportStage = new PostFightReportStage(game, this)
+  constructor(private game: Game) {
+    this.managerOptionsStage = new ManagerOptionsStage(this, this.game.has.managers)
+    this.preFightNewsStage = new PreFightNewsStage(this)
+    this.fightDayStage = new FightDayStage(this, this.game.has.managers)
+    this.postFightReportStage = new PostFightReportStage(this)
   }
 
   startRound(number) {
-    console.log(`starting round ${number}`);
+    let {abilityProcessor} = this.game.has
     this.setUpRound(number)
       .then(() => this.doStage(this.managerOptionsStage))
-      .then(() => this.endOfManagerOptionsStageSubject.next())
+      .then(() => abilityProcessor.executeAbilities('End Of Manager Options Stage'))
       .then(() => this.doStage(this.preFightNewsStage))
       .then(() => this.doStage(this.fightDayStage))
       .then(() => this.doStage(this.postFightReportStage))
-      .then(() => this.endOfRoundSubject.next())
-      .then(() => doEndOfRoundReset(this, this.game.fighters, this.game.professionals))
+      .then(() => abilityProcessor.executeAbilities('End Of Round'))
+      .then(() => doEndOfRoundReset(this, this.game.has.fighters, this.game.has.professionals))
       .then(() => this.startRound(++number))
   }
 
   doStage(stage: IStage): Promise<any>{    
-    console.log(`Stage: ${stage.name}`);
-    this.activeStage = stage.name 
+    this.activeStage = stage 
+    this.game.functions.triggerUIUpdate()
     
     return stage.start()
   }
 
+  triggerUIUpdate(){
+    this.game.functions.triggerUIUpdate()
+  }
+
   private setUpRound(number) {
+
     this.roundNumber = number
-    const {managers, professionals, fighters} = this.game
+    const {managers, professionals, fighters} = this.game.has
     setupNewRound(this, professionals, fighters, managers)
     updateManagersForNewRound(this, professionals, fighters, managers)
     return Promise.resolve()
   }
 
-  set activeStage(val){
-    this._activeStage = val
-    this.game.messageSender.triggerUpdate()
-  }
-  get activeStage(){
-    return this._activeStage
-  }
 
 
-
-  get roundState(): RoundState {
+  getRoundUIState = (): RoundUIState => {
     return {
       number: this.roundNumber,
-      stage: this.activeStage,
+      stage: this.activeStage.name,
       jobSeekers: this.jobSeekers,
       managerOptionsTimeLeft: this.managerOptionsStage.timeLeft,
       activeFight: this.activeFight

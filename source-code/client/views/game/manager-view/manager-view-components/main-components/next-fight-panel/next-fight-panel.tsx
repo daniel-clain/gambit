@@ -2,27 +2,25 @@
 import * as React from 'react';
 import './next-fight-panel.scss'
 import BetBox from './bet-box/bet-box'
-import {connect, useDispatch} from 'react-redux'
+import {connect} from 'react-redux'
 import { Bet } from '../../../../../../../interfaces/game/bet';
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface';
 import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
-import { Dispatch } from 'redux';
-import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
 export interface NextFightPanelProps{
   nextFightFighters: FighterInfo[]
-  yourFighters: FighterInfo[]
+  fighters: FighterInfo[]
   nextFightBet: Bet
 }
 
 const NextFightPanel = ({
-  yourFighters, 
+  fighters, 
   nextFightBet, 
   nextFightFighters
 }: NextFightPanelProps) => {
 
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  const {showFighter} = frontEndService().setClientState
   
   return (
     <div className='next-fight'>
@@ -40,7 +38,7 @@ const NextFightPanel = ({
               <span className='next-fight__fighter__yours'></span>
             }
             <span className='next-fight__fighter__image'
-            onClick={() => dispatch({type:'Fighter Selected', payload: fighter})}>             
+            onClick={() => showFighter(fighter)}>             
               <span className='next-fight__fighter__name'>{fighter.name}</span>
             </span>
             <BetBox
@@ -53,20 +51,20 @@ const NextFightPanel = ({
   )
 
   function isYourFighter(fighterName): boolean{
-    return yourFighters.some(fighter => fighter.name == fighterName)
+    return fighters.some(fighter => fighter.name == fighterName)
   }
 }
 
 export default connect(
   ({
-    serverUIState: {serverGameUIState: {playerManagerUiData: {
+    serverUIState: {serverGameUIState: {playerManagerUIState: {
       nextFightFighters,
-      managerInfo: {yourFighters, nextFightBet}
+      managerInfo: {fighters, nextFightBet}
     }}}
   }: FrontEndState)
   : NextFightPanelProps => {
     return {
-      yourFighters, 
+      fighters, 
       nextFightBet, 
       nextFightFighters
     } 

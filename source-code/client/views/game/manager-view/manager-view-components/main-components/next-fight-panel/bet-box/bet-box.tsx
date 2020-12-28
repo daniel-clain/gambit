@@ -19,7 +19,7 @@ const BetBox = ({
   nextFightBet
 }: BetBoxProps) => {
 
-  const {sendUpdate} = frontEndService
+  const {sendUpdate} = frontEndService()
 
   const {betSizePercentages} = gameConfiguration
   const smallAmount = Math.round(betSizePercentages.small/100 * money)
@@ -91,7 +91,7 @@ const BetBox = ({
 
 
 function mapStateToProps({
-  serverUIState: { serverGameUIState: {playerManagerUiData: {
+  serverUIState: { serverGameUIState: {playerManagerUIState: {
     managerInfo: {money, nextFightBet}
   }}}
 }: FrontEndState) {

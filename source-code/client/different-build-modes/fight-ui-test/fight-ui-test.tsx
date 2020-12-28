@@ -5,9 +5,9 @@ import '../../ui-components/global/styles/global.scss';
 import Fighter from '../../../game-components/fighter/fighter';
 import Fight from '../../../game-components/fight/fight';
 import { shuffle } from '../../../helper-functions/helper-functions';
-import { FightUiData } from '../../../interfaces/game/fight-ui-data';
 import gameConfiguration from '../../../game-settings/game-configuration';
-import FightUi from '../../ui-components/global/main-components/fight-ui/fight-ui';
+import { FightUIState } from '../../../interfaces/game/fight-ui-data';
+import Fight_View from '../../views/game/fight-view/fight.view'
 
 export default class FighterUiTest extends React.Component{
   state = {
@@ -122,7 +122,7 @@ export default class FighterUiTest extends React.Component{
 
 
     this.fight = new Fight(fighters, undefined)
-    this.fight.fightUiDataSubject.subscribe((fightUiData: FightUiData) => {
+    this.fight.fightUiDataSubject.subscribe((fightUiData: FightUIState) => {
       this.setState({fightUiData})
     })
 
@@ -150,7 +150,7 @@ export default class FighterUiTest extends React.Component{
       >
         {this.fight.paused ? 'Un-Pause' : 'Pause'}
       </button>
-        <FightUi fightUiData={fightUiData}/>
+        <Fight_View fightUiData={fightUiData}/>
       </>
     else
       return <div>loading....</div>

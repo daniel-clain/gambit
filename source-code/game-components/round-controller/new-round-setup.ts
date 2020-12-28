@@ -1,12 +1,12 @@
-import Game from "../game";
+
 import gameConfiguration from "../../game-settings/game-configuration";
 import { shuffle, random } from "../../helper-functions/helper-functions";
 import { JobSeeker, Professional } from "../../interfaces/server-game-ui-state.interface";
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
 import Fight from "../fight/fight";
-import Manager from "../manager";
 import { RoundController } from "./round-controller";
+import { Manager } from "../manager";
 
 export function setupNewRound(roundController: RoundController, professionals: Professional[], fighters: Fighter[], managers: Manager[]){
 
@@ -20,7 +20,7 @@ export function setupNewRound(roundController: RoundController, professionals: P
   }
 
   function addNewRoundToManagerLog(){
-    managers.forEach(manager => manager.addToLog({type: 'new round', message: `Round ${roundController.roundNumber}`}));
+    managers.forEach(manager => manager.functions.addToLog({type: 'new round', message: `Round ${roundController.roundNumber}`}));
   }
 
   function setRoundJobSeekers(){
@@ -72,7 +72,6 @@ export function setupNewRound(roundController: RoundController, professionals: P
             weeklyCost: 5 * professional.skillLevel
         }; break
       }
-      console.log('goalContract', goalContract)
       const {name, profession, skillLevel, abilities} = professional
       return {type: 'Professional', name, profession, goalContract, skillLevel, abilities}
     })
@@ -158,7 +157,7 @@ export function setupNewRound(roundController: RoundController, professionals: P
 
 
     roundController.activeFight.fightUiDataSubject.subscribe(() => {
-      roundController.triggerUpdate()
+      roundController.triggerUIUpdate()
     })
   }
   

@@ -1,9 +1,9 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import Game from "../../game"
-import Manager from "../../manager"
 import { ActiveContract, ContractOffer } from "../../../interfaces/game/contract.interface"
 import Fighter from "../../fighter/fighter"
 import { JobSeeker, Employee } from "../../../interfaces/server-game-ui-state.interface"
+import { Game } from "../../game"
+import { Manager } from "../../manager"
 
 
 const offerContract: Ability = {
@@ -20,17 +20,17 @@ export const offerContractServer: ServerAbility = {
     let manager: Manager
  
     if(abilityData.source.type == 'Manager'){
-      manager = game.managers.find((manager: Manager) => manager.name == abilityData.source.name)
+      manager = game.has.managers.find((manager: Manager) => manager.has.name == abilityData.source.name)
     }
     else{      
-      manager = game.managers.find((manager: Manager) => {
-        return manager.employees.some(employee => employee.name == abilityData.source.name)
+      manager = game.has.managers.find((manager: Manager) => {
+        return manager.has.employees.some(employee => employee.name == abilityData.source.name)
       })
     }
 
     const contractOffer: ContractOffer = abilityData.additionalData.contractOffer
 
-    const jobSeeker: JobSeeker = game.roundController.jobSeekers.find(jobSeeker => jobSeeker.name == abilityData.target.name)
+    const jobSeeker: JobSeeker = game.has.roundController.jobSeekers.find(jobSeeker => jobSeeker.name == abilityData.target.name)
 
     const isRecontractingFighter: boolean = !jobSeeker
 
@@ -42,17 +42,17 @@ export const offerContractServer: ServerAbility = {
           weeksRemaining: contractOffer.numberOfWeeks,
           numberOfWeeks: contractOffer.numberOfWeeks
         }
-        game.roundController.jobSeekers.splice(game.roundController.jobSeekers.findIndex(jobSeeker => jobSeeker.name == abilityData.target.name), 1)
+        game.has.roundController.jobSeekers.splice(game.has.roundController.jobSeekers.findIndex(jobSeeker => jobSeeker.name == abilityData.target.name), 1)
         const employee: Employee = {abilities, profession, skillLevel, name, activeContract, actionPoints: 1}
-        manager.employees.push(employee)
+        manager.has.employees.push(employee)
       }
       if(jobSeeker.type == 'Fighter'){
-        const fighter: Fighter = game.fighters.find(fighter => fighter.name == jobSeeker.name)
+        const fighter: Fighter = game.has.fighters.find(fighter => fighter.name == jobSeeker.name)
         if(fighter.state.dead){
-          manager.addToLog({message: `Offer contract to ${abilityData.target.name} failed beacuse he was murdered`})
+          manager.functions.addToLog({message: `Offer contract to ${abilityData.target.name} failed beacuse he was murdered`})
           return
         }
-        manager.fighters.push(fighter)
+        manager.has.fighters.push(fighter)
         fighter.state.manager = manager
         const activeContract: ActiveContract = {
           weeklyCost: contractOffer.weeklyCost, 
@@ -60,12 +60,12 @@ export const offerContractServer: ServerAbility = {
           numberOfWeeks: contractOffer.numberOfWeeks
         }
         fighter.state.activeContract = activeContract
-        const knownFighterIndex = manager.knownFighters.findIndex(fighter => fighter.name == abilityData.target.name)
-        manager.knownFighters.splice(knownFighterIndex, 1)
+        const knownFighterIndex = manager.has.knownFighters.findIndex(fighter => fighter.name == abilityData.target.name)
+        manager.has.knownFighters.splice(knownFighterIndex, 1)
       }
     }
     if(isRecontractingFighter){
-      const fighter = manager.fighters.find(fighter => fighter.name == abilityData.target.name)
+      const fighter = manager.has.fighters.find(fighter => fighter.name == abilityData.target.name)
       if(fighter){
         fighter.state.activeContract = {
           weeklyCost: contractOffer.weeklyCost,
@@ -75,7 +75,7 @@ export const offerContractServer: ServerAbility = {
       }
     }
 
-    manager.addToLog({message: `${abilityData.target.name} has agreed to the contract offed by ${abilityData.source.name}. ${abilityData.target.name} now works for you`});
+    manager.functions.addToLog({message: `${abilityData.target.name} has agreed to the contract offed by ${abilityData.source.name}. ${abilityData.target.name} now works for you`});
 
     return 
   },

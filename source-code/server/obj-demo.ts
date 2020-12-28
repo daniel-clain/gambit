@@ -6,7 +6,7 @@ function RoundController(game){
       startRound(num){
           console.log('starting round',num)
           this.nextFight = {
-              fighters: game.fighters
+              fighters: game.has.fighters
           }
       }
   }

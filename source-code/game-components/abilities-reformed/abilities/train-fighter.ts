@@ -19,19 +19,19 @@ const trainFighter: Ability = {
 
 export const trainFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter: Fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const fighter: Fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
 
     let manager: Manager
     let trainer: Employee
     let sourceSkillLevel: SkillLevel
 
     if(abilityData.source.type == 'Manager'){
-      manager = game.managers.find(manager => manager.name == abilityData.source.name)
+      manager = game.has.managers.find(manager => manager.name == abilityData.source.name)
       sourceSkillLevel = 1
     }
     else{
-      manager = game.managers.find(manager => {
-        trainer = manager.employees.find(employee => employee.name == abilityData.source.name)
+      manager = game.has.managers.find(manager => {
+        trainer = manager.has.employees.find(employee => employee.name == abilityData.source.name)
         if(trainer)
           return true
       })
@@ -43,13 +43,13 @@ export const trainFighterServer: ServerAbility = {
     fighter.state.trainingProgress += sourceSkillLevel
 
     let newsItemAdded
-    const trainedFighterInFight: boolean = game.roundController.activeFight.fighters.some(fighterInFight => fighterInFight.name == fighter.name)
+    const trainedFighterInFight: boolean = game.has.roundController.activeFight.fighters.some(fighterInFight => fighterInFight.name == fighter.name)
 
     while(fighter.state.trainingProgress >= 2){
       fighter.state.trainingProgress -= 2
 
       if(!newsItemAdded && trainedFighterInFight){        
-        game.roundController.preFightNewsStage.newsItems.push({
+        game.has.roundController.preFightNewsStage.newsItems.push({
           newsType: 'fighter has gone up in strength or fitness',
           headline: `${fighter.name} training hard`,
           message: `${fighter.name} has been training hard for the upcoming fight`
@@ -60,11 +60,11 @@ export const trainFighterServer: ServerAbility = {
       const randomNum = random(1)
       if(randomNum === 0){
         fighter.fighting.stats.baseStrength ++
-        manager.addToLog({message: `${fighter.name}'s strength has gone up by 1 as a result of being trained`})
+        manager.functions.addToLog({message: `${fighter.name}'s strength has gone up by 1 as a result of being trained`})
       }
       else if(randomNum === 1){
         fighter.fighting.stats.fitness ++
-        manager.addToLog({message: `${fighter.name}'s fitness has gone up by 1 as a result of being trained`})
+        manager.functions.addToLog({message: `${fighter.name}'s fitness has gone up by 1 as a result of being trained`})
       }
     }
 

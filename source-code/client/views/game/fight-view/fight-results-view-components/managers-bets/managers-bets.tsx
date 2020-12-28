@@ -8,13 +8,13 @@ interface ManagersBetProps{
   managersBets: ManagersBet[]
 }
 
-export const ManagersBets = (props: ManagersBetProps) => {
+export const ManagersBets = ({managersBets}: ManagersBetProps) => {
   return (    
     <div className="managers-bets">
-      {props.managersBets.map(manager =>
+      {managersBets.map(manager =>
         <div className='managers-bet' key={manager.name}>
           <div className="manager">              
-            <div className={`manager__image manager__image--${manager.managerImage.split(' ').join('-').toLowerCase()}`}></div>
+            <div className={`manager__image manager__image--${manager.image.toLowerCase().replace(' ', '-')}`}></div>
             <div className="manager__name">{manager.name}</div>
           </div>
           <div className="fighter-bet-on">

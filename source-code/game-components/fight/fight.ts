@@ -6,10 +6,10 @@ import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../helper-fu
 import Octagon from "./octagon"
 import Coords from '../../interfaces/game/fighter/coords';
 import { FightReport } from "../../interfaces/game/fight-report"
-import { FightUiData } from "../../interfaces/game/fight-ui-data"
-import Manager from "../manager"
 import { ManagersBet } from "../../interfaces/game/managers-bet"
 import { Angle } from "../../types/game/angle"
+import { Manager } from "../manager"
+import { FightUIState } from "../../interfaces/game/fight-ui-data"
 
 
 
@@ -21,7 +21,7 @@ export default class Fight {
   private _startCountdown: number = null
 
   fightFinishedSubject: Subject<FightReport> = new Subject()
-  fightUiDataSubject: Subject<FightUiData> = new Subject()  
+  fightUiDataSubject: Subject<FightUIState> = new Subject()  
 
   unpauseSubject: Subject<void> = new Subject()
   paused = false
@@ -73,6 +73,8 @@ export default class Fight {
   pause(){
     clearInterval(this.timeRemainingInterval)
     clearTimeout(this.timesUpTimer)
+    clearTimeout(this.fightUpdateLoop)
+    
     this.paused = true
   }
 
@@ -88,6 +90,7 @@ export default class Fight {
       const subscription = this.unpauseSubject.subscribe(() => {
         subscription.unsubscribe()
         resolve()
+        this.startFightUpdateLoop()
       })
     });
   }
@@ -170,7 +173,7 @@ export default class Fight {
     this.fightUiDataSubject.next(this.fightUiData)
   }
 
-  get fightUiData(): FightUiData{
+  get fightUiData(): FightUIState{
     return {
       startCountdown: this._startCountdown,
       timeRemaining: this.timeRemaining,
@@ -178,9 +181,9 @@ export default class Fight {
       fighterFightStates: this.fighters.map(fighter => fighter.fighting.getState()),
       managersBets: this.managers.map((manager: Manager): ManagersBet => {
         return {
-          name: manager.name,
-          managerImage: manager.image,
-          bet: manager.nextFightBet
+          name: manager.has.name,
+          image: manager.has.image,
+          bet: manager.has.nextFightBet
         }
       })
     }

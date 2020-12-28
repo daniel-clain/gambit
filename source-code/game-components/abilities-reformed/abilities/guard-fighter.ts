@@ -14,9 +14,9 @@ const guardFighter: Ability = {
 
 export const guardFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
 
-    const bodyGuard: Employee = game.managers.reduce((foundBodyGuard: Employee, manager) => foundBodyGuard || manager.employees.find(employee => employee.name == abilityData.source.name), undefined)
+    const bodyGuard: Employee = game.has.managers.reduce((foundBodyGuard: Employee, manager) => foundBodyGuard || manager.has.employees.find(employee => employee.name == abilityData.source.name), undefined)
 
     fighter.state.guards.push(bodyGuard)
   },

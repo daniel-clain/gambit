@@ -1,37 +1,39 @@
 import * as React from "react"
 import {connect} from 'react-redux'
 import ChatMessage from "../../interfaces/chat-message.interface"
-import GameBeingCreated from "../../interfaces/game-candidate.interface"
-import GameCandidateClient from '../../interfaces/game-candidate-client.interface'
 import GameLobbyClient from "../../interfaces/game-candidate-client.interface"
 import { GameInfo } from "../../interfaces/game/game-info"
+import { GameBeingCreated } from "../../server/game-host.types"
 import { frontEndService } from "../front-end-service/front-end-service"
 import { FrontEndState, ServerPreGameUIState } from "../front-end-state/front-end-state"
 import './lobby.view.scss'
 
 interface LobbyProps extends ServerPreGameUIState{
+  clientId: string
 }
 
 const Lobby_View = ({
   connectedClients, 
   gamesBeingCreated, 
   globalChat, 
-  activeGames
+  activeGames,
+  clientId
 }: LobbyProps) => {
 
 
-  const thisClientId: string = localStorage.getItem('clientId')
-
-  const inGameCandidate: GameBeingCreated = gamesBeingCreated.find((gameLobby: GameBeingCreated) =>
-    gameLobby.clients.some((client: GameCandidateClient) => client.id == thisClientId)
+  const joinedGameBeingCreated: GameBeingCreated = gamesBeingCreated.find((g: GameBeingCreated) =>
+    g.clients.some(c => c.id == clientId) || g.creator.id == clientId
   )
   
-  let {sendUpdate} = frontEndService
+  let {
+    create, cancel, start, join, readyToStart, 
+    leave, reJoin, submitGlobalChat, 
+  } = frontEndService().sendUpdate
 
   return (
     <div className='game-host'>
       <div className="main-container">
-        <div className='create-game-button' onClick={() => handleCreateGame()}>Create Game</div>
+        <div className='create-game-button' onClick={create}>Create Game</div>
         <div className="lists">
             <div className='connected-players box list'>
               <div className='box__heading'>Connected Players</div>
@@ -44,11 +46,11 @@ const Lobby_View = ({
             <div className='available-games box list'>
               <div className='box__heading'>Available Games</div>
               <div className="list__items">
-                {gamesBeingCreated.map((gameCandidate) =>
-                  <div className='available-game' key={inGameCandidate.id}>
-                    creator: {inGameCandidate.creator.name}<br />
-                    players: {inGameCandidate.clients.length}<br />
-                    <button onClick={() => handleJoinGame(inGameCandidate.id)}>Join Game</button>
+                {gamesBeingCreated.map((gameBeingCreated) =>
+                  <div className='available-game' key={gameBeingCreated.id}>
+                    creator: {gameBeingCreated.creator.name}<br />
+                    players: {gameBeingCreated.clients.length}<br />
+                    <button onClick={() => join(gameBeingCreated.id)}>Join Game</button>
                   </div>
                 )}
               </div>
@@ -60,8 +62,8 @@ const Lobby_View = ({
                   <div className='available-game' key={game.id}>
                     <div>game id: {game.id}</div>
                     <div>players: {game.players.map(player => <div key={player.id}>{player.name}</div>)}</div>
-                    {game. disconnectedClients.some(player => player.id == thisClientId) ?
-                      <button onClick={() => handleReJoinGame(game.id)}>Re-Join Game</button> : ''}
+                    {game. disconnectedClients.some(player => player.id == clientId) ?
+                      <button onClick={() => reJoin(game.id)}>Re-Join Game</button> : ''}
                   </div>
                 )}
               </div>
@@ -69,7 +71,7 @@ const Lobby_View = ({
           </div>
         <div className='global-chat box'>
           <div className='box__heading'>Global Chat</div>
-          <input onKeyPress={(e) => e.key == 'Enter' && submitGlobalChat(e)} />
+          <input onKeyPress={({key, currentTarget: {value}}) => key == 'Enter' && submitGlobalChat(value)} />
             
           <div className="global-chat__messages">{globalChat.map((chatMessage: ChatMessage, index) =>
               <div key={index}>
@@ -81,26 +83,26 @@ const Lobby_View = ({
         </div>
       </div>
 
-      {inGameCandidate &&
+      {joinedGameBeingCreated &&
         <div className='modal-blackout'>
           <div className='active-game-modal'>
-            <div className='active-game-modal__heading'>Game Creator: {inGameCandidate.creator.name}</div>
+            <div className='active-game-modal__heading'>Game Creator: {joinedGameBeingCreated.creator.name}</div>
             <div className='active-game-modal__heading'>Joined Players</div>
-            {inGameCandidate.clients.map((client: GameLobbyClient) =>
+            {joinedGameBeingCreated.clients.map((client: GameLobbyClient) =>
               <div key={client.id}>
                 {client.name} -
                   <input type='checkbox' checked={client.ready} disabled={true} />
               </div>)}
             <br />
-            Ready?: <input type='checkbox' onChange={e => handleReadyToggle(e, inGameCandidate.id)} />
+            Ready?: <input type='checkbox' onChange={({currentTarget: {checked}}) => readyToStart({gameId: joinedGameBeingCreated.id, ready: checked})} />
             <br /><br />
             <div className="bottom-buttons">
-              {inGameCandidate.creator.id == thisClientId ? [
-                <button key='cancel-button' onClick={() => handleCancelGame(inGameCandidate.id)}>Cancel Game</button>,
-                <button key='start-button' onClick={() => handleStartGame(inGameCandidate.id)}>Start Game</button>
+              {joinedGameBeingCreated.creator.id == clientId ? [
+                <button key='cancel-button' onClick={() => cancel(joinedGameBeingCreated.id)}>Cancel Game</button>,
+                <button key='start-button' onClick={() => start(joinedGameBeingCreated.id)}>Start Game</button>
               ]
                 :
-                <button key='leave-button' onClick={() => handleLeaveGame(inGameCandidate.id)}>Leave Game</button>}
+                <button key='leave-button' onClick={() => leave(joinedGameBeingCreated.id)}>Leave Game</button>}
             </div>
           </div>
         </div>
@@ -108,72 +110,13 @@ const Lobby_View = ({
     </div>
   )
   
-  
-
-
-  function handleCreateGame() {
-    sendUpdate({name: 'Create Game'})
-  }
-
-  function handleJoinGame(id) {
-    sendUpdate({
-      name: 'Join Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleLeaveGame(id) {
-    sendUpdate({
-      name: 'Leave Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleCancelGame(id) {
-    sendUpdate({
-      name: 'Cancel Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleStartGame(id) {
-    sendUpdate({
-      name: 'Start Game',
-      data: { gameId: id }
-    })
-  }
-
-  function handleReadyToggle(e, id) {
-    const readyValue: boolean = e.target.checked
-    console.log('ready checked ', readyValue);
-
-    sendUpdate({
-      name: 'Ready To Start Game',
-      data: { gameId: id, readyValue: readyValue }
-    })
-  }
-
-  function handleReJoinGame(gameId) {
-    sendUpdate({
-      name: 'Re-Join Game',
-      data: { gameId }
-    })
-  }
-
-  function submitGlobalChat(e) {
-    const message = e.target.value
-    sendUpdate({
-      name: 'Submit Global Chat',
-      data: { message }
-    })
-    e.target.value = ''
-  }
 }
 
 const mapStateToProps = ({
-  serverUIState: {serverPreGameUIState}
+  serverUIState: {serverPreGameUIState},
+  clientUIState: {clientPreGameUIState: {clientId}}
 }: FrontEndState): LobbyProps => {
-  return serverPreGameUIState
+  return {...serverPreGameUIState, clientId}
 }
 
 export default connect(mapStateToProps)(Lobby_View)

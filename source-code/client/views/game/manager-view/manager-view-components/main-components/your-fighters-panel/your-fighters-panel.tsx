@@ -1,29 +1,28 @@
 
 import * as React from 'react';
-import {connect, useDispatch} from 'react-redux'
-import { Dispatch } from 'redux';
+import {connect} from 'react-redux'
 import { FighterInfo } from '../../../../../../../interfaces/server-game-ui-state.interface';
+import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
-import { ClientManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 import '../fighters-list.scss'
 
 export interface YourFightersPanelProps{  
-  yourFighters: FighterInfo[]
+  fighters: FighterInfo[]
 }
 
-const YourFightersPanel = ({yourFighters}: YourFightersPanelProps) => {
+const YourFightersPanel = ({fighters}: YourFightersPanelProps) => {
 
-  const dispatch: Dispatch<ClientManagerUIAction> = useDispatch()
+  const {showFighter} = frontEndService().setClientState
     
   return (
     <div className='panel your-fighters'>
       <div className='heading'>Your Fighters</div>
       <div className='list fighter-list'>
-        {yourFighters.map(fighter =>
+        {fighters.map(fighter =>
           <div 
             className={'list__row'} 
             key={fighter.name} 
-            onClick={() => dispatch({type: 'Fighter Selected', payload: fighter})}
+            onClick={() => showFighter(fighter)}
           >
             <span className='list__row__image'></span>
             <span className='list__row__name'>{fighter.name}</span>
@@ -38,6 +37,6 @@ const YourFightersPanel = ({yourFighters}: YourFightersPanelProps) => {
 
 
 const mapStateToProps = ({
-  serverUIState: { serverGameUIState: {playerManagerUiData: {managerInfo: {yourFighters}}}}
-}: FrontEndState): YourFightersPanelProps => ({yourFighters})
+  serverUIState: { serverGameUIState: {playerManagerUIState: {managerInfo: {fighters}}}}
+}: FrontEndState): YourFightersPanelProps => ({fighters})
 export default connect(mapStateToProps)(YourFightersPanel)

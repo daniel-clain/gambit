@@ -4,17 +4,16 @@ import Redux, { combineReducers, createStore } from 'redux'
 import ChatMessage from "../../interfaces/chat-message.interface"
 import { GameInfo } from "../../interfaces/game/game-info"
 
-import GameBeingCreated from "../../interfaces/game-candidate.interface"
 import { ClientManagerUIActionType, clientManagerUIReducer, ClientManagerUIState } from "./reducers/manager-ui.reducer"
-import { clientPreGameUIReducer, ClientPreGameUIState, ClientPreUIGameActionType } from "./reducers/pre-game-ui.reducer"
-import { ClientNameAndID, GameBeingCreated } from "../../server/game-host"
+import { ClientNameAndID, GameBeingCreated } from "../../server/game-host.types"
+import { clientPreGameUIReducer } from "./reducers/pre-game-ui.reducer"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
   clientUIState: ClientUIState
 }
 
-export interface ServerUIState{
+export class ServerUIState{
   serverGameUIState: ServerGameUIState
   serverPreGameUIState: ServerPreGameUIState
 }
@@ -30,6 +29,11 @@ export interface ClientGameUIState{
   clientManagerUIState: ClientManagerUIState
 }
 
+export interface ClientPreGameUIState {
+  clientName: string
+  clientId: string
+}
+
 
 export interface ClientUIState{
   clientGameUIState: ClientGameUIState
@@ -38,21 +42,21 @@ export interface ClientUIState{
 
 
 
-type ActionType = 'Update Lobby UI' | 'Update Game UI' | ClientManagerUIActionType | ClientPreUIGameActionType
+type ServerActionName = 'Update Lobby UI' | 'Update Game UI'
 
 
-export interface DispatchAction{
-  type: ActionType
+export interface ServerAction{
+  type: ServerActionName
   payload?: any
 }
 
 const initialServerUIState: ServerUIState = {
-  serverGameUIState: undefined,
+  serverGameUIState: new ServerGameUIState(),
   serverPreGameUIState: undefined
 }
 
 
-const serverUIReducer = (serverUIState: ServerUIState = initialServerUIState, {type, payload}: DispatchAction) => {
+const serverUIReducer = (serverUIState: ServerUIState = new ServerUIState(), {type, payload}: ServerAction) => {
 
   switch(type){
     case 'Update Lobby UI': return {

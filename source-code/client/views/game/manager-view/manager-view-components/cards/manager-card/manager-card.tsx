@@ -42,7 +42,7 @@ const ManagerCard = ({manager, isPlayersManager}: ManagerCardProps<ManagerInfo |
         {label: 'Action Points', value: playersManager.actionPoints},
         {label: 'Abilities', value: playersManager.abilities.join()},
         {label: 'Employees', value: playersManager.employees.length},
-        {label: 'Fighters', value: playersManager.yourFighters.length},
+        {label: 'Fighters', value: playersManager.fighters.length},
       )
     }
     return (

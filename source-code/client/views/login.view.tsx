@@ -1,12 +1,9 @@
-import {frontEndService} from '../front-end-service/front-end-service'
 import * as React from 'react';
-import {Dispatch} from 'redux'
-import {useDispatch} from 'react-redux'
-import { PreGameUIAction } from '../front-end-state/reducers/pre-game-ui.reducer';
+import { frontEndService } from '../front-end-service/front-end-service';
 
 export const Login_View = () => { 
 
-  const dispatch: Dispatch<PreGameUIAction> = useDispatch()
+  const {setName} = frontEndService().setClientState
   let inputName
 
   return (
@@ -19,14 +16,14 @@ export const Login_View = () => {
         onInput={({currentTarget: {value}}) => inputName = value}
       />
       <button id="submit-name-button" 
-        onClick={() => dispatch({type:'Set Name', payload: inputName})}
+        onClick={() => setName(inputName)}
       >Submit</button>
       
       <hr/>
 
       <p>Is this client a game display?</p>
       <button 
-        onClick={() => dispatch({type:'Set Name', payload: inputName})}
+        onClick={() => setName('Game Display')}
       >This is a game display</button>
     </div>
   )

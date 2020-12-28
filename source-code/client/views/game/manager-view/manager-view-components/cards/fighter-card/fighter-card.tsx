@@ -4,7 +4,6 @@ import * as React from 'react';
 import {connect} from 'react-redux'
 import './fighter-card.scss';
 import '../modal-card.scss';
-import InfoBox from '../../partials/info-box/info-box';
 import AbilityBlock from '../../partials/ability-block/ability-block';
 import Fights from '../../partials/fights-and-wins/fights';
 import Wins from '../../partials/fights-and-wins/wins';
@@ -14,6 +13,7 @@ import { abilityServiceClient } from '../../../../../../../game-components/abili
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { FrontEndState } from '../../../../../../front-end-state/front-end-state';
 import { Modal } from '../../partials/modal/modal';
+import { InfoBox } from '../../partials/info-box/info-box';
 
 
 export interface FighterCardProps {
@@ -171,7 +171,7 @@ const FighterCard = ({delayedExecutionAbilities, fighter, thisPlayersName}: Figh
 
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
-    playerManagerUiData: {
+    playerManagerUIState: {
       jobSeekers, delayedExecutionAbilities
     }
   }},

@@ -1,7 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 var webpack = require("webpack");
 var sourceDir = `${__dirname}/../../source-code/client/different-build-modes/main-game`
-var compiledDir = `${__dirname}/../../compiled-code/client/main-game`
 const Dotenv = require('dotenv-webpack');
 
 console.log('Main game client running at localhost:7744')

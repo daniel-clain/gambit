@@ -1,14 +1,36 @@
+import { AbilityData } from "../../../game-components/abilities-reformed/ability"
+import { FighterInfo, Employee, JobSeeker } from "../../../interfaces/server-game-ui-state.interface"
+import { SetStateFunctionName } from "../../front-end-service/front-end-service-types"
 
 export type ClientManagerUIActionType = 'Fighter Selected' | 'Jobseeker Selected' | 'Ability Selected' | 'Employee Selected' | 'Close Modal' | 'Manager Selected' | 'Show Loan Shark Card' | 'Show Activity Log' | 'Show Known Managers' | 'Show Known Fighters' | 'Close Select List'
 
-export interface ClientManagerUIState{
+export class ClientManagerUIState{
   activeCard?: ActiveCard
   selectListActive?: boolean
 }
 
-export interface ClientGameUIState{
+export class ClientGameUIState{
   clientManagerUIState: ClientManagerUIState
 }
+
+
+
+export type SetStateManagerUI = {
+  showFighter(fighter: FighterInfo),
+  showEmployee(employee: Employee),
+  showjobSeeker(jobSeeker: JobSeeker),
+  showAbility(ability: AbilityData),
+  showActivityLog(),
+  showLoanShark(),
+  showKnownFighters(),
+  showOtherManagers(),
+  closeModal(),
+  closeSelectList()
+}
+
+export type SetStateManagerUIFunctionName = 
+'showFighter' | 'showEmployee' | 'showjobSeeker' | 'showAbility' | 'showActivityLog' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList'
+
 
 
 export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Activity Log'
@@ -18,47 +40,36 @@ export interface ActiveCard{
   data?: any
 }
 
-export interface ClientManagerUIAction{
-  type: ClientManagerUIActionType
+export interface SetStateManagerUIAction{
+  type: SetStateFunctionName
   payload?: any
 }
 
-export const clientManagerUIReducer = (clientManagerUIState: ClientManagerUIState = {activeCard: null}, {type, payload }: ClientManagerUIAction): ClientManagerUIState => {
+const setStateManagerUI: SetStateManagerUI = {
 
-  switch(type){
-    case 'Fighter Selected':
-      return {...clientManagerUIState, activeCard: {name: 'Fighter', data: payload}}
-
-    case 'Jobseeker Selected': 
-      return {...clientManagerUIState, activeCard: {name: 'Job Seeker', data: payload}}
-
-    case 'Employee Selected': 
-      return {...clientManagerUIState, activeCard: {name: 'Employee', data: payload}}
-
-    case 'Ability Selected': 
-      return {...clientManagerUIState, activeCard: {name: 'Ability', data: payload}}
-
-    case 'Show Loan Shark Card': 
-      return {...clientManagerUIState, activeCard: {name: 'Loan Shark', data: payload}}
-
-    case 'Show Activity Log': 
-      return {...clientManagerUIState, activeCard: {name: 'Activity Log', data: payload}}
-
-    case 'Show Known Managers': 
-      return {...clientManagerUIState, activeCard: {name: 'Known Managers', data: payload}}
-
-    case 'Show Known Fighters': 
-      return {...clientManagerUIState, activeCard: {name: 'Known Fighters', data: payload}}
-
-    case 'Manager Selected': 
-      return {...clientManagerUIState, activeCard: {name: 'Manager', data: payload}}
-
-    case 'Close Modal': 
-      return {...clientManagerUIState, activeCard: null}
-
-    case 'Close Select List': 
-      return {...clientManagerUIState, selectListActive: false}
-
-    default: return clientManagerUIState
-  }
+  showFighter: (fighter: FighterInfo): ActiveCard => ({
+    name: 'Fighter', data: fighter 
+  }),
+  showEmployee: (employee: Employee): ActiveCard => ({
+    name: 'Employee', data: employee 
+  }),
+  showjobSeeker: (jobSeeker: JobSeeker): ActiveCard => ({
+    name: 'Job Seeker', data: jobSeeker 
+  }),
+  showAbility: (ability: AbilityData): ActiveCard => ({
+    name: 'Ability', data: ability 
+  }),
+  showActivityLog: (): ActiveCard => ({name: 'Activity Log'}),
+  showLoanShark: (): ActiveCard => ({ name: 'Loan Shark'}),
+  showKnownFighters: (): ActiveCard => ({name: 'Known Fighters'}),
+  showOtherManagers: (): ActiveCard => ({name: 'Known Managers'}),
+  closeModal: (): ActiveCard => (null),
+  closeSelectList: () => ({selectListActive: false})
 }
+
+export const clientManagerUIReducer = (
+  clientManagerUIState: ClientManagerUIState = new ClientManagerUIState(), 
+  {type, payload }: SetStateManagerUIAction
+): ClientManagerUIState => setStateManagerUI?.[type] ? ({
+  ...clientManagerUIState, activeCard: setStateManagerUI[type](payload)
+}) : clientManagerUIState

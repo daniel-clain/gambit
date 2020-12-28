@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { FightUiData } from '../../../../../interfaces/game/fight-ui-data';
-import FightUi from '../../global/main-components/fight-ui/fight-ui';
+import { FightUIState } from '../../../../../interfaces/game/fight-ui-data';
+import Fight_View from '../../../game/fight-view/fight.view'
 
 interface DisplayFightUiProps{
-  fightUiData: FightUiData
+  fightUiData: FightUIState
 }
 
 export default class DisplayFightUi extends React.Component<DisplayFightUiProps>{
@@ -13,7 +13,7 @@ export default class DisplayFightUi extends React.Component<DisplayFightUiProps>
     
     return (
       <div className='display-fight-ui'>
-        <FightUi fightUiData={this.props.fightUiData}/>
+        <Fight_View fightUiData={this.props.fightUiData}/>
       </div>
     )
   }

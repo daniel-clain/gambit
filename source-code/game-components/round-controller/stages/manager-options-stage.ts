@@ -1,11 +1,10 @@
 
 import { Subject, Subscription } from "rxjs";
-import Game from "../../game";
 import { RoundController } from "../round-controller";
-import Manager, { ManagerInfo } from "../../manager";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import RoundStages from "../../../types/game/round-stage.type";
+import { Manager } from "../../manager";
 
 export default class ManagerOptionsStage implements IStage {
 
@@ -28,7 +27,7 @@ export default class ManagerOptionsStage implements IStage {
       this.endStage = resolve
       
       
-      this.timeLeft = this.duration
+      this.timeLeft = 999999999999 //this.duration 
 
 
       this.timeLeftInterval = setInterval(() => {
@@ -54,12 +53,13 @@ export default class ManagerOptionsStage implements IStage {
     })
 
   }
+  
 
-  private isReady = (manager: Manager) => manager.readyForNextFight
+  private isReady = (manager: Manager) => manager.state.readyForNextFight
 
   private stageFinished(){
     this.timeLeft = null
-    this.roundController.triggerUpdate()
+    this.roundController.triggerUIUpdate()
     clearInterval(this.timesUpTimer)
     clearInterval(this.timeLeftInterval)
     

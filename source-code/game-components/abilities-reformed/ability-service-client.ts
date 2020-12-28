@@ -136,7 +136,7 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
       !clientAbility.possibleTargets.includes('fighter not owned by manager')
 
     )
-      if (managerInfo.yourFighters.length == 0)
+      if (managerInfo.fighters.length == 0)
         return false
 
     if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
@@ -210,7 +210,7 @@ export const abilityServiceClient: AbilityServiceClient = (() => {
   function getPossibleTargets(clientAbility: ClientAbility, managerInfo: ManagerInfo, jobSeekers: JobSeeker[]): AbilityTargetInfo[] {
     const targetList: AbilityTargetInfo[] = []
     if (clientAbility.possibleTargets.includes('fighter owned by manager'))
-      targetList.push(...managerInfo.yourFighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter owned by manager' })))
+      targetList.push(...managerInfo.fighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter owned by manager' })))
     if (clientAbility.possibleTargets.includes('fighter not owned by manager'))
       targetList.push(...managerInfo.knownFighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter not owned by manager' })))
     if (clientAbility.possibleTargets.includes('opponent manager'))

@@ -21,7 +21,6 @@ const Game_View = ({
   roundStage, disconnectedPlayerVotes
 }: GameProps) => {
 
-  console.log('ding');
   const getActiveView = () => {
     switch (roundStage) {
       case 'Manager Options': return <Manager_View />
@@ -34,12 +33,15 @@ const Game_View = ({
     }
   }
 
-  return <>
-    {disconnectedPlayerVotes?.length > 0 ?
-      <DisconnectedPlayerModal /> : ''
-    }
-    {getActiveView()}
-    </>
+  return (
+    <div id='Gambit'>
+      {disconnectedPlayerVotes?.length > 0 ?
+        <DisconnectedPlayerModal /> : ''
+      }
+      
+      {getActiveView()}
+    </div>
+  )
 }
 
 const mapStateToProps = ({

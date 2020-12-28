@@ -13,11 +13,11 @@ const dopeFighter: Ability = {
 
 export const dopeFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
     fighter.state.doping = true
     fighter.fighting.stats.baseAggression ++
     
-    game.roundController.preFightNewsStage.newsItems.push({
+    game.has.roundController.preFightNewsStage.newsItems.push({
       newsType: 'fighter is doped up',
       headline: `${fighter.name} Suspected of Doping!`,
       message: `${fighter.name} appears to be gained massive size is such a short time period`
