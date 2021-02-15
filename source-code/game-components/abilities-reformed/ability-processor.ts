@@ -88,7 +88,9 @@ export class AbilityProcessor{
     }
 
     else
-    this.delayedExecutionAbilities.push(abilityData)   
+      this.delayedExecutionAbilities.push(abilityData)   
+
+    this.game.functions.triggerUIUpdate()
 
     
   }

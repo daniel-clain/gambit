@@ -5,7 +5,7 @@ import { SetStateFunctionName } from "../../front-end-service/front-end-service-
 export type ClientManagerUIActionType = 'Fighter Selected' | 'Jobseeker Selected' | 'Ability Selected' | 'Employee Selected' | 'Close Modal' | 'Manager Selected' | 'Show Loan Shark Card' | 'Show Activity Log' | 'Show Known Managers' | 'Show Known Fighters' | 'Close Select List'
 
 export class ClientManagerUIState{
-  activeCard?: ActiveCard
+  activeCard?
   selectListActive?: boolean
 }
 
@@ -47,23 +47,31 @@ export interface SetStateManagerUIAction{
 
 const setStateManagerUI: SetStateManagerUI = {
 
-  showFighter: (fighter: FighterInfo): ActiveCard => ({
-    name: 'Fighter', data: fighter 
+  showFighter: (fighter: FighterInfo) => ({
+    activeCard: {
+      name: 'Fighter', data: fighter 
+    }
   }),
-  showEmployee: (employee: Employee): ActiveCard => ({
-    name: 'Employee', data: employee 
+  showEmployee: (employee: Employee) => ({
+    activeCard: {
+      name: 'Employee', data: employee 
+    }
   }),
-  showjobSeeker: (jobSeeker: JobSeeker): ActiveCard => ({
-    name: 'Job Seeker', data: jobSeeker 
+  showjobSeeker: (jobSeeker: JobSeeker) => ({
+    activeCard: {
+      name: 'Job Seeker', data: jobSeeker 
+    }
   }),
-  showAbility: (ability: AbilityData): ActiveCard => ({
-    name: 'Ability', data: ability 
+  showAbility: (ability: AbilityData) => ({
+    activeCard: {
+      name: 'Ability', data: ability 
+    }
   }),
-  showActivityLog: (): ActiveCard => ({name: 'Activity Log'}),
-  showLoanShark: (): ActiveCard => ({ name: 'Loan Shark'}),
-  showKnownFighters: (): ActiveCard => ({name: 'Known Fighters'}),
-  showOtherManagers: (): ActiveCard => ({name: 'Known Managers'}),
-  closeModal: (): ActiveCard => (null),
+  showActivityLog: () => ({activeCard: {name: 'Activity Log'}}),
+  showLoanShark: () => ({activeCard: { name: 'Loan Shark'}}),
+  showKnownFighters: () => ({activeCard: {name: 'Known Fighters'}}),
+  showOtherManagers: () => ({activeCard: {name: 'Known Managers'}}),
+  closeModal: () => ({activeCard: null}),
   closeSelectList: () => ({selectListActive: false})
 }
 
@@ -71,5 +79,15 @@ export const clientManagerUIReducer = (
   clientManagerUIState: ClientManagerUIState = new ClientManagerUIState(), 
   {type, payload }: SetStateManagerUIAction
 ): ClientManagerUIState => setStateManagerUI?.[type] ? ({
-  ...clientManagerUIState, activeCard: setStateManagerUI[type](payload)
+  ...clientManagerUIState, ...setStateManagerUI[type](payload)
 }) : clientManagerUIState
+
+const SOME_OBJECT = <const>{
+  "Hello": "World",
+  "How": "Are",
+  "You": "Today?"
+}
+type ObjectType = typeof SOME_OBJECT
+type KeyObject = keyof ObjectType;
+type KeyValue<T extends KeyObject> = ObjectType[T];
+let x:KeyValue<'Hello'> = 'World';

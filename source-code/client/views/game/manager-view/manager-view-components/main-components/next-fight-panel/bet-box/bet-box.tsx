@@ -30,7 +30,7 @@ const BetBox = ({
     <div className="bet-box">
       <div 
         className={`bet-box__heading ${nextFightBet && nextFightBet.fighterName == fighterName ? 'bet-box__heading--selected' : ''}`}
-        onClick={cancelBet}
+        onClick={() => sendUpdate.betOnFighter(null)}
       >Place Bet</div>
       <div className="bet-options">
         <div 
@@ -60,33 +60,13 @@ const BetBox = ({
     
   
   function placeBet(bet: Bet) {
-
-    if(
-      nextFightBet &&
-      bet.fighterName == nextFightBet.fighterName &&
-      bet.size == nextFightBet.size
-    )
-      cancelBet()
+    if(nextFightBet == bet)
+      sendUpdate.betOnFighter(null)
     else {
       console.log(`you have placed a ${bet.size} bet on ${bet.fighterName}`);
-
-      
-      const gameAction: ClientGameAction = {
-        name: 'Bet On Fighter',
-        data: bet
-      }
-      sendUpdate(gameAction)
+      sendUpdate.betOnFighter(bet)
     }
-  }
-  
-  function cancelBet(){    
-    
-    const gameAction: ClientGameAction = {
-      name: 'Bet On Fighter',
-      data: null
-    }
-    sendUpdate(gameAction)
-  }
+  }  
 };
 
 
