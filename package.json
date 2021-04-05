@@ -28,10 +28,9 @@
     "prod-localTest-build": "webpack --mode=production --env=localTest",
     "prod-mainGame-build": "webpack --mode=production",
 
-    "start": "npm run prod-mainGame-build -- node --inspect=9090 -r ts-node/register index.ts",
-    "start2": "yarn prod-mainGame-build && yarn startServer",
+    "start": "npm run prod-mainGame-build & npm run startServer",
 
-    "startServer": "node --inspect -r ts-node/register server.ts"
+    "startServer": "ts-node server.ts"
   },
   "dependencies": {
     "express": "^4.17.1",
