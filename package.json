@@ -28,7 +28,8 @@
     "prod-mainGame-build": "webpack --mode=production --env=mainGame",
 
 
-    "start": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build startServer",
+    "start": "run-s prod-mainGame-build startServer",
+    "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
     "startServer": "ts-node server.ts"
   },
   "dependencies": {
