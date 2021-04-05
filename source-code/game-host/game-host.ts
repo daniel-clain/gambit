@@ -3,14 +3,12 @@ import { Game } from '../game-components/game';
 import {GameHost_Implementation} from './game-host.implementation'
 import { GameHostState, ConnectedClient, FromClientToHost, JoinedClient } from './game-host.types';
 import { Socket } from 'socket.io';
-import ServerWebsocketService from './server-websocket-service';
 import { Server } from 'socket.io';
 
 
 
 export class GameHost{
   state = new GameHostState()
-  websocketService = new ServerWebsocketService()
   private i: GameHost_Implementation
 
   constructor(webSocketServer: Server){
