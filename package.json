@@ -28,7 +28,7 @@
     "prod-localTest-build": "webpack --mode=production --env=localTest",
     "prod-mainGame-build": "webpack --mode=production",
 
-    "start": "node index.js",
+    "start": "ts-node index.ts",
     "start2": "yarn prod-mainGame-build && yarn startServer",
 
     "startServer": "ts-node server.ts"
