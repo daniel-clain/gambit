@@ -14,10 +14,11 @@ interface FightUiProps{
   startCountdown: number
   timeRemaining: number 
   fighterFightStates: FighterFightState[]
-  knownFighterStates: FighterStateData[]
+  knownFighterStates?: FighterStateData[]
   report: FightReport
   managersBets: ManagersBet[]
 }
+
 
 const Fight_View = ({
     startCountdown, timeRemaining, fighterFightStates, 
@@ -50,14 +51,11 @@ const Fight_View = ({
   )
   
 }
-const mapStateToProps = (frontEndState: FrontEndState): FightUiProps | {} => {
-  const fightUIState = frontEndState?.serverUIState?.serverGameUIState?.fightUIState
 
-  if(fightUIState){
-    const {startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates} = fightUIState
-    return {startCountdown, timeRemaining, fighterFightStates, report, managersBets, knownFighterStates}
-  }
-  return {}
-}
 
+const mapStateToProps = ({
+  serverUIState:{serverGameUIState:{
+    fightUIState
+  }} 
+}: FrontEndState): FightUiProps  => ({...fightUIState})
 export default connect(mapStateToProps)(hot(Fight_View))

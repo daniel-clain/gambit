@@ -33,7 +33,7 @@ const AbilityBlock = ({abilityData, managerInfo, delayedExecutionAbilities}:Abil
 
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
-    playerManagerUIState: {managerInfo}
+    playerManagerUIState: {managerInfo, delayedExecutionAbilities}
   }}
-}: FrontEndState) => ({managerInfo})
+}: FrontEndState) => ({managerInfo, delayedExecutionAbilities})
 export default connect(mapStateToProps)(AbilityBlock)

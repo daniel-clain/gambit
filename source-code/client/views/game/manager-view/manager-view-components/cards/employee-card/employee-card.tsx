@@ -54,9 +54,7 @@ const EmployeeCard = ({
           <div className='heading'>{employee.profession} Abilities</div>
           {employeeAbilities.map((employeeAbility: ClientAbility) => (
             <AbilityBlock 
-              key={employeeAbility.name} 
-              managerInfo={managerInfo}
-              delayedExecutionAbilities={delayedExecutionAbilities}
+              key={employeeAbility.name}
               abilityData={{
                 name: employeeAbility.name,
                 source: {
@@ -64,16 +62,7 @@ const EmployeeCard = ({
                   type: employee.profession
                 },
                 target: undefined
-              }} 
-              onSelected={() => showAbility({
-                name: employeeAbility.name,
-                source: {
-                  type: employee.profession,
-                  name: employee.name
-                },
-                target: null,
-
-              })} 
+              }}
             />
           ))}      
         </div>

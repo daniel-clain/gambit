@@ -2,18 +2,18 @@ import * as React from 'react';
 import { FightUIState } from "../../../../../interfaces/front-end-state-interface"
 import Fight_View from '../../../game/fight-view/fight.view'
 
-interface DisplayFightUiProps{
+interface DisplayFightUiProps {
   fightUiData: FightUIState
 }
 
 export default class DisplayFightUi extends React.Component<DisplayFightUiProps>{
 
-  
-  render(){                           
-    
+
+  render() {
+
     return (
       <div className='display-fight-ui'>
-        <Fight_View fightUiData={this.props.fightUiData}/>
+        <Fight_View />
       </div>
     )
   }

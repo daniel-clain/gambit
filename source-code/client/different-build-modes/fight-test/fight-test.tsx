@@ -2,15 +2,15 @@
 import * as React from 'react';
 import '../../styles/global.scss'
 import Fight from '../../../game-components/fight/fight';
-import Fight_View from '../../views/game/fight-view/fight.view';
 import { fightUiService } from './fight-ui-service';
 import { hot } from 'react-hot-loader/root';
 import { useEffect, useState } from 'react';
+import Fight_View from '../../views/game/fight-view/fight.view';
 
 
 
 
-export const FighterTest = hot(() => {
+export const FighterTest = () => {
 
   const [paused, setPaused] = useState(false)
   const [fight, setFight] = useState<Fight>(undefined)
@@ -19,7 +19,7 @@ export const FighterTest = hot(() => {
 
   useEffect(()=> {!paused && fight?.timeRemaining == undefined && fight?.start()})
 
-  const startNewFight = _ =>{
+  const startNewFight = _ => {
     fightUiService.newFight()
     setFight(fightUiService.fight)
   }  
@@ -38,4 +38,4 @@ export const FighterTest = hot(() => {
     </button>
     <Fight_View/>
   </>
-})
+}

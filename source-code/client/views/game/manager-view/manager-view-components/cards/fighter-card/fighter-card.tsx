@@ -17,14 +17,13 @@ import {frontEndService} from '../../../../../../front-end-service/front-end-ser
 
 export interface FighterCardProps {
   jobSeekers: JobSeeker[]
-  delayedExecutionAbilities: AbilityData[]
   fighterName: string
   allFighters: FighterInfo[]
   thisPlayersName: string
 
 }
 
-const FighterCard = ({delayedExecutionAbilities, fighterName, thisPlayersName, allFighters}: FighterCardProps) => {
+const FighterCard = ({fighterName, thisPlayersName, allFighters}: FighterCardProps) => {
   const fighter = allFighters.find(f => f.name == fighterName)
   const {abilityService} = frontEndService
   const isYourFighter = fighter.manager?.lastKnownValue == thisPlayersName
@@ -144,7 +143,6 @@ const FighterCard = ({delayedExecutionAbilities, fighterName, thisPlayersName, a
             (clientAbility: ClientAbility) => (
               <AbilityBlock
                 key={clientAbility.name}
-                delayedExecutionAbilities={delayedExecutionAbilities}
                 abilityData={{
                   name: clientAbility.name,
                   target: {
@@ -170,7 +168,7 @@ const FighterCard = ({delayedExecutionAbilities, fighterName, thisPlayersName, a
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
     playerManagerUIState: {
-      jobSeekers, delayedExecutionAbilities, managerInfo: {knownFighters, fighters}
+      jobSeekers, managerInfo: {knownFighters, fighters}
     },
     
   }},
@@ -181,7 +179,7 @@ const mapStateToProps = ({
     }
   }
 }: FrontEndState): FighterCardProps => ({
-  jobSeekers, delayedExecutionAbilities, thisPlayersName: clientName, fighterName: data, allFighters: [...knownFighters, ...fighters]
+  jobSeekers, thisPlayersName: clientName, fighterName: data, allFighters: [...knownFighters, ...fighters]
 })
 
 

@@ -14,12 +14,11 @@ import {frontEndService} from '../../../../../../front-end-service/front-end-ser
 import { hot } from 'react-hot-loader/root';
 
 export interface JobSeekerCardProps{
-  delayedExecutionAbilities: AbilityData[]
   jobSeeker: JobSeeker
   managerInfo: ManagerInfo
 }
 
-const JobSeekerCard = ({delayedExecutionAbilities, jobSeeker, managerInfo}:JobSeekerCardProps) => {
+const JobSeekerCard = ({jobSeeker, managerInfo}:JobSeekerCardProps) => {
 
   const {abilityService} = frontEndService
 
@@ -73,9 +72,7 @@ const JobSeekerCard = ({delayedExecutionAbilities, jobSeeker, managerInfo}:JobSe
         <div className='card__options'>
           <div className='heading'>Options</div>
           <AbilityBlock 
-            managerInfo={managerInfo}
-            abilityData={abilityData} 
-            delayedExecutionAbilities={delayedExecutionAbilities}
+            abilityData={abilityData}
           />
         </div>
         
@@ -89,9 +86,9 @@ export default connect(({
     activeModal
   }}},
   serverUIState: {serverGameUIState: {playerManagerUIState: {
-    delayedExecutionAbilities, managerInfo
+    managerInfo
   }}}
 }: FrontEndState): JobSeekerCardProps => ({
-  delayedExecutionAbilities, managerInfo, jobSeeker: activeModal.data
+  managerInfo, jobSeeker: activeModal.data
 }))
 (hot(JobSeekerCard))
