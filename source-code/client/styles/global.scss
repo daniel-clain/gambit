@@ -1,0 +1,138 @@
+@use 'variables' as *;
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Bangers&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Tinos:700&display=swap');
+
+
+html{
+  font-size: 11px;
+  font-family: 'Nunito', sans-serif;
+}
+body{
+  margin: 0;
+  height: 100vh;
+  background-image: linear-gradient(#03151f, #012a3f);
+}
+#react-rendering-div{
+  height: 100vh;
+}
+
+*{  
+  user-select: none;
+  box-sizing: border-box;
+}
+
+#Gambit{
+  position: relative;
+  height: 100vh;
+  max-height: 800px;
+  background-color: #03263b;
+  
+  @media (max-width: $layoutChangeBreakpoint - 1){
+    min-width: 375px;
+  }
+
+  @media (min-width: $layoutChangeBreakpoint){
+    margin: 0 auto;
+  
+  }
+
+  
+}
+
+.direction-box{
+  display: flex;
+  flex-direction: column;
+  @media (max-width: $layoutChangeBreakpoint - 1){
+    flex-direction: row;
+    & > * {
+      margin-right: 20px;
+      &:last-child{
+        margin-right: unset;
+      }
+    }
+  }
+  @media (min-width: $layoutChangeBreakpoint){
+    flex-direction: row;
+    & > * {
+      margin-right: 20px;
+      &:last-child{
+        margin-right: unset;
+      }
+    }
+  }
+
+}
+
+
+
+
+button{
+  outline: none;
+}
+
+.turn-phone{
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1050;
+    background: white;
+    width: 137px;
+    height: 70px;
+    padding: 10px;
+    border: 1px solid grey;
+    border-radius: 0 0 0 30px;
+    box-shadow: 2px 0px 1px 1px #000000b3;
+
+  &__image{
+    background-image: url('../images/icons/turn-phone.png');
+    height: 100%;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    background-size: cover;
+    flex: 1;
+  }
+  &__message{
+    font-size: 8px;
+    text-align: center;
+    flex: 1;
+    padding-left: 16px;
+
+  }
+}
+
+.login-ui{
+  padding: 20px;
+  background-image: url('../images/login-bg.jpg');
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: flex-start;
+  align-items: left;
+  flex-direction: column;
+
+  &__content{
+    background: rgba($color: white, $alpha: .8);
+    font-size: 11px;
+    padding: 20px;
+    border: black 3px double;
+    width: 320px;
+  }
+  &__text{
+    margin-bottom: 6px;
+  }
+}
+
+* ::-webkit-scrollbar{
+  width: 5px;
+}
+* ::-webkit-scrollbar-track{
+  border-radius: 4px;
+}
+* ::-webkit-scrollbar-thumb{
+  border-radius: 4px;
+  background-color: #10839a;
+}

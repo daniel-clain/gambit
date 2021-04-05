@@ -1,0 +1,2 @@
+* reconnecting display
+* disconnect pauses game

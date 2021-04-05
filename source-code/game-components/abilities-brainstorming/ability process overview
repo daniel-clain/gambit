@@ -1,0 +1,11 @@
+* job seeker can be professional or fighter
+* you can offer jobseeker a contract
+* job seeker will accecpt if its -10% or above contract goal
+* if multiple managers offer the same job seeker a contract the job seeker will accept the highest offer, or randomly decide if same offer
+* fighters can me the target of abilities, employees can be the sources of abilities
+* when an employee is selected, ability blocks are shown for each ability that employee can perform, the ability is disabled is there is no valid target or the cost cant be afforded or the requirements cant be met
+* when a fighter is selected, ability blocks are shown for each ability that fighter can be the target of, the ability is disabled is there is no valid source or the cost cant be afforded or the requirements cant be met
+* when an ability is selected it goes to the game side ability processsort and is resoled either instantly, at end of turn or at end of round
+* the money and action point cost is only reduced if the ability is valid game side
+* the money is only reduced when the ability succeds to be performed
+

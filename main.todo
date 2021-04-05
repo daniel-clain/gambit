@@ -1,0 +1,62 @@
+Main:
+  ☐ remove flanking and maovering quotes
+  ☐ fighter should not have try to win option
+  ☐ too much doping, more chance death
+  ☐ guarding blocks doping
+  ☐ Have permanent hosting solution, where game wrapper is always running, and if server is not running or crashed, you can restart the game server from the wrapper
+  ☐ Private agents spy on player, use known other manager activity to create evidence items, evidence items can be used to blackmail or sue, build blackmailing mechanic
+  ☐ build lawsuit and sue mechanics
+  ☐ Guard fighter catches other plays doping
+  ☐ Guard has chance to collect evidence
+  ☐ Private agent ability defensive counter private agents
+  ☐ handle fight death single way, for poison, overdose and murder
+
+
+
+
+Quick minor fixes: 
+  ☐ click modal overlay to close
+  ☐ make fight not be a draw on reconnect to winnigs
+  ☐ test player disconnect modal, sometimes duplicates in list
+  ☐ fight ui disconected modal under post fight winnings and fight msg, zindex
+  ☐ active games in lobby had bad data duplicates
+  ✔ get an instance hosted @done(21-03-31 17:25)
+  ☐ on player disconnect pause all stage (fight)
+  ☐ restart server from clientside
+  ☐ frontend pol server for disconnected, show restart tool
+  ☐ ability description reflects config variables, loan shark (max, interest, weeks)
+  ☐ deployment to production pipeline
+  - run single pkg.json script
+  - runs server, opens browser to fetch client
+  ☐ make poison a lot better and assault better
+  ☐ every thresh hold of number of employees, the salaries go up percentage based
+  ☐ get rid of code for comonent log modal
+
+
+
+Big updates:
+  ✔ Do responsive ui for desktop, mobile and handle display rotate @done(21-03-30 11:19)
+  ☐ Have events with lots of fighters
+  ☐ Fighters that lose 3 in a row retire
+  ☐ Handle friendly server restart
+  ☐ Handle friendly player dropout reconnect
+  ☐ Have knowledgebase that gives players info about the game, where info reflects real values
+  ☐ Build in win conditions, including different types & requirements, and finish video
+  ☐ When game ends, return all players to game lobby
+  ☐ Allow private ingame messaging between players
+  ☐ Design ui horizontal scroll areas to have my stretching arrow design that is like.   
+  | text ------------>
+  <---- text --------> 
+  <--------- text ---> 
+  <------------ text | 
+  - And the text on the edges is warpred in closer to a point, design
+  - As you scroll the side youre scrolling toward, that sides meter shrinks, and the side youre scrolling away from, the meter gets more full, when ur at the end the meter is full
+  ☐ employee thief?
+  ☐ game config varies on num player, eg num job seekers, 
+
+
+
+
+Big wins (to remember my achievements)
+✔ Refactored for passing state down to redux @done(21-03-30 21:53)
+☐ Refactored gamehost to be 

@@ -1,0 +1,1 @@
+export type Edge = 'left' | 'topLeft' |'top' |'topRight' |'right' |'bottomRight' |'bottom' |'bottomLeft'

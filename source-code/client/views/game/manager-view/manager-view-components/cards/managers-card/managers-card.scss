@@ -1,0 +1,28 @@
+$image-folder: '../../../../../../images';
+.manager{
+  margin-right: 20px;
+  padding: 12px 10px 4px;
+  width: 100px;
+  text-align: center;
+  
+  &:last-child{
+    margin-right: 0;
+  }
+  &__name{
+    text-align: center;
+  }
+  &__image{
+    width: 70px;
+    height: 100px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin: auto;
+    margin-bottom: 5px;
+    &--fat-man{
+      background-image: url('#{$image-folder}/icons/manager1.png');
+    }
+    &--sleazy-guy{
+      background-image: url('#{$image-folder}/icons/manager2.jpg');
+    }
+  }
+}

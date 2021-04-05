@@ -1,0 +1,14 @@
+- webpack does 2 things, bundles, and serves
+- server has 2 purposes, gamehost, and server frontend
+- when webpack is in dev mode, it
+
+dev 
+===
+  without server 
+  * webpack server fightTest
+  * webpack server localTest
+
+  with server
+
+prod
+===

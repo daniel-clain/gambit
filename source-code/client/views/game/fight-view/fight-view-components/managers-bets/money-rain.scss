@@ -1,0 +1,21 @@
+.money-container{
+  position: absolute;
+  bottom: 100%;
+  height: 100px;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  
+  .coin{
+    position: absolute;
+    background-image: url('../../../../../images/fight-view/coin.gif');
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background-size: contain;
+    &--falling{
+      top: 110%;
+      transition: top 2s;
+    }
+  }
+}

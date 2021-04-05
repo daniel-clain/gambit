@@ -1,0 +1,10 @@
+.job-seeker-card{
+  &__image {
+    background: url("../../../../../../images/icons/employee.png") no-repeat;
+    background-size: contain;
+  }
+  &__skill-level, &__profession{
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+}

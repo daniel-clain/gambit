@@ -1,0 +1,92 @@
+.disconnected-player-modal{
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1100;
+  
+  .modal-blackout{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: -1;
+  }
+
+  .modal-content{    
+    width: 400px;
+    background-color: white;
+    padding: 20px;
+    margin: 100px auto 0;
+
+    .heading{
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .details{
+      margin-bottom: 20px;
+    }
+
+    .vote-table{
+      width: 100%;
+      text-align: left;
+      border-collapse: collapse;
+
+      .top-row{
+        background: #ffecec;
+
+        .top-row-heading{
+          padding: 10px;
+          border-right: 2px solid black;
+          border-bottom: 2px solid black;
+        }
+    
+    
+        .disconnected-player-name{
+          padding: 10px;
+          border-bottom: 2px solid black;
+        }
+
+      }
+
+
+      .player-vote-row{
+        &--this-player{
+          background-color: #d9e9ff;   
+          .player-vote{      
+            &--dont-drop,
+            &--drop{
+              cursor: pointer;
+            }
+          }
+        }
+
+        .player-vote{
+          padding: 10px 20px;
+          &--dont-drop{
+            background: #7ac576;
+            color: #286925;
+            box-shadow: inset 0px 2px 0px -1px #aaffaa, inset 0px -6px 0px 1px #548e54;
+            border-radius: 7px;
+            padding: 7px 15px 12px 20px;
+            font-weight: bold;
+          }
+          &--drop{
+            background: #ab6363;
+            color: #590c0c;
+            box-shadow: inset 0px 2px 0px -1px #f1859a, inset 0px -6px 0px 1px #7e3939;
+            border-radius: 7px;
+            padding: 7px 15px 12px 20px;
+            font-weight: bold;
+          }
+        }
+      }
+      
+    }
+
+  }
+}

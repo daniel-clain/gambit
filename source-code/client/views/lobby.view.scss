@@ -1,0 +1,137 @@
+@use '../styles/variables' as *;
+
+
+.game-host{
+  background-image: url('../images/pre-game/pre-game-bg.jpg');
+  height: 100%;
+  background-size: cover;
+  background-position-x: center;
+  padding: 20px;
+  box-sizing: border-box;
+  min-width: 250px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+
+  
+  .main-container {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    width: 100%;
+    flex: 1;
+  }
+
+  .create-game-button{
+    background-image: url('../images/pre-game/create-button.png');
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 14px 0 0 49px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 53px;
+    box-sizing: border-box;
+    width: 200px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+
+  .lists{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 1;
+  }
+  
+
+  .list{
+    margin: 0 auto 20px;
+    &__items{
+      
+      max-height: 120px;
+      overflow-y: auto;
+    }
+  }
+
+  .box{
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    width: 150px;
+    box-sizing: border-box;
+    color: white;
+    justify-content: flex-start;
+
+    &__heading{
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #67e7ff;
+    }
+  }
+
+
+  .global-chat {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &.box{
+      width: initial;
+    }
+    input{
+      height: 16px;
+      margin-top: 10px;
+    }
+    &__messages{      
+      overflow-y: auto;
+      max-height: 120px;
+    }
+  }
+
+  .modal-blackout{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+
+    .active-game-modal {
+      background: white;
+      width: 200px;
+      margin: 100px auto;
+      padding: 10px 20px;
+      border: 1px solid black;
+
+      &__heading{
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+      }
+
+      .bottom-buttons{
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+
+  }
+
+
+
+
+  @media (min-width: $layoutChangeBreakpoint){
+    .lists{        
+      display: flex;
+      justify-content: space-between;
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+
+}
+

@@ -1,0 +1,37 @@
+.fighter-card {
+  &__fight-experience {
+    margin-bottom: 20px;
+      text-align: center;
+  }
+
+  &__image {
+    background: url("../../../../../../images/fighter/default-skin/punching.png") no-repeat;
+    width: 63px;
+  }
+  
+  &__stats{    
+
+    &__group {
+      vertical-align: top;
+      border: 1px solid grey;
+      padding: 10px;
+      box-sizing: border-box;
+      background-color: #f6f6ff;
+    }
+    &__heading {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    
+
+    .stat {
+      line-height: 20px;
+      label {
+        width: 100px;
+        display: inline-block;
+        text-align: right;
+        margin-right: 10px;
+      }
+    }
+  }
+}
