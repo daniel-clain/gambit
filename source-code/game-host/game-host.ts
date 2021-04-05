@@ -4,6 +4,7 @@ import {GameHost_Implementation} from './game-host.implementation'
 import { GameHostState, ConnectedClient, FromClientToHost, JoinedClient } from './game-host.types';
 import { Socket } from 'socket.io';
 import ServerWebsocketService from './server-websocket-service';
+import { Server } from 'socket.io';
 
 
 
@@ -12,18 +13,23 @@ export class GameHost{
   websocketService = new ServerWebsocketService()
   private i: GameHost_Implementation
 
-  constructor(){
-    this.i = new GameHost_Implementation(this.state, this.updateConnectedClients)
-
-    this.websocketService.clientConnectedSubject.subscribe((socket: Socket) => {
-
+  constructor(webSocketServer: Server){
+    
+    webSocketServer.on("connection", (socket: Socket) => {
       console.log('A client connected to the websocket server');
-
       socket.on('connectToHost', ({name, id}) => {  
-        console.log('To Server From Client: ', name);
-        this.handleConnectingClient(name, id, socket)
+        if(this.i.connectingClientIsValid(name, id)){
+          const connectedClient: ConnectedClient = {name, id, socket}
+          this.state.connectedClients.push(connectedClient)
+          console.log(`${name} has connected to the game host`)
+          this.handleEventsFromClient(connectedClient)
+          this.updateConnectedClients()
+        }
       })
     })
+
+    this.i = new GameHost_Implementation(this.state, this.updateConnectedClients)
+
   }
 
 
@@ -163,21 +169,4 @@ export class GameHost{
 
   tearDownGame = gameId => this.i.tearDownGame(gameId)
 
-  handleConnectingClient(
-    name, id, socket
-  ){
-    if(this.i.connectingClientIsValid(name, id)){
-
-      const connectedClient: ConnectedClient = {name, id, socket}
-      this.state.connectedClients.push(connectedClient)
-      
-      console.log(`${name} has connected to the game host`)
-      
-      this.handleEventsFromClient(connectedClient)
-
-      this.updateConnectedClients()
-
-
-    }
-  }
 }

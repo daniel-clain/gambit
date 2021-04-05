@@ -5,8 +5,8 @@ import { ServerGameUIState, ServerPreGameUIState } from "../../interfaces/front-
 
 
 let socket: SocketIOClient.Socket
-const port = process.env.WEBSOCKET_PORT
-const websocketAddress = 'localhost'//'192.168.43.229'
+//const port = process.env.WEBSOCKET_PORT
+//const websocketAddress = 'localhost'//'192.168.43.229'
 
 
   
@@ -39,8 +39,8 @@ export const websocketService: FrontToBackInterface = {
   onServerPreGameUIStateUpdate: new Subject<ServerPreGameUIState>(),  
   onServerGameUIStateUpdate: new Subject<ServerGameUIState>(),
   init(){
-    socket = io(`${websocketAddress}:${port}`, {transports: ['websocket']})
-    console.log(`client socket object initialized for ${websocketAddress}:${port}. connecting....`);
+    socket = io()/* 
+    console.log(`client socket object initialized for ${websocketAddress}:${port}. connecting....`); */
     socket.connect()
   
     socket.on('To Client From Server - Lobby Ui', 

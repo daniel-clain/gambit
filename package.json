@@ -1,7 +1,7 @@
 {
   "name": "gambit",
   "version": "1.0.0",
-  "license": "none",
+  "license": "UNLICENSED",
   "engines": {
     "node": "15.8.0"
   },
@@ -17,10 +17,12 @@
     "mainGameCompileServer": "webpack --watch --config config/main-game/webpack.server.main-game.config.js",
 
 
-    "dev-fightTest-serve": "webpack serve --env=fightTest",
-    "dev-localTest-serve": "webpack serve --env=localTest",
-    "dev-mainGame-serve": "webpack serve --env=mainGame",
+    "dev-fightTest-serve": "webpack serve --config-name fightTest",
+    "dev-localTest-serve": "webpack serve --config-name localTest",
+    "dev-mainGame-serve": "webpack serve --config-name mainGame",
 
+
+    "prod-mainGame-build-remote": "webpack --mode=production --config-name mainGame --env=remote",
     
 
     "prod-fightTest-build": "webpack --mode=production --env=fightTest",
