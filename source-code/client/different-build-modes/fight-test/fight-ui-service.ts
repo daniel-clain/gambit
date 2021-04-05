@@ -8,7 +8,7 @@ gameConfiguration.stageDurations.maxFightDuration = 10000000
 
 
 const fighters = [
-	/* new Fighter('Daniel'),
+	new Fighter('Daniel'),
 	new Fighter('Bob'),
 	new Fighter('Fred'),
 	new Fighter('Sam'),
@@ -24,7 +24,7 @@ const fighters = [
 	new Fighter('Fit'),
 	new Fighter('Average'),
 	new Fighter('Stupid'),
-	new Fighter('Passive'), */
+	new Fighter('Passive'),
 	new Fighter('Hyper'),
 	new Fighter('Tough'),
 	//new Fighter('Superman')
@@ -49,6 +49,7 @@ export const fightUiService = {
 				}
 			})
 		})
+		this.fight.start()
 	},
 	fighters: shuffle(fighters),
 	frontEndStore

@@ -8,9 +8,9 @@ export default class ServerWebsocketService{
 
   constructor() {
     this.clientConnectedSubject = new Subject()
-    const port = +process.env.WEBSOCKET_PORT
+    const port = process.env.WEBSOCKET_PORT
     const webSocketServer: Server = new Server()
-    webSocketServer.listen(port)
+    webSocketServer.listen(Number(port))
     console.log(`game server listening for connections on port ${port}`);
 
     webSocketServer.on("connection", (socket: Socket) => {

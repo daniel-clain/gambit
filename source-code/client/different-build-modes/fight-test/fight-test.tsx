@@ -16,9 +16,11 @@ export const FighterTest = () => {
 
   paused ? fight?.pause() : fight?.unpause()
 
-  useEffect(()=> {!paused && fight?.timeRemaining == undefined && fight?.start()})
+  useEffect(()=> {
+    startNewFight()
+  },[])
 
-  const startNewFight = _ => {
+  const startNewFight = () => {
     fightUiService.newFight()
     setFight(fightUiService.fight)
   }  
@@ -35,6 +37,8 @@ export const FighterTest = () => {
     >
       Start New Fight
     </button>
-    <Fight_View/>
+    {fight &&
+      <Fight_View/>
+    }
   </>
 }
