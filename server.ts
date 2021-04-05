@@ -2,6 +2,7 @@
 import * as express from 'express';
 import {GameHost} from './source-code/game-host/game-host';
 import * as env from 'dotenv'
+console.log('come on mate...')
 env.config()
 
 new GameHost()
