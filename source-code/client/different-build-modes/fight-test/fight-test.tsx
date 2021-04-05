@@ -3,7 +3,6 @@ import * as React from 'react';
 import '../../styles/global.scss'
 import Fight from '../../../game-components/fight/fight';
 import { fightUiService } from './fight-ui-service';
-import { hot } from 'react-hot-loader/root';
 import { useEffect, useState } from 'react';
 import Fight_View from '../../views/game/fight-view/fight.view';
 
