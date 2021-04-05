@@ -1,6 +1,9 @@
 {
   "name": "gambit",
   "version": "1.0.0",
+  "engines": {
+    "node": "15.8.0"
+  },
   "scripts": {
     "mainGame": "webpack serve",
     "fightTest": "webpack serve  --env=fightTest",
@@ -25,7 +28,8 @@
     "prod-localTest-build": "webpack --mode=production --env=localTest",
     "prod-mainGame-build": "webpack --mode=production",
 
-    "start": "yarn prod-mainGame-build && yarn startServer",
+    "start": "node index.js",
+    "start2": "yarn prod-mainGame-build && yarn startServer",
 
     "startServer": "ts-node server.ts"
   },
