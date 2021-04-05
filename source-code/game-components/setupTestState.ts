@@ -11,7 +11,7 @@ export const setupTestState = (game: Game) => {
   game.has.managers[0].has.money = -50 */
 
   //gameConfiguration.stageDurations.showWinningsDuration = 999999
-  gameConfiguration.stageDurations.managerOptions = 999999
+  /* gameConfiguration.stageDurations.managerOptions = 999999
 
   const agent1: Employee = new Employee('Private Agent')
   const agent2 = new Employee('Private Agent')
@@ -21,6 +21,6 @@ export const setupTestState = (game: Game) => {
 
 
   game.has.managers[0].has.employees.push(agent1, agent2, agent3, dealer, hitman)
-  game.has.managers[0].has.money = 5000
+  game.has.managers[0].has.money = 5000 */
   
 }
