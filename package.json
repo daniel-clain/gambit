@@ -6,31 +6,18 @@
     "node": "15.8.0"
   },
   "scripts": {
-    "mainGame": "webpack serve",
-    "fightTest": "webpack serve  --env=fightTest",
-    "localTest": "webpack serve  --env=localTest",
-    "fightTestHost": "webpack --mode=production --env=fightTest && yarn serverHost && serveFightTest",
-    "serverHost": "webpack --mode=production --env=server",
-    "serveFightTest": "set buidType=fightTest && node compiled-code/server/server.js ",
-    "xxxmainGame": "nodemon --inspect=0.0.0.0:1234 --require dotenv/config compiled-code/server/server.js",
-    "mainGameHost": "webpack serve --env=mainGame --mode=production",
-    "mainGameCompileServer": "webpack --watch --config config/main-game/webpack.server.main-game.config.js",
-
 
     "dev-fightTest-serve": "webpack serve --config-name fightTest",
     "dev-localTest-serve": "webpack serve --config-name localTest",
     "dev-mainGame-serve": "webpack serve --config-name mainGame",
 
 
-    "prod-mainGame-build-remote": "webpack --mode=production --config-name mainGame --env=remote",
-    
-
-    "prod-fightTest-build": "webpack --mode=production --env=fightTest",
-    "prod-localTest-build": "webpack --mode=production --env=localTest",
-    "prod-mainGame-build": "webpack --mode=production --env=mainGame",
+    "prod-fightTest-build": "webpack --mode=production --config-name fightTest",
+    "prod-localTest-build": "webpack --mode=production --config-name localTest",
+    "prod-mainGame-build": "webpack --mode=production --config-name mainGame",
 
 
-    "start": "npm run prod-mainGame-build-remote & npm run startServer",
+    "start": "npm run build-all & npm run startServer",
     
     "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
     "startServer": "node -r ts-node/register server.ts"
