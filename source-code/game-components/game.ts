@@ -1,5 +1,4 @@
 
-import {UtilityFunctions as u} from '../utility-functions'
 import Fighter from "./fighter/fighter"
 import { Player } from "./player"
 import { GameType } from "../types/game/game-type"
@@ -13,6 +12,7 @@ import { ConnectedClient } from '../game-host/game-host.types'
 import { setupTestState } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
 import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
+import { randomNumber } from "../helper-functions/helper-functions"
 
 
 /* 
@@ -50,7 +50,7 @@ export class GameState{
 
 class GameHas{
   protected state: GameState
-  id = u.randomNumber({digits: 6})
+  id = randomNumber({digits: 6})
   fighters: Fighter[]
   professionals: Professional[]
   players: Player[] = []
@@ -110,7 +110,6 @@ class GameFunctions{
 
 
   triggerUIUpdate(){
-    console.log('game trigger update');
     this.sendUIUpdateToPlayers()
     this.sendUIUpdateToGameDisplays()
   }
@@ -165,7 +164,6 @@ class GameFunctions{
     return {
       disconnectedPlayerVotes: this.game.state.gameType == 'Websockets' ? this.game.has.connectionManager.disconnectedPlayerVotes : null,
       roundStage: activeStage?.name,
-      postFightReportData:  {notifications: []},
       playerManagerUIState: {
         round: roundNumber,
         managerInfo: manager?.functions.getInfo(),
@@ -199,7 +197,7 @@ export class Game {
     this.has.roundController = new RoundController(this)
 
     players.forEach(player => {
-      const manager = new Manager(this, player.name)
+      const manager = new Manager(player.name)
       this.has.managers.push(manager)
       this.has.players.push(
         new Player(
@@ -211,14 +209,6 @@ export class Game {
         )
       )
     })
-
-    
-    if(this.state.gameType == 'Websockets'){
-      this.has.players.forEach(player => 
-        this.has.connectionManager.handleGameUpdatesFromPlayer(player)
-      )
-    }
-
 
 
     setupTestState(this)

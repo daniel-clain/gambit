@@ -1,7 +1,6 @@
 
 import * as React from 'react';
 import '../employee-list.scss'
-import './employees-panel.scss'
 import {connect} from 'react-redux'
 import { Employee, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';

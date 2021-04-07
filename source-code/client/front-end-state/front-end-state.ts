@@ -1,5 +1,5 @@
 import { combineReducers, createStore, Store } from 'redux'
-import { ServerUIState } from '../../interfaces/front-end-state-interface'
+import { ServerGameUIState, ServerPreGameUIState, ServerUIState } from '../../interfaces/front-end-state-interface'
 import { clientManagerUIReducer } from "./reducers/manager-ui.reducer"
 import { clientPreGameUIReducer } from "./reducers/pre-game-ui.reducer"
 
@@ -19,11 +19,11 @@ const serverUIReducer = (serverUIState: ServerUIState = new ServerUIState(), {ty
   switch(type){
     case 'Update Lobby UI': return {
       ...serverUIState,
-      serverPreGameUIState: payload
+      serverPreGameUIState: payload as ServerPreGameUIState
     }
     case 'Update Game UI': return {
       ...serverUIState,
-      serverGameUIState: payload
+      serverGameUIState: payload as ServerGameUIState
     }
     default: return serverUIState
   }
@@ -47,3 +47,6 @@ export const frontEndStore = createStore(frontEndStoreReducer,
   window['__REDUX_DEVTOOLS_EXTENSION__'] && 
   window['__REDUX_DEVTOOLS_EXTENSION__']()
 )
+export type RootState = ReturnType<typeof frontEndStore.getState>
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof frontEndStore.dispatch

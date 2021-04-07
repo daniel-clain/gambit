@@ -73,7 +73,7 @@ export const offerContractServer: ServerAbility = {
       }
     }
 
-    manager.functions.addToLog({message: `${abilityData.target.name} has agreed to the contract offed by ${abilityData.source.name}. ${abilityData.target.name} now works for you`, type: 'employee outcome'});
+    manager.functions.addToLog({message: `${abilityData.target.name} has agreed to the contract offed.`, type: 'employee outcome'});
 
     return 
   },

@@ -7,50 +7,35 @@ export type ClientManagerUIActionType = 'Fighter Selected' | 'Jobseeker Selected
 
 
 
-export interface SetStateManagerUI {
-  showFighter: (fighterName: string) => {activeModal: ActiveModal}
-  showEmployee: (employee: Employee) => {activeModal: ActiveModal}
-  showjobSeeker: (jobSeeker: JobSeeker) => {activeModal: ActiveModal}
-  showAbility: (abilityData: AbilityData) => {activeModal: ActiveModal}
-  showActivityLog: () => {activeModal: ActiveModal}
-  showLoanShark:() => {activeModal: ActiveModal}
-  showKnownFighters:() => {activeModal: ActiveModal}
-  showOtherManagers:() => {activeModal: ActiveModal}
-  closeModal:() => {activeModal: ActiveModal}
-  closeSelectList:() => void
-  showReport(): {activeModal: ActiveModal}
+export class SetStateManagerUI {
+  showFighter = fighter => this.getModal('Fighter', fighter)
+  showEmployee = employee => this.getModal('Employee', employee)
+  showjobSeeker = jobSeeker => this.getModal('Job Seeker', jobSeeker)
+  showAbility = abilityData => this.getModal('Ability', abilityData)
+  showManagerOptions = () => this.getModal('Manager')
+  showLoanShark = () => this.getModal('Loan Shark')
+  showKnownFighters = () => this.getModal('Known Fighters')
+  showOtherManagers = () => this.getModal('Known Managers')
+  showReport = () => this.getModal('Manager Report')
+  closeModal = () => ({activeModal: null})
+  closeSelectList = () => ({selectListActive: false})
+  
+  getModal(cardName: CardName, data?): {activeModal: ActiveModal}{
+    return {activeModal: {name: cardName, data}}
+  }
+
 }
 
 export type SetStateManagerUIFunctionName = 
-'showFighter' | 'showEmployee' | 'showjobSeeker' | 'showAbility' | 'showActivityLog' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport'
+'showFighter' | 'showEmployee' | 'showjobSeeker' | 'showAbility' | 'showManagerOptions' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport'
 
 
 export interface SetStateManagerUIAction{
   type: SetStateFunctionName
   payload?: any
 }
-const getModal = (cardName: CardName, data?): {activeModal: ActiveModal} => ({
-  activeModal: {name: cardName, data}
-})
-/* fighterName => ({
-  activeModal: {
-    name: 'Fighter', data: fighterName 
-  }
-}) */
-const setStateManagerUI: SetStateManagerUI = {
 
-  showFighter: fighter => getModal('Fighter', fighter),
-  showEmployee: employee => getModal('Employee', employee),
-  showjobSeeker: jobSeeker => getModal('Job Seeker', jobSeeker),
-  showAbility: abilityData => getModal('Ability', abilityData),
-  showActivityLog: () => getModal('Activity Log'),
-  showLoanShark: () => getModal('Loan Shark'),
-  showKnownFighters: () => getModal('Known Fighters'),
-  showOtherManagers: () => getModal('Known Managers'),
-  closeModal: () => ({activeModal: null}),
-  closeSelectList: () => ({selectListActive: false}),
-  showReport: () => getModal('Manager Report')
-}
+const setStateManagerUI = new SetStateManagerUI()
 
 export const clientManagerUIReducer = (
   clientManagerUIState: ClientManagerUIState = new ClientManagerUIState(), 

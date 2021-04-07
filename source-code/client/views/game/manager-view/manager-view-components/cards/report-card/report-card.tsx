@@ -1,24 +1,21 @@
-import React from "react"
-import { hot } from "react-hot-loader/root"
+import * as React from "react"
 import { ActivityLogItem } from "../../../../../../../types/game/activity-log-item"
-import { Modal } from "../../partials/modal/modal"
-import { connect } from 'react-redux'
-import { FrontEndState } from "../../../../../../../interfaces/front-end-state-interface"
+import { frontEndService } from "../../../../../../front-end-service/front-end-service"
+import { connect } from "react-redux"
+import { hot } from "react-hot-loader/root"
+import { LogItemTypes } from "../../../../../../../types/game/log-item-type"
+import './report-card.scss'
 
-interface ReportCardProps {
-  activityLogs: ActivityLogItem[]
-}
-//const typesIncludedInReport: LogItemTypes[] = ['report', 'critical', 'employee outcome', 'betting']
-//const isReportOrCritical = log => typesIncludedInReport.some(type => log.type == type)
+const {managerMap} = frontEndService
 
-export const ReportCard = hotAndStateful(({ activityLogs }: ReportCardProps) => {
-  const reversedLog = [...activityLogs].reverse()
-  
-  return <Modal>
-    <div className='panel report-card'>
-      <div className='heading'>Activity Log</div>
+const map = managerMap<{activityLogs: ActivityLogItem[]}>(({managerInfo: {activityLogs}}) => ({activityLogs}))
+export const ReportCard = connect(map)(hot(({activityLogs, dispatch}) =>   
+  <div className='report-card-modal'>
+    <div className='background' onClick={() => dispatch({type: 'closeModal'})}></div>
+    <div className="report-card">
+      <div className='heading'>Last Week Report</div>
       <div className='list'>
-        {reversedLog.map((logItem, i) => 
+        {getReportLogs(activityLogs).map((logItem, i) => 
           <div
             className={`
               list__row 
@@ -35,15 +32,19 @@ export const ReportCard = hotAndStateful(({ activityLogs }: ReportCardProps) => 
         )}
       </div>
     </div>
-  </Modal>
-})
+  </div>
+))
 
-
-function hotAndStateful(component) {
-  const mapStateToProps = ({
-    serverUIState: { serverGameUIState: { playerManagerUIState: { managerInfo: {
-      activityLogs
-    } } } }
-  }: FrontEndState): ReportCardProps => ({ activityLogs })
-  return connect(mapStateToProps)(hot(component))
+const getReportLogs = (logItems: ActivityLogItem[]) => {
+  const types: LogItemTypes[] = ['employee outcome', 'betting', 'critical', 'report']
+  const reduced = logItems.reverse().reduce((obj, logItem) => {
+    if(!obj.first && logItem.type == 'new round') return {...obj, first: true}
+    else if(obj.second) return obj
+    else if(logItem.type == 'new round') return {...obj, second: true}
+    else if(types.some(t => t == logItem.type)) return {...obj, returnArray: [...obj.returnArray, logItem]}
+    else return obj
+  },{first: null, second: null, returnArray: []})
+  return reduced.returnArray
 }
+
+

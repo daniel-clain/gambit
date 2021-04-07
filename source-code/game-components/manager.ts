@@ -65,7 +65,6 @@ export interface ManagerInfo{
   nextFightBet?: Bet
   employees?: Employee[]
   readyForNextFight: boolean
-  givenUp: boolean
   otherManagers: KnownManager[]
   activityLogs: ActivityLogItem[]
   image: ManagerImage
@@ -73,7 +72,6 @@ export interface ManagerInfo{
 
 export class ManagerState{
   readyForNextFight: boolean = false
-  givenUp = false
 }
 
 class ManagerHas{
@@ -110,6 +108,18 @@ class ManagerFunctions{
     
   }
 
+  toggleReady = () => {
+    const ready = !this.manager.state.readyForNextFight
+    ready && this.addToLog({message: 'Ready for next fight'})
+    this.manager.state.readyForNextFight = ready
+  }
+
+  betOnFighter = (bet: Bet) => {
+    
+    bet && this.addToLog({message: `Made a ${bet.size} bet on ${bet.fighterName}`})
+    this.manager.has.nextFightBet = bet
+  }
+
   getInfo(): ManagerInfo{
     return {
       ...this.manager.state,
@@ -118,6 +128,7 @@ class ManagerFunctions{
     }
   }
   paybackMoney = (amount: number) =>  {
+    this.addToLog({message: `Paid back ${amount} to the Loan Shark`})
     const {has} = this.manager
     has.money -= amount
     has.loan = {
@@ -128,6 +139,7 @@ class ManagerFunctions{
   }
 
   borrowMoney = (amount: number) => {
+    this.addToLog({message: `Borrowed ${amount} from the Loan Shark`})
     const {has} = this.manager
     has.money += amount
     has.loan = {
@@ -159,7 +171,7 @@ export class Manager{
   state = new ManagerState()
   functions: ManagerFunctions
 
-  constructor(private game: Game, name: string){
+  constructor(name: string){
     this.has = new ManagerHas(name)
     this.functions = new ManagerFunctions(this)
   }

@@ -1,8 +1,8 @@
-@use '../styles/variables' as *;
+@use '../../styles/variables' as *;
 
 
 .game-host{
-  background-image: url('../images/pre-game/pre-game-bg.jpg');
+  background-image: url('../../images/pre-game/pre-game-bg.jpg');
   height: 100%;
   background-size: cover;
   background-position-x: center;
@@ -24,7 +24,7 @@
   }
 
   .create-game-button{
-    background-image: url('../images/pre-game/create-button.png');
+    background-image: url('../../images/pre-game/create-button.png');
     color: white;
     font-size: 1.5rem;
     font-weight: bold;

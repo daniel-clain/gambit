@@ -2,27 +2,23 @@
 import * as React from 'react';
 import './job-seeker-card.scss'
 import '../modal-card.scss';
-import {connect} from 'react-redux'
 import AbilityBlock from '../../partials/ability-block/ability-block';
-import { AbilityData, AbilityName } from '../../../../../../../game-components/abilities-reformed/ability';
-import { ManagerInfo } from '../../../../../../../game-components/manager';
+import { AbilityData } from '../../../../../../../game-components/abilities-reformed/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { Modal } from '../../partials/modal/modal';
-import { FrontEndState, JobSeeker } from '../../../../../../../interfaces/front-end-state-interface';
+import { JobSeeker } from '../../../../../../../interfaces/front-end-state-interface';
 import { InfoBox } from '../../partials/info-box/info-box';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
+import { connect } from 'react-redux';
 import { hot } from 'react-hot-loader/root';
 
-export interface JobSeekerCardProps{
-  jobSeeker: JobSeeker
-  managerInfo: ManagerInfo
-}
+const {managerMap} = frontEndService
 
-const JobSeekerCard = ({jobSeeker, managerInfo}:JobSeekerCardProps) => {
+const mapping = managerMap<JobSeeker>(({activeModal:{data}}) => data)
 
-  const {abilityService} = frontEndService
+export const JobSeekerCard = connect(mapping)(hot(
+  jobSeeker => {
 
-  const abilitiesJobSeekerCanBeTargetedBy = abilityService.getAbilitiesCharacterCanBeTheTargetOf({character: jobSeeker})
 
   const abilityData: AbilityData = {      
     name: 'Offer Contract',
@@ -32,10 +28,7 @@ const JobSeekerCard = ({jobSeeker, managerInfo}:JobSeekerCardProps) => {
       type: 'job seeker'
     }
   }
-
-
-    
-      
+   
   const {numberOfWeeks, weeklyCost} = jobSeeker.goalContract
 
   const infoBoxList: InfoBoxListItem[] = [
@@ -79,16 +72,4 @@ const JobSeekerCard = ({jobSeeker, managerInfo}:JobSeekerCardProps) => {
       </div>
     </Modal>
   )
-}
-
-export default connect(({
-  clientUIState: {clientGameUIState: {clientManagerUIState: {
-    activeModal
-  }}},
-  serverUIState: {serverGameUIState: {playerManagerUIState: {
-    managerInfo
-  }}}
-}: FrontEndState): JobSeekerCardProps => ({
-  managerInfo, jobSeeker: activeModal.data
 }))
-(hot(JobSeekerCard))

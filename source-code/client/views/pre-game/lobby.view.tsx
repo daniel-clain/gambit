@@ -1,19 +1,26 @@
 import * as React from "react"
 import { hot } from "react-hot-loader/root"
 import {connect} from 'react-redux'
-import ChatMessage from "../../interfaces/chat-message.interface"
-import GameLobbyClient from "../../interfaces/game-candidate-client.interface"
-import { GameInfo } from "../../interfaces/game/game-info"
-import { GameBeingCreated } from "../../game-host/game-host.types"
-import {frontEndService}  from "../front-end-service/front-end-service"
-import { FrontEndState, ServerPreGameUIState } from "./../../interfaces/front-end-state-interface"
+import { GameBeingCreated, JoinedClient } from "../../../game-host/game-host.types"
+import ChatMessage from "../../../interfaces/chat-message.interface"
+import { ServerPreGameUIState, FrontEndState } from "../../../interfaces/front-end-state-interface"
+import { GameInfo } from "../../../interfaces/game/game-info"
+import { frontEndService } from "../../front-end-service/front-end-service"
 import './lobby.view.scss'
 
 interface LobbyProps extends ServerPreGameUIState{
   clientId: string
 }
 
-const Lobby_View = ({
+const mapStateToProps = ({
+  serverUIState: {serverPreGameUIState},
+  clientUIState: {clientPreGameUIState: {clientId}}
+}: FrontEndState): LobbyProps => {
+  return {...serverPreGameUIState, clientId}
+}
+
+
+export const Lobby_View = connect(mapStateToProps)(hot(({
   connectedClients, 
   gamesBeingCreated, 
   globalChat, 
@@ -88,7 +95,7 @@ const Lobby_View = ({
           <div className='active-game-modal'>
             <div className='active-game-modal__heading'>Game Creator: {joinedGameBeingCreated.creator.name}</div>
             <div className='active-game-modal__heading'>Joined Players</div>
-            {joinedGameBeingCreated.clients.map((client: GameLobbyClient) =>
+            {joinedGameBeingCreated.clients.map((client: JoinedClient) =>
               <div key={client.id}>
                 {client.name} -
                   <input type='checkbox' checked={client.ready} disabled={true} />
@@ -110,13 +117,4 @@ const Lobby_View = ({
     </div>
   )
   
-}
-
-const mapStateToProps = ({
-  serverUIState: {serverPreGameUIState},
-  clientUIState: {clientPreGameUIState: {clientId}}
-}: FrontEndState): LobbyProps => {
-  return {...serverPreGameUIState, clientId}
-}
-
-export default connect(mapStateToProps)(hot(Lobby_View))
+}))

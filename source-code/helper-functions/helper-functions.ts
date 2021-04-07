@@ -21,6 +21,8 @@ export const shuffle = <T>(array: T[]): T[] => {
 
   return array;
 }
+export const randomNumber = ({digits}:{digits: number}) => Math.round(Math.random() * Math.pow(10, digits)).toString()
+
 
 export const wait = (milliseconds: number): Promise<void> => new Promise(resolve => setTimeout(resolve, milliseconds))
 

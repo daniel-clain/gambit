@@ -183,5 +183,8 @@ const mapStateToProps = ({
 })
 
 
-export default connect(mapStateToProps)
+const x = connect(mapStateToProps)
 (FighterCard)
+
+export default x
+

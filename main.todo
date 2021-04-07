@@ -1,43 +1,61 @@
-Main:
+Priority:
+  ☐ preload images/sounds, store in local storage
+  ☐ overlay text scale to ui
+  ☐ loan shark interest val consistent (logs?)
+  ☐ remote game remember player name/id auto connect to game host
+  ☐ reduce image size to lagest size possible
+  ☐ assets like audio and images are saved inlocal storage, assets load in pregame and game lobby
+  ☐ you cant murder fighters not in fight
   ☐ on manager options timer to zero, autostart next stage
-  ☐ remove flanking and maovering quotes
-  ☐ fighter should not have try to win option
-  ☐ too much doping, more chance death
-  ☐ guarding blocks doping
-  ☐ Have permanent hosting solution, where game wrapper is always running, and if server is not running or crashed, you can restart the game server from the wrapper
   ☐ Private agents spy on player, use known other manager activity to create evidence items, evidence items can be used to blackmail or sue, build blackmailing mechanic
   ☐ build lawsuit and sue mechanics
-  ☐ Guard fighter catches other plays doping
-  ☐ Guard has chance to collect evidence
   ☐ Private agent ability defensive counter private agents
   ☐ handle fight death single way, for poison, overdose and murder
   ☐ text for news too big poison both
+  ☐ set up display for fight, news
+  ☐ if theres only 1 opponent, run and recover less if intelligent
+  ☐ doping perma affects +aggression and -intelligence
+  ☐ on player disconnect pause all stage (fight)
+  ☐ test player disconnect modal, sometimes duplicates in list
 
 
 
 
 Quick minor fixes: 
-  ☐ click modal overlay to close
-  ☐ make fight not be a draw on reconnect to winnigs
-  ☐ test player disconnect modal, sometimes duplicates in list
-  ☐ fight ui disconected modal under post fight winnings and fight msg, zindex
-  ☐ active games in lobby had bad data duplicates
-  ✔ get an instance hosted @done(21-03-31 17:25)
-  ☐ on player disconnect pause all stage (fight)
-  ☐ restart server from clientside
-  ☐ frontend pol server for disconnected, show restart tool
-  ☐ ability description reflects config variables, loan shark (max, interest, weeks)
-  ☐ deployment to production pipeline
-  - run single pkg.json script
-  - runs server, opens browser to fetch client
-  ☐ make poison a lot better and assault better
+  ☐ remove flanking and maovering quotes
+
+
+
+Other updates:
+  ☐ manager options phase, last 5 seconds obvious
+  ☐ fighter can be injured from fight
+  ☐ on fighter injured/poisoned, can reduce intellignce permanently
   ☐ every thresh hold of number of employees, the salaries go up percentage based
-  ☐ get rid of code for comonent log modal
-
-
-
-Big updates:
-  ✔ Do responsive ui for desktop, mobile and handle display rotate @done(21-03-30 11:19)
+  ☐ manager can expend action points to make small amounts of money
+  ☐ random events
+  - fighter with high publicity get attacked by a fan
+  - agency checks fighters for doping and removes them if found
+  - fighters get food poisoning
+  - royal rumble, 8 fighters, winner makes x4 money
+  - police arest drug dealer
+  - fighter get injured from excessive exercise
+  ☐ more manager pics, random assignment, can choose in pregame
+  ☐ intelligent guy repositioning should attack enemy not facing
+  ☐ on draw, get 50% of ur money back
+  ☐ win money based on fighter odds
+  ☐ earn more min moey per num fighters
+  ☐ Guard has chance to collect evidence
+  ☐ guarding blocks doping
+  ☐ Have permanent hosting solution, where game wrapper is always running, and if server is not running or crashed, you can restart the game server from the wrapper
+  ☐ active games in lobby had bad data duplicates
+  ☐ frontend pol server for disconnected, show restart tool
+  ☐ talent scout ability, discover list of unknown fighters with some random stats revealed
+  ☐ talent scout skill level influences offer contract success
+  ☐ injured or poisoned can persist more than 1 week, if injured/poisoned cant get put in fight
+  ☐ can see fighters in next weeks fight
+  ☐ drug dealers makes less money for each other active drug dealer selling that turn
+  ☐ cornered guy 50/50 rampage 
+  ☐ attack at retreating opponent should have extra space to connect
   ☐ Have events with lots of fighters
   ☐ Fighters that lose 3 in a row retire
   ☐ Handle friendly server restart
@@ -55,10 +73,16 @@ Big updates:
   - As you scroll the side youre scrolling toward, that sides meter shrinks, and the side youre scrolling away from, the meter gets more full, when ur at the end the meter is full
   ☐ employee thief?
   ☐ game config varies on num player, eg num job seekers, 
-
-
+  ☐ make base mechanics clear. eg how offering contract can be outbit or rejected, loan shark, how assasings/ thugs have chance of success, how skill level works, brackets after a number mean rounds since info was learnt
+  ☐ number of fights affects intellignce, (less base int)
+  ☐ audio for winner, knockout, draw, party music for winnings music and making money, jaws music intensity for loan shark weeks owed, include more loan shark info about paying back small amounts
+  ☐ your fighter has take a dive ability
+  ☐ save fight data obj file onto server, if server fails, you can recreate off saved game
+  ☐ make client know when the server has crashed
 
 
 Big wins (to remember my achievements)
 ✔ Refactored for passing state down to redux @done(21-03-30 21:53)
-☐ Refactored gamehost to be 
+✔ Refactored gamehost to be nicer @done(21-04-07 12:14)
+✔ Got game hosted on heroku @done(21-04-07 12:14)
+✔ got money and report done @done(21-04-07 12:14)

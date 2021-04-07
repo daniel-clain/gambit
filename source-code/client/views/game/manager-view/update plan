@@ -1,7 +1,0 @@
-* separate employee and job seeker card
-* option cards are responsible for validation and sending to server
-* selected options should arrive in the class of the source actor (manager, employee). if their type is instant then resolve, dont store. if type is resolve at end of turn or resolve at end of manager options stage, then they are stored in the (employee, manager). round controller has an emmitting subject that emits at end of turn and at end of manager options stage, the (employees, manager) are subscribed to these, when they trigger, the host execute the relative stored options.
-* the option host need to have knowledge of all fighters and managers and job seekers
-* ready check is the only non option action
-* options classes can be a lot refactored
-* make the source and target automatic and smooth, 

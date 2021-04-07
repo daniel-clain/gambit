@@ -24,9 +24,22 @@ export class LocalService implements FrontToBackInterface{
     this.player = this.game.has.players.find(p => p.id == '1234')
 
     this.onServerGameUIStateUpdate = this.player.onUIStateUpdate
+
+    
+    const clientToGameFuntions = {
+      toggleReady: () => this.player.doAction('toggleReady'),
+      betOnFighter: bet => this.player.doAction('betOnFighter', bet),
+      borrowMoney: amount => this.player.doAction('borrowMoney', amount),
+      payBackMoney: amount => this.player.doAction('payBackMoney', amount),
+      abilityConfirmed: ability => this.player.doAction('abilityConfirmed', ability),
+      toggleDropPlayer: obj => {
+        this.player.doAction('toggleDropPlayer', obj)
+      }
+    }  
+
     this.sendUpdate = {
       ...{} as FromClientToHost,
-      ...this.player.receiveUpdateFromClient
+      ...clientToGameFuntions
     }
   }
   

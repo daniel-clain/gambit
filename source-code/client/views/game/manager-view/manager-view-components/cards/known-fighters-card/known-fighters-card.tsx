@@ -2,15 +2,22 @@ import * as React from 'react'
 import {frontEndService} from '../../../../../../front-end-service/front-end-service'
 import { FighterInfo } from '../../../../../../../interfaces/front-end-state-interface'
 import { Modal } from '../../partials/modal/modal'
+import { connect } from 'react-redux'
+import { hot } from 'react-hot-loader/root'
 
-export const KnownFightersCard = ({fighters}: {fighters: FighterInfo[]}) => {
-  const {showFighter} = frontEndService .setClientState
+const {managerMap} = frontEndService
+
+const mapping = managerMap<{knownFighters: FighterInfo[]}>(({managerInfo:{knownFighters}}) => ({knownFighters}))
+
+export const KnownFightersCard = connect(mapping)(hot(
+  ({knownFighters}) => {
+  const {showFighter} = frontEndService.setClientState
   return (
     <Modal>    
       <div className='panel known-fighters'>
         <div className='heading'>Known Fighters</div>
         <div className='list fighter-list'>
-          {fighters.map(fighter =>
+          {knownFighters.map(fighter =>
             <div 
               className={'list__row'} 
               key={fighter.name} 
@@ -22,7 +29,6 @@ export const KnownFightersCard = ({fighters}: {fighters: FighterInfo[]}) => {
           )}
         </div>
       </div>
-      
     </Modal>
   )
-}
+}))

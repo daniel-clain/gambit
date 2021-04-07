@@ -79,10 +79,23 @@ export class AbilityProcessor{
     }
   }
 
+  getAbilitySourceManager(abilityData: AbilityData):Manager{
+    if(abilityData.source.type == 'Manager'){
+      return this.game.has.managers.find(manager => manager.has.name == abilityData.source.name)
+    }
+    else{
+      return this.game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
+    }
+  }
+
   processSelectedAbility = (abilityData: AbilityData) => {
     const ability: ServerAbility = this.abilities.find(ability => ability.name == abilityData.name)
     this.subtractCost(ability, abilityData)
-    console.log(`${abilityData.source.name} has used ability, ${abilityData.name}${abilityData.target ? `, targeting ${abilityData.target.name}` : ''}`);
+    console.log();
+
+    const manager = this.getAbilitySourceManager(abilityData)
+
+    manager.functions.addToLog({message: `Used ability ${abilityData.name}${abilityData.target ? `, targeting ${abilityData.target.name}` : ''}`})
     
 
     if(ability.executes == 'Instantly'){
@@ -99,13 +112,11 @@ export class AbilityProcessor{
   }
 
   private subtractCost(ability: ServerAbility, abilityData: AbilityData){
-    let manager: Manager
+    const manager = this.getAbilitySourceManager(abilityData)
     if(abilityData.source.type == 'Manager'){
-      manager = this.game.has.managers.find(manager => manager.has.name == abilityData.source.name)
       manager.has.actionPoints -= ability.cost.actionPoints
     }
     else{
-      manager = this.game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
       const employee: Employee = manager.has.employees.find(employee => employee.name == abilityData.source.name)
       employee.actionPoints -= ability.cost.actionPoints
     }
@@ -182,8 +193,8 @@ export class AbilityProcessor{
         if(offerContractInstance.source.name == selectedSourceName)
           offerContractAbility.execute(offerContractInstance, this.game)
         else{        
-          const {target, source} = offerContractInstance
-          const manager = source.type == 'Manager' ? managers.find(manager => manager.has.name == source.name) : managers.find(manager => manager.has.employees.some(employee => employee.name == source.name))
+          const {target} = offerContractInstance
+          const manager = this.getAbilitySourceManager(offerContractInstance)
   
           manager.functions.addToLog({message: `${target.name} (${jobSeeker ? jobSeeker.profession : 'Fighter'}) rejected your contract offer because he has accepeted the offer of another manager`, type: 'report'})
         }

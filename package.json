@@ -31,6 +31,7 @@
 
 
     "start": "npm run prod-mainGame-build-remote & npm run startServer",
+    
     "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
     "startServer": "node -r ts-node/register server.ts"
   },

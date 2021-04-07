@@ -52,9 +52,10 @@ export interface ClientUIState{
   clientPreGameUIState: ClientPreGameUIState
 }
 
+export type AllManagerUIState = ClientManagerUIState & ManagerUIState
 
 
-export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Activity Log' | 'Manager Report'
+export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Manager Report'
 
 
 
@@ -78,7 +79,6 @@ export class ServerGameUIState{
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
   fightUIState: FightUIState
-  postFightReportData: PostFightReportData
 }
 
 

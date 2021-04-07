@@ -3,31 +3,29 @@ import * as React from 'react';
 import './loan-shark-card.scss'
 import { useState } from 'react';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { Modal } from '../../partials/modal/modal';
 import { Loan } from '../../../../../../../interfaces/front-end-state-interface';
-
+import { connect } from 'react-redux';
+import { hot } from 'react-hot-loader/root';
+import { Modal } from '../../partials/modal/modal';
+import { loanSharkSettings } from '../../../../../../../game-settings/loan-shark-settings';
 export interface LoanSharkCardProps{
   loan: Loan
   money: number
 }
 
-interface LoanSharkCardState{
-  paybackAmount: number, 
-  borrowAmount: number
-}
+const {managerMap} = frontEndService
+const mapping = managerMap<LoanSharkCardProps>(({managerInfo:{loan, money}}) => ({loan, money}))
 
-
-export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
-  const [state, setState] = useState<LoanSharkCardState>({
+export const LoanSharkCard = connect(mapping)(hot(({loan, money}) => {
+  const [state, setState] = useState({
     paybackAmount: undefined,
     borrowAmount: undefined
   })
 
   const {sendUpdate} = frontEndService 
 
-  const {debt, weeksOverdue} = loan    
   const {borrowAmount, paybackAmount} = state
-
+  const {minimumAmountToPayBackEachWeek, interestAddedPerWeek, weeksOfNoPaybackUntilRespond} = loanSharkSettings
 
   return (
     <Modal>
@@ -39,18 +37,20 @@ export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
 
           <div className='card__two-columns__right'>
             <div className='loan-shark-card__info'>
-              Hey buddy, ill loan you money, but each week you don't pay me back you build up intrest, 10% of what you owe added on each week. If you owe me more than 500 and you don't pay me back in 3 weeks...... well, you'll find out what happens, and you wont like it.....
+              Hey buddy, ill loan you money, intrest will be {interestAddedPerWeek * 100}% of what you owe added on each week. You must pay me back a minimum of {minimumAmountToPayBackEachWeek} and if you dont pay the minimum {weeksOfNoPaybackUntilRespond} weeks in a row...... well, you'll find out what happens, and you wont like it.....
             </div>            
           </div>
         </div>
-        <div className='loan-shark-card__debt'>
-          Your Debt is: {debt}
-        </div>
-        {weeksOverdue > 0 && 
+        {loan ? <>
           <div className='loan-shark-card__debt'>
-            You are <strong>{weeksOverdue}</strong> week{weeksOverdue > 1 && 's'} overdue!
+            Your Debt is: {loan.debt}
           </div>
-        }
+          {loan.weeksOverdue > 0 && 
+            <div className='loan-shark-card__debt'>
+              You are <strong>{loan.weeksOverdue}</strong> week{loan.weeksOverdue > 1 && 's'} overdue!
+            </div>
+          }
+        </>: ''}
         
         <div className='loan-shark-card__loan-tool'>
           <div className='loan-shark-card__loan-tool__left'>
@@ -148,5 +148,6 @@ export const LoanSharkCard = ({loan, money}: LoanSharkCardProps) => {
     if(event.key == 'Enter')
       event.target.blur()
   }
-}
+}))
+
 

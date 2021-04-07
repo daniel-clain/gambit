@@ -1,21 +1,22 @@
 import * as React from "react"
 import './modal.scss'
-import {frontEndService} from "../../../../../../front-end-service/front-end-service"
+import { connect } from "react-redux"
+import { hot } from "react-hot-loader/root"
 
-export const Modal = ({children, onClose = undefined}) =>  {
-  const {closeModal} = frontEndService .setClientState
+export const Modal = connect()(hot((props) =>  {
+  const close = () => (props.onClose && props.onClose(), props.dispatch({type:'closeModal'}))
   return (
     <div className='modal-container'>
-      <div className='modal-blackout'></div>
+      <div className='modal-blackout' onClick={close}></div>
       <div className='modal'>
         <div className='modal__content'>
-          {children}
+          {props.children}
         </div>
         <button 
           className='modal__close-button' 
-          onClick={() => (closeModal(), onClose?.())}
+          onClick={close}
         >Close</button>
       </div>   
     </div>   
   )
-}
+}))

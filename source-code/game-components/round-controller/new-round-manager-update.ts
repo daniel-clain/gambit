@@ -54,7 +54,8 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
       (count, fighter) => count + fighter.state.activeContract.weeklyCost
     , 0)
     manager.has.money -= (employeeExpenses + fighterExpenses)
-    manager.functions.addToLog({message: `Spent ${employeeExpenses} on employee wage`, type: 'report'})
+    if(roundController.roundNumber > 1)
+    manager.functions.addToLog({message: `Spent ${employeeExpenses} on employee wages`, type: 'report'})
   }
 
   function resetEmployeeActionPoints(employees: Employee[]){
@@ -186,7 +187,7 @@ export const updateManagersForNewRound = (roundController: RoundController, prof
         let randomStat
         let failSafeTries = 0
         while(!randomStat || randomFighter.fighting.stats[randomStat] == 0){
-          const stats = ['strength', 'fitness', 'intelligence', 'agression']
+          const stats = ['baseStrength', 'baseFitness', 'baseIntelligence', 'baseAgression']
           randomStat = stats[random(3)]
           failSafeTries ++
           if(failSafeTries == 10)

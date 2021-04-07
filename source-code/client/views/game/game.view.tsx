@@ -2,7 +2,7 @@ import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
 import {connect} from 'react-redux'
 import { DisconnectedPlayerVote, FrontEndState } from '../../../interfaces/front-end-state-interface';
-import Manager_View from './manager-view/manager.view'
+import {Manager_View} from './manager-view/manager.view'
 import Fight_View from './fight-view/fight.view'
 import PreFightNews_View from './pre-fight-news-view/pre-fight-news.view'
 import DisconnectedPlayerModal from './disconnected-player-modal/disconnected-player-modal'

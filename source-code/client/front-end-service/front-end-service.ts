@@ -2,19 +2,20 @@
 import { FromClientToHost } from '../../game-host/game-host.types'
 import { SetStateManagerUI } from '../front-end-state/reducers/manager-ui.reducer'
 import { SetStatePreGameUI } from '../front-end-state/reducers/pre-game-ui.reducer'
-import { FromClientToGame, SetStateFunctionName } from './front-end-service-types'
+import { SetStateFunctionName } from './front-end-service-types'
 
 import { LocalService } from './local-service'
 import { websocketService } from './websocket-service'
 import {abilityService} from './ability-service-client';
 import { frontEndStore } from '../front-end-state/front-end-state'
-import { ServerPreGameUIState } from '../../interfaces/front-end-state-interface'
+import { AllManagerUIState, FrontEndState, ServerPreGameUIState } from '../../interfaces/front-end-state-interface'
+import { hot } from "react-hot-loader/root"
+import { connect } from "react-redux"
 
 type ConnectionType = 'Local' | 'Websockets'
 
 const frontEndService = (() => {
 
-  
 
   const dispatch = (functionName: SetStateFunctionName, data?) => {
     frontEndStore.dispatch({
@@ -31,7 +32,7 @@ const frontEndService = (() => {
     showEmployee: employee => dispatch('showEmployee', employee),
     showjobSeeker: jobSeeker => dispatch('showjobSeeker', jobSeeker),
     showAbility: ability => dispatch('showAbility', ability),
-    showActivityLog: () => dispatch('showActivityLog'),
+    showManagerOptions: () => dispatch('showManagerOptions'),
     showLoanShark: () => dispatch('showLoanShark'),
     showKnownFighters: () => dispatch('showKnownFighters'),
     showOtherManagers: () => dispatch('showOtherManagers'),
@@ -39,6 +40,7 @@ const frontEndService = (() => {
     closeSelectList: () => dispatch('closeSelectList'),
     showReport: () => dispatch('showReport')
   }
+
 
   let connectionType: ConnectionType
 
@@ -48,6 +50,20 @@ const frontEndService = (() => {
     abilityService,
     frontEndStore,
     connectionType,
+
+    /* hotConnection<T>(, component: (props: T) => JSX.Element){
+      return connect(this.managerMap(mapping))(hot(component))
+    }, */
+
+    managerMap<T>(mapping: (allManagerUIState: AllManagerUIState) => T){
+      return () => ({
+        clientUIState:{clientGameUIState:{clientManagerUIState}},
+        serverUIState:{serverGameUIState:{playerManagerUIState}}
+      }: FrontEndState):T => mapping({...clientManagerUIState, ...playerManagerUIState})
+    },
+
+
+
     setConnectionType: function (type: ConnectionType){
       connectionType = type
       

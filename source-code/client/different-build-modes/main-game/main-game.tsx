@@ -3,11 +3,11 @@ import * as React from 'react';
 import '../../styles/global.scss';
 import { connect, Provider } from 'react-redux'
 import { FrontEndState } from '../../../interfaces/front-end-state-interface';
-import { Login_View } from '../../views/login.view';
-import Lobby_View from '../../views/lobby.view'
 import Game_View from '../../views/game/game.view'
 import { frontEndService } from '../../front-end-service/front-end-service';
 import { hot } from 'react-hot-loader/root';
+import { Login_View } from '../../views/pre-game/login.view';
+import { Lobby_View } from '../../views/pre-game/lobby.view';
 
 interface MainGameProps {
   connectedToGameHost: boolean

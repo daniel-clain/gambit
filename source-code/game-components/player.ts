@@ -2,7 +2,6 @@ import { Subject } from 'rxjs';
 import {Socket} from 'socket.io';
 import { FromClientToGame } from '../client/front-end-service/front-end-service-types';
 import { ServerGameUIState } from '../interfaces/front-end-state-interface';
-import { ClientNameAndID } from '../game-host/game-host.types';
 import { Game } from './game';
 import { Manager } from './manager';
 
@@ -16,12 +15,30 @@ export class Player{
     public socket: Socket,
     public manager: Manager,
     private game: Game
-  ){}
+  ){
+    if(this.game.state.gameType == 'Websockets'){
+      this.mapSocketMessagesToActions()
+    }
+  }
 
-  
+  private mapSocketMessagesToActions(){
+    Object.keys(this.receiveUpdateFromClient).forEach(updateFromClient => {
+      this.socket.on(updateFromClient, data => (
+        this.doAction(updateFromClient, data),
+        this.game.functions.sendUIUpdateToPlayers([this])
+      ))
+    })
+  }
+
+  doAction(name, data?){
+    this.receiveUpdateFromClient[name](data)
+    this.game.functions.sendUIUpdateToPlayers([this])
+  }
+
+
   receiveUpdateFromClient: FromClientToGame = {
 
-    toggleReady: () => this.manager.state.readyForNextFight = !this.manager.state.readyForNextFight,
+    toggleReady: this.manager.functions.toggleReady,
 
     toggleDropPlayer: obj => {
       this.game.has.connectionManager.handlePlayerVote(obj.votingPlayer, obj.disconnectedPlayer, obj.vote)
@@ -29,7 +46,7 @@ export class Player{
 
     abilityConfirmed: this.game.has.abilityProcessor.processSelectedAbility,
 
-    betOnFighter: bet => this.manager.has.nextFightBet = bet,
+    betOnFighter: this.manager.functions.betOnFighter,
 
     borrowMoney: this.manager.functions.borrowMoney,
 

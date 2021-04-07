@@ -15,6 +15,7 @@ import { DisconnectedPlayerVote } from "../interfaces/front-end-state-interface"
 
   handleGameUpdatesFromPlayer(player){
     Object.keys(player.receiveUpdateFromClient).forEach(updateFromClient => {
+      player.localUpdate()
       player.socket.on(updateFromClient, data => {
         console.log('player action update');
         player.receiveUpdateFromClient[updateFromClient](data),
