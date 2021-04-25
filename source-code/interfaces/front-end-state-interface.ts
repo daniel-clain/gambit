@@ -68,9 +68,6 @@ export class ClientManagerUIState{
   selectListActive: boolean
 }
 
-export interface ClientGameUIState{
-  clientManagerUIState: ClientManagerUIState
-}
 
 export class ServerGameUIState{
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
@@ -176,6 +173,7 @@ export interface Loan{
 
 export interface Character{
   name: string
+  type: 'Fighter' | 'Professional' | 'Manager' | 'Jobseeker'
 
 }
 

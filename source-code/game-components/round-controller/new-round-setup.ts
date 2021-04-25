@@ -4,23 +4,66 @@ import { shuffle, random } from "../../helper-functions/helper-functions";
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
 import Fight from "../fight/fight";
-import { RoundController } from "./round-controller";
 import { Manager } from "../manager";
-import { Professional, JobSeeker } from "../../interfaces/front-end-state-interface";
+import { JobSeeker, FighterInfo } from "../../interfaces/front-end-state-interface";
+import { Game } from "../game";
 
-export function setupNewRound(roundController: RoundController, professionals: Professional[], fighters: Fighter[], managers: Manager[]){
+export function setupNewRound(game: Game){
+  const {managers, professionals, fighters, roundController} = game.has
 
   setRoundJobSeekers()
   setupRoundFight()
-  addNewRoundToManagerLog()
-  clearOldNews()
+  managers.forEach(manager => {
+    addNewRoundToManagerLog(manager)
+    addFightersToManagersKnownFightersList(manager)
+  })
 
-  function clearOldNews(){
-    roundController.preFightNewsStage.newsItems = []
+  function addFightersToManagersKnownFightersList(manager: Manager){
+    const roundFighersAndJobSeekerFighters: FighterInfo[] = []
+    const roundFightersInfo: FighterInfo[] = 
+    roundController.activeFight.fighters.map(fighter => fighter.getInfo())
+    const jobSeekerFighterInfo: FighterInfo[] = roundController.jobSeekers
+    .filter(jobSeeker => jobSeeker.type == 'Fighter')
+    .map(jobSeekerFighter => fighters.find(fighter => fighter.name == jobSeekerFighter.name).getInfo())
+
+    roundFighersAndJobSeekerFighters.push(...roundFightersInfo, ...jobSeekerFighterInfo)
+
+
+    roundFighersAndJobSeekerFighters.forEach(roundFighter => {
+      if(
+        managerDoesNotOwnRoundFighter() &&
+        managerDoesNotKnowRoundFighter()
+      )
+        manager.has.knownFighters.push({
+          name: roundFighter.name,
+          goalContract: roundFighter.goalContract,
+          strength: undefined,
+          fitness: undefined,
+          intelligence: undefined,
+          aggression: undefined,
+          manager: undefined,
+          numberOfFights: undefined,
+          numberOfWins: undefined,
+          activeContract: undefined
+        })
+      else{
+        manager.has.knownFighters = manager.has.knownFighters.map(knownFighter => {
+          const fighterJobSeeker =  roundController.jobSeekers.find(fighterJobSeeker => fighterJobSeeker.name == knownFighter.name)
+          return {...knownFighter, goalContract: fighterJobSeeker ? fighterJobSeeker.goalContract : null}
+        })
+      }
+
+      function managerDoesNotOwnRoundFighter(): boolean{
+        return !manager.has.fighters.some(fighter => fighter.name == roundFighter.name)
+      }
+      function managerDoesNotKnowRoundFighter(): boolean{
+        return !manager.has.knownFighters.some(knownFighter => knownFighter.name == roundFighter.name)
+      }
+    })
   }
 
-  function addNewRoundToManagerLog(){
-    managers.forEach(manager => manager.functions.addToLog({type: 'new round', message: `Round ${roundController.roundNumber}`}));
+  function addNewRoundToManagerLog(manager: Manager){
+    manager.functions.addToLog({type: 'new round', message: `Round ${roundController.roundNumber}`});
   }
 
   function setRoundJobSeekers(){

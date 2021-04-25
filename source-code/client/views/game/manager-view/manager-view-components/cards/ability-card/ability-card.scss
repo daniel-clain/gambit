@@ -12,7 +12,7 @@
     width: 160px;
     min-height: 120px;
 
-    $abilities: '../../../../../../images/abilities';
+    $abilities: '../../../../../../images/manager-view/abilities';
 
     
     &__dope-fighter{
@@ -48,8 +48,8 @@
     &__assault-fighter{
       background-image: url('#{$abilities}/assault-fighter.jpg');
     }
-    &__sue-manager{
-      background-image: url('#{$abilities}/sue-manager.png');
+    &__prosecute-manager{
+      background-image: url('#{$abilities}/sue-manager.jpg');
     }
     &__gather-evidence{
       background-image: url('#{$abilities}/gather-evidence.png');

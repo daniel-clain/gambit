@@ -195,6 +195,16 @@ export class Game {
     this.functions= new GameFunctions(this, this.i, gameHost)
     this.has = new GameHas(gameDisplays, this, this.i) 
     this.has.roundController = new RoundController(this)
+    this.setupPlayersAndManagers(players)
+
+
+
+    setupTestState(this)
+    
+    this.functions.startGame()
+  }
+
+  private setupPlayersAndManagers(players){
 
     players.forEach(player => {
       const manager = new Manager(player.name)
@@ -209,11 +219,12 @@ export class Game {
         )
       )
     })
-
-
-    setupTestState(this)
     
-    this.functions.startGame()
+    this.has.managers.forEach(manager => {
+      manager.has.otherManagers = this.has.managers
+      .filter(m => m.has.name != manager.has.name)
+      .map(m => ({name: m.has.name, image: m.has.image, activityLogs: null}))
+    })
   }
 
 

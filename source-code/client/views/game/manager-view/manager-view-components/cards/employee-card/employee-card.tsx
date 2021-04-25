@@ -3,7 +3,7 @@ import * as React from 'react';
 import './employee-card.scss'
 import '../modal-card.scss';
 import { ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
-import AbilityBlock from '../../partials/ability-block/ability-block';
+import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { Modal } from '../../partials/modal/modal';
 import { Employee } from '../../../../../../../interfaces/front-end-state-interface';

@@ -15,7 +15,7 @@ import { trainFighterClient } from "../../game-components/abilities-reformed/abi
 import { dopeFighterClient } from "../../game-components/abilities-reformed/abilities/dope-fighter"
 import {tryToWinGameClient} from '../../game-components/abilities-reformed/abilities/try-to-win-game'
 import { ManagerInfo } from "../../game-components/manager"
-import { Employee, JobSeeker } from "../../interfaces/front-end-state-interface"
+import { Character, Employee, JobSeeker } from "../../interfaces/front-end-state-interface"
 
 export const abilityService = (() => ({
   abilities: <ClientAbility[]>[
@@ -38,6 +38,7 @@ export const abilityService = (() => ({
   getAbilitiesCharacterCanBeTheTargetOf({character}){
 
   },
+
 
   getPossibleSources(ability: ClientAbility, managerInfo: ManagerInfo): AbilitySourceInfo[]{
 

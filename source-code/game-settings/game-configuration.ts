@@ -11,6 +11,11 @@ export interface GameConfiguration{
     large: number
 
   }
+  loanSharkSettings: {    
+    minimumAmountToPayBackEachWeek: number
+    interestAddedPerWeek: number
+    weeksOfNoPaybackUntilRespond: number
+  }
   stageDurations: StageDurations
   manager: {
     actionPoints: number
@@ -45,6 +50,11 @@ const gameConfiguration: GameConfiguration = {
     small: 10,
     medium: 30,
     large: 50
+  },
+  loanSharkSettings: {
+    minimumAmountToPayBackEachWeek: 50,
+    interestAddedPerWeek: .05,
+    weeksOfNoPaybackUntilRespond: 3
   },
   stageDurations: {
     managerOptions: 180,

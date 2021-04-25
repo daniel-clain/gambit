@@ -12,10 +12,10 @@ export const Modal = connect()(hot((props) =>  {
         <div className='modal__content'>
           {props.children}
         </div>
-        <button 
+        {/* <button 
           className='modal__close-button' 
           onClick={close}
-        >Close</button>
+        >Close</button> */}
       </div>   
     </div>   
   )

@@ -2,27 +2,39 @@
 import * as React from 'react';
 import './next-fight-panel.scss'
 import BetBox from './bet-box/bet-box'
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import { Bet } from '../../../../../../../interfaces/game/bet';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { FighterInfo, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import { hot } from 'react-hot-loader/root';
+import { AbilityData } from '../../../../../../../game-components/abilities-reformed/ability';
 
-export interface NextFightPanelProps{
+export interface NextFightPanelProps extends PropsFromRedux{
   nextFightFighters: string[]
   fighters: FighterInfo[]
-  knownFighters: FighterInfo[]
   nextFightBet: Bet
 }
 
-const NextFightPanel = ({
+const mapState = (s: FrontEndState) => {
+  const {nextFightFighters, managerInfo:{fighters, knownFighters, nextFightBet}} = frontEndService.toAllManagerState(s)
+  return {nextFightFighters, fighters, knownFighters, nextFightBet}
+}
+
+
+const mapDispatch = {
+  showFighter: name => ({type: 'showFighter', payload: name})
+}
+
+ const connector = connect(mapState, mapDispatch)
+ type PropsFromRedux = ConnectedProps<typeof connector>
+
+export const NextFightPanel = connector(hot(({
   fighters, 
-  knownFighters,
+  showFighter,
   nextFightBet, 
   nextFightFighters
-}: NextFightPanelProps) => {
+}: PropsFromRedux) => {
 
-  const {showFighter} = frontEndService .setClientState
   
   return (
     <div className='next-fight'>
@@ -55,22 +67,4 @@ const NextFightPanel = ({
   function isYourFighter(fighterName): boolean{
     return fighters.some(fighter => fighter.name == fighterName)
   }
-}
-
-export default connect(
-  ({
-    serverUIState: {serverGameUIState: {playerManagerUIState: {
-      nextFightFighters,
-      managerInfo: {fighters, nextFightBet, knownFighters}
-    }}}
-  }: FrontEndState)
-  : NextFightPanelProps => {
-    return {
-      fighters,
-      knownFighters, 
-      nextFightBet, 
-      nextFightFighters
-    } 
-  }
-)
-(hot(NextFightPanel));
+}))

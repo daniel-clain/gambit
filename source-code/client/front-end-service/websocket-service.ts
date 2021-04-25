@@ -39,7 +39,14 @@ export const websocketService: FrontToBackInterface = {
   onServerPreGameUIStateUpdate: new Subject<ServerPreGameUIState>(),  
   onServerGameUIStateUpdate: new Subject<ServerGameUIState>(),
   init(){
-    socket = io()/* 
+    const env = process.env.NODE_ENV
+    console.log(`websocket service node env: ${process.env.NODE_ENV}`)
+    if(env == 'development'){
+      socket = io('localhost:6969', { transports: ["websocket"]})
+    } else {
+      socket = io()
+    }
+    /* 
     console.log(`client socket object initialized for ${websocketAddress}:${port}. connecting....`); */
     socket.connect()
   

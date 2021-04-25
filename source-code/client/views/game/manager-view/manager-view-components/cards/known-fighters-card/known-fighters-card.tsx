@@ -9,9 +9,8 @@ const {managerMap} = frontEndService
 
 const mapping = managerMap<{knownFighters: FighterInfo[]}>(({managerInfo:{knownFighters}}) => ({knownFighters}))
 
-export const KnownFightersCard = connect(mapping)(hot(
-  ({knownFighters}) => {
-  const {showFighter} = frontEndService.setClientState
+export const KnownFightersCard = connect(mapping, {showFighter: name => ({type: 'showFighter', payload: name})})(hot(
+  ({knownFighters, showFighter}) => {
   return (
     <Modal>    
       <div className='panel known-fighters'>

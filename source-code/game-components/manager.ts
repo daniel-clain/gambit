@@ -80,7 +80,7 @@ class ManagerHas{
     this.logColorNumber = 0
   }
   money = gameConfiguration.manager.startingMoney
-  actionPoints = 1
+  actionPoints = gameConfiguration.manager.actionPoints
   fighters: Fighter[] = []
   employees: Employee[] = []
   loan: Loan = {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0}
@@ -110,7 +110,6 @@ class ManagerFunctions{
 
   toggleReady = () => {
     const ready = !this.manager.state.readyForNextFight
-    ready && this.addToLog({message: 'Ready for next fight'})
     this.manager.state.readyForNextFight = ready
   }
 

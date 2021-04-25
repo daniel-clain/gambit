@@ -1,25 +1,23 @@
 import * as React from 'react';
 import { KnownManager } from "../../../../../../../game-components/manager";
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import { FrontEndState } from "../../../../../../../interfaces/front-end-state-interface";
 import { Modal } from '../../partials/modal/modal';
 import './managers-card.scss'
+import { frontEndService } from '../../../../../../front-end-service/front-end-service';
+import { SetStateManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 
-interface ManagersCardProps{
-  managers: KnownManager[]
-  clientName: string
-}
 
 const ManagersCard = ({
-  managers, clientName
-}: ManagersCardProps) => {
+  managers, clientName, selectManager
+}: PropsFromRedux) => {
   
   return <Modal>
-    <div className='card'>
-      <div className='heading'>Managers</div>
-      <div className="managers-container">
+    <div className='panel known-fighters'>
+      <div className='card__heading heading'>Managers</div>
+      <div className="list managers-container">
         {managers.map(manager => 
-          <div className="manager">              
+          <div key={manager.name} className={'list__row manager'}  onClick={() => selectManager(manager)}>              
             <div className={`manager__image manager__image--${manager.image.toLowerCase().replace(' ', '-')}`}></div>
             <div className="manager__name">{
               `${manager.name == clientName ? '****' : ''} ${manager.name} `
@@ -31,15 +29,22 @@ const ManagersCard = ({
   </Modal>
 }
 
-
-
-const mapStateToProps = (({
+const mapState = (({
   serverUIState: {serverGameUIState: {
     playerManagerUIState: {managerInfo}
   }},
   clientUIState: {clientPreGameUIState: {clientName}}
-}: FrontEndState): ManagersCardProps => ({
+}: FrontEndState) => ({
   managers: managerInfo.otherManagers, clientName
 }))
 
-export default connect(mapStateToProps)(ManagersCard)
+const mapDispatch = {
+  selectManager: (manager: KnownManager): SetStateManagerUIAction => ({type: 'showManagerOptions', payload: manager })
+}
+
+
+const connector = connect(mapState, mapDispatch)
+
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export default connector(ManagersCard)

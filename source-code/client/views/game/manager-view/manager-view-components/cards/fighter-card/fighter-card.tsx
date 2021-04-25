@@ -4,7 +4,7 @@ import * as React from 'react';
 import {connect} from 'react-redux'
 import './fighter-card.scss';
 import '../modal-card.scss';
-import AbilityBlock from '../../partials/ability-block/ability-block';
+import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import Fights from '../../partials/fights-and-wins/fights';
 import Wins from '../../partials/fights-and-wins/wins';
 import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';

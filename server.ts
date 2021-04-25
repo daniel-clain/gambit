@@ -8,17 +8,23 @@ env.config()
 const app = express();
 const httpServer = http.createServer(app)
 
-const webSocketServer = new Server(httpServer);
+const environment = process.env.NODE_ENV.trim()
+
+let webSocketServer = 
+  environment == 'development' ? 
+    new Server(6969) :  new Server();
+
 new GameHost(webSocketServer)
 
 
 console.log('come on mate...')
 
+if(environment == 'production'){
+  app.use(express.static('host-packages'));
+  app.get('/favicon.ico', (req, res) => {
+    res.sendFile(`${__dirname}/favicon.ico`)
+  })
 
+}
 const PORT = process.env.PORT || 3000;
-app.use(express.static('host-packages'));
-app.get('/favicon.ico', (req, res) => {
-  res.sendFile(`${__dirname}/favicon.ico`)
-})
-
 httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`));

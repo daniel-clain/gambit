@@ -14,7 +14,7 @@ export default class Flanking {
   retreatFromCorneredDirection: Angle
 
   determineIfTrapped(){
-    console.log(`${this.fighting.fighter.name} trapped? testx`);
+    //console.log(`${this.fighting.fighter.name} trapped? testx`);
     const {proximity, movement} = this.fighting
     const fighterIsBetween2CloseEnemies = this.areNearestFlankersClose()
     const retreatFromFlankedDirection = this.getRetreatFromFlankedDirection()
@@ -146,7 +146,7 @@ export default class Flanking {
 
   determineIfFlanked() {
     
-    console.log(`${this.fighting.fighter.name} flanked? testx`);
+    //console.log(`${this.fighting.fighter.name} flanked? testx`);
     const { proximity, fighter } = this.fighting
 
     const surroundingEnemies: Fighter[] = proximity.getSurroundingEnemies()

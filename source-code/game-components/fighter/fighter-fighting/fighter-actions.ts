@@ -80,8 +80,8 @@ export default class FighterActions {
     decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
 
     
-    if(this.fighting.proximity.flanked)
-      console.log(fighter.name + ' flanked');
+    /* if(this.fighting.proximity.flanked)
+      console.log(fighter.name + ' flanked'); */
       
     if(!decidedAction){
       //console.log(`${fighter.name} had no decided action, wait half a sec then decide again`);
@@ -89,7 +89,7 @@ export default class FighterActions {
     }
     else {
     
-      console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
+      //console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
 
       try{
         switch (decidedAction) {

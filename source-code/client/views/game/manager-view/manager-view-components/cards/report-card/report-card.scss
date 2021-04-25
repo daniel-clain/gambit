@@ -15,35 +15,50 @@
     bottom:0;
     z-index: -1;
   }
-  .report-card{
-    background: url('../../../../../../images/manager-view/report.png') no-repeat; 
+  
+  .report-card-container{
     width: 80%;
     z-index: 1;
     margin: 30px auto 0;
+    max-width: 80vh;
+  }
+  .report-card{
+    background: url('../../../../../../images/manager-view/report.png') no-repeat; 
     background-size: contain;
-    padding: 18vw 18vw 17vw 20vw;
-    height: 93vw;
-    
-    .list{
-      padding-right: 0;
-      &__row{
-        padding: 4px;
-        margin-bottom: 0;
-        &--main-color{
-          background-color: #eefbff;
-        }
-        &--alternate-color{
-          background-color: #e2ffe5;
-        }
-        &--critical{
-          background-color: #ffdede;
-          color: #ce0000;
-        }
-        &--new-round{
-          background-color: #ccc;
-          font-weight: bold;
-          color: #666;
-          border-bottom: #666 solid 1px;
+    padding-bottom: 102%;
+    position: relative;
+
+
+    &__content{
+      display: flex;
+      flex-direction: column;
+      padding: 23% 24% 5% 26%;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+
+      .list{
+        padding-right: 0;
+        overflow-y: auto;
+        &__row{
+          padding: 4px;
+          margin-bottom: 0;
+          &--main-color{
+            background-color: #eefbff;
+          }
+          &--alternate-color{
+            background-color: #e2ffe5;
+          }
+          &--critical{
+            background-color: #ffdede;
+            color: #ce0000;
+          }
+          &--new-round{
+            background-color: #ccc;
+            font-weight: bold;
+            color: #666;
+            border-bottom: #666 solid 1px;
+          }
         }
       }
     }

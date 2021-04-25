@@ -4,18 +4,28 @@ import { AbilityData } from '../../../../../../../game-components/abilities-refo
 import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import './ability-block.scss'
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
+import { abilityService } from '../../../../../../front-end-service/ability-service-client';
 
-
-interface AbilityBlockProps{
-  delayedExecutionAbilities: AbilityData[]
+interface AbilityBlockProps extends PropsFromRedux{
   abilityData: AbilityData
-  managerInfo: ManagerInfo
 }
-const AbilityBlock = ({abilityData, managerInfo, delayedExecutionAbilities}:AbilityBlockProps) => {
-  const {setClientState, abilityService} = frontEndService
-  const {showAbility} = setClientState
+
+const mapStateToProps = ({
+  serverUIState: {serverGameUIState: {
+    playerManagerUIState: {managerInfo, delayedExecutionAbilities}
+  }}
+}: FrontEndState) => ({managerInfo, delayedExecutionAbilities})
+const mapDispatch = {
+  showAbility: (abilityData: AbilityData) => ({type: 'showAbility', payload: abilityData})
+}
+
+ const connector = connect(mapStateToProps, mapDispatch)
+ type PropsFromRedux = ConnectedProps<typeof connector>
+
+ export const AbilityBlock = connector(({abilityData, managerInfo, delayedExecutionAbilities, showAbility}:AbilityBlockProps) => {
+   
   let disabled = !abilityService.isPossibleToPerformAbility(abilityData, managerInfo, delayedExecutionAbilities)
 
   
@@ -29,11 +39,4 @@ const AbilityBlock = ({abilityData, managerInfo, delayedExecutionAbilities}:Abil
       
     </div>
   )
-}
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {
-    playerManagerUIState: {managerInfo, delayedExecutionAbilities}
-  }}
-}: FrontEndState) => ({managerInfo, delayedExecutionAbilities})
-export default connect(mapStateToProps)(AbilityBlock)
+})

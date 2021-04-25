@@ -8,6 +8,8 @@ import { frontEndService } from '../../front-end-service/front-end-service';
 import { hot } from 'react-hot-loader/root';
 import { Login_View } from '../../views/pre-game/login.view';
 import { Lobby_View } from '../../views/pre-game/lobby.view';
+import { useEffect, useState } from 'react';
+import { preLoadImages } from '../../front-end-service/pre-load-images';
 
 interface MainGameProps {
   connectedToGameHost: boolean
@@ -19,6 +21,12 @@ const MainGameComponent = ({
   connectedToGameHost, inGame, clientName
 }: MainGameProps) => {
 
+  const [imagesPreloaded, setImagesPreloaded] = useState(false)
+  useEffect(() => {
+    preLoadImages()
+    .then(() => setImagesPreloaded(true))
+  },[])
+
   if (
     frontEndService.connectionType == 'Websockets' &&
     !connectedToGameHost && 
@@ -26,17 +34,13 @@ const MainGameComponent = ({
   ) {
     frontEndService.connectToGameHost()
   }
-  return <>
-    {
-      !connectedToGameHost ?
-        <Login_View /> :
-
-        !inGame ?
-          <Lobby_View /> :
-
-          <Game_View />
-    }
-  </>
+  return (
+    !connectedToGameHost || !imagesPreloaded ?
+      <Login_View /> :
+      !inGame ?
+        <Lobby_View /> :
+        <Game_View />
+  )
 }
 
 const mapStateToProps = ({

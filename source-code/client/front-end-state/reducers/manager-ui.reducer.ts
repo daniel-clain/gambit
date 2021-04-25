@@ -1,6 +1,7 @@
+
 import { AbilityData } from "../../../game-components/abilities-reformed/ability"
-import { ActiveModal, Employee, JobSeeker, CardName, ClientManagerUIState } from "../../../interfaces/front-end-state-interface"
-import { ActivityLogItem } from "../../../types/game/activity-log-item"
+import { KnownManager } from "../../../game-components/manager"
+import { ActiveModal, CardName, ClientManagerUIState, Employee, FighterInfo, JobSeeker } from "../../../interfaces/front-end-state-interface"
 import { SetStateFunctionName } from "../../front-end-service/front-end-service-types"
 
 export type ClientManagerUIActionType = 'Fighter Selected' | 'Jobseeker Selected' | 'Ability Selected' | 'Employee Selected' | 'Close Modal' | 'Manager Selected' | 'Show Loan Shark Card' | 'Show Activity Log' | 'Show Known Managers' | 'Show Known Fighters' | 'Close Select List'
@@ -8,11 +9,11 @@ export type ClientManagerUIActionType = 'Fighter Selected' | 'Jobseeker Selected
 
 
 export class SetStateManagerUI {
-  showFighter = fighter => this.getModal('Fighter', fighter)
-  showEmployee = employee => this.getModal('Employee', employee)
-  showjobSeeker = jobSeeker => this.getModal('Job Seeker', jobSeeker)
-  showAbility = abilityData => this.getModal('Ability', abilityData)
-  showManagerOptions = () => this.getModal('Manager')
+  showFighter = (fighter: FighterInfo) => this.getModal('Fighter', fighter)
+  showEmployee = (employee: Employee) => this.getModal('Employee', employee)
+  showjobSeeker = (jobSeeker: JobSeeker) => this.getModal('Job Seeker', jobSeeker)
+  showAbility = (abilityData: AbilityData) => this.getModal('Ability', abilityData)
+  showManagerOptions = (knownManager: KnownManager) => this.getModal('Manager', knownManager)
   showLoanShark = () => this.getModal('Loan Shark')
   showKnownFighters = () => this.getModal('Known Fighters')
   showOtherManagers = () => this.getModal('Known Managers')

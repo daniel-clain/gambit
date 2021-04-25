@@ -11,7 +11,7 @@
   },
   "include": [
     "./source-code/**/*"
-  ],
+, "source-code/custom.d.ts"  ],
   "exclude": [
     "./node_modules"
   ]

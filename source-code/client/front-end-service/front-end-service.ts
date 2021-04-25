@@ -27,7 +27,7 @@ const frontEndService = (() => {
     setName: clientName => dispatch('setName', clientName)
   }
 
-  const setStateManagerUIFunctions = {
+/*   const setStateManagerUIFunctions = {
     showFighter: fighter => dispatch('showFighter', fighter),
     showEmployee: employee => dispatch('showEmployee', employee),
     showjobSeeker: jobSeeker => dispatch('showjobSeeker', jobSeeker),
@@ -40,7 +40,7 @@ const frontEndService = (() => {
     closeSelectList: () => dispatch('closeSelectList'),
     showReport: () => dispatch('showReport')
   }
-
+ */
 
   let connectionType: ConnectionType
 
@@ -62,10 +62,26 @@ const frontEndService = (() => {
       }: FrontEndState):T => mapping({...clientManagerUIState, ...playerManagerUIState})
     },
 
+    toManagerState(mapping){
+      return () => ({
+        clientUIState:{clientGameUIState:{clientManagerUIState}},
+        serverUIState:{serverGameUIState:{playerManagerUIState}}
+      }: FrontEndState): AllManagerUIState => mapping(
+        {...clientManagerUIState, ...playerManagerUIState}
+      )
+    },
+
+    toAllManagerState({
+      clientUIState:{clientGameUIState:{clientManagerUIState}},
+      serverUIState:{serverGameUIState:{playerManagerUIState}}
+    }: FrontEndState): AllManagerUIState{
+      return {...clientManagerUIState, ...playerManagerUIState}
+    },
+
 
 
     setConnectionType: function (type: ConnectionType){
-      connectionType = type
+      this.connectionType = type
       
       if(type == 'Local'){
         const localService = new LocalService()
@@ -106,8 +122,7 @@ const frontEndService = (() => {
       }
     },
     setClientState: {
-      ...setStatePreGameUIFunctions,
-      ...setStateManagerUIFunctions
+      ...setStatePreGameUIFunctions
       
     },
 

@@ -9,7 +9,7 @@
 
     "dev-fightTest-serve": "webpack serve --config-name fightTest",
     "dev-localTest-serve": "webpack serve --config-name localTest",
-    "dev-mainGame-serve": "webpack serve --config-name mainGame",
+    "dev-mainGame-serve": "webpack serve --config-name mainGame --hot",
 
 
     "prod-fightTest-build": "webpack --mode=production --config-name fightTest",
@@ -17,10 +17,12 @@
     "prod-mainGame-build": "webpack --mode=production --config-name mainGame",
 
 
-    "start": "npm run build-all & npm run startServer",
+    "start": "npm run build-all & npm run prod-startServer",
     
     "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
-    "startServer": "node -r ts-node/register server.ts"
+
+    "dev-startServer": "set NODE_ENV=development & nodemon server.ts",
+    "prod-startServer": "set NODE_ENV=production & node -r ts-node/register server.ts"
   },
   "dependencies": {
     "awesome-typescript-loader": "^5.2.1",

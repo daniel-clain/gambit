@@ -13,7 +13,7 @@ export const ActivityLogPanel = connect(map)(hot(({activityLogs}) =>
     <div className='panel activity-logs'>
       <div className='heading'>ActivityLogs</div>
       <div className='list employee-list'>
-        {activityLogs.reverse().map((logItem, i) => 
+        {[...activityLogs].reverse().map((logItem, i) => 
           <div
             className={`list__row ${logItem.type == 'critical' ? 'list__row--critical' : logItem.type == 'new round' ? 'list__row--new-round' : ''}`} 
             key={i}

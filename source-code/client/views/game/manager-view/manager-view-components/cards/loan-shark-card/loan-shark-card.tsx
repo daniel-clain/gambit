@@ -7,7 +7,7 @@ import { Loan } from '../../../../../../../interfaces/front-end-state-interface'
 import { connect } from 'react-redux';
 import { hot } from 'react-hot-loader/root';
 import { Modal } from '../../partials/modal/modal';
-import { loanSharkSettings } from '../../../../../../../game-settings/loan-shark-settings';
+import gameConfiguration from '../../../../../../../game-settings/game-configuration';
 export interface LoanSharkCardProps{
   loan: Loan
   money: number
@@ -25,7 +25,7 @@ export const LoanSharkCard = connect(mapping)(hot(({loan, money}) => {
   const {sendUpdate} = frontEndService 
 
   const {borrowAmount, paybackAmount} = state
-  const {minimumAmountToPayBackEachWeek, interestAddedPerWeek, weeksOfNoPaybackUntilRespond} = loanSharkSettings
+  const {minimumAmountToPayBackEachWeek, interestAddedPerWeek, weeksOfNoPaybackUntilRespond} = gameConfiguration.loanSharkSettings
 
   return (
     <Modal>

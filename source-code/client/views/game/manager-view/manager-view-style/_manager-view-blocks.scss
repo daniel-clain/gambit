@@ -42,7 +42,7 @@ hr {
     padding-right: 7px;
 
     &__row {
-      margin-bottom: 2px;
+      margin-bottom: 3px;
       display: flex;
       align-items: stretch;
 
@@ -81,6 +81,9 @@ hr {
   &.activity-logs{
     .list {
 
+      &__row {
+        margin-bottom: 0px;
+      }
         
       &__name{
         padding: 2px 5px;

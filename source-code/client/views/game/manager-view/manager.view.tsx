@@ -1,17 +1,17 @@
 import * as React from "react"
 import Headbar from './manager-view-components/main-components/headbar/headbar'
-import NextFightPanel from './manager-view-components/main-components/next-fight-panel/next-fight-panel'
-import EmployeesPanel from './manager-view-components/main-components/employees-panel/employees-panel'
+import {NextFightPanel} from './manager-view-components/main-components/next-fight-panel/next-fight-panel'
+import {EmployeesPanel} from './manager-view-components/main-components/employees-panel/employees-panel'
 import { LoanSharkCard } from "./manager-view-components/cards/loan-shark-card/loan-shark-card"
-import AbilityCard from "./manager-view-components/cards/ability-card/ability-card"
+import {AbilityCard} from "./manager-view-components/cards/ability-card/ability-card"
 import {JobSeekerCard} from "./manager-view-components/cards/job-seeker-card/job-seeker-card"
-import { ManagerInfo } from "../../../../game-components/manager"
+import { KnownManager, ManagerInfo } from "../../../../game-components/manager"
 import { KnownFightersCard } from "./manager-view-components/cards/known-fighters-card/known-fighters-card"
 import ManagersCard from './manager-view-components/cards/managers-card/managers-card'
-import JobSeekersPanel from './manager-view-components/main-components/job-seekers-panel/job-seekers-panel'
-import YourFightersPanel from './manager-view-components/main-components/your-fighters-panel/your-fighters-panel'
-import { ActiveModal,  CardName,  FrontEndState, } from "../../../../interfaces/front-end-state-interface"
-import {connect} from 'react-redux'
+import {JobSeekersPanel} from './manager-view-components/main-components/job-seekers-panel/job-seekers-panel'
+import {YourFightersPanel} from './manager-view-components/main-components/your-fighters-panel/your-fighters-panel'
+import { ActiveModal,  AllManagerUIState,  CardName,  FrontEndState, } from "../../../../interfaces/front-end-state-interface"
+import {connect, ConnectedProps} from 'react-redux'
 import {frontEndService} from "../../../front-end-service/front-end-service"
 
 import './manager-view-style/manager-view.scss'
@@ -25,26 +25,28 @@ import { ManagerCard } from "./manager-view-components/cards/manager-card/manage
 import { EmployeeCard } from "./manager-view-components/cards/employee-card/employee-card"
 
 
-const {managerMap, setClientState: {
-  showManagerOptions, 
-  showLoanShark,
-  showKnownFighters,
-  showOtherManagers,
-  showReport
-}} = frontEndService
+const {toManagerState} = frontEndService
 
 
-interface ManagerViewProps{
-  activeModal: ActiveModal
-  round: number
+const mapState = toManagerState(({activeModal, round, managerInfo}: AllManagerUIState) => ({activeModal, round, managerInfo}))
+
+const mapDispatch = {
+  showLoanShark: () => ({type: 'showLoanShark'}),
+  showKnownFighters: () => ({type: 'showKnownFighters'}),
+  showOtherManagers: () => ({type: 'showOtherManagers'}),
+  showManagerOptions: (m: KnownManager) => ({type: 'showManagerOptions', payload: m}),
+  showReport: () => ({type: 'showReport'})
 }
 
-const mapping = managerMap<ManagerViewProps>(({activeModal, round}) => ({activeModal, round}))
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
 
-export const Manager_View = connect(mapping)(hot( 
-  ({activeModal, round}) => {
 
-  useEffect(() => round != 1 && showReport(),[round])
+
+export const Manager_View = connector(hot( 
+  ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManagerOptions, showReport}: PropsFromRedux) => {
+
+  useEffect(() => {round != 1 && showReport()},[round])
 
   return (
   
@@ -61,7 +63,7 @@ export const Manager_View = connect(mapping)(hot(
               <ButtonPanel>
                 <button onClick={showLoanShark}>Loan Shark</button>
                 <button onClick={showKnownFighters}>Known Fighters</button>
-                <button onClick={showManagerOptions}>Manager Options</button>
+                <button onClick={() => showManagerOptions({name: managerInfo.name, image: managerInfo.image, activityLogs: {lastKnownValue: managerInfo.activityLogs, roundsSinceUpdated: null}})}>Manager Options</button>
                 <button onClick={showOtherManagers}>Other Managers</button>
               </ButtonPanel>
             </div>

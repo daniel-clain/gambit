@@ -13,8 +13,10 @@ import { DisconnectedPlayerVote } from "../interfaces/front-end-state-interface"
   }
    
 
-  handleGameUpdatesFromPlayer(player){
+  /* handleGameUpdatesFromPlayer(player){
+    const {gameType} = this.game.state
     Object.keys(player.receiveUpdateFromClient).forEach(updateFromClient => {
+      if( == )
       player.localUpdate()
       player.socket.on(updateFromClient, data => {
         console.log('player action update');
@@ -22,7 +24,7 @@ import { DisconnectedPlayerVote } from "../interfaces/front-end-state-interface"
         this.game.functions.sendUIUpdateToPlayers([player])
       })
     })
-  }
+  } */
 
   
   handleClientDisconnect = (disconnectedClient: ClientNameAndID) => {
@@ -99,7 +101,7 @@ import { DisconnectedPlayerVote } from "../interfaces/front-end-state-interface"
     function reconnectPlayerSocket(){
       const player = thisClass.game.has.players.find(p => p.id == reconnectingPlayer.id)
       player.socket = reconnectingPlayer.socket
-      thisClass.handleGameUpdatesFromPlayer(player)
+      player.mapSocketMessagesToActions()
     }
 
     function removePlayerFromDisconnectedPlayerArray() {

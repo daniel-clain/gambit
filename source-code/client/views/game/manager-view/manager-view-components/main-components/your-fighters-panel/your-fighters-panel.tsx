@@ -1,18 +1,25 @@
 
 import * as React from 'react';
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { FighterInfo, FrontEndState } from '../../../../../..//../interfaces/front-end-state-interface';
 import '../fighters-list.scss'
+import { hot } from 'react-hot-loader/root';
 
-export interface YourFightersPanelProps{  
-  fighters: FighterInfo[]
+
+
+const mapState = (s: FrontEndState): {fighters: FighterInfo[]} => {
+  const {managerInfo:{fighters}} = frontEndService.toAllManagerState(s)
+  return {fighters}
 }
+const mapDispatch = {
+  showFighter: name => ({type: 'showFighter', payload: name})
+}
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
 
-const YourFightersPanel = ({fighters}: YourFightersPanelProps) => {
+export const YourFightersPanel = connector(hot(({fighters, showFighter}: PropsFromRedux) => {
 
-  const {showFighter} = frontEndService .setClientState
-    
   return (
     <div className='panel your-fighters'>
       <div className='heading'>Your Fighters</div>
@@ -31,11 +38,5 @@ const YourFightersPanel = ({fighters}: YourFightersPanelProps) => {
     </div>
   )
 
-};
+}))
 
-
-
-const mapStateToProps = ({
-  serverUIState: { serverGameUIState: {playerManagerUIState: {managerInfo: {fighters}}}}
-}: FrontEndState): YourFightersPanelProps => ({fighters})
-export default connect(mapStateToProps)(YourFightersPanel)

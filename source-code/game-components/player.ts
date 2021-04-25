@@ -21,7 +21,7 @@ export class Player{
     }
   }
 
-  private mapSocketMessagesToActions(){
+  mapSocketMessagesToActions(){
     Object.keys(this.receiveUpdateFromClient).forEach(updateFromClient => {
       this.socket.on(updateFromClient, data => (
         this.doAction(updateFromClient, data),

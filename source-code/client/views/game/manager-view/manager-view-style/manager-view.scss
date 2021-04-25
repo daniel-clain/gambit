@@ -2,7 +2,7 @@
 @import './manager-view-variables';
 @import './manager-view-blocks';
 
-$images: '../../../../images';
+$images: '../../../../images/manager-view';
 
 .manager-ui{
   height: 100%;
@@ -65,7 +65,7 @@ $images: '../../../../images';
             }
           }  
         }
-        .your-fighters, .employees, .job-seekers{
+        .your-fighters, .employees, .job-seekers, .activity-logs{
           flex: 1 0;
           min-height: 100px;
           min-height: 130px;

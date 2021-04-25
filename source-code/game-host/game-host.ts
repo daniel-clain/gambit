@@ -12,6 +12,8 @@ export class GameHost{
   private i: GameHost_Implementation
 
   constructor(webSocketServer: Server){
+    console.log('curry');
+    
     
     webSocketServer.on("connection", (socket: Socket) => {
       console.log('A client connected to the websocket server');

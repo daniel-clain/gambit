@@ -23,7 +23,6 @@ export default class FighterStats {
     if(hallucinating) x *= .7
     if(doping) x = x * 1.25 + 1   
     if(doping && hallucinating) x *= .1
-    if(x>10)console.error('fitness > 10: ', x) 
     return x
   }
 
@@ -34,7 +33,6 @@ export default class FighterStats {
     if(injured) x *= .6
     if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
     if(doping) x *= 1.2   
-    if(x>10)console.error('intelligence > 10: ', x) 
     return x
   }
 
@@ -44,7 +42,6 @@ export default class FighterStats {
     if(sick) x *= .7
     if(injured) x *= .6
     if(doping) x = x * 1.3 + 1    
-    if(x>10)console.error('strength > 10: ', x)
     return x
   }
 
@@ -56,7 +53,6 @@ export default class FighterStats {
     if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
     if(doping) x *= 1.2   
     if(onARampage) x *= 2
-    if(x>12)console.error('aggression > 12: ', x)
     return x
   }
 
@@ -67,8 +63,6 @@ export default class FighterStats {
       -this.strength*.3 + 
       this.fitness
     )
-    
-    if(speed>12)console.error('speed > 12: ', speed)
 
     return speed
   }
@@ -80,8 +74,6 @@ export default class FighterStats {
       this.fitness*.5 + 
       this.aggression*.5
     )
-    
-    if(maxStamina>12)console.error('maxStamina > 12: ', maxStamina) 
 
     return maxStamina
   }

@@ -10,10 +10,11 @@ import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../../../inte
 import '../modal-card.scss';
 import SelectList from '../select-list/select-list';
 import './ability-card.scss';
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import { Modal } from '../../partials/modal/modal';
 import { InfoBox } from '../../partials/info-box/info-box';
 import { OfferContractPartial } from './offer-contract-partial';
+import { hot } from 'react-hot-loader/root';
 
 
 
@@ -26,17 +27,48 @@ export interface AbilityCardProps{
   
 }
 
-const AbilityCard = ({
+
+
+const mapState = ({
+  clientUIState: {clientGameUIState: {
+    clientManagerUIState: {activeModal}
+  }},
+  serverUIState: {serverGameUIState: {
+    playerManagerUIState: {
+      managerInfo,
+      delayedExecutionAbilities,
+      jobSeekers,
+      nextFightFighters
+    }
+  }}
+}: FrontEndState): AbilityCardProps => ({
+  managerInfo,
+  delayedExecutionAbilities,
+  jobSeekers,
+  nextFightFighters,
+  abilityData: activeModal.data
+})
+
+const mapDispatch = {
+  showFighter: name => ({type: 'showFighter', payload: name}),
+  closeModal: () => ({type: 'closeModal'})
+}
+
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export const AbilityCard = connector(hot(({
   abilityData,
   managerInfo,
   jobSeekers,
   delayedExecutionAbilities,
-  nextFightFighters
-}: AbilityCardProps) => {
+  nextFightFighters,
+  showFighter,
+  closeModal
+}: PropsFromRedux) => {
 
 
   let {sendUpdate, setClientState, abilityService} = frontEndService 
-  const {closeModal, showFighter} = setClientState
 
   const [state, setState] = useState({
     listOptions: [] as ListOption[],
@@ -191,25 +223,4 @@ const AbilityCard = ({
   }
 
   
-}
-
-const mapStateToProps = ({
-  clientUIState: {clientGameUIState: {
-    clientManagerUIState: {activeModal}
-  }},
-  serverUIState: {serverGameUIState: {
-    playerManagerUIState: {
-      managerInfo,
-      delayedExecutionAbilities,
-      jobSeekers,
-      nextFightFighters
-    }
-  }}
-}: FrontEndState): AbilityCardProps => ({
-  managerInfo,
-  delayedExecutionAbilities,
-  jobSeekers,
-  nextFightFighters,
-  abilityData: activeModal.data
-})
-export default connect(mapStateToProps)(AbilityCard)
+}))

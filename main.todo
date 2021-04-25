@@ -1,5 +1,6 @@
 Priority:
-  ☐ preload images/sounds, store in local storage
+  ☐ no non-agressive behaviour when onRampage
+  ☐ preload images/sounds, store in local storage - binary in local, preload before needed
   ☐ overlay text scale to ui
   ☐ loan shark interest val consistent (logs?)
   ☐ remote game remember player name/id auto connect to game host
@@ -17,6 +18,7 @@ Priority:
   ☐ doping perma affects +aggression and -intelligence
   ☐ on player disconnect pause all stage (fight)
   ☐ test player disconnect modal, sometimes duplicates in list
+  ☐ character names cant have same names as player(manager) names
 
 
 
@@ -27,6 +29,8 @@ Quick minor fixes:
 
 
 Other updates:
+  ☐ different fight modes, eg, 
+  - each manager has one of their fighters in at once, when that guy get knocked out, next best guys enters
   ☐ manager options phase, last 5 seconds obvious
   ☐ fighter can be injured from fight
   ☐ on fighter injured/poisoned, can reduce intellignce permanently

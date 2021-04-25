@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import '../employee-list.scss'
-import {connect} from 'react-redux'
+import {connect, ConnectedProps} from 'react-redux'
 import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../..//../interfaces/front-end-state-interface';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { hot } from 'react-hot-loader/root';
@@ -9,10 +9,19 @@ import { hot } from 'react-hot-loader/root';
 export interface JobSeekersPanelProps{
   jobSeekers: JobSeeker[]
 }
+const mapStateToProps = ({
+  serverUIState:{ serverGameUIState: {playerManagerUIState: {jobSeekers}}}
+}: FrontEndState): JobSeekersPanelProps => ({jobSeekers})
+const mapDispatch = {
+  showFighter: (name: string) => ({type: 'showFighter', payload: name}),
+  showjobSeeker: (j: JobSeeker) => ({type: 'showjobSeeker', payload: j})
+}
+const connector = connect(mapStateToProps, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
 
-const JobSeekersPanel = ({jobSeekers}: JobSeekersPanelProps) => {
 
-  const {showFighter, showjobSeeker} = frontEndService .setClientState
+export const JobSeekersPanel = connector(hot(({jobSeekers, showFighter, showjobSeeker}: PropsFromRedux) => {
+
     
   return (
     <div className='panel job-seekers'>
@@ -41,9 +50,4 @@ const JobSeekersPanel = ({jobSeekers}: JobSeekersPanelProps) => {
   )
 
   
-};
-const mapStateToProps = ({
-  serverUIState:{ serverGameUIState: {playerManagerUIState: {jobSeekers}}}
-}: FrontEndState): JobSeekersPanelProps => ({jobSeekers})
-export default connect(mapStateToProps)(
-  hot(JobSeekersPanel))
+}))

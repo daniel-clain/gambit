@@ -2,14 +2,15 @@ import * as React from 'react';
 import { useState } from 'react';
 import FighterModelImage from '../../../../../../interfaces/game/fighter/fighter-model-image';
 import SoundTime from '../../../../../../interfaces/game/fighter/sound-time';
-import { defaultSkinModelImages } from '../../../../../images/fighter/default-skin/default-skin-model-images';
-import { fastSkinModelImages } from '../../../../../images/fighter/fast-skin/fast-skin-model-images';
-import { muscleSkinModelImages } from '../../../../../images/fighter/muscle-skin/muscle-skin-model-images';
+import { defaultSkinModelImages } from '../../../../../images/fight-view/fighter/default-skin/default-skin-model-images';
+import { fastSkinModelImages } from '../../../../../images/fight-view/fighter/fast-skin/fast-skin-model-images';
+import { muscleSkinModelImages } from '../../../../../images/fight-view/fighter/muscle-skin/muscle-skin-model-images';
 import { punchSound, criticalStrikeSound, dodgeSound, blockSound } from '../../../../../sound-effects/sound-effects';
+import FighterFightState from '../../../../../../interfaces/front-end-state-interface';
 import './fighter.scss'
+import { defaultFighterImages, fastFighterImages, FighterImageObj, fightUiImages, muscleFigherImages } from '../../../../../images/images';
 
-
-export const FighterComponent = ({fighterFightState, arenaWidth}) => {	
+export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightState: FighterFightState, arenaWidth}) => {	
 
 	const [processedSounds, setProcessedSounds] = useState([])
 	//original octagon width height 
@@ -67,39 +68,32 @@ export const FighterComponent = ({fighterFightState, arenaWidth}) => {
 	const fighterModelImage: FighterModelImage = fighterModelImages.find(
 		(fighterModelImage: FighterModelImage) => fighterModelImage.modelState == modelState)
 	
-		const fighterStyle ={
-		left: coords.x * widthRatio, 
-		bottom: coords.y * heightRatio,
-		zIndex: modelState == 'Knocked Out' ? 0 : 1000 - Math.round(coords.y),	
-	}
 	const fighterImageStyle = {
 		transform: (facingDirection === 'left' ? `scalex(-1) translateX(50%)` : `scalex(1) translateX(-50%)`),
 		filter: `hue-rotate(${onRampage ? 330 : 0}deg)`,
 		width: fighterModelImage.dimensions.width * widthRatio,
 		height: fighterModelImage.dimensions.height * heightRatio
 	}
+	/* const fighterModelClass = `fighter__image--${skin.toLocaleLowerCase()}--${modelState.toLocaleLowerCase().split(' ').join('-')}` */
+
+
+	const fighterStyle = {
+		left: coords.x * widthRatio, 
+		bottom: coords.y * heightRatio,
+		zIndex: modelState == 'Knocked Out' ? 0 : 1000 - Math.round(coords.y),	
+	}
 	const fighterNameStyle = {
 		bottom: fighterModelImage.dimensions.height * heightRatio + 20,
 	}
-	const fighterModelClass = `fighter__image--${skin.toLocaleLowerCase()}--${modelState.toLocaleLowerCase().split(' ').join('-')}`
-	let flankedStyle
-	if(retreatingFromFlanked)
-		flankedStyle = {
-			bottom: fighterModelImage.dimensions.height * heightRatio - 10,
-		}
-	
-	let repositioningStyle
-	if(repositioning)
-		repositioningStyle = {
-			bottom: fighterModelImage.dimensions.height * heightRatio - 10,
-		}
-
-	let trappedStyle			
-	if(trapped)
-		trappedStyle = {
-			bottom: fighterModelImage.dimensions.height * heightRatio - 10,
-		}
-
+	const flankedStyle = {
+		bottom: fighterModelImage.dimensions.height * heightRatio - 10,
+	}
+	const repositioningStyle = {
+		bottom: fighterModelImage.dimensions.height * heightRatio - 10,
+	}
+	const trappedStyle = {
+		bottom: fighterModelImage.dimensions.height * heightRatio - 10,
+	}
 	const directionStyle = {
 		transform: `rotate(${direction}deg)`
 	}
@@ -112,12 +106,17 @@ export const FighterComponent = ({fighterFightState, arenaWidth}) => {
 		left: strikingCenters.back.x,
 		bottom: strikingCenters.back.y
 	}
+
+	const fighterImageObjs: FighterImageObj[] = 
+		skin == 'Muscle' ? muscleFigherImages : 
+		skin == 'Fast' ? fastFighterImages : 
+		defaultFighterImages
 		
 	return <>
 		<div key='figher' className='fighter' id={name} style={fighterStyle}>
 			<div className='fighter__name' style={fighterNameStyle}>
 				{name}
-				<span className="spirit">{
+				<span className="fighter__spirit">{
 					spirit == 5 ? '😈' :
 					spirit == 4 ? '😁' :
 					spirit == 3 ? '🙂' :
@@ -133,12 +132,17 @@ export const FighterComponent = ({fighterFightState, arenaWidth}) => {
 			
 			<div className='fighter__direction' style={directionStyle}></div>
 			<div 
-				className={`
-					fighter__image
-					fighter__image--${skin.toLocaleLowerCase()} 
-					${fighterModelClass}
-				`} 
-				style={fighterImageStyle}></div>
+				className={`fighter__image-container`} 
+				style={fighterImageStyle}>
+					{fighterImageObjs.map(imageObj =>
+						<img 
+							key={imageObj.modelState}
+							className={`fighter__image fighter__image--${modelState.toLocaleLowerCase().split(' ').join('-')}`}
+							src={imageObj.image} 
+							style={modelState == imageObj.modelState ? {'visibility': 'visible'} : {}} 
+						/>
+					)}
+				</div>
 		</div>,
 		
 		<div key='strike-boxes'>

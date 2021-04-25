@@ -1,6 +1,7 @@
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const webpack = require('webpack')
 
 const buildModesPath = 'source-code/client/different-build-modes'
 const hostPackagesPath = 'host-packages'
@@ -32,7 +33,7 @@ module.exports = ({remote}, {mode, configName}) => {
   buildType == 'mainGame' ? {
     buildDir: `${__dirname}/${buildModesPath}/main-game/main-game-root.tsx`,      
     title: 'Gambit - Main Game ',
-    port: '6969',
+    port: '3000',
     outputDir: `${__dirname}/${hostPackagesPath}/main-game/`,
     outputFile: 'mainGame.js'
   } : {}
@@ -43,7 +44,12 @@ module.exports = ({remote}, {mode, configName}) => {
 
 
   let config = {
-    entry: [buildDir],
+    entry: [buildDir],    
+    output: {
+      filename: outputFile,
+      path: outputDir,
+      clean: true,
+    },
     name: buildType,
     resolve: {
       alias: {
@@ -61,7 +67,9 @@ module.exports = ({remote}, {mode, configName}) => {
         {
           test: /\.(j|t)s(x)?$/,
           exclude: /node_modules/,
-          use: {
+          use: [
+            {loader: 'react-hot-loader/webpack'},
+            {
             loader: 'babel-loader',
             options: {
               cacheDirectory: true,
@@ -81,12 +89,28 @@ module.exports = ({remote}, {mode, configName}) => {
                 'react-hot-loader/babel',
               ],
             },
-          },
+          }],
+        },
+        {
+          test: /\.(jpg|png|gif)$/,
+          loader: 'url-loader',
+          options: {
+            limit: false,
+            fallback: 'file-loader',
+            name: 'images/[folder]/[name].[ext]'
+          }
+        },
+        {
+          test: /\.mp3$/,
+          loader: 'file-loader',
+          options:{
+            name: 'sounds/[name].[ext]'
+          }
         }
       ]
     },
     plugins: [
-      new ForkTsCheckerWebpackPlugin(),
+      new webpack.HotModuleReplacementPlugin(),
       new HtmlWebpackPlugin({
         title,
         meta:{viewport: "width=device-width, initial-scale=1.0"}
@@ -95,90 +119,23 @@ module.exports = ({remote}, {mode, configName}) => {
   }
 
 
-
-
-  /* if(env.gameHost){
-    config = {
-      ...config,
-      resolve: {
-        extensions: ['.ts', '.js']
-      },
-      target: 'node',
-      externals: [nodeExternals()],
-      module: {
-        rules: [
-          {
-            test: /\.ts?$/,
-            loader: 'awesome-typescript-loader',
-          }
-        ]
-      }
-    }
-  } */
-
-  
-  
-
-  if(mode == 'production'){
-    config = {...config,
-      output: {
-        filename: outputFile,
-        path: outputDir,
-        clean: true,
-      }
-    }
-    config.module.rules.push(
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 100000,
-          fallback: 'file-loader',
-          name: '../images/[name].[ext]'
-        }
-      },
-      {
-        test: /\.mp3$/,
-        loader: 'file-loader',
-        options:{
-          name: '../sounds/[name].[ext]'
-        }
-      },
-    )
-  }
-
-
-
   if(mode == 'development'){
     config = {...config,  
-      mode: 'development',   
+      mode: 'development',
       devtool: 'eval-source-map',
       devServer: { 
         liveReload: true,
         port: port,
         hot: true,
-        writeToDisk: false,
-        open: true
+        open: true,
+        proxy: {
+          '/api': {
+            target: 'ws://localhost:6969',
+            ws: true
+          }
+        }
       }
     }
-    config.module.rules.push(
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 100000,
-          fallback: 'file-loader',
-          name: 'images/[name].[ext]'
-        }
-      },
-      {
-        test: /\.mp3$/,
-        loader: 'file-loader',
-        options:{
-          name: 'sounds/[name].[ext]'
-        }
-      },
-    )
   }
 
   return config

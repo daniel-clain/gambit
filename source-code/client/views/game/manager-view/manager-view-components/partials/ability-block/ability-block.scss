@@ -31,7 +31,7 @@
     background-repeat: no-repeat;
     background-position: top center;
 
-    $abilities: '../../../../../../images/abilities';
+    $abilities: '../../../../../../images/manager-view/abilities';
     &__dope-fighter{
       background-image: url('#{$abilities}/dope-fighter.png');
     }
@@ -62,8 +62,8 @@
     &__poison-fighter{
       background-image: url('#{$abilities}/poison-fighter.jpg');
     }
-    &__sue-manager{
-      background-image: url('#{$abilities}/sue-manager.png');
+    &__prosecute-manager{
+      background-image: url('#{$abilities}/sue-manager.jpg');
     }
     &__gather-evidence{
       background-image: url('#{$abilities}/gather-evidence.png');

@@ -65,7 +65,7 @@ export const getProbabilityToMoveToAttack = (fighting: FighterFighting): number 
   
   if (closestEnemy.fighting.animation.inProgress == 'recovering'){
     probability += aggression * 2
-    probability += intelligence * 2
+    probability += intelligence * 4
     
     if(logistics.hasFullSpirit())
       probability += 5

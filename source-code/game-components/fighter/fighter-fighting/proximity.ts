@@ -9,9 +9,9 @@ import EdgeCoordDistance from "../../../interfaces/game/fighter/edge-coord-dista
 import Octagon from "../../fight/octagon"
 import FighterModelState from "../../../types/figher/fighter-model-states"
 import Flanker from "../../../interfaces/game/fighter/flanker"
-import { defaultSkinModelImages } from "../../../client/images/fighter/default-skin/default-skin-model-images"
-import { muscleSkinModelImages } from "../../../client/images/fighter/muscle-skin/muscle-skin-model-images"
-import { fastSkinModelImages } from "../../../client/images/fighter/fast-skin/fast-skin-model-images"
+import { defaultSkinModelImages } from "../../../client/images/fight-view/fighter/default-skin/default-skin-model-images"
+import { muscleSkinModelImages } from "../../../client/images/fight-view/fighter/muscle-skin/muscle-skin-model-images"
+import { fastSkinModelImages } from "../../../client/images/fight-view/fighter/fast-skin/fast-skin-model-images"
 import Flanked from "../../../interfaces/game/fighter/flanked"
 import { Edge } from "../../../interfaces/game/fighter/edge"
 import { octagon } from "../../fight/new-octagon"
@@ -569,7 +569,7 @@ function isFacingAwayFromEnemy(enemy: Fighter, thisFighter: Fighter): boolean{
   return isFacingCoods(enemyCoords, thisFighter)    
 }
 
-function isEnemyFacingAway(enemy: Fighter, thisFighter): boolean{
+function isEnemyFacingAway(enemy: Fighter, thisFighter: Fighter): boolean{
   const {coords} = thisFighter.fighting.movement
   const enemyFacingDirection = enemy.fighting.facingDirection
 
