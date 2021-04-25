@@ -42,9 +42,11 @@ export const websocketService: FrontToBackInterface = {
     const env = process.env.NODE_ENV
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
     if(env == 'development'){
+      console.log('socket io running for local dev');
       socket = io('localhost:6969', { transports: ["websocket"]})
     } else {
       socket = io()
+      console.log('socket io running for remote prod');
     }
     /* 
     console.log(`client socket object initialized for ${websocketAddress}:${port}. connecting....`); */

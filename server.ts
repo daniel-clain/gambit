@@ -20,11 +20,12 @@ new GameHost(webSocketServer)
 console.log('come on mate...')
 
 if(environment == 'production'){
+  webSocketServer.listen(httpServer)
   app.use(express.static('host-packages'));
   app.get('/favicon.ico', (req, res) => {
     res.sendFile(`${__dirname}/favicon.ico`)
   })
 
 }
-const PORT = process.env.PORT || environment == 'development' ? 6000 : 3000;
+const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`));
