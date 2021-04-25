@@ -33,7 +33,7 @@ module.exports = ({remote}, {mode, configName}) => {
   buildType == 'mainGame' ? {
     buildDir: `${__dirname}/${buildModesPath}/main-game/main-game-root.tsx`,      
     title: 'Gambit - Main Game ',
-    port: '3000',
+    port: '5555',
     outputDir: `${__dirname}/${hostPackagesPath}/main-game/`,
     outputFile: 'mainGame.js'
   } : {}

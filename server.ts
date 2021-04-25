@@ -26,5 +26,5 @@ if(environment == 'production'){
   })
 
 }
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || environment == 'development' ? 6000 : 3000;
 httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`));

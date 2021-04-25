@@ -1,4 +1,4 @@
-import FighterModelImage from "../../../../interfaces/game/fighter/fighter-model-image";
+import FighterModelImage from "../../../../../interfaces/game/fighter/fighter-model-image";
 
 export const fastSkinModelImages: FighterModelImage[] = [
 	{
