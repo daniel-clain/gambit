@@ -25,7 +25,7 @@ export default class FightDayStage implements IStage {
       fightFinishedSubject.subscribe(
         fightReport => {
           this.makeItRain(fightReport)
-          const playersHadWinnings = fightReport.managerWinnings.some(m => m.winnings > 0)
+          const playersHadWinnings = fightReport.managerWinnings?.some(m => m.winnings > 0)
           const duration = playersHadWinnings ? gameConfiguration.stageDurations.showWinningsDuration : 1
           setTimeout(this.stageFinished, duration * 1000);
           

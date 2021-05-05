@@ -1,4 +1,4 @@
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { Ability, ClientAbility, ServerAbility, AbilityData, removeFighterFromTheGame } from "../ability"
 import { Employee } from "../../../interfaces/front-end-state-interface"
 import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
@@ -61,7 +61,7 @@ export const poisonFighterServer: ServerAbility = {
         
       if(severityLevel == 'death'){
 
-        fighter.state.dead = true
+        removeFighterFromTheGame(fighter.name, game)
         game.has.roundController.preFightNewsStage.newsItems.push({
           newsType: 'fighter died from poison',
           headline: `${fighter.name} had Died from Poisoning!`,
@@ -76,7 +76,7 @@ export const poisonFighterServer: ServerAbility = {
         game.has.roundController.preFightNewsStage.newsItems.push({
           newsType: 'fighter is sick',
           headline: `${fighter.name} Poisoned!`,
-          message: `${fighter.name} has been nausious, constantly going to the bathroom and is pale in complexion, there is reason to belive he has been poisoned`
+          message: `${fighter.name} has been nausious and is pale in complexion, there is reason to belive he has been poisoned`
         })
         poisonersManager.functions.addToLog({
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'
@@ -88,7 +88,7 @@ export const poisonFighterServer: ServerAbility = {
         game.has.roundController.preFightNewsStage.newsItems.push({
           newsType: 'fighter is hallucinating',
           headline: `${fighter.name} Poisoned!`,
-          message: `${fighter.name} has been acting strange, delerious and confused, there is reason to belive he has been poisoned`
+          message: `${fighter.name} has been acting delerious and highly erratic, he says he cant remember`
         })
         poisonersManager.functions.addToLog({
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'

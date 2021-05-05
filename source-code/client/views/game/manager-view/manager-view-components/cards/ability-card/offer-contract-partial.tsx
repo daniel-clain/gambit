@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { AbilityData } from "../../../../../../../game-components/abilities-reformed/ability"
+import { AbilityData } from "../../../../../../../game-components/abilities-general/ability"
 import { ManagerInfo } from "../../../../../../../game-components/manager"
 import { ContractOffer, GoalContract } from "../../../../../../../interfaces/game/contract.interface"
 import { JobSeeker } from "../../../../../../../interfaces/front-end-state-interface"

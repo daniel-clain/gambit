@@ -6,7 +6,7 @@ import { hot } from "react-hot-loader/root"
 import { LogItemTypes } from "../../../../../../../types/game/log-item-type"
 import './report-card.scss'
 
-const {managerMap} = frontEndService
+const {managerMap, getReportItems} = frontEndService
 
 const map = managerMap<{activityLogs: ActivityLogItem[]}>(({managerInfo: {activityLogs}}) => ({activityLogs}))
 export const ReportCard = connect(map)(hot(({activityLogs, dispatch}) =>   
@@ -17,7 +17,7 @@ export const ReportCard = connect(map)(hot(({activityLogs, dispatch}) =>
         <div className="report-card__content">
           <div className='heading'>Last Week Report</div>
           <div className='list'>
-            {getReportLogs(activityLogs).map((logItem, i) => 
+            {getReportItems().map((logItem, i) => 
               <div
                 className={`
                   list__row 
@@ -38,17 +38,5 @@ export const ReportCard = connect(map)(hot(({activityLogs, dispatch}) =>
     </div>
   </div>
 ))
-
-const getReportLogs = (logItems: ActivityLogItem[]) => {
-  const types: LogItemTypes[] = ['employee outcome', 'betting', 'critical', 'report']
-  const reduced = [...logItems].reverse().reduce((obj, logItem) => {
-    if(!obj.first && logItem.type == 'new round') return {...obj, first: true}
-    else if(obj.second) return obj
-    else if(logItem.type == 'new round') return {...obj, second: true}
-    else if(types.some(t => t == logItem.type)) return {...obj, returnArray: [...obj.returnArray, logItem]}
-    else return obj
-  },{first: null, second: null, returnArray: []})
-  return reduced.returnArray
-}
 
 

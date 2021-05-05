@@ -6,7 +6,7 @@ import { ExecutesWhenOptions } from "../../types/game/executes-when-options";
 import { Game } from "../game";
 
 
-export interface Ability {
+export class Ability {
   name: AbilityName
   cost: Cost
   possibleSources: AbilitySourceType[]
@@ -14,6 +14,26 @@ export interface Ability {
   executes: ExecutesWhenOptions 
   canOnlyTargetSameTargetOnce: boolean
   disabled?: boolean
+
+}
+export const removeFighterFromTheGame = (fighterName, game: Game) => {
+  const fighter = game.has.fighters.find(fighter => fighter.name == fighterName)
+  fighter.state.dead = true
+
+  game.has.managers.forEach(manager => {
+    const {fighters, knownFighters} = manager.has
+    fighters.splice(
+      fighters.findIndex(f => f.name == fighterName), 0
+    )
+    knownFighters.splice(
+      fighters.findIndex(f => f.name == fighterName), 0
+    )
+  })
+
+  const {fighters} = game.has.roundController.activeFight
+  fighters.splice(
+    fighters.findIndex(f => f.name == fighterName), 0
+  )
 }
 
 export interface ServerAbility extends Ability {

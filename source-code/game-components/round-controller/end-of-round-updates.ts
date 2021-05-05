@@ -29,7 +29,13 @@ export function doEndOfRoundUpdates(game: Game) {
   })
 
   
-
+  if(roundController.nextWeekIsEvent){
+    roundController.nextWeekIsEvent = false
+    roundController.thisWeekIsEvent = true
+  }
+  if(roundController.thisWeekIsEvent = true){
+    roundController.thisWeekIsEvent = false
+  }
   returnProfessionalJobSeekersToProfessionalsPool()
   resetFighterAffects()
   reduceExtremeFighterStats()

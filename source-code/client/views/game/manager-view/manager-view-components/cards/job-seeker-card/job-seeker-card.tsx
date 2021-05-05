@@ -3,7 +3,7 @@ import * as React from 'react';
 import './job-seeker-card.scss'
 import '../modal-card.scss';
 import {AbilityBlock} from '../../partials/ability-block/ability-block';
-import { AbilityData } from '../../../../../../../game-components/abilities-reformed/ability';
+import { AbilityData } from '../../../../../../../game-components/abilities-general/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { Modal } from '../../partials/modal/modal';
 import { JobSeeker } from '../../../../../../../interfaces/front-end-state-interface';

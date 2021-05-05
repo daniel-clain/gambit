@@ -13,7 +13,7 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
 
 
   const invalid: boolean =
-    logistics.hasJustTurnedAround()
+    logistics.hasJustTurnedAround() || (logistics.otherFightersStillFighting().length == 1 && !!proximity.getClosestEnemyInfront())
 
   if (invalid)
     return 0

@@ -108,6 +108,9 @@ $preFightImagesFolder: '../../../images/pre-fight';
       &--after-training{
         background-image: url('#{$preFightImagesFolder}/after-training.png');
       }
+      &--main-event{
+        background-image: url('#{$preFightImagesFolder}/main-event-small.jpg');
+      }
     }
   }
 }

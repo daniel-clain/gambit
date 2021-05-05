@@ -3,7 +3,7 @@ import Fighter from "./fighter/fighter"
 import { Player } from "./player"
 import { GameType } from "../types/game/game-type"
 import ConnectionManager from "./connection-manager"
-import {AbilityProcessor} from './abilities-reformed/ability-processor'
+import {AbilityProcessor} from './abilities-general/ability-processor'
 import { Game_Implementation } from "./game.implementation"
 import { RoundController } from './round-controller/round-controller'
 import { GameInfo } from '../interfaces/game/game-info'
@@ -13,6 +13,7 @@ import { setupTestState } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
 import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
 import { randomNumber } from "../helper-functions/helper-functions"
+import gameConfiguration from "../game-settings/game-configuration"
 
 
 /* 
@@ -94,7 +95,12 @@ class GameFunctions{
   }
 
   startGame(){
-    this.game.has.roundController.startRound(1)
+    const game = this.game
+    setTimeout(() => {
+      setupTestState(game)
+      game.has.roundController.startRound(gameConfiguration.startingRoundNumber)
+      
+    }, 1000);
   }
 
   tearDownGame(){
@@ -199,8 +205,6 @@ export class Game {
 
 
 
-    setupTestState(this)
-    
     this.functions.startGame()
   }
 

@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { AbilityData } from '../../../../../../../game-components/abilities-reformed/ability';
+import { AbilityData } from '../../../../../../../game-components/abilities-general/ability';
 import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import './ability-block.scss'

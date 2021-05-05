@@ -7,7 +7,7 @@ import { Bet } from '../../../../../../../interfaces/game/bet';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { FighterInfo, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import { hot } from 'react-hot-loader/root';
-import { AbilityData } from '../../../../../../../game-components/abilities-reformed/ability';
+import { AbilityData } from '../../../../../../../game-components/abilities-general/ability';
 
 export interface NextFightPanelProps extends PropsFromRedux{
   nextFightFighters: string[]

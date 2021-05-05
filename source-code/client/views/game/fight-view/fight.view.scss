@@ -35,11 +35,12 @@ $fightUi: '#{$image-folder}/fight-view';
   }
   &__winner{    
     font-size: 5rem;
-    top: 280px;
+    top: 50%;
     z-index: 1050;
     font-family: 'Bangers';
     letter-spacing: 6px;
     color: #5490ff;
+    transform: translateY(-50%);
   }
 
 
@@ -101,16 +102,16 @@ $fightUi: '#{$image-folder}/fight-view';
 
   .fight-explosion{
     background-image: url('#{$fightUi}/fight.png');
-    width: 656px;
-    height: 500px;
+    //width: 656px;
+    padding-bottom: 76.2%;
+    max-width: 100%;
     background-size: cover;
     position: absolute;
     z-index: 1070;
-    top: 80px;
-    left: 0;
-    right: 0;
+    top: 50%;
     margin: auto;
     transition: all .4s;
+    transform: translateY(-50%);
     
     &--start{
       transform: scale(.5);

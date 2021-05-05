@@ -23,9 +23,10 @@ import { useEffect } from "react"
 import { ActivityLogPanel } from "./manager-view-components/main-components/activity-log-panel/activity-log-panel"
 import { ManagerCard } from "./manager-view-components/cards/manager-card/manager-card"
 import { EmployeeCard } from "./manager-view-components/cards/employee-card/employee-card"
+import { ReportTypes } from "../../../../types/game/log-item-type"
 
 
-const {toManagerState} = frontEndService
+const {toManagerState, getReportItems} = frontEndService
 
 
 const mapState = toManagerState(({activeModal, round, managerInfo}: AllManagerUIState) => ({activeModal, round, managerInfo}))
@@ -46,7 +47,8 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 export const Manager_View = connector(hot( 
   ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManagerOptions, showReport}: PropsFromRedux) => {
 
-  useEffect(() => {round != 1 && showReport()},[round])
+  useEffect(() => {
+    getReportItems().length && showReport()},[round])
 
   return (
   

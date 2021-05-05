@@ -1,4 +1,4 @@
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { Ability, ClientAbility, ServerAbility, AbilityData, removeFighterFromTheGame } from "../ability"
 import { Employee } from "../../../interfaces/front-end-state-interface"
 import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
@@ -96,16 +96,5 @@ export const murderFighterClient: ClientAbility = {
 }
 
 
-function removeFighterFromTheGame(fighterName, game: Game){
-  const fighter = game.has.fighters.find(fighter => fighter.name == fighterName)
-  fighter.state.dead = true
 
-  game.has.managers.forEach(manager => {
-    manager.has.fighters = manager.has.fighters.filter(fighter => fighter.name != fighterName)
-    manager.has.knownFighters = manager.has.knownFighters.filter(fighter => fighter.name != fighterName)
-  })
-
-  const fighterFightIndex = game.has.roundController.activeFight.fighters.findIndex(fighter => fighter.name == fighterName)
-  game.has.roundController.activeFight.fighters.splice(fighterFightIndex, 1)
-}
 

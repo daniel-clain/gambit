@@ -1,6 +1,6 @@
 import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { Ability, ClientAbility, ServerAbility, AbilityData, removeFighterFromTheGame } from "../ability"
 
 
 const dopeFighter: Ability = {
@@ -41,7 +41,7 @@ export const dopeFighterServer: ServerAbility = {
     }
 
     function  fighterDead() {
-      fighter.state.dead = true
+      removeFighterFromTheGame(fighter.name, game)
       game.has.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter died of overdose',
         headline: `${fighter.name} Died of drug overdose!`,

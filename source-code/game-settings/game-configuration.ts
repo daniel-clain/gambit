@@ -1,5 +1,6 @@
 
 export interface GameConfiguration{  
+  startingRoundNumber: number
   numberOfFighters: number
   numberOfProfessionals: number
   numberOfProfessionalJobSeekersPerRound: number
@@ -31,6 +32,8 @@ export interface GameConfiguration{
     "Promoter": number
     "Trainer": number
   }
+  fightersAfterRounds: {round: number, fighters:number}[]
+  
 }
 
 export interface StageDurations{
@@ -41,11 +44,12 @@ export interface StageDurations{
 }
 
 const gameConfiguration: GameConfiguration = {
+  startingRoundNumber: 1,
   numberOfFighters: 30,
   numberOfProfessionals: 40,
   numberOfProfessionalJobSeekersPerRound: 3,
   numberOfFighterJobSeekersPerRound: 2,
-  listOfNames: ['Daniel', 'Tom', 'Alex', 'Angelo', 'Paul', 'Mark', 'Mat', 'Mike', 'Brad', 'Steve', 'James', 'Harry', 'Kevin', 'Stan', 'Dave', 'Chris', 'Sam', 'Bob', 'Fred', 'Frank', 'Jake', 'Alan', 'Ben', 'Chad', 'Denis', 'Eric', 'Greg', 'Lewis', 'Larry', 'Neil', 'Nathan', 'Norbit', 'Phil', 'Ryan', 'Simon', 'Seth', 'Troy', 'Tyler', 'Zach', 'George', 'Gavin', 'Robert', 'Tim', 'Tyson', 'Hugh', 'Ronald', 'Spencer', 'Jason', 'Arnold', 'Tod', 'Shawn', 'Liam', 'Will', 'Oliver', 'Ethan', 'John', 'Luke', 'Dylan', 'Anthony', 'Josh', 'Charles', 'Connor', 'Cameron', 'Adam', 'Ian', 'Evan', 'Henry', 'Owen', 'Isaac', 'Jackson', 'Leo', 'Jonathan', 'Declan', 'Vincent', 'Tristan'],
+  listOfNames: ['Daniel', 'Tom', 'Alex', 'Angelo', 'Paul', 'Mark', 'Mat', 'Mike', 'Brad', 'Steve', 'James', 'Harry', 'Kevin', 'Stan', 'Dave', 'Chris', 'Sam', 'Bob', 'Fred', 'Frank', 'Jake', 'Alan', 'Ben', 'Chad', 'Denis', 'Eric', 'Greg', 'Lewis', 'Larry', 'Neil', 'Nathan', 'Norbit', 'Phil', 'Ryan', 'Simon', 'Seth', 'Troy', 'Tyler', 'Zach', 'George', 'Gavin', 'Robert', 'Tim', 'Tyson', 'Hugh', 'Ronald', 'Spencer', 'Jason', 'Arnold', 'Tod', 'Shawn', 'Liam', 'Will', 'Oliver', 'Ethan', 'John', 'Luke', 'Dylan', 'Anthony', 'Josh', 'Charles', 'Connor', 'Cameron', 'Adam', 'Ian', 'Evan', 'Henry', 'Owen', 'Isaac', 'Jackson', 'Leo', 'Jonathan', 'Declan', 'Vincent', 'Tristan', 'Dom', 'Patrick', 'Arie', 'John', 'Adrien', 'Bruce', 'Miles'],
   betSizePercentages: {
     small: 10,
     medium: 30,
@@ -58,7 +62,7 @@ const gameConfiguration: GameConfiguration = {
   },
   stageDurations: {
     managerOptions: 180,
-    eachNewsSlide: 5,
+    eachNewsSlide: 3,
     maxFightDuration: 120,
     showWinningsDuration: 10
   },
@@ -75,7 +79,12 @@ const gameConfiguration: GameConfiguration = {
     "Hitman": 1,
     "Promoter": 3,
     "Trainer": 4
-  }
+  },
+  fightersAfterRounds:[
+    {round: 0, fighters:2},
+    {round: 7, fighters:3},
+    {round: 14, fighters:4}
+  ]
 }
 
 export default gameConfiguration

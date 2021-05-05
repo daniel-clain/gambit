@@ -1,4 +1,4 @@
-
+@use '../../../../../../styles/variables' as *;
 @import url('https://fonts.googleapis.com/css?family=Bangers&display=swap');
 
 .next-fight{
@@ -60,8 +60,18 @@
     }
   }
 }
-  .place-bet-button{
-    background: #e7ffe0;
-    border: 2px outset #69bc51;
-    color: black;
+.place-bet-button{
+  background: #e7ffe0;
+  border: 2px outset #69bc51;
+  color: black;
+}
+
+
+@media (min-width: $layoutChangeBreakpoint){
+  .next-fight__fighters{
+    flex-wrap: wrap;
   }
+  .next-fight__fighter{
+    margin-bottom: 26px;
+  }
+}

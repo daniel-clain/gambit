@@ -1,5 +1,5 @@
 
-import { AbilityData } from "../../../game-components/abilities-reformed/ability"
+import { AbilityData } from "../../../game-components/abilities-general/ability"
 import { KnownManager } from "../../../game-components/manager"
 import { ActiveModal, CardName, ClientManagerUIState, Employee, FighterInfo, JobSeeker } from "../../../interfaces/front-end-state-interface"
 import { SetStateFunctionName } from "../../front-end-service/front-end-service-types"

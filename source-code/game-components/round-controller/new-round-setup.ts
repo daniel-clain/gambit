@@ -11,12 +11,27 @@ import { Game } from "../game";
 export function setupNewRound(game: Game){
   const {managers, professionals, fighters, roundController} = game.has
 
+  chanceNextFightEvent()
   setRoundJobSeekers()
   setupRoundFight()
   managers.forEach(manager => {
     addNewRoundToManagerLog(manager)
     addFightersToManagersKnownFightersList(manager)
   })
+
+  function chanceNextFightEvent(){
+    const {nextWeekIsEvent, thisWeekIsEvent, roundNumber} = roundController
+    if(!nextWeekIsEvent  && !nextWeekIsEvent && roundNumber > 15 && random(2)){
+      roundController
+      roundController.nextWeekIsEvent = true
+      roundController.preFightNewsStage.newsItems.push({
+        newsType: 'fight event next week',
+        message: 'The top 10 fighters will compete, every man for himself, last man standing, all winnings are trippled',
+        headline: 'Main Event!'
+      })
+
+    }
+  }
 
   function addFightersToManagersKnownFightersList(manager: Manager){
     const roundFighersAndJobSeekerFighters: FighterInfo[] = []
@@ -67,7 +82,10 @@ export function setupNewRound(game: Game){
   }
 
   function setRoundJobSeekers(){
-    const { numberOfProfessionalJobSeekersPerRound, numberOfFighterJobSeekersPerRound } = gameConfiguration
+    let { numberOfProfessionalJobSeekersPerRound, numberOfFighterJobSeekersPerRound } = gameConfiguration
+    numberOfProfessionalJobSeekersPerRound += game.has.players.length - 2
+    numberOfFighterJobSeekersPerRound += game.has.players.length - 2
+
     roundController.jobSeekers = 
     shuffle(professionals)
     .splice(0, numberOfProfessionalJobSeekersPerRound)
@@ -146,17 +164,15 @@ export function setupNewRound(game: Game){
     if (roundController.activeFight != null)
       roundController.activeFight.doTeardown()
 
-    let numOfFighters
+    let numOfFighters: number = roundController.thisWeekIsEvent && 10 || gameConfiguration.fightersAfterRounds.reduce((num: number, roundFighters) => {
+      if(roundFighters.round < roundController.roundNumber &&
+        roundFighters.fighters > num
+      ){
+        return roundFighters.fighters
+      } else return num
+    }, null)
 
-    if(roundController.roundNumber < 8)
-      numOfFighters = 2
-    else if(roundController.roundNumber < 16)
-      numOfFighters = 3
-    else
-      numOfFighters = 4
 
-      
-    //numOfFighters = 8
 
     
     const randomFighters: Fighter[] = []

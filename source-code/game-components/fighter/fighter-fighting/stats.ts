@@ -32,7 +32,7 @@ export default class FighterStats {
     if(sick) x *= .6
     if(injured) x *= .6
     if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
-    if(doping) x *= 1.2   
+    if(doping) x *= .8  
     return x
   }
 

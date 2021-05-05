@@ -1,4 +1,4 @@
-import { AbilityName, AbilityData } from "../game-components/abilities-reformed/ability"
+import { AbilityName, AbilityData } from "../game-components/abilities-general/ability"
 import { ManagerInfo } from "../game-components/manager"
 import { getProfessionalsAbilities } from "../game-components/professionals"
 import { random } from "../helper-functions/helper-functions"

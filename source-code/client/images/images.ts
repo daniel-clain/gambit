@@ -63,6 +63,20 @@ import FighterModelState from '../../types/figher/fighter-model-states'
 import fastIdle from './fight-view/fighter/fast-skin/idle.png'
 
 
+import mainEventBg from './pre-fight/main-event-bg.jpg';
+import preFightNewsBg from './pre-fight/pre-fight-news-bg.jpg';
+import newsBg from './pre-fight/after-training.png';
+import mainEventNext from './pre-fight/main-event-small.jpg';
+import afterTraining from './pre-fight/after-training.png';
+import assaulted from './pre-fight/assaulted.jpg';
+import doped from './pre-fight/doped.jpg';
+import drugOverdose from './pre-fight/drug-overdose.jpg';
+import guarded from './pre-fight/guarded.png';
+import murdered from './pre-fight/murder-news.jpg';
+import sick from './pre-fight/sick.png';
+import hallucinate from './pre-fight/hallucinate.jpg';
+
+
 
 export type FighterImageObj = {
   modelState: FighterModelState,
@@ -79,7 +93,7 @@ export const defaultFighterImages: FighterImageObj[] = [
   { modelState: 'Recovering', image: defaultRecovering },
   { modelState: 'Victory', image: defaultVictory },
   { modelState: 'Walking', image: defaultWalking },
-  { modelState: 'Idle', image: defaultDefending },
+  { modelState: 'Idle', image: defaultWalking },
   { modelState: 'Taking Hit', image: defaultTakingHit }
 ]
 
@@ -140,5 +154,18 @@ export const images = {
   research,
   sellDrugs,
   sueManager,
-  train
+  train,
+
+  newsBg,
+  mainEventBg,
+  preFightNewsBg,
+  afterTraining,
+  mainEventNext,
+  assaulted,
+  doped,
+  drugOverdose,
+  guarded,
+  murdered,
+  sick,
+  hallucinate
 }

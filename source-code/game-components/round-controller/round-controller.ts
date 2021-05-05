@@ -16,6 +16,8 @@ export class RoundController {
   jobSeekers: JobSeeker[]
   activeFight: Fight
   lastFightFighters: string[] = []
+  nextWeekIsEvent = false
+  thisWeekIsEvent = false
 
   fightUiDataSubject: Subject<void> = new Subject()
   endOfRoundSubject: Subject<void> = new Subject()
@@ -41,7 +43,7 @@ export class RoundController {
       .then(() => this.doStage(this.fightDayStage))
       .then(() => abilityProcessor.executeAbilities('End Of Round'))
       .then(() => doEndOfRoundUpdates(this.game))
-      .then(() => this.startRound(++number))
+      .then(() => this.startRound(++this.roundNumber))
   }
 
   doStage(stage: IStage): Promise<any>{    

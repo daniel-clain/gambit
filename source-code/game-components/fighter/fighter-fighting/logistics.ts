@@ -25,7 +25,8 @@ export default class Logistics {
   }
 
   get onARampage(): boolean{
-    return this._onARampage
+    const {fighter} = this.fighting
+    return fighter.state.onARampage
   }
   
   isARetreatInProgress(): boolean{

@@ -1,6 +1,8 @@
-export type LogItemTypes  = 
+export type ReportTypes = 
 'critical' |
-'new round' |
 'report' | 
 'employee outcome' |
 'betting'
+
+export type LogItemTypes  = 
+'new round' | ReportTypes

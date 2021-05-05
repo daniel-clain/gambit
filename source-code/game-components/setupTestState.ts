@@ -6,7 +6,7 @@ import { Game } from "./game"
 gameConfiguration.stageDurations.managerOptions = 500
 
 export const setupTestState = (game: Game) => {
-  
+  gameConfiguration.fightersAfterRounds = [{round: 0, fighters: 3}]
   const manager1 = game.has.managers[0]
   const agent1: Employee = new Employee('Private Agent')
   const agent2 = new Employee('Private Agent')
@@ -17,6 +17,7 @@ export const setupTestState = (game: Game) => {
   manager1.has.employees.push(agent1, agent2, agent3, dealer, hitman, thug)
   gameConfiguration.stageDurations.eachNewsSlide = 10
   manager1.has.money = 10000
+  gameConfiguration.startingRoundNumber = 15
   /* 
 
   gameConfiguration.stageDurations.maxFightDuration = 1

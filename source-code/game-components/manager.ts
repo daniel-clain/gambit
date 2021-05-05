@@ -3,7 +3,7 @@
 import {Bet} from '../interfaces/game/bet';
 import Fighter from "./fighter/fighter";
 import gameConfiguration from '../game-settings/game-configuration';
-import { AbilityName } from './abilities-reformed/ability';
+import { AbilityName } from './abilities-general/ability';
 import { ActivityLogItem } from '../types/game/activity-log-item';
 import { ManagerImage } from '../types/game/manager-image';
 import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';

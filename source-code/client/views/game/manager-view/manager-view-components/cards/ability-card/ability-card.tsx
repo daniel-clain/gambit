@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
+import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-general/ability';
 import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { ListOption } from '../../../../../../../types/game/list-option';

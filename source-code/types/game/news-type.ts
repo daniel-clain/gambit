@@ -9,4 +9,5 @@ export type NewsType =
 'fighter is doped up' |
 'fighter died of overdose' |
 'fighter is sick' |
-'fighter is hallucinating'
+'fighter is hallucinating' |
+'fight event next week'

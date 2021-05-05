@@ -72,7 +72,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		transform: (facingDirection === 'left' ? `scalex(-1) translateX(50%)` : `scalex(1) translateX(-50%)`),
 		filter: `hue-rotate(${onRampage ? 330 : 0}deg)`,
 		width: fighterModelImage.dimensions.width * widthRatio,
-		height: fighterModelImage.dimensions.height * heightRatio
+		paddingBottom: fighterModelImage.dimensions.height * heightRatio
 	}
 	/* const fighterModelClass = `fighter__image--${skin.toLocaleLowerCase()}--${modelState.toLocaleLowerCase().split(' ').join('-')}` */
 
@@ -132,12 +132,12 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 			
 			<div className='fighter__direction' style={directionStyle}></div>
 			<div 
-				className={`fighter__image-container`} 
+				className={`fighter__image-container fighter__image--${modelState.toLocaleLowerCase().split(' ').join('-')}`} 
 				style={fighterImageStyle}>
 					{fighterImageObjs.map(imageObj =>
 						<img 
 							key={imageObj.modelState}
-							className={`fighter__image fighter__image--${modelState.toLocaleLowerCase().split(' ').join('-')}`}
+							className={`fighter__image`}
 							src={imageObj.image} 
 							style={modelState == imageObj.modelState ? {'visibility': 'visible'} : {}} 
 						/>

@@ -1,4 +1,4 @@
-import { AbilityData } from "../../game-components/abilities-reformed/ability"
+import { AbilityData } from "../../game-components/abilities-general/ability"
 import { Bet } from "../../interfaces/game/bet"
 import { ClientNameAndID } from "../../game-host/game-host.types"
 import { SetStateManagerUIFunctionName, SetStateManagerUI } from "../front-end-state/reducers/manager-ui.reducer"

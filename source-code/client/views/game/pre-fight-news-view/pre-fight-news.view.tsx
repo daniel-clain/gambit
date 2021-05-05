@@ -48,6 +48,7 @@ const PreFightNews_View = ({
       newsType == 'fighter is sick' ? 'sick' :
       newsType == 'fighter is doped up' ? 'doped' :
       newsType == 'fighter has gone up in strength or fitness' ? 'after-training' :
+      newsType == 'fight event next week' ? 'main-event' :
     'guarded'
     )
   }

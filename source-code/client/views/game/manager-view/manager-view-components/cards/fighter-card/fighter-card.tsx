@@ -7,7 +7,7 @@ import '../modal-card.scss';
 import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import Fights from '../../partials/fights-and-wins/fights';
 import Wins from '../../partials/fights-and-wins/wins';
-import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-reformed/ability';
+import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-general/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../..//../interfaces/front-end-state-interface';
 import { Modal } from '../../partials/modal/modal';

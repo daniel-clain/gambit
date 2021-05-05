@@ -25,7 +25,7 @@ if(environment == 'production'){
   app.get('/favicon.ico', (req, res) => {
     res.sendFile(`${__dirname}/favicon.ico`)
   })
+  const PORT = process.env.PORT || 3000;
+  httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 }
-const PORT = process.env.PORT || 3000;
-httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`));

@@ -1,6 +1,11 @@
 import Coords from "../interfaces/game/fighter/coords";
 import { Angle } from "../types/game/angle";
-
+/**
+ * 
+ * @param number From 0 to x
+ * @param startAtOne From 1 to x instead
+ * @returns 
+ */
 export function random(number: number, startAtOne?: boolean){return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
 
 export const shuffle = <T>(array: T[]): T[] => {
