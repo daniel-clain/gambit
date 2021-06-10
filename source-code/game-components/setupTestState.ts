@@ -1,14 +1,15 @@
 
 import gameConfiguration from "../game-settings/game-configuration"
 import { Employee } from "../interfaces/front-end-state-interface"
+import Fighter from "./fighter/fighter"
 import { Game } from "./game"
 
 
 export const setupTestState = (game: Game) => {
 
+  gameConfiguration.stageDurations.managerOptions = 6000
   //skipFight()
-
-
+  //freezeOnFight()
 
   //implementation
 
@@ -17,6 +18,11 @@ export const setupTestState = (game: Game) => {
     gameConfiguration.stageDurations.maxFightDuration = 1
     gameConfiguration.stageDurations.eachNewsSlide = 1
     gameConfiguration.stageDurations.startCountdown = 1
+
+  }
+  function freezeOnFight(){
+    gameConfiguration.stageDurations.maxFightDuration = 9999
+    gameConfiguration.freezeFight = true
 
   }
 
@@ -38,4 +44,22 @@ export const setupTestState = (game: Game) => {
     if(manager2) manager2.has.money = 10000
 
   }
+
+  
+
+}
+
+export const postStartTestState = (game: Game) => {
+  //setup2()
+
+  
+  function setup2(){
+    const manager1 = game.has.managers[0]
+    const fighter: Fighter = game.has.fighters[0]
+    fighter.state.manager = manager1
+    manager1.has.fighters.push(fighter)
+
+    game.has.roundController.activeFight.fighters.push(fighter)
+  }
+
 }

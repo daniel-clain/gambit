@@ -9,7 +9,7 @@ import { RoundController } from './round-controller/round-controller'
 import { GameInfo } from '../interfaces/game/game-info'
 import { Manager } from './manager'
 import { ConnectedClient } from '../game-host/game-host.types'
-import { setupTestState } from './setupTestState'
+import { postStartTestState, setupTestState } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
 import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
 import { randomNumber } from "../helper-functions/helper-functions"
@@ -94,6 +94,7 @@ class GameFunctions{
     setTimeout(() => {
       setupTestState(game)
       game.has.roundController.startRound(gameConfiguration.startingRoundNumber)
+      postStartTestState(game)
       
     }, 1000);
   }

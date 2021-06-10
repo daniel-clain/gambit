@@ -1,5 +1,6 @@
 
 const gameConfiguration = {
+  freezeFight: false,
   startingRoundNumber: 1,
   numberOfFighters: 30,
   numberOfProfessionals: 40,
@@ -28,7 +29,7 @@ const gameConfiguration = {
     eachNewsSlide: 3,
     maxFightDuration: 120,
     extraTimePerFighter: 10,
-    showWinningsDuration: 10,
+    showWinningsDuration: 8,
     startCountdown: 3
   },
   manager: {

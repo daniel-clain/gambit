@@ -112,7 +112,7 @@ export default class Fight {
   }
 
   startFightUpdateLoop(){
-    this.fightUpdateLoop = setInterval(this.sendUiStateUpdate.bind(this), 5)
+    this.fightUpdateLoop = setInterval(this.sendUiStateUpdate.bind(this), 20)
   }
 
   set report(value: FightReport){

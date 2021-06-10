@@ -17,6 +17,7 @@ export default class FighterActions {
   }
 
   async decideAction(){  
+    
     const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
     const {fight} = fighter.state
 

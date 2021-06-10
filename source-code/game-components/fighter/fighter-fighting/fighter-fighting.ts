@@ -13,6 +13,7 @@ import FighterActions from "./fighter-actions";
 import Logistics from "./logistics";
 import FighterCombat from "./fighter-combat";
 import FighterFightState from "../../../interfaces/front-end-state-interface";
+import gameConfiguration from "../../../game-settings/game-configuration";
 
 export default class FighterFighting {
 
@@ -58,6 +59,7 @@ export default class FighterFighting {
     this.fightStarted = true
     this.otherFightersInFight = this.fighter.state.fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
+    if(gameConfiguration.freezeFight) return
     this.actions.decideAction()
   }
   stop() {

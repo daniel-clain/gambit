@@ -12,21 +12,18 @@
     text-shadow: 2px 2px 0px #288cde;
   }
   &__fighters{
-    display: flex;
-    justify-content: space-between;
+    text-align: center;
+    white-space: nowrap;
     overflow-x: scroll;
   }
 
   &__fighter{
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
     position: relative;
     text-align: center;
-    min-width: 20%;
-    margin-right: 2px;
-    &:last-child{
-      margin-right: 0;
-    }
+    min-width: 100px;
+    margin: 8px 6px 0;
     &__name{      
       font-size: 1.3rem;
       padding-top: 8px;
@@ -69,10 +66,10 @@
 
 
 @media (min-width: $layoutChangeBreakpoint){
-  .next-fight__fighters{
-    flex-wrap: wrap;
+  .next-fight__fighters{ */
+    white-space: pre-wrap;
   }
   .next-fight__fighter{
-    margin-bottom: 26px;
+    margin-bottom: 20px;
   }
 }

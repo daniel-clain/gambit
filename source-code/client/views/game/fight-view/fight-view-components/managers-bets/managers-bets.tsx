@@ -35,7 +35,7 @@ const ManagersBets = ({ managersBets, report }: ManagersBetProps) => {
         <div className='managers-bet' key={manager.name}>
           <MoneyRain money={managerWinnings(manager)} />
           <div className="managers-bet__manager">
-            <div className={`managers-bet__manager__image manager__image--${manager.image.toLowerCase().replace(' ', '-')}`}></div>
+            <div className={`managers-bet__manager__image managers-bet__manager__image--${manager.image.toLowerCase().replace(' ', '-')}`}></div>
             <div className="managers-bet__manager__name">{manager.name}</div>
           </div>
           <div className="fighter-bet-on">
