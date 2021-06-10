@@ -33,6 +33,7 @@ export default class Fight {
   }
 
   doTeardown(){
+    this.fighters.forEach(f => f.state.fight = undefined)
     this.fightUiDataSubject.complete()
   }
 
@@ -57,10 +58,10 @@ export default class Fight {
     this.startFightUpdateLoop()
     this.tellFightersToStartFighting()
     this.watchForAWinner()
-    let {maxFightDuration} = gameConfiguration.stageDurations
-    this.timeRemaining = maxFightDuration
+    const fightDuration =  gameConfiguration.stageDurations.maxFightDuration + this.fighters.length * gameConfiguration.stageDurations.extraTimePerFighter
+    this.timeRemaining = fightDuration
     this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
-    this.timesUpTimer = setTimeout(() => this.timesUp(), maxFightDuration * 1000)
+    this.timesUpTimer = setTimeout(() => this.timesUp(), fightDuration * 1000)
     if(this.paused)
       this.pause()
   }
@@ -97,7 +98,7 @@ export default class Fight {
 
   private fightCountdown(): Promise<void>{
     return new Promise(resolve => {
-      this.startCountdown = 3
+      this.startCountdown = gameConfiguration.stageDurations.startCountdown
       this.sendUiStateUpdate()
       const countdownInterval = setInterval(() => {
         this.startCountdown --

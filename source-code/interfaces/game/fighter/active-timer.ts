@@ -1,4 +1,4 @@
-import { TimerName } from "../../../types/figher/timer-name";
+import { TimerName } from "../../../types/fighter/timer-name";
 
 export interface ActiveTimer{
   name: TimerName

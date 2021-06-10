@@ -1,7 +1,8 @@
 import FighterFighting from "./fighter-fighting"
-import { MoveAction } from "../../../types/figher/action-name"
+
 import Fighter from "../fighter"
-import { Closeness } from "../../../types/figher/closeness"
+import { MoveAction } from "../../../types/fighter/action-name"
+import { Closeness } from "../../../types/fighter/closeness"
 
 export default class Logistics {
 

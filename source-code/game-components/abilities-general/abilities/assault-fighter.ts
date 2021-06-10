@@ -3,13 +3,15 @@ import { random } from "../../../helper-functions/helper-functions"
 import { Employee } from "../../../interfaces/front-end-state-interface"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
+import { handleUnderSurveillance } from "./do-surveillance"
 
 
 const assaultFighter: Ability = {
   name: 'Assault Fighter',
   cost: { money: 10, actionPoints: 1 },
   possibleSources: ['Thug'],
-  possibleTargets: ['fighter not owned by manager'],
+  notValidTargetIf: ['fighter owned by manager'],
+  validTargetIf: ['fighter in next fight'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: false
 }
@@ -30,8 +32,12 @@ export const assaultFighterServer: ServerAbility = {
 
     
     if(fighter.state.dead){
-      assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed beacuse he was already found dead`, type: 'report'})
+      assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed because he was already found dead`, type: 'report'})
       return
+    }
+    
+    if(assaultersManager.state.underSurveillance){
+      handleUnderSurveillance(assaultersManager, abilityData, game)
     }
 
     let success

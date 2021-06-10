@@ -1,6 +1,6 @@
 
 import FighterFighting from "./fighter-fighting"
-import { ActionName } from "../../../types/figher/action-name"
+import { ActionName } from "../../../types/fighter/action-name"
 import { getProbabilityToRecover } from "./probability-resolver/getProbabilityToRecover"
 import { getProbabilityToRetreat } from "./probability-resolver/getProbabilityToRetreat"
 import { getProbabilityToCautiousRetreat } from "./probability-resolver/getProbabilityToCautiousRetreat"

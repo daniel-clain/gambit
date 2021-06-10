@@ -84,6 +84,9 @@ $preFightImagesFolder: '../../../images/pre-fight';
       left: 17%;
       transform: rotate(-7deg);
       
+      &--manager-prosecuted{
+        background-image: url('#{$preFightImagesFolder}/prosecute-manager.jpg');
+      }
       &--assaulted{
         background-image: url('#{$preFightImagesFolder}/assaulted.jpg');
       }

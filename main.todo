@@ -1,14 +1,12 @@
 InProgress: overlay scale
 
 Priority:
-  
-  ☐ overlay text scale to ui
-  ☐ loan shark interest val consistent (logs?)
-  ☐ remote game remember player name/id auto connect to game host
-  ☐ reduce image size to lagest size possible
-  ☐ assets like audio and images are saved inlocal storage, assets load in pregame and game lobby
-  ☐ you cant murder fighters not in fight
-  ☐ on manager options timer to zero, autostart next stage
+  ☐ prosecute manager goes in used abilites list when not used, only viewed
+  ☐ make an info object that is both the config for the game, and also the 'how to play manual'
+  ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
+  ☐ private investigator can use 'Do Research' targeting a manager, result of research a manager is like results of a fighter, state is based on memory, how many turns since learned
+  ☐ Doing surveillance on self protects against enemy private agents and enemy hitmen
+  ☐ Private agent can sent opponent a blackmail offer, trading evidence
   ☐ Private agents spy on player, use known other manager activity to create evidence items, evidence items can be used to blackmail or sue, build blackmailing mechanic
   ☐ build lawsuit and sue mechanics
   ☐ Private agent ability defensive counter private agents
@@ -20,16 +18,24 @@ Priority:
   ☐ on player disconnect pause all stage (fight)
   ☐ test player disconnect modal, sometimes duplicates in list
   ☐ character names cant have same names as player(manager) names
+  ☐ remote game remember player name/id auto connect to game host
+  ☐ defend + retreat never really has its value, because the backward movement makes all on range targeting miss, so the righter never has a chance to block and get the bonuses that come with that.
+  ☐ doping makes them recover, why
+  ☐ pause in fight is buggy
+  ☐ in select list, manager icon
+  
 
 
 
 
 Quick minor fixes: 
   ☐ remove flanking and maovering quotes
+  ☐ fight ui: fighter stats, when knockout, put red cross over pic
 
 
 
 Other updates:
+  ☐ battle royal allow 3 votes, 1 large medium and small, all bet size percentages are scaled down, instead of large 50% => 30%, 20%, 10%. extra bonus for win, normally if 
   ☐ different fight modes, eg, 
   - each manager has one of their fighters in at once, when that guy get knocked out, next best guys enters
   ☐ manager options phase, last 5 seconds obvious

@@ -11,7 +11,7 @@ const trainFighter: Ability = {
   name: 'Train Fighter',
   cost: { money: 5, actionPoints: 1 },
   possibleSources: ['Manager', 'Trainer'],
-  possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
+  validTargetIf: ['fighter owned by manager', 'fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true
   
@@ -74,7 +74,7 @@ export const trainFighterServer: ServerAbility = {
 
 export const trainFighterClient: ClientAbility = {
   shortDescription: 'Increase a fighters stats',
-  longDescription: 'Increse target fighters fitness and strength, with affect the fighters hit damage, stamina, speed and recovery rate',
+  longDescription: 'Increase target fighters fitness and strength, with affect the fighters hit damage, stamina, speed and recovery rate',
   ...trainFighter
 }
 

@@ -1,7 +1,7 @@
 import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
-import { AttackType } from "../../../types/figher/attack-types"
-import { ActionName, AttackResponseAction } from "../../../types/figher/action-name"
+import { AttackType } from "../../../types/fighter/attack-types"
+import { ActionName, AttackResponseAction } from "../../../types/fighter/action-name"
 import { isFacingAwayFromEnemy } from "./proximity"
 
 export default class AttackResponseProbability {

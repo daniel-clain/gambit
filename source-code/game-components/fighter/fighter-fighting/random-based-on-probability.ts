@@ -1,6 +1,6 @@
 
 import { random } from "../../../helper-functions/helper-functions";
-import { ActionName } from "../../../types/figher/action-name";
+import { ActionName } from "../../../types/fighter/action-name";
 
 export function selectRandomResponseBasedOnProbability(responseProbabilities: [ActionName, number][]): ActionName {
 

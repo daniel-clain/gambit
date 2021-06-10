@@ -22,7 +22,7 @@ $fightUi: '#{$image-folder}/fight-view';
     margin: auto;
 
     .has-winnings &{
-      top: 100px;
+      top: 15vh;
       transition: top 2s;
     }
   }
@@ -34,8 +34,8 @@ $fightUi: '#{$image-folder}/fight-view';
     width: 280px;
   }
   &__winner{    
-    font-size: 5rem;
-    top: 50%;
+    font-size: clamp(1rem, 10vh, 4rem);
+    top: 50vh;
     z-index: 1050;
     font-family: 'Bangers';
     letter-spacing: 6px;
@@ -101,35 +101,41 @@ $fightUi: '#{$image-folder}/fight-view';
   }
 
   .fight-explosion{
-    background-image: url('#{$fightUi}/fight.png');
-    //width: 656px;
-    padding-bottom: 76.2%;
-    max-width: 100%;
-    background-size: cover;
+    max-width: 656px;
+    width: 100%;
     position: absolute;
     z-index: 1070;
     top: 50%;
+    left: 50%;
     margin: auto;
     transition: all .4s;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%) scale(.5);
     
     &--start{
-      transform: scale(.5);
+      transform: translate(-50%, -50%) scale(.5);
       opacity: 0;
     }
     &--grow{
-      transform: scale(1);
+      transform: translate(-50%, -50%) scale(1);
       opacity: 1;
 
     }
     &--shrink-and-fade{
       transition: 'transform' .8s;
-      transform: scale(.9);
+      transform: translate(-50%, -50%) scale(.9);
       opacity: 0;
 
     }
     &--removed{
       display: none;
+    }
+
+    &__inner{
+      background-image: url('#{$fightUi}/fight.png');
+      padding-bottom: 76.2%;
+      width: 100%;
+      background-size: cover;
+
     }
   }
 

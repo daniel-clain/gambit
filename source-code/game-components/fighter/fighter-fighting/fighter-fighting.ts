@@ -1,10 +1,10 @@
 import Fighter from "../fighter";
 import { random } from "../../../helper-functions/helper-functions";
-import FighterModelState from "../../../types/figher/fighter-model-states";
+import FighterModelState from "../../../types/fighter/fighter-model-states";
 import Movement from "./movement";
 import Proximity, { getFighterStrikingCenter } from "./proximity";
 import SoundTime from "../../../interfaces/game/fighter/sound-time";
-import FacingDirection from "../../../types/figher/facing-direction";
+import FacingDirection from "../../../types/fighter/facing-direction";
 import FighterStats from "./stats";
 import Flanking from "./flanking";
 import FighterTimers from "./fighter-timers";
@@ -56,10 +56,8 @@ export default class FighterFighting {
 
   start() {
     this.fightStarted = true
-    this.stamina = this.stats.maxStamina
-    this.spirit = 3
     this.otherFightersInFight = this.fighter.state.fight.fighters
-      .filter(figher => figher.name != this.fighter.name)
+      .filter(fighter => fighter.name != this.fighter.name)
     this.actions.decideAction()
   }
   stop() {

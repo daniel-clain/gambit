@@ -166,7 +166,6 @@ import { DisconnectedPlayerVote } from "../interfaces/front-end-state-interface"
       })
       manager.has.fighters.forEach(f => {
         f.state.manager = undefined
-        f.state.goalContract = undefined
         f.state.activeContract = undefined
       })
        managers.splice(managerIndex, 1)

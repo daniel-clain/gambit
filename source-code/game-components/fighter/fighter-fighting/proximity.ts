@@ -1,13 +1,10 @@
 import Fighter from "../fighter"
 import FighterFighting from "./fighter-fighting"
 import Coords from "../../../interfaces/game/fighter/coords"
-import { Closeness } from "../../../types/figher/closeness"
 import Dimensions from "../../../interfaces/game/fighter/dimensions"
 import { getDirectionOfPosition2FromPosition1, getDistanceBetweenTwoPoints, getSmallestAngleBetween2Directions, validateAngle } from "../../../helper-functions/helper-functions"
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right"
 import EdgeCoordDistance from "../../../interfaces/game/fighter/edge-coord-distance"
-import Octagon from "../../fight/octagon"
-import FighterModelState from "../../../types/figher/fighter-model-states"
 import Flanker from "../../../interfaces/game/fighter/flanker"
 import { defaultSkinModelImages } from "../../../client/images/fight-view/fighter/default-skin/default-skin-model-images"
 import { muscleSkinModelImages } from "../../../client/images/fight-view/fighter/muscle-skin/muscle-skin-model-images"
@@ -16,6 +13,8 @@ import Flanked from "../../../interfaces/game/fighter/flanked"
 import { Edge } from "../../../interfaces/game/fighter/edge"
 import { octagon } from "../../fight/new-octagon"
 import { Angle } from "../../../types/game/angle"
+import { Closeness } from "../../../types/fighter/closeness"
+import FighterModelState from "../../../types/fighter/fighter-model-states"
 
 
 

@@ -9,11 +9,11 @@ export type ClientManagerUIActionType = 'Fighter Selected' | 'Jobseeker Selected
 
 
 export class SetStateManagerUI {
-  showFighter = (fighter: FighterInfo) => this.getModal('Fighter', fighter)
+  showFighter = (fighter: string) => this.getModal('Fighter', fighter)
   showEmployee = (employee: Employee) => this.getModal('Employee', employee)
-  showjobSeeker = (jobSeeker: JobSeeker) => this.getModal('Job Seeker', jobSeeker)
+  showJobSeeker = (jobSeeker: JobSeeker) => this.getModal('Job Seeker', jobSeeker)
   showAbility = (abilityData: AbilityData) => this.getModal('Ability', abilityData)
-  showManagerOptions = (knownManager: KnownManager) => this.getModal('Manager', knownManager)
+  showManager = (knownManager: KnownManager) => this.getModal('Manager', knownManager)
   showLoanShark = () => this.getModal('Loan Shark')
   showKnownFighters = () => this.getModal('Known Fighters')
   showOtherManagers = () => this.getModal('Known Managers')
@@ -28,7 +28,7 @@ export class SetStateManagerUI {
 }
 
 export type SetStateManagerUIFunctionName = 
-'showFighter' | 'showEmployee' | 'showjobSeeker' | 'showAbility' | 'showManagerOptions' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport'
+'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport'
 
 
 export interface SetStateManagerUIAction{

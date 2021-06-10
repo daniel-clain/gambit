@@ -37,7 +37,7 @@ export const LoanSharkCard = connect(mapping)(hot(({loan, money}) => {
 
           <div className='card__two-columns__right'>
             <div className='loan-shark-card__info'>
-              Hey buddy, ill loan you money, intrest will be {interestAddedPerWeek * 100}% of what you owe added on each week. You must pay me back a minimum of {minimumAmountToPayBackEachWeek} and if you dont pay the minimum {weeksOfNoPaybackUntilRespond} weeks in a row...... well, you'll find out what happens, and you wont like it.....
+              Hey buddy, ill loan you money, interest will be {interestAddedPerWeek * 100}% of what you owe added on each week. You must pay me back a minimum of {minimumAmountToPayBackEachWeek} and if you don't pay the minimum {weeksOfNoPaybackUntilRespond} weeks in a row...... well, you'll find out what happens, and you wont like it.....
             </div>            
           </div>
         </div>

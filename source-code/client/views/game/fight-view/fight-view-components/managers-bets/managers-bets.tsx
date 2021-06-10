@@ -12,23 +12,13 @@ interface ManagersBetProps {
 
 const ManagersBets = ({ managersBets, report }: ManagersBetProps) => {
   let [isHidden, setIsHidden] = useState(true)
-  report && console.log(report);
 
   const hasWinnings = report?.managerWinnings?.some(({ winnings }) => winnings > 0)
 
-  useEffect(() => {
-    hasWinnings && (() => {
-      /* do winnings animation */
-      setInterval(() => {
-
-      }, 2000);
-    })()
-  })
 
   const managerWinnings = (manager): number => {
     return report?.managerWinnings?.find(m => m.managerName == manager.name)?.winnings
   }
-  const doWinningAnimation = winnings => { console.log(winnings) }
 
 
   return (

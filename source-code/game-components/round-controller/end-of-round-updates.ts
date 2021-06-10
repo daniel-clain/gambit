@@ -1,10 +1,10 @@
 
 import gameConfiguration from "../../game-settings/game-configuration";
 import { random } from "../../helper-functions/helper-functions";
-import { Employee, FighterInfo, Professional } from "../../interfaces/front-end-state-interface";
+import { Employee, FighterInfo, KnownFighterStat, Professional } from "../../interfaces/front-end-state-interface";
 import Fighter from "../fighter/fighter";
 import { Game } from "../game";
-import { Manager } from "../manager";
+import { KnownManager, KnownManagerStat, Manager } from "../manager";
 
 export function doEndOfRoundUpdates(game: Game) {
 
@@ -17,14 +17,20 @@ export function doEndOfRoundUpdates(game: Game) {
   managers.forEach((manager) => {
     manager.has.nextFightBet = null
     manager.state.readyForNextFight = false
-    manager.has.actionPoints = 3
+    manager.has.actionPoints = manager.state.inJail ? 0 : 3
     returnEmployeesAndFightersWithExpiredContracts(manager)
     updateEmployeeAndFighterWeeksLeft(manager)
     payEmployeeAndFighterWages(manager)
     resetEmployeeActionPoints(manager.has.employees)
     updateNumberOfRoundsForKnowFighterStats(manager.has.knownFighters)
+    updateNumberOfRoundsForKnowManagerStats(manager.has.otherManagers)
     
     updateLoanSharkData(manager)
+    if(manager.state.inJail){
+      if(manager.state.inJail.weeksRemaining = 1)
+        manager.state.inJail = null
+      else manager.state.inJail.weeksRemaining --
+    }
 
   })
 
@@ -32,10 +38,10 @@ export function doEndOfRoundUpdates(game: Game) {
   if(roundController.nextWeekIsEvent){
     roundController.nextWeekIsEvent = false
     roundController.thisWeekIsEvent = true
-  }
-  if(roundController.thisWeekIsEvent = true){
+  } else if(roundController.thisWeekIsEvent = true){
     roundController.thisWeekIsEvent = false
   }
+  
   returnProfessionalJobSeekersToProfessionalsPool()
   resetFighterAffects()
   reduceExtremeFighterStats()
@@ -98,12 +104,13 @@ export function doEndOfRoundUpdates(game: Game) {
   function returnEmployeesAndFightersWithExpiredContracts(manager: Manager){
     const expiredEmployees: Employee[] = manager.has.employees.filter(employee => employee.activeContract.weeksRemaining == 0)
 
-    manager.has.employees = manager.has.employees.filter(employee => employee.activeContract.weeksRemaining != 0)
+    const {employees} = manager.has
 
-    expiredEmployees?.forEach(employee => {
-      const {activeContract, actionPoints, ...rest} = employee
-      professionals.push(rest)
-    })
+    employees.forEach(employee => 
+      employee.activeContract.weeksRemaining == 0 && 
+      game.functions.resignEmployee(employee)
+    )
+
 
     
     const expiredFighters: Fighter[] = manager.has.fighters.filter(fighter => fighter.state.activeContract?.weeksRemaining == 0)
@@ -126,9 +133,10 @@ export function doEndOfRoundUpdates(game: Game) {
     const fighterExpenses = manager.has.fighters.reduce(
       (count, fighter) => count + fighter.state.activeContract.weeklyCost
     , 0)
-    manager.has.money -= (employeeExpenses + fighterExpenses)
-    if(roundController.roundNumber > 1)
-    manager.functions.addToLog({message: `Spent ${employeeExpenses} on employee wages`, type: 'report'})
+    const allExpenses = employeeExpenses + fighterExpenses
+    manager.has.money -= allExpenses
+    if(allExpenses)
+    manager.functions.addToLog({message: `Spent ${allExpenses} on employee wages`, type: 'report'})
   }
 
   function resetEmployeeActionPoints(employees: Employee[]){
@@ -158,8 +166,19 @@ export function doEndOfRoundUpdates(game: Game) {
       Object.keys(knownFighter).forEach(incrementStatRounds)
 
       function incrementStatRounds(key){
-        let knownFighterProperty = knownFighter[key]
-        knownFighterProperty?.lastKnownValue && knownFighterProperty.lastKnownValue ++
+        let knownFighterProperty: KnownFighterStat = knownFighter[key]
+        knownFighterProperty?.lastKnownValue && knownFighterProperty.roundsSinceUpdated ++
+      }
+    })
+  }
+  function updateNumberOfRoundsForKnowManagerStats(knownManagers: KnownManager[]){
+    knownManagers.forEach(knownManager => {
+
+      Object.keys(knownManager).forEach(incrementStatRounds)
+
+      function incrementStatRounds(key){
+        let stat: KnownManagerStat = knownManager[key]
+        stat?.lastKnownValue && stat.roundsSinceUpdated ++
       }
     })
   }

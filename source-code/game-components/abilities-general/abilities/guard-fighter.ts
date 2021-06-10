@@ -7,7 +7,7 @@ const guardFighter: Ability = {
   name: 'Guard Fighter',
   cost: { money: 5, actionPoints: 1 },
   possibleSources: ['Thug'],
-  possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
+  validTargetIf: ['fighter in next fight'],
   executes: 'Instantly',
   canOnlyTargetSameTargetOnce: false
 }
@@ -24,7 +24,7 @@ export const guardFighterServer: ServerAbility = {
 }
 
 export const guardFighterClient: ClientAbility = {
-  shortDescription: 'Chance to block malicious attemps on a fighter',
+  shortDescription: 'Chance to block malicious attempt on a fighter',
   longDescription: 'The more skilled the guard is the higher the chance to block an attempt. Can block attempts to assault, poison or murder a fighter',
   ...guardFighter
 }

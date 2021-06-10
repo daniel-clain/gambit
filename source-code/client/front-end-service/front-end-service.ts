@@ -25,20 +25,6 @@ const frontEndService = (() => {
     setName: clientName => dispatch('setName', clientName)
   }
 
-/*   const setStateManagerUIFunctions = {
-    showFighter: fighter => dispatch('showFighter', fighter),
-    showEmployee: employee => dispatch('showEmployee', employee),
-    showjobSeeker: jobSeeker => dispatch('showjobSeeker', jobSeeker),
-    showAbility: ability => dispatch('showAbility', ability),
-    showManagerOptions: () => dispatch('showManagerOptions'),
-    showLoanShark: () => dispatch('showLoanShark'),
-    showKnownFighters: () => dispatch('showKnownFighters'),
-    showOtherManagers: () => dispatch('showOtherManagers'),
-    closeModal: () => dispatch('closeModal'),
-    closeSelectList: () => dispatch('closeSelectList'),
-    showReport: () => dispatch('showReport')
-  }
- */
 
   
 
@@ -126,7 +112,6 @@ const frontEndService = (() => {
         )
         websocketService.onServerGameUIStateUpdate.subscribe(
           serverGameUIState => {
-            console.log('game update ', serverGameUIState);
             frontEndStore.dispatch(
               {type:'Update Game UI', payload: serverGameUIState}
             )

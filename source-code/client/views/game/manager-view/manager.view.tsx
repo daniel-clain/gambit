@@ -5,12 +5,12 @@ import {EmployeesPanel} from './manager-view-components/main-components/employee
 import { LoanSharkCard } from "./manager-view-components/cards/loan-shark-card/loan-shark-card"
 import {AbilityCard} from "./manager-view-components/cards/ability-card/ability-card"
 import {JobSeekerCard} from "./manager-view-components/cards/job-seeker-card/job-seeker-card"
-import { KnownManager, ManagerInfo } from "../../../../game-components/manager"
+import { KnownManager } from "../../../../game-components/manager"
 import { KnownFightersCard } from "./manager-view-components/cards/known-fighters-card/known-fighters-card"
-import ManagersCard from './manager-view-components/cards/managers-card/managers-card'
+import {ManagersCard} from './manager-view-components/cards/managers-card/managers-card'
 import {JobSeekersPanel} from './manager-view-components/main-components/job-seekers-panel/job-seekers-panel'
 import {YourFightersPanel} from './manager-view-components/main-components/your-fighters-panel/your-fighters-panel'
-import { ActiveModal,  AllManagerUIState,  CardName,  FrontEndState, } from "../../../../interfaces/front-end-state-interface"
+import { AllManagerUIState,  CardName} from "../../../../interfaces/front-end-state-interface"
 import {connect, ConnectedProps} from 'react-redux'
 import {frontEndService} from "../../../front-end-service/front-end-service"
 
@@ -23,19 +23,19 @@ import { useEffect } from "react"
 import { ActivityLogPanel } from "./manager-view-components/main-components/activity-log-panel/activity-log-panel"
 import { ManagerCard } from "./manager-view-components/cards/manager-card/manager-card"
 import { EmployeeCard } from "./manager-view-components/cards/employee-card/employee-card"
-import { ReportTypes } from "../../../../types/game/log-item-type"
+import { outOfTimeSound } from "../../../sound-effects/sound-effects"
 
 
 const {toManagerState, getReportItems} = frontEndService
 
 
-const mapState = toManagerState(({activeModal, round, managerInfo}: AllManagerUIState) => ({activeModal, round, managerInfo}))
+const mapState = toManagerState(({activeModal, round, managerInfo, managerOptionsTimeLeft}: AllManagerUIState) => ({activeModal, round, managerInfo, managerOptionsTimeLeft}))
 
 const mapDispatch = {
   showLoanShark: () => ({type: 'showLoanShark'}),
   showKnownFighters: () => ({type: 'showKnownFighters'}),
   showOtherManagers: () => ({type: 'showOtherManagers'}),
-  showManagerOptions: (m: KnownManager) => ({type: 'showManagerOptions', payload: m}),
+  showManager: (m: KnownManager) => ({type: 'showManager', payload: m}),
   showReport: () => ({type: 'showReport'})
 }
 
@@ -45,10 +45,19 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 
 export const Manager_View = connector(hot( 
-  ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManagerOptions, showReport}: PropsFromRedux) => {
+  ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManager, showReport, managerOptionsTimeLeft}: PropsFromRedux) => {
 
   useEffect(() => {
-    getReportItems().length && showReport()},[round])
+    getReportItems().length && showReport()
+  },[round])
+
+  useEffect(() => {
+    if(managerOptionsTimeLeft == 5){
+      outOfTimeSound.play().catch(() => null)
+    }
+  },[managerOptionsTimeLeft])
+
+  
 
   return (
   
@@ -65,7 +74,7 @@ export const Manager_View = connector(hot(
               <ButtonPanel>
                 <button onClick={showLoanShark}>Loan Shark</button>
                 <button onClick={showKnownFighters}>Known Fighters</button>
-                <button onClick={() => showManagerOptions({name: managerInfo.name, image: managerInfo.image, activityLogs: {lastKnownValue: managerInfo.activityLogs, roundsSinceUpdated: null}})}>Manager Options</button>
+                <button onClick={() => showManager(convertThisManagerToKnownManager())}>Manager Options</button>
                 <button onClick={showOtherManagers}>Other Managers</button>
               </ButtonPanel>
             </div>
@@ -95,6 +104,18 @@ export const Manager_View = connector(hot(
       case 'Known Managers': return <ManagersCard/>
       case 'Ability': return <AbilityCard/>
       case 'Manager Report': return <ReportCard/>
+    }
+  }
+
+  function convertThisManagerToKnownManager(): KnownManager{
+    const {name, image, money, loan, employees, fighters, evidence} = managerInfo
+    return {
+      name, image,
+      money: {roundsSinceUpdated: null, lastKnownValue: money},
+      loan: {roundsSinceUpdated: null, lastKnownValue: loan},
+      employees: {roundsSinceUpdated: null, lastKnownValue: employees},
+      fighters: {roundsSinceUpdated: null, lastKnownValue: fighters},
+      evidence: {roundsSinceUpdated: null, lastKnownValue: evidence},
     }
   }
 

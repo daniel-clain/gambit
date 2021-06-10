@@ -1,4 +1,4 @@
-import { Sound } from "../../../types/figher/sound";
+import { Sound } from "../../../types/fighter/sound";
 
 
 export default interface SoundTime {

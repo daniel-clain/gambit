@@ -9,9 +9,11 @@ const tryToWinGame: Ability = {
   name: 'Try To Win',
   cost: { money: 10, actionPoints: 1 },
   possibleSources: ['Manager'],
-  possibleTargets: [],
+  notValidTargetIf: ['fighter'],
+  validTargetIf: [],
   executes: 'End Of Manager Options Stage',
-  canOnlyTargetSameTargetOnce: false
+  canOnlyTargetSameTargetOnce: false,
+  disabled: true
 }
 
 export const tryToWinGameServer: ServerAbility = {

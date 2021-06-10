@@ -2,11 +2,10 @@
 import FighterState from "./fighter-state";
 import Fight from '../fight/fight';
 import FighterFighting from './fighter-fighting/fighter-fighting';
-import { Skin } from '../../types/figher/skin';
 import { random } from "../../helper-functions/helper-functions";
-import { KnownManager, Manager } from "../manager";
 import FighterStats from "./fighter-fighting/stats";
 import { FighterInfo } from "../../interfaces/front-end-state-interface";
+import { Skin } from "../../types/fighter/skin";
 
 
 export default class Fighter{
@@ -68,7 +67,7 @@ export default class Fighter{
       ...getStats(this.fighting.stats),
       numberOfFights: {roundsSinceUpdated: 0, lastKnownValue: numberOfFights},
       numberOfWins: {roundsSinceUpdated: 0, lastKnownValue: numberOfWins},
-      manager: {roundsSinceUpdated: 0, lastKnownValue: manager?.has.name},//getKnownManagerInfo(manager),
+      manager: {roundsSinceUpdated: 0, lastKnownValue: manager?.has.name},
       activeContract,
       goalContract
     }
@@ -83,11 +82,6 @@ export default class Fighter{
       }
     }
     
-    function getKnownManagerInfo(manager: Manager): KnownManager{
-      
-      const {name, activityLogs, image} = manager.has
-      return {name, activityLogs: {lastKnownValue: activityLogs, roundsSinceUpdated: 0}, image}
-    } 
   }
 
 

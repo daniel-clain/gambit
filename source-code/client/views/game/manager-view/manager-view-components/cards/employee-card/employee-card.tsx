@@ -6,19 +6,31 @@ import { ClientAbility } from '../../../../../../../game-components/abilities-ge
 import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { Modal } from '../../partials/modal/modal';
-import { Employee } from '../../../../../../../interfaces/front-end-state-interface';
+import { Employee, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { InfoBox } from '../../partials/info-box/info-box';
 import { abilityService } from '../../../../../../front-end-service/ability-service-client';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { hot } from 'react-hot-loader/root';
+import { AbilityCardProps } from '../ability-card/ability-card';
 
-const {managerMap} = frontEndService
 
-const map = managerMap<Employee>(({activeModal: {data}}) => data)
-export const EmployeeCard = connect(map)(hot(employee => {
+const mapState = ({
+  clientUIState: {clientGameUIState: {
+    clientManagerUIState: {activeModal}
+  }}
+}: FrontEndState): {employee: Employee} => ({
+  employee: activeModal.data
+})
+
+
+const connector = connect(mapState)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export const EmployeeCard = connector(hot(({employee}: PropsFromRedux) => {
 
   const {weeksRemaining, weeklyCost} = employee.activeContract
+
   const employeeAbilities: ClientAbility[] = abilityService.abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))
   
   const infoBoxList: InfoBoxListItem[] = [

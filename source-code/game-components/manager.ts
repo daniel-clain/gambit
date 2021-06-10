@@ -3,12 +3,14 @@
 import {Bet} from '../interfaces/game/bet';
 import Fighter from "./fighter/fighter";
 import gameConfiguration from '../game-settings/game-configuration';
-import { AbilityName } from './abilities-general/ability';
+import { AbilityData, AbilityName, AbilitySourceInfo } from './abilities-general/ability';
 import { ActivityLogItem } from '../types/game/activity-log-item';
 import { ManagerImage } from '../types/game/manager-image';
 import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
 import { Game } from './game';
 import { FighterInfo, Loan, Employee } from '../interfaces/front-end-state-interface';
+import { Evidence } from '../types/game/evidence.type';
+import { Lawsuit } from '../types/game/lawsuit.type';
 
 
 
@@ -43,7 +45,7 @@ import { FighterInfo, Loan, Employee } from '../interfaces/front-end-state-inter
     - ready for the next round
 
 */
-interface KnownManagerStat{  
+export interface KnownManagerStat{  
   lastKnownValue: any,
   roundsSinceUpdated: number
 }
@@ -51,7 +53,11 @@ interface KnownManagerStat{
 export interface KnownManager{
   name: string
   image: ManagerImage
-  activityLogs: KnownManagerStat
+  money: KnownManagerStat
+  employees: KnownManagerStat
+  fighters: KnownManagerStat
+  loan: KnownManagerStat
+  evidence: KnownManagerStat
 }
 
 export interface ManagerInfo{
@@ -68,10 +74,17 @@ export interface ManagerInfo{
   otherManagers: KnownManager[]
   activityLogs: ActivityLogItem[]
   image: ManagerImage
+  evidence: Evidence[]
 }
 
 export class ManagerState{
   readyForNextFight: boolean = false
+  underSurveillance: {professional: string} = undefined
+  inJail: {
+    weeksTotal: number,
+    weeksRemaining: number,
+    lawsuit: Lawsuit
+  }
 }
 
 class ManagerHas{
@@ -91,6 +104,7 @@ class ManagerHas{
   activityLogs: ActivityLogItem[] = []
   abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract']
   postFightReportItems: PostFightReportItem[] = []
+  evidence: Evidence[] = []
 
   
 }

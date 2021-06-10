@@ -21,19 +21,11 @@ interface FightUiProps{
 
 
 const Fight_View = ({
-    startCountdown, timeRemaining, fighterFightStates, 
-    report, managersBets, knownFighterStates
-  }:FightUiProps) => {
-
-    const [doStartAnimation, setDoStartAnimation] = useState(startCountdown == 0)
-
-    useEffect(() => {
-      if(startCountdown == 0){
-        setDoStartAnimation(true)
-      } else {
-        setDoStartAnimation(false)
-      }
-    }, [startCountdown])
+  startCountdown, timeRemaining, fighterFightStates, 
+  report, managersBets, knownFighterStates
+}:FightUiProps) => {
+  const doStartAnimation = startCountdown == 0
+    
     
   return (
     <div className={`

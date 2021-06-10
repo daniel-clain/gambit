@@ -9,12 +9,12 @@ const prepareForProsecution: Ability = {
   name: 'Prepare For Prosecution',
   cost: { money: 10, actionPoints: 1 },
   possibleSources: ['Lawyer'],
-  possibleTargets: ['fighter not owned by manager'],
+  validTargetIf: ['fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: false
 }
 
-export const prepareForProsectionServer: ServerAbility = {
+export const prepareForProsecutionServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
     
@@ -30,7 +30,7 @@ export const prepareForProsectionServer: ServerAbility = {
 
     
     if(fighter.state.dead){
-      assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed beacuse he was already found dead`, type:'employee outcome'})
+      assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed because he was already found dead`, type:'employee outcome'})
       return
     }
 

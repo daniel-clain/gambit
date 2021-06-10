@@ -4,11 +4,27 @@ import {connect, ConnectedProps} from 'react-redux'
 import { FrontEndState } from "../../../../../../../interfaces/front-end-state-interface";
 import { Modal } from '../../partials/modal/modal';
 import './managers-card.scss'
-import { frontEndService } from '../../../../../../front-end-service/front-end-service';
 import { SetStateManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
+import { hot } from 'react-hot-loader/root';
 
 
-const ManagersCard = ({
+const mapState = (({
+  serverUIState: {serverGameUIState: {
+    playerManagerUIState: {managerInfo}
+  }},
+  clientUIState: {clientPreGameUIState: {clientName}}
+}: FrontEndState) => ({
+  managers: managerInfo.otherManagers, clientName
+}))
+
+const mapDispatch = {
+  selectManager: (manager: KnownManager): SetStateManagerUIAction => ({type: 'showManager', payload: manager })
+}
+
+const connector = connect(mapState, mapDispatch)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export const ManagersCard = connector(hot(({
   managers, clientName, selectManager
 }: PropsFromRedux) => {
   
@@ -27,24 +43,5 @@ const ManagersCard = ({
       </div>
     </div>
   </Modal>
-}
-
-const mapState = (({
-  serverUIState: {serverGameUIState: {
-    playerManagerUIState: {managerInfo}
-  }},
-  clientUIState: {clientPreGameUIState: {clientName}}
-}: FrontEndState) => ({
-  managers: managerInfo.otherManagers, clientName
 }))
 
-const mapDispatch = {
-  selectManager: (manager: KnownManager): SetStateManagerUIAction => ({type: 'showManagerOptions', payload: manager })
-}
-
-
-const connector = connect(mapState, mapDispatch)
-
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-export default connector(ManagersCard)

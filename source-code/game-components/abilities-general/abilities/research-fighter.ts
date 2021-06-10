@@ -11,7 +11,7 @@ const researchFighter: Ability = {
   name: 'Research Fighter',
   cost: { money: 5, actionPoints: 1 },
   possibleSources: ['Manager', 'Private Agent', 'Talent Scout'],
-  possibleTargets: ['fighter not owned by manager'],
+  validTargetIf: ['fighter not owned by manager'],
   executes: 'Instantly',
   canOnlyTargetSameTargetOnce: false
 }

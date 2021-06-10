@@ -4,7 +4,6 @@ import { researchFighterServer } from './abilities/research-fighter';
 import { ExecutesWhenOptions } from '../../types/game/executes-when-options';
 import { assaultFighterServer } from './abilities/assault-fighter';
 import { doSurveillanceServer } from './abilities/do-surveillance';
-import { gatherEvidenceServer } from './abilities/gather-evidence';
 import { guardFighterServer } from './abilities/guard-fighter';
 import { murderFighterServer } from './abilities/murder-fighter';
 import { offerContractServer } from './abilities/offer-contract';
@@ -19,6 +18,7 @@ import { ContractOffer, GoalContract } from '../../interfaces/game/contract.inte
 import { Game } from '../game';
 import { Manager } from '../manager';
 import { Employee } from '../../interfaces/front-end-state-interface';
+import { investigateManagerServer } from './abilities/investigate-manager';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]
@@ -33,7 +33,6 @@ export class AbilityProcessor{
   private abilities: ServerAbility[] = [    
     assaultFighterServer,
     doSurveillanceServer,
-    gatherEvidenceServer,
     guardFighterServer,
     murderFighterServer,
     offerContractServer,
@@ -43,11 +42,13 @@ export class AbilityProcessor{
     sellDrugsServer,
     prosecuteManagerServer,
     trainFighterServer,
-    dopeFighterServer
+    dopeFighterServer,
+    investigateManagerServer
   ]
   delayedExecutionAbilities: AbilityData[] = []
 
   executeAbilities(executes: ExecutesWhenOptions){
+    
     if(executes == 'End Of Round'){
       const offerContractInstances = this.delayedExecutionAbilities.filter((delayedAbility => delayedAbility.name == 'Offer Contract'))
       const offerContractAbility = this.abilities.find(ability => ability.name == 'Offer Contract')
@@ -56,13 +57,23 @@ export class AbilityProcessor{
 
 
 
-    this.delayedExecutionAbilities.map((delayedAbility: AbilityData): {ability: ServerAbility, abilityData: AbilityData} => ({
+    const sortedAbilitiesToExecute = this.delayedExecutionAbilities.map((delayedAbility: AbilityData): {ability: ServerAbility, abilityData: AbilityData} => ({
       ability: this.abilities.find(ability => ability.name == delayedAbility.name), 
       abilityData: delayedAbility
     }))
-    .filter(({ability}: {ability: ServerAbility}) => ability.executes == executes && ability.name != 'Offer Contract')
-    .forEach(({ability, abilityData}: {ability: ServerAbility, abilityData: AbilityData}) => 
-      ability.execute(abilityData, this.game)
+    .filter(({ability}: {ability: ServerAbility}) => {
+      if(ability.name == 'Offer Contract') return false
+      if(
+        ability.executes instanceof Array ? 
+        executes.includes(executes) : 
+        ability.executes == executes 
+      ) return true
+      else return false
+    })
+    .sort((a, b) => !a.ability.priority ? 1 : !b.ability.priority ? -1 : a.ability.priority-b.ability.priority)
+
+    sortedAbilitiesToExecute.forEach(({ability, abilityData}: {ability: ServerAbility, abilityData: AbilityData}) => 
+      ability.execute(abilityData, this.game, executes)
     )
 
 
@@ -73,9 +84,38 @@ export class AbilityProcessor{
       if(indexToBeRemoved != undefined)
       this.delayedExecutionAbilities.splice(indexToBeRemoved, 1)
       indexToBeRemoved = 
-      this.delayedExecutionAbilities.findIndex((delayedAbility: AbilityData) => 
-      this.abilities.find(ability => ability.name == delayedAbility.name).executes == executes
-      )
+      this.delayedExecutionAbilities.findIndex((delayedAbility: AbilityData) => {
+        const abilityExecutes = this.abilities.find(ability => ability.name == delayedAbility.name).executes
+        
+        if(abilityExecutes instanceof Array){
+          return abilityExecutes.reduce((isFinalTimeExecuted, executeTime) => {
+
+            if(isFinalTimeExecuted) return true
+
+            if(
+              executeTime == 'End Of Round' && 
+              executeTime == executes
+            ) return true
+
+            if(
+              executeTime == 'End Of Manager Options Stage' && 
+              executeTime == executes && 
+              !abilityExecutes.includes('End Of Manager Options Stage')
+            ) return true
+
+            if(
+              executeTime == 'Instantly' && 
+              executeTime == executes && 
+              !abilityExecutes.includes('End Of Manager Options Stage') &&
+              !abilityExecutes.includes('End Of Round')
+            ) return true
+
+          }, false)
+          
+        } else return abilityExecutes == executes
+
+
+      })
     }
   }
 
@@ -143,14 +183,14 @@ export class AbilityProcessor{
         goalContract = jobSeeker.goalContract
       else
         goalContract = fighters.find(fighter => fighter.name == target.name).state.goalContract
-      const randomThreshhold = (random(5) + 5) / 10
-      if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshhold){
+      const randomThreshold = (random(5) + 5) / 10
+      if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold){
         const manager = source.type == 'Manager' ? managers.find(manager => manager.has.name == source.name) : managers.find(manager => manager.has.employees.some(employee => employee.name == source.name))
         manager.functions.addToLog({message: `Job seeker ${target.name} (${!jobSeeker ? 'Fighter' : jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}) rejected your contract offer because you offered too little`, type: 'report'})
         return
       }
   
-      const targetExists = offerContractTargets.find(offerCOntractTarget => offerCOntractTarget.targetName == offerContractInstance.target.name)
+      const targetExists = offerContractTargets.find(offerContractTarget => offerContractTarget.targetName == offerContractInstance.target.name)
       if(!targetExists)
         offerContractTargets.push({
           targetName: offerContractInstance.target.name,
@@ -196,7 +236,7 @@ export class AbilityProcessor{
           const {target} = offerContractInstance
           const manager = this.getAbilitySourceManager(offerContractInstance)
   
-          manager.functions.addToLog({message: `${target.name} (${jobSeeker ? jobSeeker.profession : 'Fighter'}) rejected your contract offer because he has accepeted the offer of another manager`, type: 'report'})
+          manager.functions.addToLog({message: `${target.name} (${jobSeeker ? jobSeeker.profession : 'Fighter'}) rejected your contract offer because he has accepted the offer of another manager`, type: 'report'})
         }
       })
   

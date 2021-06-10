@@ -21,17 +21,23 @@ export default function SelectList(props: SelectListProps){
           <div className="item-name">
             {listItem.name}
           </div>
-          {nextFightFighters.includes(listItem.name) && 
-            <div className="fighter-in-next-fight"></div>
-          }      
-          {listItem.type == 'fighter owned by manager' && 
-            <div className="your-fighter"></div>
-          }     
-          {listItem.type == 'opponent manager' || listItem.type == 'Manager' && 
-            <div className="manager"></div>
-          }    
+          {getType(listItem)}
+             
         </div>
       )}
     </div>
   )
+
+  function getType(listItem){
+    let returnElems: JSX.Element[] = []
+    if(nextFightFighters.includes(listItem.name)){
+      returnElems.push(<div className="fighter-in-next-fight"></div>)
+    }      
+    if(listItem.type == 'fighter owned by manager'){
+      returnElems.push(<div className="your-fighter"></div>)
+    }     
+    if(listItem.type == 'opponent manager' || listItem.type == 'Manager'){
+      returnElems.push(<div className="manager"></div>)
+    } 
+  }
 };

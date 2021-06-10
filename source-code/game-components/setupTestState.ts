@@ -3,33 +3,39 @@ import gameConfiguration from "../game-settings/game-configuration"
 import { Employee } from "../interfaces/front-end-state-interface"
 import { Game } from "./game"
 
-gameConfiguration.stageDurations.managerOptions = 500
 
 export const setupTestState = (game: Game) => {
-  gameConfiguration.fightersAfterRounds = [{round: 0, fighters: 3}]
-  const manager1 = game.has.managers[0]
-  const agent1: Employee = new Employee('Private Agent')
-  const agent2 = new Employee('Private Agent')
-  const agent3 = new Employee('Private Agent')
-  const dealer = new Employee('Drug Dealer')
-  const hitman = new Employee('Hitman')
-  const thug = new Employee('Thug')
-  manager1.has.employees.push(agent1, agent2, agent3, dealer, hitman, thug)
-  gameConfiguration.stageDurations.eachNewsSlide = 10
-  manager1.has.money = 10000
-  gameConfiguration.startingRoundNumber = 15
-  /* 
 
-  gameConfiguration.stageDurations.maxFightDuration = 1
-
-  game.has.managers[0].has.money = -50 */
-
-  //gameConfiguration.stageDurations.showWinningsDuration = 999999
-  /* 
+  //skipFight()
 
 
 
-/* 
-  for(; manager1.has.activityLogs.length < 100; manager1.functions.addToLog({message: 'some bullshit'})){} */
+  //implementation
 
+  function skipFight(){
+    gameConfiguration.stageDurations.extraTimePerFighter = 0 
+    gameConfiguration.stageDurations.maxFightDuration = 1
+    gameConfiguration.stageDurations.eachNewsSlide = 1
+    gameConfiguration.stageDurations.startCountdown = 1
+
+  }
+
+  function setup1(){
+    gameConfiguration.stageDurations.managerOptions = 6000
+
+    const manager1 = game.has.managers[0]
+    const manager2 = game.has.managers[1]
+    const agent1: Employee = new Employee('Private Agent')
+    const agent2 = new Employee('Private Agent')
+    const agent3 = new Employee('Private Agent')
+    const dealer = new Employee('Drug Dealer')
+    const lawyer = new Employee('Lawyer')
+    const hitman = new Employee('Hitman')
+    const thug = new Employee('Thug')
+    manager1.has.employees.push(lawyer, agent1)
+    manager2?.has.employees.push(agent2, agent3, dealer, hitman, thug)
+    manager1.has.money = 10000
+    if(manager2) manager2.has.money = 10000
+
+  }
 }

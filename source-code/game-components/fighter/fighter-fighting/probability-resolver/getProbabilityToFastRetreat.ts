@@ -1,4 +1,5 @@
-import { Closeness } from "../../../../types/figher/closeness"
+
+import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
 import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetreat"
 

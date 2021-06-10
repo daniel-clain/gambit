@@ -16,6 +16,7 @@ export default class FighterState{
   goalContract?: GoalContract
   guards: Employee[] = []
   onARampage: boolean
+  underSurveillance: {professional: string} = undefined
   
   trainingProgress = 0
   manager?: Manager

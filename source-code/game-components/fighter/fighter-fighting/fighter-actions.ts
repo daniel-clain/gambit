@@ -1,7 +1,7 @@
 import FighterFighting from "./fighter-fighting";
 import DecideActionProbability from "./decide-action-probability";
 import Fighter from "../fighter";
-import { CombatAction, MoveAction, ActionName, AttackResponseAction } from "../../../types/figher/action-name";
+import { CombatAction, MoveAction, ActionName, AttackResponseAction } from "../../../types/fighter/action-name";
 import { wait } from "../../../helper-functions/helper-functions";
 import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability";
 

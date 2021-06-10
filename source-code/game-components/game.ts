@@ -14,6 +14,7 @@ import { GameHost } from '../game-host/game-host'
 import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
 import { randomNumber } from "../helper-functions/helper-functions"
 import gameConfiguration from "../game-settings/game-configuration"
+import { Lawsuit } from "../types/game/lawsuit.type"
 
 
 /* 
@@ -63,14 +64,8 @@ class GameHas{
   constructor(
     public gameDisplays: ConnectedClient[],
     private game: Game,
-    private i: Game_Implementation,
   ){
-    this.fighters = this.i.createRandomFighters()
-    this.professionals = this.i.createRandomProfessionals()
-    
     this.abilityProcessor = new AbilityProcessor(this.game)
-    
-
     if(this.game.state.gameType == 'Websockets'){
       this.connectionManager = new ConnectionManager(this.game)
     }
@@ -102,6 +97,11 @@ class GameFunctions{
       
     }, 1000);
   }
+
+  resignEmployee = this.i.resignEmployee
+
+  removeFighterFromTheGame = this.i.removeFighterFromTheGame
+
 
   tearDownGame(){
     console.log('TEARING DOWN GAME');
@@ -164,7 +164,7 @@ class GameFunctions{
   
 
   getGameUiState(manager?: Manager): ServerGameUIState{
-    let {activeStage, preFightNewsStage, activeFight: {fightUiData, fighters}, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
+    let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
     let {delayedExecutionAbilities} = this.game.has.abilityProcessor
 
     return {
@@ -175,11 +175,11 @@ class GameFunctions{
         managerInfo: manager?.functions.getInfo(),
         managerOptionsTimeLeft: timeLeft,
         jobSeekers,
-        nextFightFighters: fighters.map(fighter => fighter.name),
+        nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
         delayedExecutionAbilities
       },
       preFightNewsUIState: {newsItem: preFightNewsStage.activeNewsItem},
-      fightUIState: {...fightUiData, knownFighterStates: manager?.functions.getKnownFighterStats(fighters)}
+      fightUIState: {...activeFight?.fightUiData, knownFighterStates: !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)}
     }
   }
 }
@@ -199,10 +199,11 @@ export class Game {
   ){
     this.state = new GameState(gameType)
     this.functions= new GameFunctions(this, this.i, gameHost)
-    this.has = new GameHas(gameDisplays, this, this.i) 
+    this.has = new GameHas(gameDisplays, this) 
     this.has.roundController = new RoundController(this)
+    
     this.setupPlayersAndManagers(players)
-
+    this.i.setupFightersAndProfessionals()
 
 
     this.functions.startGame()
@@ -227,7 +228,7 @@ export class Game {
     this.has.managers.forEach(manager => {
       manager.has.otherManagers = this.has.managers
       .filter(m => m.has.name != manager.has.name)
-      .map(m => ({name: m.has.name, image: m.has.image, activityLogs: null}))
+      .map(m => ({name: m.has.name, image: m.has.image, money: null, loan: null, fighters: null, employees: null, evidence: null}))
     })
   }
 

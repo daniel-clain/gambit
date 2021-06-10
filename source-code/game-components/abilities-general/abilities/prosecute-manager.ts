@@ -1,18 +1,155 @@
+import x from "../../../client/views/game/manager-view/manager-view-components/cards/fighter-card/fighter-card"
+import { Employee } from "../../../interfaces/front-end-state-interface"
+import { Evidence, IllegalActivityName } from "../../../types/game/evidence.type"
+import { Lawsuit, LawsuitAccount } from "../../../types/game/lawsuit.type"
+import { Profession } from "../../../types/game/profession"
 import { Game } from "../../game"
+import { Manager } from "../../manager"
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 
 const sueManager: Ability = {
   name: 'Prosecute Manager',
   cost: { money: 500, actionPoints: 1 },
   possibleSources: ['Lawyer'],
-  possibleTargets: ['opponent manager'],
-  executes: 'End Of Round',
+  validTargetIf: ['opponent manager'],
+  executes: ['End Of Manager Options Stage', 'End Of Round'],
   canOnlyTargetSameTargetOnce: true
 }
 
+type Verdict = {
+  weeksInJail: number
+  fine: number
+}
+
+
 export const prosecuteManagerServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    throw 'sue manager ability not yet implemented'    
+    const {managers} = game.has
+    const {source, target} = abilityData
+    const prosecutingManager = managers.find(m => m.has.employees.find(e => e.name == source.name))
+    const prosecutedManager = managers.find(m => m.has.name == target.name)
+    const lawsuit: Lawsuit = createLawsuit()
+    addNewsItem()
+
+    const verdict: Verdict = determineTheVerdict()
+    console.log('verdict :>> ', verdict);
+
+    const moneyTakenOffPlayer = takeMoneyOffManager()
+    giveHalfToProsecutingManager()
+    getPutInJail()
+    const lostEmployees: Employee[] = prosecutedManager.has.employees.filter(e => 
+      ['Drug Dealer', 'Hitman', 'Thug'].includes(e.profession)  
+    )
+    updateManagerLogs()
+
+    
+    function updateManagerLogs(){
+      const logMessage = `
+        You have been found guilty on accounts of:
+        ${lawsuit.accounts.reduce((x, a, i) => 
+          x += `\n -${a.name}(${a.evidence.length})`
+        , '')}
+
+        . You have been sentenced to ${verdict.weeksInJail} weeks in jail with a fine of $${verdict.fine}. While in jail, you manager has 0 action points.
+
+        ${!lostEmployees.length ? '' : 
+          `The following employees have left you: 
+            ${lostEmployees.reduce((string, e) => string += `
+              \n - ${e.name} (${e.profession})
+            `, '')}
+          `
+        }
+      `
+
+      prosecutedManager.functions.addToLog({type: 'critical', message: logMessage})
+    }
+
+    function addNewsItem(){
+      
+      game.has.roundController.preFightNewsStage.newsItems.push({
+        newsType: 'manager prosecuted',
+        headline: 'Lawsuit filed',
+        message: `${prosecutingManager.has.name} has filed a lawsuit against ${prosecutedManager.has.name}`
+      })
+    }
+
+    function giveHalfToProsecutingManager(){
+      prosecutingManager.has.money += moneyTakenOffPlayer / 2
+    }
+
+    function takeMoneyOffManager(): number{
+      prosecutedManager.has.money -= verdict.fine
+      return verdict.fine
+    }
+
+    function getPutInJail(){
+      prosecutedManager.state.inJail = {
+        weeksRemaining: verdict.weeksInJail,
+        weeksTotal: verdict.weeksInJail,
+        lawsuit
+      }
+    }
+
+    function createLawsuit(): Lawsuit{
+      return {
+        prosecutedManager: prosecutedManager.functions.getInfo(), 
+        prosecutingManager: prosecutingManager.functions.getInfo(), 
+        accounts: abilityData.additionalData.reduce(
+          (accounts: LawsuitAccount[], dataItem: {id, evidence: Evidence}): LawsuitAccount[] => {
+            if(findAccountWithActivity()){
+              findAccountWithActivity().evidence.push(dataItem.evidence)
+            }
+            else {
+              accounts.push({
+                name: dataItem.evidence.illegalActivity,
+                evidence: [dataItem.evidence]
+              })
+            }
+            return accounts
+
+            function findAccountWithActivity(){
+              return accounts.find(account => account.name == dataItem.evidence.illegalActivity)
+            }
+          }, []
+      )}
+    }
+
+    function determineTheVerdict(): Verdict{
+
+      const verdict = lawsuit.accounts.reduce((verdict, account): Verdict => {
+        console.log(account.name)
+        switch(account.name){
+          case 'administering performance enhancing drugs': {
+            verdict.weeksInJail += 0.5 + account.evidence.length * 0.1
+            verdict.fine += 1000 + account.evidence.length * 500
+          } break
+          case 'administering with intent to harm': {
+            verdict.weeksInJail += 0.8 + account.evidence.length * 0.3
+            verdict.fine += 1000 + account.evidence.length * 500
+          } break
+          case 'solicitation to commit homicide': {
+            verdict.weeksInJail += 2 + account.evidence.length * 1
+            verdict.fine += 10000 + account.evidence.length * 5000
+          } break
+          case 'solicited assault': {
+            verdict.weeksInJail += .7 + account.evidence.length * .2
+            verdict.fine += 1000 + account.evidence.length * 500
+          } break
+          case 'supplying illegal substances': {
+            verdict.weeksInJail += 1 + account.evidence.length * .5
+            verdict.fine += 3000 + account.evidence.length * 1000
+          } break
+        }
+        return verdict
+      }, {weeksInJail: 0, fine: 0} as Verdict)
+
+      return {
+        ...verdict,
+        weeksInJail: Math.round(verdict.weeksInJail)
+      }
+
+    }
+
   },
   ...sueManager
 }

@@ -113,7 +113,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		defaultFighterImages
 		
 	return <>
-		<div key='figher' className='fighter' id={name} style={fighterStyle}>
+		<div key='fighter' className='fighter' id={name} style={fighterStyle}>
 			<div className='fighter__name' style={fighterNameStyle}>
 				{name}
 				<span className="fighter__spirit">{

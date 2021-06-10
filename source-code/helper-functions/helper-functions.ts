@@ -7,6 +7,7 @@ import { Angle } from "../types/game/angle";
  * @returns 
  */
 export function random(number: number, startAtOne?: boolean){return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
+export function randomFloor(number: number, startAtOne?: boolean){return Math.floor((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
 
 export const shuffle = <T>(array: T[]): T[] => {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -166,6 +167,24 @@ export function validateAngle(angle: Angle): Angle{
     throw 'angle is invalid: ' + angle
   
   return angle
+}
+
+
+export const unwrapToBody = selector => {
+  const element = document.querySelector(selector)
+  const parentElement = element.parentElement
+  if(parentElement.tagName.toLowerCase() == 'body') {
+    const siblings = document.querySelectorAll(`body > *:not(${selector})`)
+    siblings.forEach(sibling => sibling.remove())
+    return
+  }
+  replaceParentWithElement()
+  unwrapToBody(selector)
+
+
+  function replaceParentWithElement(){
+    parentElement.outerHTML = element.outerHTML
+  }
 }
 
 

@@ -1,0 +1,25 @@
+.checkbox{
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid black;
+  flex-shrink: 0;
+  &.is-checked{
+    background-color: #00f;
+  }
+  margin-right: 10px;
+}
+
+.checkbox-item{
+  display: flex;
+  margin-bottom: 6px;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 1px dashed #bbb;
+  padding-bottom: 6px;
+}
+
+.checkbox-label{
+  overflow-y: auto;
+  max-height: 50px;
+}

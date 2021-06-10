@@ -7,7 +7,7 @@
 
 * when does a fighter retreat from being flanked
 = fighter has a probability of being flanked, the probability increases based on whether the fighters are targeting that fighter for attack, and also how close the fighters/arena edge is
-= if the closestFighter is in stiking range, the figher will not try to retreat because turning his back will result in being attacked, he will wait until after he has blocked, dodged or taken a hit
+= if the closestFighter is in stiking range, the fighter will not try to retreat because turning his back will result in being attacked, he will wait until after he has blocked, dodged or taken a hit
 
 * how does being flanked influence a fighters action
 = if the fighter is flanked they will have a high chance to retreat from flanked, further influenced by if their spirit and stamina is low

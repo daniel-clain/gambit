@@ -1,4 +1,4 @@
-import { Professional } from "../interfaces/front-end-state-interface";
+import { Employee, Professional } from "../interfaces/front-end-state-interface";
 import gameConfiguration from "../game-settings/game-configuration";
 import { random, shuffle } from "../helper-functions/helper-functions";
 import { Profession } from "../types/game/profession";
@@ -8,10 +8,16 @@ import { Game } from "./game";
 import { getProfessionalsAbilities } from "./professionals";
 
 export class Game_Implementation{
-  shuffledNames = shuffle([...gameConfiguration.listOfNames])
-
+  shuffledNames 
 
   constructor(public game: Game){}
+
+  setupFightersAndProfessionals(){
+    this.shuffledNames = shuffle([...gameConfiguration.listOfNames.filter(name => !this.game.has.players.some(p => p.name == name))])
+    
+    this.game.has.fighters = this.createRandomFighters()
+    this.game.has.professionals = this.createRandomProfessionals()
+  }
 
 
   createRandomFighters(): Fighter[]{
@@ -108,6 +114,7 @@ export class Game_Implementation{
       const randomProfession: Profession = getRandomProfession()
       
       return new Professional(randomProfession, <SkillLevel>random(3, true), shuffledNames.pop())
+      
       function getRandomProfession(): Profession {
         let totalProbability = 0
         
@@ -133,6 +140,37 @@ export class Game_Implementation{
     
     return this.game.has.gameDisplays?.filter(gameDisplay => this.game.has.connectionManager.disconnectedPlayerVotes
       .find(d => d.disconnectedPlayer.id == gameDisplay.id))
+  }
+
+
+  removeFighterFromTheGame = (fighterName, game: Game) => {
+    const fighter = game.has.fighters.find(fighter => fighter.name == fighterName)
+    fighter.state.dead = true
+  
+    game.has.managers.forEach(manager => {
+      const {fighters, knownFighters} = manager.has
+      fighters.splice(
+        fighters.findIndex(f => f.name == fighterName), 1
+      )
+      knownFighters.splice(
+        fighters.findIndex(f => f.name == fighterName), 1
+      )
+    })
+  
+    const {fighters} = game.has.roundController.activeFight
+    fighters.splice(
+      fighters.findIndex(f => f.name == fighterName), 1
+    )
+  }
+
+  resignEmployee(employee: Employee){
+    const employeesManager = this.game.has.managers.find(m => m.has.employees.some(e => e.name == employee.name))
+    
+    employeesManager.has.employees = employeesManager.has.employees.filter(e => e.name == employee.name)
+
+    const {actionPoints, activeContract, ...rest} = employee
+
+    this.game.has.professionals.push(rest)
   }
 
 }

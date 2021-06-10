@@ -13,6 +13,7 @@ type FightExplosionAnimationStages =
 export const FightStartAnimation = ({doStartAnimation}) => {
   
   const doFightExplosionAnimation = async () =>{
+    console.log('doing start animation');
     setFightExplosionAnimationStage('start')
     await wait(400)
     setFightExplosionAnimationStage('grow') 
@@ -28,5 +29,7 @@ export const FightStartAnimation = ({doStartAnimation}) => {
     
   const [fightExplosionAnimationStage, setFightExplosionAnimationStage] = useState<FightExplosionAnimationStages>('removed')
 
-  return <div className={`fight-explosion fight-explosion--${fightExplosionAnimationStage}`}></div>
+  return <div className={`fight-explosion fight-explosion--${fightExplosionAnimationStage}`}>
+    <div className="fight-explosion__inner"></div>
+  </div>
 }

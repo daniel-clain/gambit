@@ -20,13 +20,15 @@ export interface FighterCardProps {
   fighterName: string
   allFighters: FighterInfo[]
   thisPlayersName: string
+  nextFightFighters: string[]
 
 }
 
-const FighterCard = ({fighterName, thisPlayersName, allFighters}: FighterCardProps) => {
+const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighters}: FighterCardProps) => {
   const fighter = allFighters.find(f => f.name == fighterName)
   const {abilityService} = frontEndService
   const isYourFighter = fighter.manager?.lastKnownValue == thisPlayersName
+  const fighterIsInNextFight = nextFightFighters.includes(fighter.name)
 
 
   let goalContractInfo: InfoBoxListItem[]
@@ -40,7 +42,7 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters}: FighterCardPro
 
 
 
-  const abilitiesFighterCanBeTheTargetOf: ClientAbility[] = abilityService.getAbilitiesFighterCanBeTheTargetOf(isYourFighter)
+  const abilitiesFighterCanBeTheTargetOf: ClientAbility[] = abilityService.getAbilitiesFighterCanBeTheTargetOf(isYourFighter, fighterIsInNextFight)
 
 
 
@@ -168,7 +170,7 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters}: FighterCardPro
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
     playerManagerUIState: {
-      jobSeekers, managerInfo: {knownFighters, fighters}
+      jobSeekers, managerInfo: {knownFighters, fighters}, nextFightFighters
     },
     
   }},
@@ -179,7 +181,7 @@ const mapStateToProps = ({
     }
   }
 }: FrontEndState): FighterCardProps => ({
-  jobSeekers, thisPlayersName: clientName, fighterName: data, allFighters: [...knownFighters, ...fighters]
+  jobSeekers, thisPlayersName: clientName, fighterName: data, allFighters: [...knownFighters, ...fighters], nextFightFighters
 })
 
 

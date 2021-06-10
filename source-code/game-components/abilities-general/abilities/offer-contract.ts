@@ -10,7 +10,7 @@ const offerContract: Ability = {
   name: 'Offer Contract',
   cost: { money: 0, actionPoints: 1 },
   possibleSources: ['Manager', 'Talent Scout'],
-  possibleTargets: ['job seeker'],
+  validTargetIf: ['job seeker'],
   executes: 'End Of Round',
   canOnlyTargetSameTargetOnce: true
 }
@@ -49,7 +49,7 @@ export const offerContractServer: ServerAbility = {
       if(jobSeeker.type == 'Fighter'){
         const fighter: Fighter = game.has.fighters.find(fighter => fighter.name == jobSeeker.name)
         if(fighter.state.dead){
-          manager.functions.addToLog({message: `Offer contract to ${abilityData.target.name} failed beacuse he was murdered`, type: 'employee outcome'})
+          manager.functions.addToLog({message: `Offer contract to ${abilityData.target.name} failed because he was murdered`, type: 'employee outcome'})
           return
         }
         manager.has.fighters.push(fighter)
@@ -82,7 +82,7 @@ export const offerContractServer: ServerAbility = {
 
 export const offerContractClient: ClientAbility = {
   shortDescription: 'Offer a contract to work for you',
-  longDescription: 'Offer a fighter or proffessional a contract to work for you, you earn more money when your fighter wins, and your empoyees can perform actions on your behalf',
+  longDescription: `Offer a fighter or professional a contract to work for you, you earn more money when your fighter wins, and your employees can perform actions on your behalf. If you offer less than what they're asking for, theres a chance they will refuse. If another manager makes a better offer, they will take that offer instead`,
   ...offerContract
 }
 

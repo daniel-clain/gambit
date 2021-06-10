@@ -64,49 +64,94 @@ export default class FightDayStage implements IStage {
     this.roundController.activeFight.fighters.forEach(fighter => fighter.reset())
   }
   
-  private processManagerBets(fightReport: FightReport): FightReport {
-    const { winner } = fightReport
+  private processManagerBets(fightReport: FightReport) {
+    const { winner, draw } = fightReport
 
-    if (winner) {
-      const bonusFromPublicityRating = this.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * 10
-      const managerWinnings: ManagerWinnings[] = this.managers.map(
-        (manager: Manager) => {
-          let winnings = 0
-          const managersBet: Bet = manager.has.nextFightBet
-          if (managersBet) {
-            const betSizePercentage = gameConfiguration.betSizePercentages[managersBet.size]
-            const managersBetAmount = Math.round(manager.has.money * betSizePercentage / 100)
-            
-          manager.functions.addToLog({message: `You spent ${managersBetAmount} money on the last fight`, type: 'betting'})
-            manager.has.money -= managersBetAmount
-            if (managersBet.fighterName == winner.name) {
-              winnings += Math.round(managersBetAmount * 2 + 150)
-              winnings += bonusFromPublicityRating
-            }
+    const managerWinnings: ManagerWinnings[] = this.managers.map((manager: Manager) => {
+
+
+      let winnings = 0
+      let betWinnings = 0
+      let playersFighterWinnings = 0
+
+      const managersBet: Bet = manager.has.nextFightBet
+      let  managersBetAmount
+
+      
+      if (managersBet) {
+        const betSizePercentage = gameConfiguration.betSizePercentages[managersBet.size]
+        managersBetAmount = Math.round(manager.has.money * betSizePercentage / 100)
+        manager.has.money -= managersBetAmount
+        manager.functions.addToLog({message: `You spent ${managersBetAmount} on a ${managersBet.size} bet on ${managersBet.fighterName}`, type: 'betting'})
+      }
+      
+      if(draw){
+        if (managersBet) {
+          manager.functions.addToLog({message: `The fight was a draw, all managers will get back half of their bet money. You get back ${Math.round(managersBetAmount / 2)} of the ${managersBetAmount} you bet on ${managersBet.fighterName}`, type: 'betting'})
+          manager.has.money -= Math.round(managersBetAmount / 2)
+        } else {
+          manager.functions.addToLog({message: `The fight was a draw, all managers will get back half of their bet money.`, type: 'betting'})
+
+        }
+      }
+
+      if (winner) {
+        const {playersFighterMultiplier, playersFighterWinBase, betWinningsBase, betAmountMultiplier, totalPublicityMultiplier} = gameConfiguration.fightWinnings
+
+        const managerWonBet = winner.name == managersBet?.fighterName
+        const bonusFromPublicityRating = this.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * totalPublicityMultiplier
+
+        if (managersBet) {
+        
+          if (managerWonBet) {
+            winnings += betWinningsBase
+            betWinnings =  Math.round(managersBetAmount * betAmountMultiplier)
+            winnings += betWinnings
           }
-          const managersFighter = manager.has.fighters.find((f: Fighter) => f.name == winner.name)
-          if (managersFighter) {
-            winnings += 100
-            winnings += Math.round(winnings *(managersFighter.state.publicityRating * 2) / 100)
-          }
-          console.log(`${manager.has.name} just won ${winnings}`);
-          manager.has.money += winnings
+        }
 
-          
-          
+        const managersFighter = manager.has.fighters.find((f: Fighter) => f.name == winner.name)
+        
+        if(managersFighter){
+          winnings += playersFighterWinBase
+          playersFighterWinnings = Math.round((winnings * managersFighter.state.publicityRating * playersFighterMultiplier))
+
+          winnings += playersFighterWinnings
+        }
 
 
-          if(winnings)
-            manager.functions.addToLog({message: `You made ${winnings} money in winnings from the last fight`, type: 'betting'})
+        // manager logs
+        if(managerWonBet){
+          manager.functions.addToLog({message: `
+          ${managersBet.fighterName} has won the fight! Your ${managersBet.size} bet on ${managersBet.fighterName} has won you $${winnings}. 
+          ${playersFighterWinnings || bonusFromPublicityRating ? 'Including: ': ''}
+          ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
+          ${bonusFromPublicityRating ? `$${bonusFromPublicityRating} fight publicity bonus.`:''}
+        `, type: 'betting'})
+        }
+        if(managersBet && !managerWonBet && managersFighter){
+          manager.functions.addToLog({message: `
+          Unfortunately ${managersBet.fighterName} did not win the fight. However your sponsored fighter ${winner.name} did win earning you ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
+        `, type: 'betting'})
+        }
+        if(!managersBet && managersFighter){
+          manager.functions.addToLog({message: `
+          Although you did not bet on the fight, Your sponsored fighter ${winner.name} did win earning you ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
+        `, type: 'betting'})
+        }
 
-          return {
-            managerName: manager.has.name,
-            winnings
-          }
-        })
-      fightReport.managerWinnings = managerWinnings
-    }
-    return fightReport
+        manager.has.money += winnings
+      }
+
+
+      
+
+      return {
+        managerName: manager.has.name,
+        winnings
+      }
+    })
+    fightReport.managerWinnings = managerWinnings
   }
   
 };

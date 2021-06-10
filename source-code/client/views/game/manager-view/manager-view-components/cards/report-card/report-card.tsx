@@ -17,18 +17,17 @@ export const ReportCard = connect(map)(hot(({activityLogs, dispatch}) =>
         <div className="report-card__content">
           <div className='heading'>Last Week Report</div>
           <div className='list'>
-            {getReportItems().map((logItem, i) => 
+            {getReportItems().reverse().map((logItem, i) => 
               <div
                 className={`
                   list__row 
                   ${
-                    logItem.type == 'critical' ? 'list__row--critical' :
-                    logItem.type == 'new round' ? 'list__row--new-round' : ''
+                    logItem.type == 'critical' ? 'list__row--critical' : ''
                   }
                 `} 
                 key={i}
               >
-                <div className='color-bar' style={{background: `linear-gradient(${logItem.color1}, ${logItem.color2})`}}></div>
+                <div className='color-bar' style={{background: `linear-gradient(${logItem.color2}, ${logItem.color1})`}}></div>
                 <div className="list__row__name">{logItem.message}</div>
               </div>
             )}

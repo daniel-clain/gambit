@@ -59,7 +59,7 @@ import fastRecovering from './fight-view/fighter/fast-skin/recovering.png'
 import fastTakingHit from './fight-view/fighter/fast-skin/taking-hit.png'
 import fastVictory from './fight-view/fighter/fast-skin/victory.png'
 import fastWalking from './fight-view/fighter/fast-skin/walking.png'
-import FighterModelState from '../../types/figher/fighter-model-states'
+import FighterModelState from '../../types/fighter/fighter-model-states'
 import fastIdle from './fight-view/fighter/fast-skin/idle.png'
 
 

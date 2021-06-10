@@ -41,23 +41,23 @@
         padding-right: 0;
         overflow-y: auto;
         &__row{
-          padding: 4px;
           margin-bottom: 0;
-          &--main-color{
-            background-color: #eefbff;
+          display: flex;
+
+          &__name{
+            padding: 4px 0;
           }
-          &--alternate-color{
-            background-color: #e2ffe5;
+
+          
+          .color-bar {
+            width: 20px;
+            margin-right: 8px;
+            flex-shrink: 0;
           }
+
           &--critical{
             background-color: #ffdede;
             color: #ce0000;
-          }
-          &--new-round{
-            background-color: #ccc;
-            font-weight: bold;
-            color: #666;
-            border-bottom: #666 solid 1px;
           }
         }
       }

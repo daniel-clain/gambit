@@ -1,6 +1,6 @@
 import FighterFighting from "./fighter-fighting";
 import { ActiveTimer } from "../../../interfaces/game/fighter/active-timer";
-import { TimerName } from "../../../types/figher/timer-name";
+import { TimerName } from "../../../types/fighter/timer-name";
 
 export default class FighterTimers {
   constructor(public fighting: FighterFighting){}

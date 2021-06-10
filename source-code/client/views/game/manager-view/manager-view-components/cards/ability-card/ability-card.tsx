@@ -15,6 +15,8 @@ import { Modal } from '../../partials/modal/modal';
 import { InfoBox } from '../../partials/info-box/info-box';
 import { OfferContractPartial } from './offer-contract-partial';
 import { hot } from 'react-hot-loader/root';
+import { CheckboxItem } from '../../partials/checkbox-item/checkbox-item';
+import { Evidence, IllegalActivityName, IllegalActivityName_Set } from '../../../../../../../types/game/evidence.type';
 
 
 
@@ -51,6 +53,7 @@ const mapState = ({
 
 const mapDispatch = {
   showFighter: name => ({type: 'showFighter', payload: name}),
+  showManager: name => ({type: 'showManager', payload: name}),
   closeModal: () => ({type: 'closeModal'})
 }
 
@@ -64,11 +67,12 @@ export const AbilityCard = connector(hot(({
   delayedExecutionAbilities,
   nextFightFighters,
   showFighter,
-  closeModal
+  closeModal,
+  showManager
 }: PropsFromRedux) => {
 
 
-  let {sendUpdate, setClientState, abilityService} = frontEndService 
+  let {sendUpdate, abilityService} = frontEndService 
 
   const [state, setState] = useState({
     listOptions: [] as ListOption[],
@@ -87,7 +91,7 @@ export const AbilityCard = connector(hot(({
 
   if(!clientAbility)
     return <div>....loading</div>
-    const {longDescription, possibleTargets, name, cost} = clientAbility
+    const {longDescription, validTargetIf, name, cost} = clientAbility
     const {target, source } = activeAbility
 
     
@@ -134,7 +138,7 @@ export const AbilityCard = connector(hot(({
         <hr/>
       
         <div className='ability-card__variables'>
-          {possibleTargets.length ?
+          {validTargetIf.length ?
             <div className='target'>
               <label className='target__label'>Target:</label>
               {target ?
@@ -154,6 +158,28 @@ export const AbilityCard = connector(hot(({
             <button className='standard-button source__set-button' 
             onClick={() => showSelectList('source')}>Set Source</button>
           </div>
+          {abilityData.name == 'Prosecute Manager' &&
+          activeAbility.target ? 
+            <div className="evidence-items-container">
+              {Array.from(IllegalActivityName_Set).map(illegalActivity => {
+                return <div className="illegal-activity" key={illegalActivity}>
+                  <div className="illegal-activity__name">{illegalActivity}</div>                  
+                  <div className="illegal-activity__evidence-items">
+                    {managerInfo.evidence
+                    .filter(e => e.managerName == activeAbility.target.name)
+                    .filter(e => e.illegalActivity == illegalActivity)
+                    .map((evidence, index) => 
+                      <CheckboxItem 
+                        key={evidence.illegalActivity+index}
+                        onSelected={() => onEvidenceToggle(evidence, index)}
+                        selected={isEvidenceSelected(evidence, index)}>
+                          {evidence.evidenceDescription}
+                      </CheckboxItem>
+                    )}
+                  </div>
+                </div>
+              })}
+            </div> : ''}
         </div>
 
         {activeAbility.name == 'Offer Contract' ?
@@ -178,12 +204,15 @@ export const AbilityCard = connector(hot(({
     </Modal>
   )
   
+  function isEvidenceSelected(evidence, index){
+    return !!activeAbility.additionalData?.find(e => e.id == evidence.illegalActivity+evidence.managerName+index)
+  }
 
   function showSelectList(type: 'source' | 'target'){
     if(type == 'source')
       setState({...state, listOptions: abilityService.getPossibleSources(clientAbility, managerInfo), selectListType: type})
     if(type == 'target')
-      setState({...state, listOptions: abilityService.getPossibleTargets(clientAbility, managerInfo, jobSeekers), selectListType: type})
+      setState({...state, listOptions: abilityService.getPossibleTargets(clientAbility, managerInfo, jobSeekers, nextFightFighters), selectListType: type})
   }
 
   
@@ -195,17 +224,34 @@ export const AbilityCard = connector(hot(({
     catch(error){
       console.log(error)
       alert(error)
+      return
     }
     
 
     closeModal()
 
     if(activeAbility.name == 'Research Fighter'){
-      let {knownFighters} = frontEndService .frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+      let {knownFighters} = frontEndService.frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
       const fighter: FighterInfo = knownFighters.find(f => f.name == target.name)
       
       showFighter(fighter.name)
     }   
+  }
+
+  function onEvidenceToggle(evidence: Evidence, index: number){
+    const evidenceId = evidence.illegalActivity+evidence.managerName+index
+    const evidenceAlreadyChecked = activeAbility.additionalData?.find(e => e.id == evidenceId)
+    if(evidenceAlreadyChecked){
+      setActiveAbility({...activeAbility, additionalData: [...activeAbility.additionalData?.filter(e => e.id != evidenceId)]})
+    } else {
+      const evidenceObj = {
+        id: evidenceId,
+        evidence
+      }
+      const checkedEvidence = activeAbility.additionalData ? [...activeAbility.additionalData, evidenceObj] : [evidenceObj]
+      setActiveAbility({...activeAbility, additionalData: checkedEvidence})
+    }
+
   }
 
   function resetSelectList(){

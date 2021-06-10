@@ -3,7 +3,6 @@ import { ClientAbility, AbilityData, AbilitySourceInfo, AbilityTargetInfo } from
 import { researchFighterClient } from "../../game-components/abilities-general/abilities/research-fighter"
 import { assaultFighterClient } from "../../game-components/abilities-general/abilities/assault-fighter"
 import { doSurveillanceClient } from "../../game-components/abilities-general/abilities/do-surveillance"
-import { gatherEvidenceClient } from "../../game-components/abilities-general/abilities/gather-evidence"
 import { guardFighterClient } from "../../game-components/abilities-general/abilities/guard-fighter"
 import { murderFighterClient } from "../../game-components/abilities-general/abilities/murder-fighter"
 import { offerContractClient } from "../../game-components/abilities-general/abilities/offer-contract"
@@ -16,12 +15,12 @@ import { dopeFighterClient } from "../../game-components/abilities-general/abili
 import {tryToWinGameClient} from '../../game-components/abilities-general/abilities/try-to-win-game'
 import { ManagerInfo } from "../../game-components/manager"
 import { Character, Employee, JobSeeker } from "../../interfaces/front-end-state-interface"
+import { investigateManagerClient } from "../../game-components/abilities-general/abilities/investigate-manager"
 
 export const abilityService = (() => ({
   abilities: <ClientAbility[]>[
     assaultFighterClient,
     doSurveillanceClient,
-    gatherEvidenceClient,
     guardFighterClient,
     murderFighterClient,
     offerContractClient,
@@ -32,12 +31,9 @@ export const abilityService = (() => ({
     prosecuteManagerClient,
     trainFighterClient,
     dopeFighterClient,
-    tryToWinGameClient
+    tryToWinGameClient,
+    investigateManagerClient
   ],
-
-  getAbilitiesCharacterCanBeTheTargetOf({character}){
-
-  },
 
 
   getPossibleSources(ability: ClientAbility, managerInfo: ManagerInfo): AbilitySourceInfo[]{
@@ -119,8 +115,8 @@ export const abilityService = (() => ({
       return false
 
     if (
-      clientAbility.possibleTargets.includes('fighter owned by manager') &&
-      !clientAbility.possibleTargets.includes('fighter not owned by manager')
+      clientAbility.validTargetIf.includes('fighter owned by manager') &&
+      !clientAbility.validTargetIf.includes('fighter not owned by manager')
 
     )
       if (managerInfo.fighters.length == 0)
@@ -161,12 +157,16 @@ export const abilityService = (() => ({
     if (!abilityData.source)
       throw (`${clientAbility.name} requires a source`)
 
+      
 
-    if (clientAbility.possibleTargets.length != 0 && !abilityData.target)
+
+
+    if (clientAbility.validTargetIf.length != 0 && !abilityData.target)
       throw (`${clientAbility.name} requires a target`)
     if (managerInfo.money < clientAbility.cost.money)
       throw (`manager does not have enough money to pay for ${clientAbility.name}`)
 
+    
     let sourceActionPoints: number
     if (abilityData.source.type == 'Manager')
       sourceActionPoints = managerInfo.actionPoints
@@ -176,35 +176,76 @@ export const abilityService = (() => ({
     if (sourceActionPoints < clientAbility.cost.actionPoints)
       throw (`${abilityData.source.type} ${abilityData.source.name} does not have enough action points for ${clientAbility.name}`)
 
+    
+    if (prosecuteManagerHasNoEvidence())
+      throw (`${clientAbility.name} requires a evidence`)
+
+
     if((clientAbility.name == 'Dope Fighter' || clientAbility.name == 'Poison Fighter') && !managerInfo.employees.some(employee => employee.profession == 'Drug Dealer'))
       throw(`${clientAbility.name} can only be used unless if you have a Drug Dealer employed`)
 
     if (this.canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
       throw (`${abilityData.target.name} has already been targeted for ${clientAbility.name} and can not be the target of this ability again`)
 
+    function prosecuteManagerHasNoEvidence(){
+      if(abilityData.name != 'Prosecute Manager') return false
+      if(
+        !abilityData.additionalData || 
+        !(abilityData.additionalData.length > 0)
+      ) return true
+      return false
+    }
+
   },
-  getAbilitiesFighterCanBeTheTargetOf(fighterOwnedByManager: boolean): ClientAbility[] {
+  getAbilitiesFighterCanBeTheTargetOf(fighterOwnedByManager: boolean, fighterInNextFight: boolean): ClientAbility[] {
     return this.abilities.filter((ability: ClientAbility) => {
-      if(ability.disabled)
-        return false
-      if(fighterOwnedByManager)
-        return ability.possibleTargets.includes('fighter owned by manager')  
-      else
-        return ability.possibleTargets.includes('fighter not owned by manager')
+      if(ability.disabled) return false
+      if(
+        ability.notValidTargetIf?.includes('fighter')  
+      ) return false
+      if(
+        fighterOwnedByManager &&
+        ability.notValidTargetIf?.includes('fighter owned by manager')  
+      ) return false
+
+      if(!ability.validTargetIf.length) return true
+      if(
+        fighterInNextFight &&
+        ability.validTargetIf.includes('fighter in next fight')
+      ) return true
+      if(
+        fighterOwnedByManager &&
+        ability.validTargetIf.includes('fighter owned by manager')
+      ) return true
+      if(
+        !fighterOwnedByManager &&
+        ability.validTargetIf.includes('fighter not owned by manager')
+      ) return true
     })
   },
 
-  getPossibleTargets(clientAbility: ClientAbility, managerInfo: ManagerInfo, jobSeekers: JobSeeker[]): AbilityTargetInfo[] {
-    const targetList: AbilityTargetInfo[] = []
-    if (clientAbility.possibleTargets.includes('fighter owned by manager'))
-      targetList.push(...managerInfo.fighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter owned by manager' })))
-    if (clientAbility.possibleTargets.includes('fighter not owned by manager'))
-      targetList.push(...managerInfo.knownFighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter not owned by manager' })))
-    if (clientAbility.possibleTargets.includes('opponent manager'))
-      targetList.push(...managerInfo.otherManagers.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'opponent manager' })))
 
-    if (clientAbility.possibleTargets.includes('job seeker'))
+  getPossibleTargets(clientAbility: ClientAbility, managerInfo: ManagerInfo, jobSeekers: JobSeeker[], nextFightFighters:string[]): AbilityTargetInfo[] {
+    const targetList: AbilityTargetInfo[] = []
+
+    if (clientAbility.validTargetIf.includes('fighter owned by manager')){
+      targetList.push(...managerInfo.fighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter owned by manager' })))
+    }
+    if (clientAbility.validTargetIf.includes('fighter in next fight')){
+      targetList.push(...managerInfo.knownFighters.filter(f => nextFightFighters.includes(f.name)).map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter in next fight' })))
+    }
+
+    if (clientAbility.validTargetIf.includes('fighter not owned by manager')){
+      targetList.push(...managerInfo.knownFighters.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'fighter not owned by manager' })))
+    }
+    
+    if (clientAbility.validTargetIf.includes('opponent manager')){
+      targetList.push(...managerInfo.otherManagers.map((fighter): AbilityTargetInfo => ({ name: fighter.name, type: 'opponent manager' })))
+    }
+
+    if (clientAbility.validTargetIf.includes('job seeker')){
       targetList.push(...jobSeekers.map((jobSeeker): AbilityTargetInfo => ({ name: jobSeeker.name, type: 'job seeker' })))
+    }
 
     return targetList
   }

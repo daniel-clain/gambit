@@ -14,13 +14,13 @@ const mapStateToProps = ({
 }: FrontEndState): JobSeekersPanelProps => ({jobSeekers})
 const mapDispatch = {
   showFighter: (name: string) => ({type: 'showFighter', payload: name}),
-  showjobSeeker: (j: JobSeeker) => ({type: 'showjobSeeker', payload: j})
+  showJobSeeker: (j: JobSeeker) => ({type: 'showJobSeeker', payload: j})
 }
 const connector = connect(mapStateToProps, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 
-export const JobSeekersPanel = connector(hot(({jobSeekers, showFighter, showjobSeeker}: PropsFromRedux) => {
+export const JobSeekersPanel = connector(hot(({jobSeekers, showFighter, showJobSeeker}: PropsFromRedux) => {
 
     
   return (
@@ -33,7 +33,7 @@ export const JobSeekersPanel = connector(hot(({jobSeekers, showFighter, showjobS
             key={`${jobSeeker.name}${i}`} 
             onClick={() => {console.log(jobSeeker); jobSeeker.type == 'Fighter' ?
               showFighter(jobSeeker.name):
-              showjobSeeker(jobSeeker)
+              showJobSeeker(jobSeeker)
             }}
           >
             <span className='list__row__image'></span>

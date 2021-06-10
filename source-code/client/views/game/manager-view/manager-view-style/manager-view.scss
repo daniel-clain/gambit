@@ -101,8 +101,11 @@ $images: '../../../../images/manager-view';
 
       .next-fight {
         margin-bottom: 8px;
-        padding-right: 40px;
+        padding-right: 20px;
         width: 270px;
+        overflow-y: scroll;
+        margin-right: 20px;
+
       }
     }
 

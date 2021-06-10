@@ -1,31 +1,36 @@
 import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
-import { Ability, ClientAbility, ServerAbility, AbilityData, removeFighterFromTheGame } from "../ability"
+import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { handleUnderSurveillance } from "./do-surveillance"
 
 
 const dopeFighter: Ability = {
   name: 'Dope Fighter',
   cost: { money: 40, actionPoints: 1 },
   possibleSources:  ['Manager', 'Drug Dealer'],
-  possibleTargets: ['fighter owned by manager', 'fighter not owned by manager'],
+  validTargetIf: ['fighter owned by manager', 'fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true
 }
 
 export const dopeFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
+    const {source} = abilityData
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+
+    const manager = source.type == 'Manager' ? game.has.managers.find(m => m.has.name == source.name) : game.has.managers.find(m => m.has.employees.find(e => e.name == source.name))
     
     if(fighter.state.doping){
       if(random(100) < 10) fighterDead()
-      else fighterTakesSteroids
     } else {
       if(random(100) < 2) fighterDead()
-      else fighterTakesSteroids
     }
 
     if(!fighter.state.dead){
-      fighterTakesSteroids
+      if(manager.state.underSurveillance){
+        handleUnderSurveillance(manager, abilityData, game)
+      }
+      fighterTakesSteroids()
       
     }
 
@@ -41,11 +46,11 @@ export const dopeFighterServer: ServerAbility = {
     }
 
     function  fighterDead() {
-      removeFighterFromTheGame(fighter.name, game)
+      game.functions.removeFighterFromTheGame(fighter.name, game)
       game.has.roundController.preFightNewsStage.newsItems.push({
         newsType: 'fighter died of overdose',
         headline: `${fighter.name} Died of drug overdose!`,
-        message: `${fighter.name} was found dead, the coroner's report says the cause was stroid abuse`
+        message: `${fighter.name} was found dead, the coroner's report says the cause was steroid abuse`
       }) 
     }
   },

@@ -1,5 +1,5 @@
 import Dimensions from "./fighter/dimensions";
-import FighterModelState from "../../types/figher/fighter-model-states";
+import FighterModelState from "../../types/fighter/fighter-model-states";
 
 export default interface IFighterModelImage {  
 	modelState: FighterModelState

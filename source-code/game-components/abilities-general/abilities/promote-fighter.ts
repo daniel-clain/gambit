@@ -7,7 +7,7 @@ const promoteFighter: Ability = {
   name: 'Promote Fighter',
   cost: { money: 30, actionPoints: 1 },
   possibleSources: ['Promoter'],
-  possibleTargets: ['fighter owned by manager'],
+  validTargetIf: ['fighter owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true
 }

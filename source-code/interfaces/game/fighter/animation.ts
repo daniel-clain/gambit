@@ -1,7 +1,7 @@
-import {ActionName } from "../../../types/figher/action-name";
-import FighterModelState from "../../../types/figher/fighter-model-states";
-import { Sound } from "../../../types/figher/sound";
-import { AnimationName } from "../../../types/figher/animation-name";
+import {ActionName } from "../../../types/fighter/action-name";
+import FighterModelState from "../../../types/fighter/fighter-model-states";
+import { Sound } from "../../../types/fighter/sound";
+import { AnimationName } from "../../../types/fighter/animation-name";
 
 export default interface Animation{
   name: AnimationName

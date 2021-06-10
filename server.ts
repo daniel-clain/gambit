@@ -17,7 +17,7 @@ let webSocketServer =
 new GameHost(webSocketServer)
 
 
-console.log('come on mate...')
+console.log('come on mate... ',process.pid)
 
 if(environment == 'production'){
   webSocketServer.listen(httpServer)

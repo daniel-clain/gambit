@@ -13,12 +13,14 @@ $image-folder: '../../../../../images';
   overflow-x: auto;
   transition: transform .2s;
   align-items: center;
+  padding-top: 0%;
 
   .has-winnings &{
     height: 100%;
     background: #e2d6fbaa;  
     transform:translateY(0) !important;
     transition: all 1s;
+    padding-top: 10%;
   }
   
   &.is-hidden{

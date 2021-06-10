@@ -19,7 +19,6 @@ export const MoneyRain = hot(({money}: {money: number}) => {
     const fallTime = 1
     const duration = gameConfiguration.stageDurations.showWinningsDuration - (scrollUpDuration + fallTime)
     const moneyDropTimeInterval = Math.round((duration / Math.ceil(money / 10)) * 1000)
-    console.log('moneyDropTimeInterval :>> ', moneyDropTimeInterval);
 
 
 

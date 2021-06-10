@@ -13,7 +13,8 @@
   }
   &__fighters{
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    overflow-x: scroll;
   }
 
   &__fighter{
