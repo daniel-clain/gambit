@@ -17,7 +17,7 @@
     "prod-mainGame-build": "webpack --mode=production --config-name mainGame",
 
 
-    "start": "npm run build-all & npm run prod-startServer",
+    "start": "npm run prod-mainGame-build & npm run prod-startServer",
     
     "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
 
