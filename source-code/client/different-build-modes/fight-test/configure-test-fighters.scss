@@ -1,0 +1,50 @@
+.fighter-stats-drawer{
+  
+  width: 200px;
+  position: fixed;
+  height: 100%;
+  background: #fff;
+  padding: 20px;
+  right: 0;
+  transition: transform .4s;
+  transform: translateX(100%);
+  z-index: 10;
+  
+  &.is-open{
+    transform: translateX(0%);
+    .open-close-tag{
+      display: none;
+    }
+  }
+
+  .open-close-tag{
+    position: absolute;
+    right: 100%;
+    width: 60px;
+    height: 20px;
+    background: white;
+    border-radius: 5px 0 0 5px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fighter-config{
+    padding-bottom: 16px;
+    border-bottom: 1px solid black;
+    margin-bottom: 16px;
+
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      input{
+        width: 50%;
+        margin-left: 10px;
+      }
+    }
+  }
+
+}

@@ -1,4 +1,6 @@
 @use 'variables' as *;
+@use 'preload-css-images.scss';
+
 @import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Bangers&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Tinos:700&display=swap');

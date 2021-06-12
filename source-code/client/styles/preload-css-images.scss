@@ -1,0 +1,80 @@
+body::before{
+  content: 
+    url('../images/manager-view/bg.jpg')
+    url('../images/manager-view/abilities/assault-fighter.jpg')
+    url('../images/manager-view/abilities/do-surveillance.jpg')
+    url('../images/manager-view/abilities/dope-fighter.png')
+    url('../images/manager-view/abilities/gather-evidence.png')
+    url('../images/manager-view/abilities/guard-fighter.jpg')
+    url('../images/manager-view/abilities/investigate-manager.jpg')
+    url('../images/manager-view/abilities/murder-fighter.jpg')
+    url('../images/manager-view/abilities/offer-contract.png')
+    url('../images/manager-view/abilities/poison-fighter.jpg')
+    url('../images/manager-view/abilities/promote-fighter.png')
+    url('../images/manager-view/abilities/research-fighter.png')
+    url('../images/manager-view/abilities/sell-drugs.jpg')
+    url('../images/manager-view/abilities/sue-manager.jpg')
+    url('../images/manager-view/abilities/train-fighter.png')
+
+    url('../images/icons/loan-shark.png')
+
+    url('../images/pre-fight/news-bg.png')
+    url('../images/pre-fight/pre-fight-news-bg.jpg')
+    url('../images/pre-fight/after-training.png')
+    url('../images/pre-fight/assaulted.jpg')
+    url('../images/pre-fight/doped.jpg')
+    url('../images/pre-fight/drug-overdose.jpg')
+    url('../images/pre-fight/guarded.png')
+    url('../images/pre-fight/hallucinate.jpg')
+    url('../images/pre-fight/main-event-bg.jpg')
+    url('../images/pre-fight/main-event-small.jpg')
+    url('../images/pre-fight/murder-news.jpg')
+    url('../images/pre-fight/prosecute-manager.jpg')
+    url('../images/pre-fight/sick.png')
+
+
+
+    url('../images/fight-view/arena/fight-arena-behind.png')
+    url('../images/fight-view/arena/fight-arena-infront.png')
+
+    url('../images/fight-view/fighter/default-skin/blocking.png')
+    url('../images/fight-view/fighter/default-skin/defending.png')
+    url('../images/fight-view/fighter/default-skin/dodging.png')
+    url('../images/fight-view/fighter/default-skin/kicking.png')
+    url('../images/fight-view/fighter/default-skin/knocked-out.png')
+    url('../images/fight-view/fighter/default-skin/punching.png')
+    url('../images/fight-view/fighter/default-skin/recovering.png')
+    url('../images/fight-view/fighter/default-skin/taking-hit.png')
+    url('../images/fight-view/fighter/default-skin/victory.png')
+    url('../images/fight-view/fighter/default-skin/walking.png')
+
+    
+    url('../images/fight-view/fighter/muscle-skin/blocking.png')
+    url('../images/fight-view/fighter/muscle-skin/defending.png')
+    url('../images/fight-view/fighter/muscle-skin/dodging.png')
+    url('../images/fight-view/fighter/muscle-skin/kicking.png')
+    url('../images/fight-view/fighter/muscle-skin/knocked-out.png')
+    url('../images/fight-view/fighter/muscle-skin/punching.png')
+    url('../images/fight-view/fighter/muscle-skin/recovering.png')
+    url('../images/fight-view/fighter/muscle-skin/taking-hit.png')
+    url('../images/fight-view/fighter/muscle-skin/victory.png')
+    url('../images/fight-view/fighter/muscle-skin/walking.png')
+
+    
+    url('../images/fight-view/fighter/fast-skin/blocking.png')
+    url('../images/fight-view/fighter/fast-skin/defending.png')
+    url('../images/fight-view/fighter/fast-skin/dodging.png')
+    url('../images/fight-view/fighter/fast-skin/kicking.png')
+    url('../images/fight-view/fighter/fast-skin/knocked-out.png')
+    url('../images/fight-view/fighter/fast-skin/punching.png')
+    url('../images/fight-view/fighter/fast-skin/recovering.png')
+    url('../images/fight-view/fighter/fast-skin/taking-hit.png')
+    url('../images/fight-view/fighter/fast-skin/victory.png')
+    url('../images/fight-view/fighter/fast-skin/walking.png')
+    
+  ;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+}
