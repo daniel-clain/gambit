@@ -97,7 +97,7 @@ module.exports = ({remote}, {mode, configName}) => {
           options: {
             limit: false,
             fallback: 'file-loader',
-            name: 'images/[folder]/[name].[ext]'
+            name: 'images/[folder]/[name].[hash:8].[ext]'
           }
         },
         {

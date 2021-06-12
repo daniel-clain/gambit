@@ -72,7 +72,7 @@ export class ClientManagerUIState{
 export class ServerGameUIState{
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
   roundStage: RoundStage = null
-  displayManagerUIState?: ManagerUIState
+  displayManagerUIState?: DisplayManagerUiData
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
   fightUIState: FightUIState
@@ -161,7 +161,7 @@ export interface DisplayManagerUiData{
   timeLeft: number
   managersDisplayInfo: ManagerDisplayInfo[]
   nextFightFighters: string[]
-  jobSeekers: JobSeekerInfo[]
+  jobSeekers: JobSeeker[]
 }
 
 
@@ -198,10 +198,6 @@ export interface JobSeeker{
   goalContract?: GoalContract 
 }
 
-export interface JobSeekerInfo{
-  name: string, 
-  type: Profession | 'Fighter'
-}
 
 export class Employee extends Professional{
   actionPoints: number = 1

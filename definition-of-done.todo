@@ -1,6 +1,6 @@
 To be present worthy:
   ☐ game display working with correct info
-  ☐ preloaded images properly working
+  ☐ fix retire employee bug
   ☐ balanced for any number of player
   ☐ appropraite stats for starting game
   ☐ when player disconnects, disconnect handler working 100%

@@ -1,9 +1,11 @@
 
 import * as React from 'react';
-import { DisplayManagerUiData, ManagerDisplayInfo } from "../../../../../interfaces/front-end-state-interface"
+import { hot } from 'react-hot-loader/root';
+import { connect } from 'react-redux';
+import { DisplayManagerUiData, FrontEndState, ManagerDisplayInfo } from "../../../../../interfaces/front-end-state-interface"
 import './display-manager-options-ui.scss'
 
-export default function DisplayManagerOptionsUi({timeLeft, managersDisplayInfo, nextFightFighters, jobSeekers}: DisplayManagerUiData){
+function DisplayManagerOptionsUi({timeLeft, managersDisplayInfo, nextFightFighters, jobSeekers}: DisplayManagerUiData){
 
   return (
     <div className='game-display-manager-options'>
@@ -40,3 +42,15 @@ export default function DisplayManagerOptionsUi({timeLeft, managersDisplayInfo, 
     </div>
   )
 }
+
+
+const mapStateToProps = ({
+  serverUIState: { serverGameUIState: { roundStage, displayManagerUIState: {
+      timeLeft, nextFightFighters, jobSeekers, managersDisplayInfo
+    }
+  }}
+}: FrontEndState) => ({
+  nextFightFighters, jobSeekers, managersDisplayInfo, timeLeft, roundStage
+})
+
+export default hot(connect(mapStateToProps)(DisplayManagerOptionsUi))

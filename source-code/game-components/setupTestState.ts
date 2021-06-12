@@ -10,6 +10,7 @@ export const setupTestState = (game: Game) => {
   gameConfiguration.stageDurations.managerOptions = 6000
   //skipFight()
   //freezeOnFight()
+  setup1()
 
   //implementation
 

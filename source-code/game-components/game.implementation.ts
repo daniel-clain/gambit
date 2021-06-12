@@ -138,7 +138,7 @@ export class Game_Implementation{
 
   getAllConnectedGameDisplays(){
     
-    return this.game.has.gameDisplays?.filter(gameDisplay => this.game.has.connectionManager.disconnectedPlayerVotes
+    return this.game.has.gameDisplays?.filter(gameDisplay => !this.game.has.connectionManager.disconnectedPlayerVotes
       .find(d => d.disconnectedPlayer.id == gameDisplay.id))
   }
 

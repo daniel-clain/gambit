@@ -171,6 +171,15 @@ class GameFunctions{
     return {
       disconnectedPlayerVotes: this.game.state.gameType == 'Websockets' ? this.game.has.connectionManager.disconnectedPlayerVotes : null,
       roundStage: activeStage?.name,
+      displayManagerUIState: {
+        roundStage: activeStage.name,
+        timeLeft,
+        jobSeekers,
+        nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
+        managersDisplayInfo: this.game.has.managers.map(m => ({
+          name: m.has.name, ready: m.state.readyForNextFight, image: m.has.image, bet: m.has.nextFightBet
+        }))
+      },
       playerManagerUIState: {
         round: roundNumber,
         managerInfo: manager?.functions.getInfo(),
@@ -215,6 +224,7 @@ export class Game {
     players.forEach(player => {
       const manager = new Manager(player.name)
       this.has.managers.push(manager)
+      console.log('manager.has.image :>> ', manager.has.image);
       this.has.players.push(
         new Player(
           player.name,

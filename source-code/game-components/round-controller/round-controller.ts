@@ -48,6 +48,7 @@ export class RoundController {
 
   doStage(stage: IStage): Promise<any>{    
     this.activeStage = stage
+    this.triggerUIUpdate()
     return stage.start()
   }
 
@@ -59,7 +60,6 @@ export class RoundController {
 
     this.roundNumber = number
     setupNewRound(this.game)
-    this.triggerUIUpdate()
     return Promise.resolve()
   }
 

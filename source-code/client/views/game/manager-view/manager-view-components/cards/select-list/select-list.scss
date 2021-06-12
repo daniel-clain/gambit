@@ -19,7 +19,12 @@
       background-image: url('../../../../../../images/icons/your-fighter-in-fight.png');
     }
     .manager{
-      background-image: url('../../../../../../images/icons/manager1-face.png');
+      &--fat-man{
+        background-image: url('../../../../../../images/icons/manager1-face.png');
+      }
+      &--moustache-man{
+        background-image: url('../../../../../../images/icons/manager2-face.jpg');
+      }
     }
   }
 }

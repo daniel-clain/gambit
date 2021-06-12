@@ -6,13 +6,13 @@ $image-folder: '../../../../../../images';
   }
   
   &__image{
-    width: 63px;
+    width: 150px;
     background-size: contain;
     background-repeat: no-repeat;
     &--fat-man{
       background-image: url('#{$image-folder}/icons/manager1.png');
     }
-    &--sleazy-guy{
+    &--moustache-man{
       background-image: url('#{$image-folder}/icons/manager2.jpg');
     }
   }

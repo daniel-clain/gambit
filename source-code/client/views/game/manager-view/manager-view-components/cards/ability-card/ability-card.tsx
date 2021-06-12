@@ -193,6 +193,7 @@ export const AbilityCard = connector(hot(({
         {state.selectListType &&
           <Modal onClose={resetSelectList}>
             <SelectList 
+              managerInfo={managerInfo}
               nextFightFighters={nextFightFighters}
               list={state.listOptions} 
               type={state.selectListType}

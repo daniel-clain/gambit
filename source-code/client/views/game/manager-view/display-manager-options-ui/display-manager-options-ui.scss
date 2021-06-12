@@ -1,4 +1,3 @@
-@import '../../global/styles/manager-options-ui/manager-options-ui-variables';
 
 .game-display-manager-options{
   display: flex;
@@ -9,13 +8,14 @@
   padding: 30px;
   color: white;
   height: 100%;
+  z-index: 1;
 
   .heading{
     font-size: 2rem;
   }
 
   &__background{
-    background-image: url('../../../images/display-bg.jpg');
+    background-image: url('../../../../images/manager-view/bg.jpg');
     background-size: cover;
     position: absolute;
     top: 0;
@@ -58,10 +58,10 @@
         background-repeat: no-repeat;
         margin-bottom: 5px;
         &--fat-man{
-          background-image: url('../../../images/icons/manager1.png');
+          background-image: url('../../../../images/icons/manager1.png');
         }
-        &--sleazy-guy{
-          background-image: url('../../../images/icons/manager2.jpg');
+        &--moustache-man{
+          background-image: url('../../../../images/icons/manager2.jpg');
         }
       }
     }
@@ -90,7 +90,7 @@
       }
       
       &__image{
-        background-image: url('../../../images/global/fighter.png');    
+        background-image: url('../../../../images/global/fighter.png');    
         width: 80px;
         height: 100px;
         margin: 0 auto 5px;

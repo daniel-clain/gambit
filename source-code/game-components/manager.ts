@@ -11,6 +11,7 @@ import { Game } from './game';
 import { FighterInfo, Loan, Employee } from '../interfaces/front-end-state-interface';
 import { Evidence } from '../types/game/evidence.type';
 import { Lawsuit } from '../types/game/lawsuit.type';
+import { randomFloor } from '../helper-functions/helper-functions';
 
 
 
@@ -97,7 +98,7 @@ class ManagerHas{
   fighters: Fighter[] = []
   employees: Employee[] = []
   loan: Loan = {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0}
-  image: ManagerImage = 'Fat Man'
+  image: ManagerImage = randomFloor(2) ? 'Fat Man' : 'Moustache Man'
   nextFightBet?: Bet
   otherManagers: KnownManager[] = []
   knownFighters: FighterInfo[] = []
