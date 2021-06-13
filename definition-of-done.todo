@@ -1,6 +1,7 @@
 To be present worthy:
   ☐ game display working with correct info
   ☐ fix retire employee bug
+  ☐ timer no reset bug
   ☐ balanced for any number of player
   ☐ appropraite stats for starting game
   ☐ when player disconnects, disconnect handler working 100%
@@ -16,6 +17,7 @@ To be present worthy:
   ☐ show employee action points
   ☐ sponsored fighter icon hidden by parent elem
   ☐ offer contract recejt shows profession as undefined
+  ☐ game display show read for next fight 
 
 
 Included features:
