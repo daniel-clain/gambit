@@ -165,7 +165,7 @@ export class Game_Implementation{
 
   resignEmployee(employee: Employee){
     const employeesManager = this.game.has.managers.find(m => m.has.employees.some(e => e.name == employee.name))
-    
+    if(!employeesManager) return
     employeesManager.has.employees = employeesManager.has.employees.filter(e => e.name == employee.name)
 
     const {actionPoints, activeContract, ...rest} = employee
