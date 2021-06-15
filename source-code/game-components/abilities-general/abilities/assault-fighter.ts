@@ -20,6 +20,7 @@ export const assaultFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
     
+
     let assaulter: Employee
     let assaultersManager: Manager
     for(let manager of game.has.managers){
@@ -37,7 +38,10 @@ export const assaultFighterServer: ServerAbility = {
     }
     
     if(assaultersManager.state.underSurveillance){
-      handleUnderSurveillance(assaultersManager, abilityData, game)
+      handleUnderSurveillance({surveilledManager: assaultersManager, abilityData, game})
+    }
+    if(fighter.state.underSurveillance){
+      handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
     }
 
     let success

@@ -28,7 +28,10 @@ export const dopeFighterServer: ServerAbility = {
 
     if(!fighter.state.dead){
       if(manager.state.underSurveillance){
-        handleUnderSurveillance(manager, abilityData, game)
+        handleUnderSurveillance({surveilledManager: manager, abilityData, game})
+      }
+      if(fighter.state.underSurveillance){
+        handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
       }
       fighterTakesSteroids()
       

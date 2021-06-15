@@ -6,7 +6,6 @@ import { OverlayMessaging } from './fight-view-components/overlay-messaging/over
 import { ArenaUi } from './fight-view-components/arena-ui/arena-ui';
 import ManagersBets from './fight-view-components/managers-bets/managers-bets';
 import { hot } from 'react-hot-loader/root';
-import { useEffect, useState } from 'react';
 import { FighterStates } from './fight-view-components/fighter-states/fighter-states';
 
 

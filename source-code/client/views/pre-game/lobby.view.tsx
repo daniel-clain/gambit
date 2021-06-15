@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createRef, useState } from "react"
 import { hot } from "react-hot-loader/root"
 import {connect} from 'react-redux'
 import { GameBeingCreated, JoinedClient } from "../../../game-host/game-host.types"
@@ -28,6 +29,7 @@ export const Lobby_View = connect(mapStateToProps)(hot(({
   clientId
 }: LobbyProps) => {
 
+  const [chatVal, setChatVal] = useState('')
 
   const joinedGameBeingCreated: GameBeingCreated = gamesBeingCreated.find((g: GameBeingCreated) =>
     g.clients.some(c => c.id == clientId) || g.creator.id == clientId
@@ -86,7 +88,11 @@ export const Lobby_View = connect(mapStateToProps)(hot(({
               </div>
             )}
           </div>
-          <input onKeyPress={({key, currentTarget: {value}}) => key == 'Enter' && submitGlobalChat(value)} />
+          <input value={chatVal} 
+          onChange={({currentTarget:{value}}) => setChatVal(value)}
+          onKeyPress={({key, currentTarget:{value}}) => 
+            key == 'Enter' && submitGlobalChat(value) && setChatVal('')
+          }  />
         </div>
       </div>
 

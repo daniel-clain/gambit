@@ -5,6 +5,7 @@ import { NewsType } from '../../../../types/game/news-type'
 import { NewsItem } from '../../../../types/game/news-item'
 import { FrontEndState } from '../../../../interfaces/front-end-state-interface'
 import { useEffect, useState } from 'react'
+import { time } from 'node:console'
 
 export interface PreFightNewsProps{
   newsItem: NewsItem
@@ -18,9 +19,10 @@ const PreFightNews_View = ({
 
   useEffect(() => {
     setShowNewsItem(false)
-    setTimeout(() => {
+    let timeout = setTimeout(() => {
       setShowNewsItem(true)
     }, 100);
+    return () => clearTimeout(timeout)
   }, [newsItem])
 
   if(!newsItem) return <div></div>

@@ -34,7 +34,7 @@ const gameConfiguration = {
   },
   manager: {
     actionPoints: 3,
-    startingMoney: 500
+    startingMoney: 750
   },
   professionalTypeProbability: {    
     "Lawyer": 1,

@@ -3,7 +3,7 @@ import { ClientNameAndID } from "../../game-host/game-host.types";
 
 
 export interface GameInfo{
-  id: string
+  id: number
   players: ClientNameAndID[]
   gameDisplays: ClientNameAndID[]
   paused: boolean

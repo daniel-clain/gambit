@@ -113,7 +113,7 @@ class ManagerHas{
 
 class ManagerFunctions{
 
-  constructor(private manager: Manager){}
+  constructor(private manager: Manager, private game: Game){}
 
   addToLog(activityLogItem: ActivityLogItem): void{
     
@@ -126,6 +126,7 @@ class ManagerFunctions{
   toggleReady = () => {
     const ready = !this.manager.state.readyForNextFight
     this.manager.state.readyForNextFight = ready
+    this.game.functions.triggerUIUpdate()
   }
 
   betOnFighter = (bet: Bet) => {
@@ -185,9 +186,9 @@ export class Manager{
   state = new ManagerState()
   functions: ManagerFunctions
 
-  constructor(name: string){
+  constructor(name: string, public game: Game){
     this.has = new ManagerHas(name)
-    this.functions = new ManagerFunctions(this)
+    this.functions = new ManagerFunctions(this, game)
   }
 
 

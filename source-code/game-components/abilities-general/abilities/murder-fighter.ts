@@ -40,7 +40,10 @@ export const murderFighterServer: ServerAbility = {
 
     
     if(hitmansManager.state.underSurveillance){
-      handleUnderSurveillance(hitmansManager, abilityData, game)
+      handleUnderSurveillance({surveilledManager: hitmansManager, abilityData, game})
+    }
+    if(fighter.state.underSurveillance){
+      handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
     }
 
     let success

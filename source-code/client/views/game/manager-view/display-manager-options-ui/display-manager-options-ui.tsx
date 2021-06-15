@@ -35,7 +35,7 @@ function DisplayManagerOptionsUi({timeLeft, managersDisplayInfo, nextFightFighte
         {jobSeekers.map(jobSeeker => 
           <div key={jobSeeker.name} className='job-seeker'>
             <div className="job-seeker__name">{jobSeeker.name}:</div>
-            <div className="job-seeker__profession">{jobSeeker.type}</div>
+            <div className="job-seeker__profession">{jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}</div>
           </div>
         )}
       </div>

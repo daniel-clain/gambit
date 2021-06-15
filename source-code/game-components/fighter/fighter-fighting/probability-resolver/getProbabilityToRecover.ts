@@ -33,7 +33,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   if (rememberedEnemyBehind === undefined)
     probability -= intelligence * 2
 
-  if (rememberedEnemyBehind !== null && enemyBehindCloseness <= Closeness['nearby']){
+  if (rememberedEnemyBehind !== null && enemyBehindCloseness >= Closeness['nearby']){
     if(rememberedEnemyBehind.fighting.animation.inProgress == 'recovering')
       probability += intelligence
     else

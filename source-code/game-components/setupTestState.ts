@@ -45,6 +45,19 @@ export const setupTestState = (game: Game) => {
     if(manager2) manager2.has.money = 10000
 
   }
+  function setup2(){
+    gameConfiguration.stageDurations.managerOptions = 6000
+
+    const manager1 = game.has.managers[0]
+    const agent1: Employee = new Employee('Private Agent')
+    agent1.activeContract = {
+      weeklyCost: 0,
+      weeksRemaining: 1
+    }
+
+    manager1.has.employees.push(agent1)
+
+  }
 
   
 

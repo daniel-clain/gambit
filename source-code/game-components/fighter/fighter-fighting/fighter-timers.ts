@@ -24,7 +24,7 @@ export default class FighterTimers {
     const {name} = this.fighting.fighter
     this.showTimerLogs && console.log(`${name}'s timer '${timer.name}' was removed because ${reason}, it had  ${timer.timeRemaining} timer remaining (${timeoutRef})`);
     if(timer.timeRemaining > 100 && reason == 'it finished'){
-      console.log(`error : ${name}' ${timer.name} timer finished even though it had ${timer.timeRemaining} time remaining`);
+      //console.log(`error : ${name}' ${timer.name} timer finished even though it had ${timer.timeRemaining} time remaining`);
     }
     clearInterval(timer.timeRemainingIntervalRef)
     this.activeTimers.splice(timerIndex, 1)

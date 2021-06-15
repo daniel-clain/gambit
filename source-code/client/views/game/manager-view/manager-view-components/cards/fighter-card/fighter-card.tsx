@@ -149,7 +149,7 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
                   name: clientAbility.name,
                   target: {
                     name: fighter.name,
-                    type: fighter ?
+                    type: isYourFighter ?
                       'fighter owned by manager' :
                       'fighter not owned by manager'
                   },

@@ -51,7 +51,7 @@ export class GameHost{
       create: () => {
         if(this.i.isCreateGameValid(client)){
           this.state.gamesBeingCreated.push({
-            id: randomNumber({digits: 6}),
+            id: randomNumber({digits: 6}).toString(),
             creator: new JoinedClient(
               client.name,
               client.id
@@ -113,15 +113,15 @@ export class GameHost{
       },
       reJoin: gameId => {
         const reconnectingGameFound = this.state.activeGames.find(g => {
-            if(g.has.id == gameId){
+            if(g.has.id == Number(gameId)){
               if(client.name == 'Game Display'){
                 g.has.connectionManager.gameDisplayReconnected(client)
               }
               else{
                 g.has.connectionManager.playerReconnected(client)
               }
+              return true
             }
-            return true
           })
         
         if(!reconnectingGameFound)  

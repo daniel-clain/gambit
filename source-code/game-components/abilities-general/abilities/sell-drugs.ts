@@ -20,7 +20,7 @@ export const sellDrugsServer: ServerAbility = {
     const drugDealer = manager.has.employees.find(employee => employee.name == abilityData.source.name)
 
     if(manager.state.underSurveillance){
-      handleUnderSurveillance(manager, abilityData, game)
+      handleUnderSurveillance({surveilledManager: manager, abilityData, game})
     }
 
 

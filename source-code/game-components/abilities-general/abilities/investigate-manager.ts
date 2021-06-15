@@ -119,7 +119,7 @@ export const investigateManagerServer: ServerAbility = {
 }
 
 export const investigateManagerClient: ClientAbility = {
-  shortDescription: 'Investigate Manager',
+  shortDescription: 'Learn info about a manager',
   longDescription: `Find out stats about opponent manager, including: money, loan debt, employees, fighters, evidence on other managers. This ability resolves at the end of the round`,
   ...investigateManager
 }

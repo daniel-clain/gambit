@@ -4,6 +4,7 @@ import {frontEndService} from '../../../../../../front-end-service/front-end-ser
 import { ActivityLogItem } from '../../../../../../../types/game/activity-log-item';
 import { hot } from 'react-hot-loader/root';
 import { connect } from 'react-redux';
+import './activity-log-panel.scss';
 
 const {managerMap} = frontEndService
 

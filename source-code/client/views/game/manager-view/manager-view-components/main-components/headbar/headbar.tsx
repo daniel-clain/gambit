@@ -7,7 +7,7 @@ import ActionPoints from '../../partials/action-points/action-points';
 import {connect} from 'react-redux'
 import gameConfiguration from '../../../../../../../game-settings/game-configuration';
 import { Bet } from '../../../../../../../interfaces/game/bet';
-import { FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
+import { DisconnectedPlayerVote, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { Socket } from 'socket.io-client';
 
@@ -16,13 +16,15 @@ export interface HeadbarProps{
   money: number
   managerOptionsTimeLeft: number
   nextFightBet: Bet
+  disconnectedPlayerVotes: DisconnectedPlayerVote[]
 }
 
 const Headbar = ({
   actionPoints,
   money,
   managerOptionsTimeLeft,
-  nextFightBet
+  nextFightBet,
+  disconnectedPlayerVotes
 }: HeadbarProps) => {
 
   let {sendUpdate} = frontEndService 
@@ -31,14 +33,22 @@ const Headbar = ({
   let timeLeftTimeout
 
   useEffect(() => {
-    if(timeLeftTimeout) clearTimeout(timeLeftTimeout)
+    const playersDisconnected = disconnectedPlayerVotes?.length
     timeLeftTimeout = setTimeout(() => {
-      setTimeLeft(--timeLeft)
+      if(timeLeft && !playersDisconnected){
+        setTimeLeft(--timeLeft)
+      }
     }, 1000);
 
-    return () => clearTimeout(timeLeftTimeout)
+    return () => {    
+      clearTimeout(timeLeftTimeout)
+    }
 
-  })
+  }, [timeLeft])
+
+  useEffect(() => {
+    setTimeLeft(managerOptionsTimeLeft)
+  }, [managerOptionsTimeLeft, disconnectedPlayerVotes])
 
 
   
@@ -68,12 +78,13 @@ const Headbar = ({
 }
 
 const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {playerManagerUIState: {
+  serverUIState: {serverGameUIState: {disconnectedPlayerVotes, playerManagerUIState: {
     managerOptionsTimeLeft,
     managerInfo: {actionPoints, money, nextFightBet}
   }}}
 }: FrontEndState) : HeadbarProps => {
   return {
+    disconnectedPlayerVotes,
     managerOptionsTimeLeft,
     money,
     nextFightBet,

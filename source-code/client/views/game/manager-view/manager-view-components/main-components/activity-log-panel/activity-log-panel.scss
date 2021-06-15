@@ -1,4 +1,10 @@
-@import '../../../manager-view-style/manager-view-variables';
-.has-action-points {
-  background-color: $blue-light;
+
+.list{
+  &__row{
+
+    &--critical{
+      background-color: #ffdede;
+      color: #ce0000;
+    }
+  }
 }

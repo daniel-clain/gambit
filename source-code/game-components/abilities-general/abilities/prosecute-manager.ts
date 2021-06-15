@@ -12,7 +12,7 @@ const sueManager: Ability = {
   cost: { money: 500, actionPoints: 1 },
   possibleSources: ['Lawyer'],
   validTargetIf: ['opponent manager'],
-  executes: ['End Of Manager Options Stage', 'End Of Round'],
+  executes: ['End Of Manager Options Stage'],
   canOnlyTargetSameTargetOnce: true
 }
 
@@ -36,13 +36,28 @@ export const prosecuteManagerServer: ServerAbility = {
 
     const moneyTakenOffPlayer = takeMoneyOffManager()
     giveHalfToProsecutingManager()
+    concedeEvidence()
     getPutInJail()
     const lostEmployees: Employee[] = prosecutedManager.has.employees.filter(e => 
       ['Drug Dealer', 'Hitman', 'Thug'].includes(e.profession)  
     )
+    lostEmployees.forEach(e => {
+      game.functions.resignEmployee(e, prosecutedManager)
+    })
     updateManagerLogs()
 
-    
+    //implementation
+
+    function concedeEvidence(){
+      const {accounts, prosecutingManager} = lawsuit
+      const prosecutingManagerObj = game.has.managers.find(m => m.has.name == prosecutingManager.name)
+      prosecutingManagerObj.has.evidence = prosecutingManagerObj.has.evidence.filter(managerEvidence =>  
+        !accounts.find(a => a.evidence.find(e => e.id == managerEvidence.id))
+      )
+      
+    }
+
+
     function updateManagerLogs(){
       const logMessage = `
         You have been found guilty on accounts of:
@@ -120,24 +135,24 @@ export const prosecuteManagerServer: ServerAbility = {
         console.log(account.name)
         switch(account.name){
           case 'administering performance enhancing drugs': {
-            verdict.weeksInJail += 0.5 + account.evidence.length * 0.1
-            verdict.fine += 1000 + account.evidence.length * 500
+            verdict.weeksInJail += account.evidence.length * .3
+            verdict.fine += account.evidence.length * 600
           } break
           case 'administering with intent to harm': {
-            verdict.weeksInJail += 0.8 + account.evidence.length * 0.3
-            verdict.fine += 1000 + account.evidence.length * 500
+            verdict.weeksInJail += account.evidence.length * 0.4
+            verdict.fine += account.evidence.length *600
           } break
           case 'solicitation to commit homicide': {
-            verdict.weeksInJail += 2 + account.evidence.length * 1
-            verdict.fine += 10000 + account.evidence.length * 5000
+            verdict.weeksInJail += account.evidence.length * 3
+            verdict.fine += account.evidence.length * 7000
           } break
           case 'solicited assault': {
-            verdict.weeksInJail += .7 + account.evidence.length * .2
-            verdict.fine += 1000 + account.evidence.length * 500
+            verdict.weeksInJail += account.evidence.length * .5
+            verdict.fine += account.evidence.length * 500
           } break
           case 'supplying illegal substances': {
-            verdict.weeksInJail += 1 + account.evidence.length * .5
-            verdict.fine += 3000 + account.evidence.length * 1000
+            verdict.weeksInJail += 1 + account.evidence.length * .6
+            verdict.fine += account.evidence.length * 2000
           } break
         }
         return verdict

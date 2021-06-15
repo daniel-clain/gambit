@@ -6,6 +6,7 @@ import SkillLevel from "../types/game/skill-level.type";
 import Fighter from "./fighter/fighter";
 import { Game } from "./game";
 import { getProfessionalsAbilities } from "./professionals";
+import { Manager } from "./manager";
 
 export class Game_Implementation{
   shuffledNames 
@@ -163,10 +164,11 @@ export class Game_Implementation{
     )
   }
 
-  resignEmployee(employee: Employee){
-    const employeesManager = this.game.has.managers.find(m => m.has.employees.some(e => e.name == employee.name))
-    if(!employeesManager) return
-    employeesManager.has.employees = employeesManager.has.employees.filter(e => e.name == employee.name)
+  resignEmployee(employee: Employee, manager?: Manager){
+    const employeesManager = manager || this.game.has.managers.find(m => m.has.employees.some(e => e.name == employee.name))
+
+    if(!employeesManager) return console.error(`tried to find manager of resigning employee but failed. ${employee.name}`)
+    employeesManager.has.employees = employeesManager.has.employees.filter(e => e.name != employee.name)
 
     const {actionPoints, activeContract, ...rest} = employee
 

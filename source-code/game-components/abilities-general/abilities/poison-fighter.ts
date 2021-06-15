@@ -36,8 +36,12 @@ export const poisonFighterServer: ServerAbility = {
     }
 
     if(poisonersManager.state.underSurveillance){
-      handleUnderSurveillance(poisonersManager, abilityData, game)
+      handleUnderSurveillance({surveilledManager: poisonersManager, abilityData, game})
     }
+    if(fighter.state.underSurveillance){
+      handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
+    }
+
     let success
     let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)

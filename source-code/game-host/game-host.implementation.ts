@@ -101,8 +101,8 @@ export class GameHost_Implementation{
     this.gameHostState.activeGames.find(game => {
       const {players, gameDisplays, connectionManager} = game.has
       if(
-        players.some(p => p.id == client.id) || 
-        gameDisplays.some(d => d.id == client.id)
+        (players.some(p => p.id == client.id) || 
+        gameDisplays.some(d => d.id == client.id))
         && !connectionManager.disconnectedPlayerVotes
         .find(d => d.disconnectedPlayer.id == client.id)
       ) {
@@ -110,6 +110,7 @@ export class GameHost_Implementation{
           name: client.name,
           id: client.id
         })
+        return true
       }
 
     })  

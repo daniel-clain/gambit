@@ -65,7 +65,7 @@ export class AbilityProcessor{
       if(ability.name == 'Offer Contract') return false
       if(
         ability.executes instanceof Array ? 
-        executes.includes(executes) : 
+        ability.executes.includes(executes) : 
         ability.executes == executes 
       ) return true
       else return false
@@ -100,8 +100,10 @@ export class AbilityProcessor{
             if(
               executeTime == 'End Of Manager Options Stage' && 
               executeTime == executes && 
-              !abilityExecutes.includes('End Of Manager Options Stage')
-            ) return true
+              !abilityExecutes.includes('End Of Round')
+            ) {
+              return true
+            }
 
             if(
               executeTime == 'Instantly' && 

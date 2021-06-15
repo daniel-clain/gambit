@@ -102,13 +102,11 @@ export function doEndOfRoundUpdates(game: Game) {
     }
   }
   function returnEmployeesAndFightersWithExpiredContracts(manager: Manager){
-    const expiredEmployees: Employee[] = manager.has.employees.filter(employee => employee.activeContract.weeksRemaining == 0)
-
     const {employees} = manager.has
 
     employees.forEach(employee => 
       employee.activeContract.weeksRemaining == 0 && 
-      game.functions.resignEmployee(employee)
+      game.functions.resignEmployee(employee, manager)
     )
 
 

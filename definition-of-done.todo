@@ -1,23 +1,19 @@
 To be present worthy:
-  ☐ game display working with correct info
-  ☐ fix retire employee bug
-  ☐ timer no reset bug
-  ☐ balanced for any number of player
-  ☐ appropraite stats for starting game
-  ☐ when player disconnects, disconnect handler working 100%
-  ☐ get friends feedback on what part they didnt understand
-  ☐ get friends to test with and without lawyer
   ☐ game ends if manager can
     ☐ have a fighter in the final round tournament
     ☐ have everyone else go bankrupt
     ☐ hire 3 hitmen and 4 thugs and go for kingpin victory
   ☐ Fighters only recover at appropriate times
-  ☐ games running in parallel dont conflict
-  ☐ all ability cards and jobseeker cards have good info
-  ☐ show employee action points
-  ☐ sponsored fighter icon hidden by parent elem
-  ☐ offer contract recejt shows profession as undefined
-  ☐ game display show read for next fight 
+  ☐ all ability cards and employee cards have good info
+  ☐ balanced for any number of player
+  ☐ get friends feedback on what part they didnt understand
+  ☐ get friends to test with and without lawyer
+
+
+Secondary requrements:
+  ☐ account for all things affecting delay in load speed
+  ☐ how to make game insta-load after assets are store on clin
+
 
 
 Included features:

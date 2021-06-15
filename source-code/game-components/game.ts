@@ -222,7 +222,7 @@ export class Game {
   private setupPlayersAndManagers(players){
 
     players.forEach(player => {
-      const manager = new Manager(player.name)
+      const manager = new Manager(player.name, this)
       this.has.managers.push(manager)
       console.log('manager.has.image :>> ', manager.has.image);
       this.has.players.push(
