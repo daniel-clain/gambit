@@ -81,6 +81,7 @@ export interface ManagerInfo{
 export class ManagerState{
   readyForNextFight: boolean = false
   underSurveillance: {professional: string} = undefined
+  beingProsecuted: boolean = false
   inJail: {
     weeksTotal: number,
     weeksRemaining: number,

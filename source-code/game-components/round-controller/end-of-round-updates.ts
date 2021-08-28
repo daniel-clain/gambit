@@ -17,6 +17,8 @@ export function doEndOfRoundUpdates(game: Game) {
   managers.forEach((manager) => {
     manager.has.nextFightBet = null
     manager.state.readyForNextFight = false
+    manager.state.beingProsecuted = false
+    manager.state.underSurveillance = null
     manager.has.actionPoints = manager.state.inJail ? 0 : 3
     returnEmployeesAndFightersWithExpiredContracts(manager)
     updateEmployeeAndFighterWeeksLeft(manager)
@@ -72,6 +74,7 @@ export function doEndOfRoundUpdates(game: Game) {
       fighter.state.doping = false
       fighter.state.sick = false
       fighter.state.hallucinating = false
+      fighter.state.underSurveillance = null
     })
   }
 

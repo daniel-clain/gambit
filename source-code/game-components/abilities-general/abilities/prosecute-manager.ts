@@ -12,7 +12,7 @@ const sueManager: Ability = {
   cost: { money: 500, actionPoints: 1 },
   possibleSources: ['Lawyer'],
   validTargetIf: ['opponent manager'],
-  executes: ['End Of Manager Options Stage'],
+  executes: 'End Of Round',
   canOnlyTargetSameTargetOnce: true
 }
 
@@ -29,7 +29,6 @@ export const prosecuteManagerServer: ServerAbility = {
     const prosecutingManager = managers.find(m => m.has.employees.find(e => e.name == source.name))
     const prosecutedManager = managers.find(m => m.has.name == target.name)
     const lawsuit: Lawsuit = createLawsuit()
-    addNewsItem()
 
     const verdict: Verdict = determineTheVerdict()
     console.log('verdict :>> ', verdict);
@@ -37,13 +36,16 @@ export const prosecuteManagerServer: ServerAbility = {
     const moneyTakenOffPlayer = takeMoneyOffManager()
     giveHalfToProsecutingManager()
     concedeEvidence()
-    getPutInJail()
-    const lostEmployees: Employee[] = prosecutedManager.has.employees.filter(e => 
-      ['Drug Dealer', 'Hitman', 'Thug'].includes(e.profession)  
-    )
-    lostEmployees.forEach(e => {
-      game.functions.resignEmployee(e, prosecutedManager)
-    })
+    let lostEmployees: Employee[]
+    if(verdict.weeksInJail > 1){
+      getPutInJail()
+      lostEmployees = prosecutedManager.has.employees.filter(e => 
+        ['Drug Dealer', 'Hitman', 'Thug'].includes(e.profession)  
+      )
+      lostEmployees.forEach(e => {
+        game.functions.resignEmployee(e, prosecutedManager)
+      })
+    }
     updateManagerLogs()
 
     //implementation
@@ -67,7 +69,7 @@ export const prosecuteManagerServer: ServerAbility = {
 
         . You have been sentenced to ${verdict.weeksInJail} weeks in jail with a fine of $${verdict.fine}. While in jail, you manager has 0 action points.
 
-        ${!lostEmployees.length ? '' : 
+        ${lostEmployees?.length ? '' : 
           `The following employees have left you: 
             ${lostEmployees.reduce((string, e) => string += `
               \n - ${e.name} (${e.profession})
@@ -79,17 +81,11 @@ export const prosecuteManagerServer: ServerAbility = {
       prosecutedManager.functions.addToLog({type: 'critical', message: logMessage})
     }
 
-    function addNewsItem(){
-      
-      game.has.roundController.preFightNewsStage.newsItems.push({
-        newsType: 'manager prosecuted',
-        headline: 'Lawsuit filed',
-        message: `${prosecutingManager.has.name} has filed a lawsuit against ${prosecutedManager.has.name}`
-      })
-    }
 
     function giveHalfToProsecutingManager(){
-      prosecutingManager.has.money += moneyTakenOffPlayer / 2
+      const amount = moneyTakenOffPlayer / 2
+      prosecutingManager.has.money += amount
+      prosecutingManager.functions.addToLog({type: 'employee outcome', message: `You have been awarded $${amount} from a successful court case`})
     }
 
     function takeMoneyOffManager(): number{
@@ -165,6 +161,19 @@ export const prosecuteManagerServer: ServerAbility = {
 
     }
 
+  },
+  onSelected(abilityData: AbilityData, game: Game){
+
+    const {managers} = game.has
+    const {source, target} = abilityData
+    const prosecutingManager = managers.find(m => m.has.employees.find(e => e.name == source.name))
+    const prosecutedManager = managers.find(m => m.has.name == target.name)
+    game.has.roundController.preFightNewsStage.newsItems.push({
+      newsType: 'manager prosecuted',
+      headline: 'Lawsuit filed',
+      message: `${prosecutingManager.has.name} has filed a lawsuit against ${prosecutedManager.has.name}`
+    })
+    prosecutedManager.state.beingProsecuted = true
   },
   ...sueManager
 }

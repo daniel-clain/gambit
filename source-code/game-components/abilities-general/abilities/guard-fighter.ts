@@ -1,6 +1,7 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import { Employee } from "../../../interfaces/front-end-state-interface"
 import { Game } from "../../game"
+import { Manager } from "../../manager"
 
 
 const guardFighter: Ability = {
@@ -16,7 +17,17 @@ export const guardFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
 
-    const bodyGuard: Employee = game.has.managers.reduce((foundBodyGuard: Employee, manager) => foundBodyGuard || manager.has.employees.find(employee => employee.name == abilityData.source.name), undefined)
+    
+    let bodyGuard: Employee
+    let guardsManager: Manager
+    for(let manager of game.has.managers){
+      bodyGuard = manager.has.employees.find(employee => employee.name == abilityData.source.name)
+      if(bodyGuard){
+        guardsManager = manager
+        break
+      }
+    } 
+
 
     fighter.state.guards.push(bodyGuard)
   },

@@ -29,6 +29,10 @@ export const poisonFighterServer: ServerAbility = {
         break
       }
     }    
+
+    if(poisonersManager.state.beingProsecuted){
+      return
+    }
     
     if(fighter.state.dead){
       poisonersManager.functions.addToLog({message: `Attempt to poison ${abilityData.target.name} failed because he was already found dead`, type: 'employee outcome'})

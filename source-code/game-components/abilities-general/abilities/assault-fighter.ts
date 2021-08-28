@@ -31,6 +31,10 @@ export const assaultFighterServer: ServerAbility = {
       }
     }
 
+    if(assaultersManager.state.beingProsecuted){
+      return
+    }
+
     
     if(fighter.state.dead){
       assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed because he was already found dead`, type: 'report'})

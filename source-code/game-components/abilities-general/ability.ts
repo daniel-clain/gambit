@@ -23,6 +23,7 @@ export class Ability {
 
 export interface ServerAbility extends Ability {
   execute(abilityData: AbilityData, game: Game, executes?: ExecutesWhenOptions)
+  onSelected?(abilityData: AbilityData, game: Game)
 }
 
 export interface ClientAbility extends Ability {

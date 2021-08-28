@@ -19,6 +19,10 @@ export const dopeFighterServer: ServerAbility = {
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
 
     const manager = source.type == 'Manager' ? game.has.managers.find(m => m.has.name == source.name) : game.has.managers.find(m => m.has.employees.find(e => e.name == source.name))
+
+    if(manager.state.beingProsecuted){
+      return
+    }
     
     if(fighter.state.doping){
       if(random(100) < 10) fighterDead()

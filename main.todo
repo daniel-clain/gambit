@@ -1,7 +1,7 @@
 InProgress: overlay scale
 
 Priority:
-  ☐ prosecute manager goes in used abilites list when not used, only viewed
+  ☐ using bad guy on turn u get prosecuted causes bug cos bad guy will not have a manager
   ☐ make an info object that is both the config for the game, and also the 'how to play manual'
   ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
   ☐ private investigator can use 'Do Research' targeting a manager, result of research a manager is like results of a fighter, state is based on memory, how many turns since learned
@@ -23,6 +23,7 @@ Priority:
   ☐ doping makes them recover, why
   ☐ pause in fight is buggy
   ☐ in select list, manager icon
+  ☐ user manual to check mechanics (when being prosecuted bad employees dont act)
   
 
 
@@ -31,8 +32,15 @@ Priority:
 Quick minor fixes: 
   ☐ remove flanking and maovering quotes
   ☐ fight ui: fighter stats, when knockout, put red cross over pic
+  ☐ make evidence item copy better ('fighter not owned by manager')
+  ☐ poisoned icon not showing
 
 
+QA:
+  ☐ surveilance on fighter
+  ☐ display view works in all scenarios
+  ☐ prosecuting manager get half of money
+  ☐ ability description says what ability does
 
 Other updates:
   ☐ battle royal allow 3 votes, 1 large medium and small, all bet size percentages are scaled down, instead of large 50% => 30%, 20%, 10%. extra bonus for win, normally if 

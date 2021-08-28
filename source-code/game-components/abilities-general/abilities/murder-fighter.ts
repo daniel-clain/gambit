@@ -32,6 +32,10 @@ export const murderFighterServer: ServerAbility = {
       }
     }
 
+    if(hitmansManager.state.beingProsecuted){
+      return
+    }
+
     
     if(fighter.state.dead){
       hitmansManager.functions.addToLog({message: `Attempt to murder ${abilityData.target.name} failed because he was already found dead`, type: 'employee outcome'})

@@ -139,6 +139,7 @@ export class AbilityProcessor{
 
     manager.functions.addToLog({message: `Used ability ${abilityData.name}${abilityData.target ? `, targeting ${abilityData.target.name}` : ''}`})
     
+    ability.onSelected?.(abilityData, this.game)
 
     if(ability.executes == 'Instantly'){
       ability.execute(abilityData, this.game)

@@ -17,6 +17,9 @@ export const sellDrugsServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const manager = game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
 
+    if(!manager){
+      return
+    }
     const drugDealer = manager.has.employees.find(employee => employee.name == abilityData.source.name)
 
     if(manager.state.underSurveillance){

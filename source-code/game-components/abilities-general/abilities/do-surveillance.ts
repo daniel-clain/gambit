@@ -22,7 +22,6 @@ export const doSurveillanceServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const {target, source} = abilityData
     const {type, name} = target
-    console.log('abilityData :>> ', abilityData);
     if(type == 'fighter not owned by manager'){
       const fighter = game.has.fighters.find(f => f.name == name)
       fighter.state.underSurveillance = {

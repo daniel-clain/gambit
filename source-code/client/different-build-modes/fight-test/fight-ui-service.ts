@@ -8,7 +8,7 @@ gameConfiguration.stageDurations.maxFightDuration = 10000000
 
 
 const fighters = [
-/* 	new Fighter('Daniel'),
+	new Fighter('Daniel'),
 	new Fighter('Bob'),
 	new Fighter('Fred'),
 	new Fighter('Jeff'),
@@ -25,15 +25,7 @@ const fighters = [
 	new Fighter('Stupid'),
 	new Fighter('Passive'),
 	new Fighter('Hyper'),
-	new Fighter('Tough'),*/
-	new Fighter('Parth'), 
-	new Fighter('Misael'),
-	new Fighter('Sam'),
-	new Fighter('Nicoles Anus'),
-	new Fighter('Ileens nose and ears'),
-	new Fighter('Andy no ass'),
-	new Fighter('Ellas but plug'),
-	
+	new Fighter('Tough'),
 
 	//new Fighter('Superman')
 ]
@@ -148,44 +140,6 @@ f('Hyper').state.injured = true
 
 
 
-
-s(f('Misale'),{
-	baseStrength: 8,
-	baseFitness: 3,
-	baseIntelligence: 7,
-	baseAggression: 7
-})
-
-
-s(f('Parth'),{
-	baseStrength: 6,
-	baseFitness: 5,
-	baseIntelligence: 6,
-	baseAggression: 7
-})
-
-
-s(f('Nicoles Anus'),{
-	baseStrength: 10,
-	baseFitness: 10,
-	baseIntelligence: 1,
-	baseAggression: 10
-})
-
-
-s(f('Ileens nose and ears'),{
-	baseStrength: 3,
-	baseFitness: 7,
-	baseIntelligence: 2,
-	baseAggression: 10
-})
-
-s(f('Andy no ass'),{
-	baseStrength: 2,
-	baseFitness: 2,
-	baseIntelligence: 0,
-	baseAggression: 2
-})
 
 
 
