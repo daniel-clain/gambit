@@ -7,11 +7,10 @@ import { Game } from "./game"
 
 export const setupTestState = (game: Game) => {
 
-  gameConfiguration.stageDurations.managerOptions = 6000
   //skipFight()
   //freezeOnFight()
+  //longManagerOptions()
   //setup1()
-
   //implementation
 
   function skipFight(){
@@ -26,9 +25,11 @@ export const setupTestState = (game: Game) => {
     gameConfiguration.freezeFight = true
 
   }
+  function longManagerOptions(){
+    gameConfiguration.stageDurations.managerOptions = 6000
+  }
 
   function setup1(){
-    gameConfiguration.stageDurations.managerOptions = 6000
 
     const manager1 = game.has.managers[0]
     const manager2 = game.has.managers[1]
@@ -45,8 +46,27 @@ export const setupTestState = (game: Game) => {
     if(manager2) manager2.has.money = 10000
 
   }
+  
+
+  
+
+}
+
+export const postStartTestState = (game: Game) => {
+  //setup2()
+  //testContractEnding()
+
+  
   function setup2(){
-    gameConfiguration.stageDurations.managerOptions = 6000
+    const manager1 = game.has.managers[0]
+    const fighter: Fighter = game.has.fighters[0]
+    fighter.state.manager = manager1
+    manager1.has.fighters.push(fighter)
+
+    game.has.roundController.activeFight.fighters.push(fighter)
+  }
+  
+  function testContractEnding(){
 
     const manager1 = game.has.managers[0]
     const agent1: Employee = new Employee('Private Agent')
@@ -57,23 +77,26 @@ export const setupTestState = (game: Game) => {
 
     manager1.has.employees.push(agent1)
 
-  }
+    const fighter1: Fighter = new Fighter('Test Fighter')
+    fighter1.state.activeContract = {
+      weeklyCost: 10,
+      weeksRemaining: 1
+    }
+    const fighter2: Fighter = new Fighter('Test Fighter2')
+    fighter1.state.goalContract = {
+      weeklyCost: 10,
+      numberOfWeeks: 1
+    }
+    fighter1.state.manager = manager1
+    manager1.has.fighters.push(fighter1)
 
-  
 
-}
+    game.has.fighters.push(fighter2)
 
-export const postStartTestState = (game: Game) => {
-  //setup2()
+    game.has.roundController.jobSeekers.push({
+      type: 'Fighter', name: fighter2.name, goalContract: fighter2.state.goalContract
+    })
 
-  
-  function setup2(){
-    const manager1 = game.has.managers[0]
-    const fighter: Fighter = game.has.fighters[0]
-    fighter.state.manager = manager1
-    manager1.has.fighters.push(fighter)
-
-    game.has.roundController.activeFight.fighters.push(fighter)
   }
 
 }

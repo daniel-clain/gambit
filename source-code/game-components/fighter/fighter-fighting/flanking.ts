@@ -4,7 +4,7 @@ import Fighter from "../fighter";
 import Flanker from "../../../interfaces/game/fighter/flanker";
 import FlankingPair from "../../../interfaces/game/fighter/flanking-pair";
 import { getDistanceOfEnemyStrikingCenter, closeRange, nearbyRange } from "./proximity";
-import { octagon } from "../../fight/new-octagon";
+import { octagon } from "../../abilities-general/fight/new-octagon";
 import { Angle } from "../../../types/game/angle";
 import { Closeness } from "../../../types/fighter/closeness";
 export default class Flanking {

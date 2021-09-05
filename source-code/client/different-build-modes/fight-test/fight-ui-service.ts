@@ -1,5 +1,5 @@
 
-import Fight from '../../../game-components/fight/fight';
+import Fight from '../../../game-components/abilities-general/fight/fight';
 import Fighter from '../../../game-components/fighter/fighter';
 import gameConfiguration from '../../../game-settings/game-configuration';
 import { shuffle } from '../../../helper-functions/helper-functions';

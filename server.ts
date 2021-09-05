@@ -3,8 +3,10 @@ import * as env from 'dotenv'
 import {GameHost} from './source-code/game-host/game-host';
 import {Server} from 'socket.io';
 import * as http from 'http'
-
+console.log('Server script running... ', process.pid)
 env.config()
+
+const PORT = process.env.PORT || 80;
 const app = express();
 const httpServer = http.createServer(app)
 
@@ -17,15 +19,21 @@ let webSocketServer =
 new GameHost(webSocketServer)
 
 
-console.log('come on mate... ',process.pid)
 
 if(environment == 'production'){
   webSocketServer.listen(httpServer)
+  
   app.use(express.static('host-packages'));
+
+  app.get('/', (req, res) => {
+    console.log('test');
+    res.write(`
+      <h1> Test </h1>
+    `)
+  })
   app.get('/favicon.ico', (req, res) => {
     res.sendFile(`${__dirname}/favicon.ico`)
   })
-  const PORT = process.env.PORT || 3000;
   httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 }

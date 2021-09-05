@@ -11,7 +11,7 @@ import { muscleSkinModelImages } from "../../../client/images/fight-view/fighter
 import { fastSkinModelImages } from "../../../client/images/fight-view/fighter/fast-skin/fast-skin-model-images"
 import Flanked from "../../../interfaces/game/fighter/flanked"
 import { Edge } from "../../../interfaces/game/fighter/edge"
-import { octagon } from "../../fight/new-octagon"
+import { octagon } from "../../abilities-general/fight/new-octagon"
 import { Angle } from "../../../types/game/angle"
 import { Closeness } from "../../../types/fighter/closeness"
 import FighterModelState from "../../../types/fighter/fighter-model-states"

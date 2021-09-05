@@ -11,8 +11,7 @@ export class GameHost{
   state = new GameHostState()
   private i: GameHost_Implementation
 
-  constructor(webSocketServer: Server){    
-    
+  constructor(webSocketServer: Server){
     webSocketServer.on("connection", (socket: Socket) => {
       console.log('A client connected to the websocket server');
       socket.on('connectToHost', ({name, id}) => {  

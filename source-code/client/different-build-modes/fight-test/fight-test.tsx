@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import '../../styles/global.scss'
-import Fight from '../../../game-components/fight/fight';
+import Fight from '../../../game-components/abilities-general/fight/fight';
 import { fightUiService } from './fight-ui-service';
 import { useEffect, useState } from 'react';
 import Fight_View from '../../views/game/fight-view/fight.view';

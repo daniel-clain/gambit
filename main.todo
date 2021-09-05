@@ -1,6 +1,11 @@
 InProgress: overlay scale
 
 Priority:
+  ☐ priv agent research get more info
+  ☐ falling money buggs out
+  ☐ fighter expire contract no recontract
+  ☐ main even cause crash, au server
+  ☐ load shark weeks remaining not updated
   ☐ using bad guy on turn u get prosecuted causes bug cos bad guy will not have a manager
   ☐ make an info object that is both the config for the game, and also the 'how to play manual'
   ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
@@ -105,3 +110,7 @@ Big wins (to remember my achievements)
 ✔ Refactored gamehost to be nicer @done(21-04-07 12:14)
 ✔ Got game hosted on heroku @done(21-04-07 12:14)
 ✔ got money and report done @done(21-04-07 12:14)
+
+
+other players finished icons 
+loan shark weeks after payback

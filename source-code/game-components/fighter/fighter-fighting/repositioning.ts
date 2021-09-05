@@ -1,7 +1,7 @@
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 import Coords from "../../../interfaces/game/fighter/coords";
 import Fighter from "../fighter";
-import { octagon } from "../../fight/new-octagon";
+import { octagon } from "../../abilities-general/fight/new-octagon";
 import { getEnemiesInfront, getDirectionOfEnemyStrikingCenter,  getDistanceOfEnemyStrikingCenter, strikingRange } from "./proximity";
 import { getDirectionOfPosition2FromPosition1, validateAngle, subtractAngle2FromAngle1, add2Angles } from "../../../helper-functions/helper-functions";
 import { Angle } from "../../../types/game/angle";

@@ -4,7 +4,7 @@ import Coords from '../../../interfaces/game/fighter/coords';
 import { Edge } from "../../../interfaces/game/fighter/edge";
 import { wait, getDirectionOfPosition2FromPosition1 } from "../../../helper-functions/helper-functions";
 import { MoveAction } from "../../../types/fighter/action-name";
-import { octagon } from "../../fight/new-octagon";
+import { octagon } from "../../abilities-general/fight/new-octagon";
 import { getFighterModelDimensions, getDirectionOfEnemyStrikingCenter, isFacingAwayFromEnemy } from "./proximity";
 import { getRepositionMoveDirection } from "./repositioning";
 import { Angle } from "../../../types/game/angle";

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Octagon from '../../../../../../game-components/fight/octagon';
+import Octagon from '../../../../../../game-components/abilities-general/fight/octagon';
 import Coords from '../../../../../../interfaces/game/fighter/coords';
 import { FighterComponent } from '../fighter/fighter.component';
 

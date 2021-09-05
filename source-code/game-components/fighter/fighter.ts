@@ -1,6 +1,6 @@
 
 import FighterState from "./fighter-state";
-import Fight from '../fight/fight';
+import Fight from '../abilities-general/fight/fight';
 import FighterFighting from './fighter-fighting/fighter-fighting';
 import { random } from "../../helper-functions/helper-functions";
 import FighterStats from "./fighter-fighting/stats";
@@ -52,7 +52,7 @@ export default class Fighter{
     const weeklyCost = randomRange
 
     this.state.goalContract = {
-      numberOfWeeks: 6,
+      numberOfWeeks: 1,
       weeklyCost
     }
   }
@@ -62,6 +62,7 @@ export default class Fighter{
 
   getInfo(): FighterInfo{
     const {numberOfFights, numberOfWins, activeContract, goalContract, manager} = this.state
+    console.log(`${this.name} goal contract: `, goalContract);
     return {
       name: this.name, 
       ...getStats(this.fighting.stats),

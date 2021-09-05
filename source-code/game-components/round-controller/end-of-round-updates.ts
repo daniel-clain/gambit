@@ -151,6 +151,7 @@ export function doEndOfRoundUpdates(game: Game) {
       fighter.state.activeContract.weeksRemaining --
       if(fighter.state.activeContract.weeksRemaining == 0){
         fighter.determineGoalContract()
+        console.log(`no weeks left fighter ${fighter.name}. goal contract:`, fighter.state.goalContract);
         manager.functions.addToLog({message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
       }
     })

@@ -1,13 +1,13 @@
 
 import { Subject, Subscription } from "rxjs"
-import Fighter from "../fighter/fighter"
-import gameConfiguration from "../../game-settings/game-configuration"
-import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../helper-functions/helper-functions"
+import Fighter from "../../fighter/fighter"
+import gameConfiguration from "../../../game-settings/game-configuration"
+import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../../helper-functions/helper-functions"
 import Octagon from "./octagon"
-import Coords from '../../interfaces/game/fighter/coords';
-import { Angle } from "../../types/game/angle"
-import { Manager } from "../manager"
-import { FightReport, FightUIState, ManagersBet } from "../../interfaces/front-end-state-interface"
+import Coords from '../../../interfaces/game/fighter/coords';
+import { Angle } from "../../../types/game/angle"
+import { Manager } from "../../manager"
+import { FightReport, FightUIState, ManagersBet } from "../../../interfaces/front-end-state-interface"
 
 
 

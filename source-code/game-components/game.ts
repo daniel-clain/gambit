@@ -168,7 +168,7 @@ class GameFunctions{
     let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
     let {delayedExecutionAbilities} = this.game.has.abilityProcessor
 
-    return {
+    const serverGameUIState: ServerGameUIState = {
       disconnectedPlayerVotes: this.game.state.gameType == 'Websockets' ? this.game.has.connectionManager.disconnectedPlayerVotes : null,
       roundStage: activeStage?.name,
       displayManagerUIState: {
@@ -188,9 +188,18 @@ class GameFunctions{
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
         delayedExecutionAbilities
       },
-      preFightNewsUIState: {newsItem: preFightNewsStage.activeNewsItem},
-      fightUIState: {...activeFight?.fightUiData, knownFighterStates: !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)}
+      preFightNewsUIState: {
+        newsItem: preFightNewsStage.activeNewsItem
+      },
+      fightUIState: {
+        ...activeFight?.fightUiData, 
+        knownFighterStates: 
+          !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)}
     }
+    serverGameUIState.playerManagerUIState.managerInfo.fighters.forEach(f => {
+      console.log(`${f.name}, active contract: ${f.activeContract.weeksRemaining}, goal contract: ${f.goalContract}`);
+    })
+    return serverGameUIState
   }
 }
 
