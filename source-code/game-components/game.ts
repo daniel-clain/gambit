@@ -196,9 +196,6 @@ class GameFunctions{
         knownFighterStates: 
           !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)}
     }
-    serverGameUIState.playerManagerUIState.managerInfo.fighters.forEach(f => {
-      console.log(`${f.name}, active contract: ${f.activeContract.weeksRemaining}, goal contract: ${f.goalContract}`);
-    })
     return serverGameUIState
   }
 }

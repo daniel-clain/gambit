@@ -24,6 +24,12 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
     
   probability -= aggression    
 
+  
+  const otherFighters = logistics.otherFightersStillFighting().length
+  if (otherFighters == 1){
+    probability -= (5 + intelligence)
+  }
+
 
   if(logistics.enemyIsOnARampage(closestEnemy)){
     probability += 5

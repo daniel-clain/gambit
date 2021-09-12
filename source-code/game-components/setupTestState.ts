@@ -7,10 +7,16 @@ import { Game } from "./game"
 
 export const setupTestState = (game: Game) => {
 
-  //skipFight()
+  skipFight()
   //freezeOnFight()
   //longManagerOptions()
-  //setup1()
+  setup1()
+  //testFighterStats()
+
+
+
+
+
   //implementation
 
   function skipFight(){
@@ -42,9 +48,18 @@ export const setupTestState = (game: Game) => {
     const thug = new Employee('Thug')
     manager1.has.employees.push(lawyer, agent1)
     manager2?.has.employees.push(agent2, agent3, dealer, hitman, thug)
-    manager1.has.money = 10000
-    if(manager2) manager2.has.money = 10000
+    manager1.has.money = 100000
+    if(manager2) manager2.has.money = 100000
 
+  }
+
+  
+  function testFighterStats(){
+    const manager1 = game.has.managers[0]
+    const promoter = new Employee('Promoter',3)
+    const trainer = new Employee('Trainer',3)
+    const dealer = new Employee('Drug Dealer')
+    manager1.has.employees.push(dealer, promoter, trainer)
   }
   
 
@@ -54,6 +69,7 @@ export const setupTestState = (game: Game) => {
 
 export const postStartTestState = (game: Game) => {
   //setup2()
+  //testMainEvent()
   //testContractEnding()
 
   
@@ -62,8 +78,12 @@ export const postStartTestState = (game: Game) => {
     const fighter: Fighter = game.has.fighters[0]
     fighter.state.manager = manager1
     manager1.has.fighters.push(fighter)
-
     game.has.roundController.activeFight.fighters.push(fighter)
+  }
+
+  function testMainEvent(){
+    game.has.roundController.roundNumber = 20
+
   }
   
   function testContractEnding(){

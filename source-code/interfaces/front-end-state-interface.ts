@@ -169,6 +169,7 @@ export interface Loan{
   debt: number
   weeksOverdue: number
   amountPaidBackThisWeek: number
+  isNew: boolean
 }
 
 export interface Character{

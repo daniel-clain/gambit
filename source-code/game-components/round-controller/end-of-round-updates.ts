@@ -61,7 +61,12 @@ export function doEndOfRoundUpdates(game: Game) {
       return {name, profession, skillLevel, abilities}
     }))
 
-    fighters.forEach(fighter => delete fighter.state.goalContract)
+    fighters.forEach(f => {
+      const isAJobseeker = roundController.jobSeekers.some(j => j.name == f.name)
+      if(isAJobseeker){
+        delete f.state.goalContract
+      }
+    })
     
     roundController.jobSeekers = []
   }
@@ -187,13 +192,16 @@ export function doEndOfRoundUpdates(game: Game) {
   function updateLoanSharkData(manager: Manager){
     const {minimumAmountToPayBackEachWeek, interestAddedPerWeek, weeksOfNoPaybackUntilRespond} = gameConfiguration.loanSharkSettings
     
-
+    if(manager.has.loan?.debt == 0){
+      delete manager.has.loan
+    }
     if(manager.has.loan?.debt){
       manager.has.loan.weeksOverdue ++
       addInterestToLoan()
 
-      if(managerHasPaidBackTheMinimumAmountThisWeek())
-        manager.has.loan = {...manager.has.loan, weeksOverdue: 0}
+      if(manager.has.loan.isNew ||managerHasPaidBackTheMinimumAmountThisWeek()){
+        manager.has.loan = {...manager.has.loan, weeksOverdue: 0, isNew: false}
+      }
 
       else if(dayBeforeOverdue())
         sendWarning()
@@ -204,6 +212,7 @@ export function doEndOfRoundUpdates(game: Game) {
       manager.has.loan.amountPaidBackThisWeek = 0
 
     }
+
 
 
     function sendWarning(){
@@ -220,7 +229,7 @@ export function doEndOfRoundUpdates(game: Game) {
     function addInterestToLoan(){
       const addedAmount = Math.round(manager.has.loan.debt * interestAddedPerWeek)
       manager.has.loan.debt += addedAmount
-      manager.functions.addToLog({message: `You loan debt has incresed by ${addedAmount} because of ${interestAddedPerWeek * 100}% interest, you now owe ${manager.has.loan.debt}`, type:'report'})
+      manager.functions.addToLog({message: `You loan debt has increased by ${addedAmount} because of ${interestAddedPerWeek * 100}% interest, you now owe ${manager.has.loan.debt}`, type:'report'})
 
     }
     function managerHasNotMadeRepaymentInSpecifiedNumberOfWeeks(): boolean{
@@ -244,7 +253,7 @@ export function doEndOfRoundUpdates(game: Game) {
 
       randomFighter.fighting.stats[randomStat] --
 
-      manager.functions.addToLog({type: 'critical', message: `The loan shark is mad that you didnt pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat} has been reduced by 1`})
+      manager.functions.addToLog({type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat} has been reduced by 1`})
 
 
     }

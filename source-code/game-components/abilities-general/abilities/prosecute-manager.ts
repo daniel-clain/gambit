@@ -125,6 +125,7 @@ export const prosecuteManagerServer: ServerAbility = {
       )}
     }
 
+
     function determineTheVerdict(): Verdict{
 
       const verdict = lawsuit.accounts.reduce((verdict, account): Verdict => {

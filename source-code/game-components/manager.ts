@@ -98,7 +98,7 @@ class ManagerHas{
   actionPoints = gameConfiguration.manager.actionPoints
   fighters: Fighter[] = []
   employees: Employee[] = []
-  loan: Loan = {debt: 0, weeksOverdue: 0, amountPaidBackThisWeek: 0}
+  loan: Loan
   image: ManagerImage = randomFloor(2) ? 'Fat Man' : 'Moustache Man'
   nextFightBet?: Bet
   otherManagers: KnownManager[] = []
@@ -158,10 +158,19 @@ class ManagerFunctions{
     this.addToLog({message: `Borrowed ${amount} from the Loan Shark`})
     const {has} = this.manager
     has.money += amount
-    has.loan = {
-      ...has.loan, 
-      debt: has.loan.debt += amount,
-      amountPaidBackThisWeek: has.loan.amountPaidBackThisWeek -= amount
+    if(!has.loan){
+      has.loan = {
+        isNew: true,
+        debt: amount,
+        amountPaidBackThisWeek: 0,
+        weeksOverdue: 0
+      }
+    } else {
+      has.loan = {
+        ...has.loan, 
+        debt: has.loan.debt += amount,
+        amountPaidBackThisWeek: has.loan.amountPaidBackThisWeek -= amount
+      }
     }
   }
 

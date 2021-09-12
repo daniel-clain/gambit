@@ -1,6 +1,6 @@
 
 import gameConfiguration from "../../game-settings/game-configuration";
-import { shuffle, random } from "../../helper-functions/helper-functions";
+import { shuffle, random, percentageChance } from "../../helper-functions/helper-functions";
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
 import Fight from "../abilities-general/fight/fight";
@@ -26,13 +26,14 @@ export function setupNewRound(game: Game){
 
   function chanceNextFightEvent(){
     const {nextWeekIsEvent, thisWeekIsEvent, roundNumber} = roundController
-    if(!nextWeekIsEvent && !thisWeekIsEvent && roundNumber > 15 && random(2)){
+    if(!nextWeekIsEvent && !thisWeekIsEvent && roundNumber > 15 && percentageChance({percentage: 20})){
       roundController
       roundController.nextWeekIsEvent = true
       roundController.preFightNewsStage.newsItems.push({
         newsType: 'fight event next week',
         message: 'The top 10 fighters will compete in a battle royal, all winnings are tripled',
-        headline: 'Main Event!'
+        headline: 'Main Event!',
+        duration: 5
       })
 
     }

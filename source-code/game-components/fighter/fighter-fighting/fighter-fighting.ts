@@ -57,6 +57,7 @@ export default class FighterFighting {
 
   start() {
     this.fightStarted = true
+    this.stamina = this.stats.maxStamina
     this.otherFightersInFight = this.fighter.state.fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
     if(gameConfiguration.freezeFight) return

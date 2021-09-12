@@ -19,12 +19,15 @@ export const InfoBox = ({heading, info, list, children}: InfoBoxProps) =>
       }
       {list &&
         <div className="list">
-          <div className="list__labels">
-            {list.map(listItem => <div key={listItem.label}>{listItem.label}:</div>)}
-          </div>
-          <div className="list__values">
-            {list.map(listItem => <div key={listItem.label}>{listItem.value}</div>)}
-          </div>
+          {list.map(listItem => ([
+              <div className="list__label" key={listItem.label}>
+                {listItem.label}:
+              </div>,
+              <div className="list__value" key={listItem.label+'value'}>
+                {listItem.value}
+              </div>
+            ])
+          )}          
         </div>
       }
       {children}

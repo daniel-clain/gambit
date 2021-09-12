@@ -1,0 +1,21 @@
+
+
+.manager-list{
+  .manager{
+    display: flex;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    background-size: contain;
+    margin-right: 8px;
+    background-repeat: no-repeat;
+    &__image{      
+      &--fat-man{
+        background-image: url('../../../../../images/icons/manager1-face.png');
+      }
+      &--moustache-man{
+        background-image: url('../../../../../images/icons/manager2-face.jpg');
+      }
+    }
+  }
+}

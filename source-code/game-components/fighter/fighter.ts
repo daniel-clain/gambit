@@ -52,7 +52,7 @@ export default class Fighter{
     const weeklyCost = randomRange
 
     this.state.goalContract = {
-      numberOfWeeks: 1,
+      numberOfWeeks: random(1) ? 5 : 6,
       weeklyCost
     }
   }
@@ -62,7 +62,6 @@ export default class Fighter{
 
   getInfo(): FighterInfo{
     const {numberOfFights, numberOfWins, activeContract, goalContract, manager} = this.state
-    console.log(`${this.name} goal contract: `, goalContract);
     return {
       name: this.name, 
       ...getStats(this.fighting.stats),

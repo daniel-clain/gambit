@@ -117,8 +117,8 @@ export const LoanSharkCard = connect(mapping)(hot(({loan, money}) => {
       return
       
     if(state.borrowAmount > 500 ||
-      loan.debt && state.borrowAmount + loan.debt > 500){
-      alert(`you loan can't be bigger than 500`)
+      loan?.debt && state.borrowAmount + loan.debt > 500){
+      alert(`You can not get a loan be bigger than 500`)
       return
     }
     sendUpdate.borrowMoney(state.borrowAmount)
@@ -131,12 +131,12 @@ export const LoanSharkCard = connect(mapping)(hot(({loan, money}) => {
       return
     
     if(state.paybackAmount > money){
-      alert(`you can't pay back more money than what you have`)
+      alert(`You can't pay back more money than what you have`)
       return
     }
 
     if(state.paybackAmount > loan.debt){
-      alert(`you can't pay back more than what you owe`)
+      alert(`You can't pay back more than what you owe`)
       return
     }
     sendUpdate.payBackMoney(state.paybackAmount)

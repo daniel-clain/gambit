@@ -36,7 +36,7 @@ export default class PreFightNewsStage implements IStage {
     this.roundController.triggerUIUpdate()
 
     return new Promise(newsItemFinished => 
-      setTimeout(newsItemFinished, this.newsItemDuration)
+      setTimeout(newsItemFinished, newsItem.duration ? newsItem.duration*1000 : this.newsItemDuration)
     )
   }
 

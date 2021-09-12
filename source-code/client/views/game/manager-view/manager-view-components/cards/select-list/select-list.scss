@@ -1,6 +1,7 @@
 .select-list{
   &__item{
     display: flex;
+    align-items: center;
     height: 24px;
     > * {
       margin-right: 10px;

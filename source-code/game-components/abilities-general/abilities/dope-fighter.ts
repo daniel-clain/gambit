@@ -66,7 +66,7 @@ export const dopeFighterServer: ServerAbility = {
 
 export const dopeFighterClient: ClientAbility = {
   shortDescription: 'Temporary performance enhancer',
-  longDescription: 'Gives the fighter more strength, speed and recovery',
+  longDescription: 'Gives the fighter more strength, speed and recovery for 1 week only. Also increases aggression permanently.',
   ...dopeFighter
 }
 

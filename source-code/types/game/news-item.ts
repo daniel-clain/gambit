@@ -4,4 +4,5 @@ export type NewsItem = {
   newsType: NewsType
   message: string
   headline: string
+  duration?: number
 }

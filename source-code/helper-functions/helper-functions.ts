@@ -6,7 +6,9 @@ import { Angle } from "../types/game/angle";
  * @param startAtOne From 1 to x instead
  * @returns 
  */
-export function random(number: number, startAtOne?: boolean){return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
+export function random(number: number, startAtOne?: boolean){
+  return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
+
 export function randomFloor(number: number, startAtOne?: boolean){return Math.floor((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
 
 export const shuffle = <T>(array: T[]): T[] => {
@@ -27,6 +29,13 @@ export const shuffle = <T>(array: T[]): T[] => {
 
   return array;
 }
+
+export const percentageChance = ({percentage}: {percentage: number}): boolean => {
+  return percentage > Math.floor((Math.random() * 100))
+}
+
+
+
 export const randomNumber = ({digits}:{digits: number}) => Math.round(Math.random() * Math.pow(10, digits))
 
 

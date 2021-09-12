@@ -23,12 +23,13 @@
     }
     .list{
       line-height: 1.6rem;
-      display: flex;
-      &__labels{        
+      display: grid;
+      grid-template-columns: auto 1fr;
+      &__label{        
         text-align: right;
         margin-right: 8px;
       }
-      &__values{
+      &__value{
         flex: 1;
       }
     }

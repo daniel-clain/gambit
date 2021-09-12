@@ -4,6 +4,7 @@ import {connect, ConnectedProps} from 'react-redux'
 import { FrontEndState } from "../../../../../../../interfaces/front-end-state-interface";
 import { Modal } from '../../partials/modal/modal';
 import './managers-card.scss'
+import '../../main-components/manager-list.scss'
 import { SetStateManagerUIAction } from '../../../../../../front-end-state/reducers/manager-ui.reducer';
 import { hot } from 'react-hot-loader/root';
 
@@ -29,9 +30,9 @@ export const ManagersCard = connector(hot(({
 }: PropsFromRedux) => {
   
   return <Modal>
-    <div className='panel known-fighters'>
+    <div className='panel'>
       <div className='card__heading heading'>Managers</div>
-      <div className="list managers-container">
+      <div className="list manager-list">
         {managers.map(manager => 
           <div key={manager.name} className={'list__row manager'}  onClick={() => selectManager(manager)}>              
             <div className={`manager__image manager__image--${manager.image.toLowerCase().replace(' ', '-')}`}></div>

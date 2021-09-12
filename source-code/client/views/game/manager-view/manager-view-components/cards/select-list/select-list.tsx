@@ -49,5 +49,6 @@ export default function SelectList(props: SelectListProps){
         managerImage == 'Moustache Man' && 'manager--moustache-man'
       }`}></div>)
     } 
+    return returnElems
   }
 };

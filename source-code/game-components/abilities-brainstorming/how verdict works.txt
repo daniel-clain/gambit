@@ -1,0 +1,9 @@
+* if the opponent has no lawyers, then all accounts have a 100% chance of success
+* each account has a fine and jail value, that is multiplied by each account
+* if the opponent has lawyers, each account has a chance not to be successful
+* each accounts chance of being countered is reduced by the total number of accounts. eg if you have 1 account, each account has a 50% chance to be countered, but if theres 4 accounts, then each account has a 40% chance of being countered
+* each lawyer of each player influences the chance of being each account being countered
+- if p1 1 laywer and p2 0 lawyer => 0% chacnce of counter
+- if p1 1 and p2 1 => 30%
+- p1 2 and p2 1 => 10%
+- p1 1 and p2 2 => 70%
