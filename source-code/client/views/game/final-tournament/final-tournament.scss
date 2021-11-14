@@ -1,0 +1,106 @@
+
+.final-tournament-board-container {
+  border: 1vw ridge#83878b;
+  background: #030303;
+  padding: 3vw;
+}
+.final-tournament-board{
+  background: url('../../../images/end-game-assets/tournament-board.jpg') no-repeat;
+  aspect-ratio: 2.6;
+  background-size: contain;
+  position: relative;
+
+
+  .fighter-name{
+    font-size: max(16px, 3vw);
+    position: absolute;
+    color: white;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .quarter-finals1{
+    left: 10%;
+    &.fighter1 {
+      top: 9%;
+    }
+    &.fighter2 {
+      top: 28%;
+    }
+  }
+  .quarter-finals2{
+    left: 10%;
+    &.fighter1 {
+      top: 71%;
+    }
+    &.fighter2 {
+      top: 89%;
+    }
+  }
+  .quarter-finals3{
+    left: 90%;
+    &.fighter1 {
+      top: 9%;
+    }
+    &.fighter2 {
+      top: 28%;
+    }
+  }
+  .quarter-finals4{
+    left: 90%;
+    &.fighter1 {
+      top: 71%;
+    }
+    &.fighter2 {
+      top: 89%;
+    }
+  }
+
+
+  
+  .semi-finals1{
+    left: 30%;
+    &.fighter1 {
+      top: 21%;
+    }
+    &.fighter2 {
+      top: 78%;
+    }
+  }
+  .semi-finals2{
+    left: 70%;
+    &.fighter1 {
+      top: 21%;
+    }
+    &.fighter2 {
+      top: 78%;
+    }
+  }
+
+  .finalist{
+    top: 49%;
+    &.fighter1 {
+      left: 37%;
+    }
+    &.fighter2 {
+      left: 63%;
+    }
+  }
+
+  .tournament-winner {
+    color: white;
+    font-size: 7vw;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: rgb(15 15 15 / 80%);
+    padding: 5vw;
+    z-index: 1;
+    border-radius: 100%;
+    box-shadow: 0 0 5vw 0 black;
+  }
+
+  
+}

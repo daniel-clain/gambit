@@ -18,6 +18,7 @@ export class SetStateManagerUI {
   showKnownFighters = () => this.getModal('Known Fighters')
   showOtherManagers = () => this.getModal('Known Managers')
   showReport = () => this.getModal('Manager Report')
+  showWinOptions = () => this.getModal('Win Options')
   closeModal = () => ({activeModal: null})
   closeSelectList = () => ({selectListActive: false})
   
@@ -28,7 +29,7 @@ export class SetStateManagerUI {
 }
 
 export type SetStateManagerUIFunctionName = 
-'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport'
+'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport' | 'showWinOptions'
 
 
 export interface SetStateManagerUIAction{

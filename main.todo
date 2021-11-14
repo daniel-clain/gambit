@@ -1,6 +1,15 @@
 InProgress: overlay scale
 
 Priority:
+  ☐ can only start tournament if there are 8 owned fighters minimum
+  ☐ no draw
+  ☐ fix start of fights, 1 start animation, clear last fighters, position new fighters at vvery start
+
+
+
+  ☐ game display, during fight, show player bets and fighter stats
+  ☐ final tournament
+  ☐ songs toward end of manager phase
   ☐ set up display for fight, news
   ☐ on player disconnect pause all stage (fight)
   ☐ defend + retreat never really has its value, because the backward movement makes all on range targeting miss, so the righter never has a chance to block and get the bonuses that come with that.
@@ -30,6 +39,7 @@ QA:
   ☐ ability description says what ability does
 
 Other updates:
+  ☐ Lawyers skill level doesnt matter too much, make it relevant
   ☐ Private agent ability defensive counter private agents
   ☐ Doing surveillance on self protects against enemy private agents and enemy hitmen
   ☐ Private agent can sent opponent a blackmail offer, trading evidence

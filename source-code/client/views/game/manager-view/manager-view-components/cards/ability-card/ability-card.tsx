@@ -26,7 +26,7 @@ export interface AbilityCardProps{
   nextFightFighters: string[]
   managerInfo: ManagerInfo
   jobSeekers: JobSeeker[]
-  
+  round: number
 }
 
 
@@ -40,7 +40,8 @@ const mapState = ({
       managerInfo,
       delayedExecutionAbilities,
       jobSeekers,
-      nextFightFighters
+      nextFightFighters,
+      round
     }
   }}
 }: FrontEndState): AbilityCardProps => ({
@@ -48,7 +49,8 @@ const mapState = ({
   delayedExecutionAbilities,
   jobSeekers,
   nextFightFighters,
-  abilityData: activeModal.data
+  abilityData: activeModal.data,
+  round
 })
 
 const mapDispatch = {
@@ -68,7 +70,7 @@ export const AbilityCard = connector(hot(({
   nextFightFighters,
   showFighter,
   closeModal,
-  showManager
+  round
 }: PropsFromRedux) => {
 
 
@@ -91,7 +93,7 @@ export const AbilityCard = connector(hot(({
 
   if(!clientAbility)
     return <div>....loading</div>
-    const {longDescription, validTargetIf, name, cost} = clientAbility
+    const {longDescription, validTargetIf, name, cost, possibleSources} = clientAbility
     const {target, source } = activeAbility
 
     
@@ -108,6 +110,10 @@ export const AbilityCard = connector(hot(({
       label: 'Requires:', value: 'Must have a drug dealer working for you'
     })
   }
+
+  const noNeedForSourceSelect: boolean = possibleSources.length == 1 && possibleSources[0] == 'Manager'
+
+  const noNeedForTargetSelect: boolean = !validTargetIf.length
 
 
   return (
@@ -133,54 +139,58 @@ export const AbilityCard = connector(hot(({
             }
           </div>
         </div>
-        {}
 
-        <hr/>
-      
-        <div className='ability-card__variables'>
-          {validTargetIf.length ?
-            <div className='target'>
-              <label className='target__label'>Target:</label>
-              {target ?
-                <div className="target__value">{target.name}</div> :
-                <div className="target__value target__value--required">target required</div>
-              }
-              <button className='standard-button target__set-button' 
-              onClick={() => showSelectList('target')}>Set Target</button>
-            </div> : ''
-          }
-          <div className='source'>
-            <label className='source__label'>Source:</label>
-            {source ?
-              <div className="source__value">{source.name}</div> :
-              <div className="source__value source__value--required">source required</div>
+        {noNeedForSourceSelect && noNeedForTargetSelect ? '' : <>
+          <hr/>
+              
+          <div className='ability-card__variables'>
+            {noNeedForTargetSelect ? '' : 
+              <div className='target'>
+                <label className='target__label'>Target:</label>
+                {target ?
+                  <div className="target__value">{target.name}</div> :
+                  <div className="target__value target__value--required">target required</div>
+                }
+                <button className='standard-button target__set-button' 
+                onClick={() => showSelectList('target')}>Set Target</button>
+              </div>
             }
-            <button className='standard-button source__set-button' 
-            onClick={() => showSelectList('source')}>Set Source</button>
-          </div>
-          {abilityData.name == 'Prosecute Manager' &&
-          activeAbility.target ? 
-            <div className="evidence-items-container">
-              {Array.from(IllegalActivityName_Set).map(illegalActivity => {
-                return <div className="illegal-activity" key={illegalActivity}>
-                  <div className="illegal-activity__name">{illegalActivity}</div>                  
-                  <div className="illegal-activity__evidence-items">
-                    {managerInfo.evidence
-                    .filter(e => e.managerName == activeAbility.target.name)
-                    .filter(e => e.illegalActivity == illegalActivity)
-                    .map((evidence, index) => 
-                      <CheckboxItem 
-                        key={evidence.illegalActivity+index}
-                        onSelected={() => onEvidenceToggle(evidence, index)}
-                        selected={isEvidenceSelected(evidence, index)}>
-                          {evidence.evidenceDescription}
-                      </CheckboxItem>
-                    )}
+            {noNeedForSourceSelect ? '' :
+              <div className='source'>
+                <label className='source__label'>Source:</label>
+                {source ?
+                  <div className="source__value">{source.name}</div> :
+                  <div className="source__value source__value--required">source required</div>
+                }
+                <button className='standard-button source__set-button' 
+                onClick={() => showSelectList('source')}>Set Source</button>
+              </div>
+            }
+
+            {abilityData.name == 'Prosecute Manager' &&
+            activeAbility.target ? 
+              <div className="evidence-items-container">
+                {Array.from(IllegalActivityName_Set).map(illegalActivity => {
+                  return <div className="illegal-activity" key={illegalActivity}>
+                    <div className="illegal-activity__name">{illegalActivity}</div>                  
+                    <div className="illegal-activity__evidence-items">
+                      {managerInfo.evidence
+                      .filter(e => e.managerName == activeAbility.target.name)
+                      .filter(e => e.illegalActivity == illegalActivity)
+                      .map((evidence, index) => 
+                        <CheckboxItem 
+                          key={evidence.illegalActivity+index}
+                          onSelected={() => onEvidenceToggle(evidence, index)}
+                          selected={isEvidenceSelected(evidence, index)}>
+                            {evidence.evidenceDescription}
+                        </CheckboxItem>
+                      )}
+                    </div>
                   </div>
-                </div>
-              })}
-            </div> : ''}
-        </div>
+                })}
+              </div> : ''}
+          </div>
+        </>}
 
         {activeAbility.name == 'Offer Contract' ?
           <OfferContractPartial {...{activeAbility, setActiveAbility, jobSeekers, managerInfo}}/> : ''
@@ -219,7 +229,8 @@ export const AbilityCard = connector(hot(({
   
   function confirmButtonClicked(){
     try{
-      abilityService.validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities)
+      abilityService.validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities, round)
+
       sendUpdate.abilityConfirmed(activeAbility)
     }
     catch(error){

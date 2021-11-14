@@ -66,8 +66,8 @@ export default class FighterCombat {
       if(stillInRange){
         lanededAttack = enemy.fighting.combat.getAttacked(this.fighting.fighter, attackType)
       }
-      else
-        console.log(`*** ${fighter.name} no longer in rage to attack ${enemy.name}`);
+      /* else
+        console.log(`*** ${fighter.name} no longer in rage to attack ${enemy.name}`); */
   
       if(lanededAttack && stillInRange){
         
@@ -82,7 +82,6 @@ export default class FighterCombat {
             timers.start('on a rampage')
           }
         }
-        console.log(`${this.fighting.fighter.name} will ${attackType} ${this.fighting.enemyTargetedForAttack.name}`);
         this.fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)
       
   
@@ -174,7 +173,7 @@ export default class FighterCombat {
   async blockEnemyAttack(enemy: Fighter, attackType: AttackType): Promise<void>{
     const {animation, fighter, timers} = this.fighting
     timers.start('just blocked')
-    console.log(`${fighter.name} blocked ${enemy.name}'s ${attackType}`);
+    //console.log(`${fighter.name} blocked ${enemy.name}'s ${attackType}`);
     try{
       await animation.start({
         name: 'blocking',
@@ -185,7 +184,7 @@ export default class FighterCombat {
       .then(() => animation.cooldown(300))
     }
     catch(reason){
-      console.log(`${fighter.name}'s block was interupted because ${reason}`);
+      //console.log(`${fighter.name}'s block was interupted because ${reason}`);
       return
     }
     this.fighting.actions.decideAction()
@@ -195,7 +194,7 @@ export default class FighterCombat {
   async dodgeEnemyAttack(enemy: Fighter, attackType: AttackType): Promise<void>{
     const {animation, fighter, timers} = this.fighting
     timers.start('just dodged')
-    console.log(`${fighter.name} dodged ${enemy.name}'s ${attackType}`); 
+    //console.log(`${fighter.name} dodged ${enemy.name}'s ${attackType}`); 
     try{
       await animation.start({
         name: 'dodging',
@@ -205,7 +204,7 @@ export default class FighterCombat {
       .then(() => animation.cooldown(200))
     }
     catch(reason){
-      console.log(`${fighter.name}'s dodge was interupted because ${reason}`);
+      //console.log(`${fighter.name}'s dodge was interupted because ${reason}`);
       return
     }
     this.fighting.actions.decideAction()
@@ -226,7 +225,7 @@ export default class FighterCombat {
     ) / 10
 
       this.fighting.stamina = stamina - hitDamage
-    console.log(`${fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
+    //console.log(`${fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
     
     if(this.fighting.knockedOut){
       console.error('should not be attacked when knocked out');
@@ -254,7 +253,7 @@ export default class FighterCombat {
       })  
     }
     catch(reason){
-      console.log(`${fighter.name}'s take hit was interupted because ${reason}`);
+      //console.log(`${fighter.name}'s take hit was interupted because ${reason}`);
       return
     }
 

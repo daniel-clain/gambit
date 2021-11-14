@@ -3,13 +3,12 @@ import * as React from 'react';
 import '../../styles/global.scss';
 import { connect, Provider } from 'react-redux'
 import { FrontEndState } from '../../../interfaces/front-end-state-interface';
-import Game_View from '../../views/game/game.view'
+import {Game_View} from '../../views/game/game.view'
 import { frontEndService } from '../../front-end-service/front-end-service';
 import { hot } from 'react-hot-loader/root';
 import { Login_View } from '../../views/pre-game/login.view';
 import { Lobby_View } from '../../views/pre-game/lobby.view';
 import { useEffect, useState } from 'react';
-import { preLoadImages } from '../../front-end-service/pre-load-images';
 
 interface MainGameProps {
   connectedToGameHost: boolean
@@ -21,12 +20,6 @@ const MainGameComponent = ({
   connectedToGameHost, inGame, clientName
 }: MainGameProps) => {
 
-  const [imagesPreloaded, setImagesPreloaded] = useState(false)
-  useEffect(() => {
-    preLoadImages()
-    .then(() => setImagesPreloaded(true))
-  },[])
-
   if (
     frontEndService.connectionType == 'Websockets' &&
     !connectedToGameHost && 
@@ -35,7 +28,7 @@ const MainGameComponent = ({
     frontEndService.connectToGameHost()
   }
   return (
-    !connectedToGameHost || !imagesPreloaded ?
+    !connectedToGameHost ?
       <Login_View /> :
       !inGame ?
         <Lobby_View /> :

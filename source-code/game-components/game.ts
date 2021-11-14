@@ -11,10 +11,13 @@ import { Manager } from './manager'
 import { ConnectedClient } from '../game-host/game-host.types'
 import { postStartTestState, setupTestState } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
-import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
+import { FinalTournamentBoard, Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
 import { randomNumber } from "../helper-functions/helper-functions"
 import gameConfiguration from "../game-settings/game-configuration"
 import { Lawsuit } from "../types/game/lawsuit.type"
+import { VictoryType } from "../types/game/victory-type"
+import Fight from "./abilities-general/fight/fight"
+import { FinalTournament } from "./round-controller/final-tournament/final-tournament"
 
 
 /* 
@@ -43,6 +46,15 @@ import { Lawsuit } from "../types/game/lawsuit.type"
 
 export class GameState{
   paused: boolean  
+  playerHasVictory: {
+    name: string,
+    victoryType: VictoryType
+  }
+  playerHasFailedVictory: {
+    name: string
+    victoryType: VictoryType
+  }
+  finalTournament: FinalTournament
   
   constructor(public gameType: GameType){
 
@@ -151,7 +163,7 @@ class GameFunctions{
 
 
   getInfo(): GameInfo{
-    const {has, functions, state} = this.game
+    const {has, state} = this.game
 
     return {
       id: has.id,
@@ -166,6 +178,7 @@ class GameFunctions{
 
   getGameUiState(manager?: Manager): ServerGameUIState{
     let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
+    const {has:{fighters}, state:{finalTournament}} = this.game
     let {delayedExecutionAbilities} = this.game.has.abilityProcessor
 
     const serverGameUIState: ServerGameUIState = {
@@ -188,13 +201,13 @@ class GameFunctions{
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
         delayedExecutionAbilities
       },
+      showVideo: this.i.getShowVideo(), 
+      enoughFightersForFinalTournament: !!fighters.filter(f => f.state.manager).length,
+      finalTournamentBoard: finalTournament?.finalTournamentBoard,
       preFightNewsUIState: {
         newsItem: preFightNewsStage.activeNewsItem
       },
-      fightUIState: {
-        ...activeFight?.fightUiData, 
-        knownFighterStates: 
-          !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)}
+      fightUIState: this.i.getFightUiState(manager)
     }
     return serverGameUIState
   }

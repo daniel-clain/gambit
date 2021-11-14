@@ -60,6 +60,15 @@
     &__investigate-manager{
       background-image: url('#{$abilities}/investigate-manager.jpg');
     }
+    &__domination-victory{
+      background-image: url('#{$abilities}/domination-victory.jpg');
+    }
+    &__sinister-victory{
+      background-image: url('#{$abilities}/sinister-victory.jpg');
+    }
+    &__wealth-victory{
+      background-image: url('#{$abilities}/wealth-victory.jpg');
+    }
   }
   &__description {
     padding: 10px;

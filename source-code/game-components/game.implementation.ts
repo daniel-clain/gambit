@@ -1,12 +1,12 @@
-import { Employee, Professional } from "../interfaces/front-end-state-interface";
+import { Employee, FightUIState, Professional } from "../interfaces/front-end-state-interface";
 import gameConfiguration from "../game-settings/game-configuration";
 import { random, shuffle } from "../helper-functions/helper-functions";
 import { Profession } from "../types/game/profession";
 import SkillLevel from "../types/game/skill-level.type";
 import Fighter from "./fighter/fighter";
 import { Game } from "./game";
-import { getProfessionalsAbilities } from "./professionals";
 import { Manager } from "./manager";
+import { VideoName } from "../client/videos/videos";
 
 export class Game_Implementation{
   shuffledNames 
@@ -173,6 +173,43 @@ export class Game_Implementation{
     const {actionPoints, activeContract, ...rest} = employee
 
     this.game.has.professionals.push(rest)
+  }
+
+  getShowVideo(): VideoName{
+    const {playerHasVictory, playerHasFailedVictory} = this.game.state
+    if(playerHasVictory){
+      switch(playerHasVictory.victoryType){
+        case 'Sinister Victory': return 'Sinister Victory'
+        case 'Wealth Victory': return 'Wealth Victory'
+        case 'Domination Victory': return 'Domination Victory'
+      }
+    }
+    if(playerHasFailedVictory){
+      switch(playerHasVictory.victoryType){
+        case 'Sinister Victory': return 'Sinister Victory Fail'
+        case 'Wealth Victory': return 'Wealth Victory Fail'
+      }
+    }
+  }
+
+  getFightUiState(manager?: Manager): FightUIState{
+    const {has:{roundController}, state:{finalTournament}} = this.game
+    
+    if(finalTournament){
+      const {activeFight} = finalTournament
+      const finalTournamentFight = {
+        ...activeFight?.fightUiData, 
+        knownFighterStates: 
+          !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)
+      }
+      return finalTournamentFight
+    }
+    const roundFight = {
+      ...roundController.activeFight?.fightUiData, 
+      knownFighterStates: 
+        !roundController.activeFight ? [] : manager?.functions.getKnownFighterStats(roundController.activeFight?.fighters)
+    }
+    return roundFight
   }
 
 }

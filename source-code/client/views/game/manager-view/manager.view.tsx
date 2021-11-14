@@ -24,6 +24,7 @@ import { ActivityLogPanel } from "./manager-view-components/main-components/acti
 import { ManagerCard } from "./manager-view-components/cards/manager-card/manager-card"
 import { EmployeeCard } from "./manager-view-components/cards/employee-card/employee-card"
 import { outOfTimeSound } from "../../../sound-effects/sound-effects"
+import { WinOptionsCard } from "./manager-view-components/cards/win-options-card/win-options-card"
 
 
 const {toManagerState, getReportItems} = frontEndService
@@ -36,7 +37,8 @@ const mapDispatch = {
   showKnownFighters: () => ({type: 'showKnownFighters'}),
   showOtherManagers: () => ({type: 'showOtherManagers'}),
   showManager: (m: KnownManager) => ({type: 'showManager', payload: m}),
-  showReport: () => ({type: 'showReport'})
+  showReport: () => ({type: 'showReport'}),
+  showWinOptions: () => ({type: 'showWinOptions'})
 }
 
 const connector = connect(mapState, mapDispatch)
@@ -45,7 +47,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 
 export const Manager_View = connector(hot( 
-  ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManager, showReport, managerOptionsTimeLeft}: PropsFromRedux) => {
+  ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManager, showReport, showWinOptions, managerOptionsTimeLeft}: PropsFromRedux) => {
 
   useEffect(() => {
     getReportItems().length && showReport()
@@ -76,6 +78,7 @@ export const Manager_View = connector(hot(
                 <button onClick={showKnownFighters}>Known Fighters</button>
                 <button onClick={() => showManager(convertThisManagerToKnownManager())}>Manager Options</button>
                 <button onClick={showOtherManagers}>Other Managers</button>
+                <button onClick={showWinOptions}>Try To Win</button>
               </ButtonPanel>
             </div>
             <div className="right-column">
@@ -104,6 +107,7 @@ export const Manager_View = connector(hot(
       case 'Known Managers': return <ManagersCard/>
       case 'Ability': return <AbilityCard/>
       case 'Manager Report': return <ReportCard/>
+      case 'Win Options': return <WinOptionsCard/>
     }
   }
 

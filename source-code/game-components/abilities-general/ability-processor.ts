@@ -19,6 +19,9 @@ import { Game } from '../game';
 import { Manager } from '../manager';
 import { Employee } from '../../interfaces/front-end-state-interface';
 import { investigateManagerServer } from './abilities/investigate-manager';
+import { dominationVictoryServer } from './abilities/domination-victory';
+import { sinisterVictoryServer } from './abilities/sinister-victory';
+import { wealthVictoryServer } from './abilities/wealth-victory';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]
@@ -43,7 +46,10 @@ export class AbilityProcessor{
     prosecuteManagerServer,
     trainFighterServer,
     dopeFighterServer,
-    investigateManagerServer
+    investigateManagerServer,
+    dominationVictoryServer,
+    sinisterVictoryServer,
+    wealthVictoryServer
   ]
   delayedExecutionAbilities: AbilityData[] = []
 

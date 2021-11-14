@@ -7,10 +7,10 @@ import { Game } from "./game"
 
 export const setupTestState = (game: Game) => {
 
-  skipFight()
+  //skipFight()
   //freezeOnFight()
   //longManagerOptions()
-  setup1()
+  //setup1()
   //testFighterStats()
 
 
@@ -18,6 +18,8 @@ export const setupTestState = (game: Game) => {
 
 
   //implementation
+
+  
 
   function skipFight(){
     gameConfiguration.stageDurations.extraTimePerFighter = 0 
@@ -71,7 +73,29 @@ export const postStartTestState = (game: Game) => {
   //setup2()
   //testMainEvent()
   //testContractEnding()
+  //quickSinisterVictory()
+  finalTournamentTest()
 
+
+  function finalTournamentTest(){
+    game.has.roundController.roundNumber = 20
+    const manager = game.has.managers[0]
+    for(let i = 0; i < 8; i++){
+      const fighter = game.has.fighters[i]      
+      manager.has.fighters.push(fighter)
+      fighter.state.manager = manager
+    }
+
+  }
+
+  function quickSinisterVictory(){
+    
+    const manager1 = game.has.managers[0]
+    game.has.roundController.roundNumber = 20
+    const hitman = new Employee('Hitman')
+    const thug = new Employee('Thug')
+    manager1?.has.employees.push(hitman, thug)
+  }
   
   function setup2(){
     const manager1 = game.has.managers[0]

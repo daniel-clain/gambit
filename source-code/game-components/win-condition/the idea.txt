@@ -9,3 +9,19 @@
 * you can eliminate people from the game
 * as the game goes on, you get to put skill points next to skills you want, they are cheaper the more you have engaged in that type of skill over the game, this idea of skill kinda scopes you in to going for a certain strategy
 * before the game starts, you are given a random advantage and disadvantage, that will be your strength and weakness, these can influence the way you play the game
+
+
+game finish options
+====================
+
+* fighter victory = final tournament 8 slots of the top fighters
+- player who owns to winning fighter wins
+
+* sinister victory = kill all other players
+- if you fail, youre out of the game
+- based on how many thugs and hitmen you have
+
+* financial victory = you win if youre more financially dominant that others
+- based on how many lawyers and money you have
+- if others players have money and lawyers as well, it can fail
+

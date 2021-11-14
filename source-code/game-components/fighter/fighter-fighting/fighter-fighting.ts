@@ -64,7 +64,7 @@ export default class FighterFighting {
     this.actions.decideAction()
   }
   stop() {
-    console.log(`${this.fighter.name} stopped fighting`);
+    //console.log(`${this.fighter.name} stopped fighting`);
     this.stopFighting = true
   }
 

@@ -25,7 +25,7 @@ export default class FighterActions {
       await fight.waitForUnpause()
 
     if(knockedOut || stopFighting){
-      console.log(`${fighter.name} did not decide an action`);
+      //console.log(`${fighter.name} did not decide an action`);
       return
     }
     
@@ -118,7 +118,7 @@ export default class FighterActions {
       catch(reason){
         if(reason == "TypeError: Cannot read property 'fighting' of undefined")
           debugger
-        console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);      
+        //console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);      
       }
 
       await wait(5)

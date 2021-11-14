@@ -15,16 +15,15 @@ interface FightUiProps{
   fighterFightStates: FighterFightState[]
   knownFighterStates?: FighterStateData[]
   report: FightReport
-  managersBets: ManagersBet[]
+  managersBets?: ManagersBet[]
 }
 
 
-const Fight_View = ({
+const Fight = ({
   startCountdown, timeRemaining, fighterFightStates, 
   report, managersBets, knownFighterStates
 }:FightUiProps) => {
   const doStartAnimation = startCountdown == 0
-    
     
   return (
     <div className={`
@@ -49,4 +48,4 @@ const mapStateToProps = ({
     fightUIState
   }} 
 }: FrontEndState): FightUiProps  => ({...fightUIState})
-export default connect(mapStateToProps)(hot(Fight_View))
+export const Fight_View = connect(mapStateToProps)(hot(Fight))

@@ -92,7 +92,7 @@ module.exports = ({remote}, {mode, configName}) => {
           }],
         },
         {
-          test: /\.(jpg|png|gif)$/,
+          test: /\.(jpg|png|gif|mp4)$/,
           loader: 'url-loader',
           options: {
             limit: false,

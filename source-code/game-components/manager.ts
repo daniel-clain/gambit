@@ -104,7 +104,7 @@ class ManagerHas{
   otherManagers: KnownManager[] = []
   knownFighters: FighterInfo[] = []
   activityLogs: ActivityLogItem[] = []
-  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract']
+  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract', 'Domination Victory', 'Sinister Victory', 'Wealth Victory']
   postFightReportItems: PostFightReportItem[] = []
   evidence: Evidence[] = []
 

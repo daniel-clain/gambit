@@ -82,8 +82,8 @@ fighters.forEach(fighter => {
 	
 })
 
-//s(f('Fast'), {baseSpeed: 10})
-//s(f('Tough'), {baseStamina: 15})
+s(f('Fast'), {baseSpeed: 10})
+s(f('Tough'), {baseStamina: 15})
 s(f('Strong'), {baseStrength: 10})
 s(f('Fit'), {baseFitness: 10})
 s(f('Intelligent'), {baseIntelligence: 10})

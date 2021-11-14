@@ -28,7 +28,7 @@ export default class Fight {
   private timesUpTimer
   private timeRemainingInterval
   
-  constructor(public fighters: Fighter[], public managers: Manager[] ) {    
+  constructor(public fighters: Fighter[], public managers?: Manager[] ) {    
     fighters.forEach(fighter => fighter.getPutInFight(this))
   }
 

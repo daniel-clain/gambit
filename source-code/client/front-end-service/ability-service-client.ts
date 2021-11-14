@@ -12,10 +12,12 @@ import { sellDrugsClient } from "../../game-components/abilities-general/abiliti
 import { prosecuteManagerClient } from "../../game-components/abilities-general/abilities/prosecute-manager"
 import { trainFighterClient } from "../../game-components/abilities-general/abilities/train-fighter"
 import { dopeFighterClient } from "../../game-components/abilities-general/abilities/dope-fighter"
-import {tryToWinGameClient} from '../../game-components/abilities-general/abilities/try-to-win-game'
 import { ManagerInfo } from "../../game-components/manager"
 import { Character, Employee, JobSeeker } from "../../interfaces/front-end-state-interface"
 import { investigateManagerClient } from "../../game-components/abilities-general/abilities/investigate-manager"
+import { dominationVictoryClient } from "../../game-components/abilities-general/abilities/domination-victory"
+import { sinisterVictoryClient } from "../../game-components/abilities-general/abilities/sinister-victory"
+import { wealthVictoryClient } from "../../game-components/abilities-general/abilities/wealth-victory"
 
 export const abilityService = (() => ({
   abilities: <ClientAbility[]>[
@@ -31,9 +33,15 @@ export const abilityService = (() => ({
     prosecuteManagerClient,
     trainFighterClient,
     dopeFighterClient,
-    tryToWinGameClient,
-    investigateManagerClient
+    investigateManagerClient,
+    dominationVictoryClient, 
+    sinisterVictoryClient, 
+    wealthVictoryClient
   ],
+
+  getTryToWinAbilities(){
+    return [dominationVictoryClient, sinisterVictoryClient, wealthVictoryClient]
+  },
 
 
   getPossibleSources(ability: ClientAbility, managerInfo: ManagerInfo): AbilitySourceInfo[]{
@@ -93,7 +101,7 @@ export const abilityService = (() => ({
     
   },
   
-  isPossibleToPerformAbility(abilityData: AbilityData, managerInfo: ManagerInfo, delayedExecutionAbilities: AbilityData[]): boolean {
+  isPossibleToPerformAbility(abilityData: AbilityData, managerInfo: ManagerInfo, delayedExecutionAbilities: AbilityData[], currentRound: number, enoughFightersForFinalTournament: boolean): boolean {
 
 
     const clientAbility: ClientAbility = this.abilities.find(ability => ability.name == abilityData.name)
@@ -102,6 +110,14 @@ export const abilityService = (() => ({
       return false
 
     const possibleSources: AbilitySourceInfo[] = this.getPossibleSources(clientAbility, managerInfo)
+
+    if(clientAbility?.notActiveUntilRound > currentRound){
+      return false
+    }
+
+    if(clientAbility.name == 'Domination Victory' && !enoughFightersForFinalTournament){
+      return false
+    }
 
     if (possibleSources.length == 0)
       return false
@@ -152,7 +168,7 @@ export const abilityService = (() => ({
     return ability.cost.money <= managerMoney
   },
 
-  validateAbilityConfirm(clientAbility: ClientAbility, managerInfo: ManagerInfo, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[]) {
+  validateAbilityConfirm(clientAbility: ClientAbility, managerInfo: ManagerInfo, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], currentRound: number) {
 
     if (!abilityData.source)
       throw (`${clientAbility.name} requires a source`)
@@ -160,6 +176,8 @@ export const abilityService = (() => ({
       
 
 
+    if (clientAbility?.notActiveUntilRound > currentRound)
+      throw (`${clientAbility.name} is not available until round 20`)
 
     if (clientAbility.validTargetIf.length != 0 && !abilityData.target)
       throw (`${clientAbility.name} requires a target`)

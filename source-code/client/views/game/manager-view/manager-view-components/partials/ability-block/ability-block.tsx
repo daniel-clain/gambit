@@ -1,11 +1,9 @@
 
 import * as React from 'react';
 import { AbilityData } from '../../../../../../../game-components/abilities-general/ability';
-import { ManagerInfo } from '../../../../../../../game-components/manager';
 import { FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
 import './ability-block.scss'
 import {connect, ConnectedProps} from 'react-redux'
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { abilityService } from '../../../../../../front-end-service/ability-service-client';
 
 interface AbilityBlockProps extends PropsFromRedux{
@@ -14,9 +12,10 @@ interface AbilityBlockProps extends PropsFromRedux{
 
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {
-    playerManagerUIState: {managerInfo, delayedExecutionAbilities}
+    enoughFightersForFinalTournament,
+    playerManagerUIState: {managerInfo, delayedExecutionAbilities, round, }
   }}
-}: FrontEndState) => ({managerInfo, delayedExecutionAbilities})
+}: FrontEndState) => ({managerInfo, delayedExecutionAbilities, currentRound: round, enoughFightersForFinalTournament})
 const mapDispatch = {
   showAbility: (abilityData: AbilityData) => ({type: 'showAbility', payload: abilityData})
 }
@@ -24,12 +23,14 @@ const mapDispatch = {
  const connector = connect(mapStateToProps, mapDispatch)
  type PropsFromRedux = ConnectedProps<typeof connector>
 
- export const AbilityBlock = connector(({abilityData, managerInfo, delayedExecutionAbilities, showAbility}:AbilityBlockProps) => {
+ export const AbilityBlock = connector(({abilityData, managerInfo, delayedExecutionAbilities, showAbility, currentRound, enoughFightersForFinalTournament}:AbilityBlockProps) => {
    
-  let disabled = !abilityService.isPossibleToPerformAbility(abilityData, managerInfo, delayedExecutionAbilities)
+  let disabled = !abilityService.isPossibleToPerformAbility(abilityData, managerInfo, delayedExecutionAbilities, currentRound, enoughFightersForFinalTournament)
 
   
   return (
+
+
     <div 
       className={`ability-block ${disabled ? 'ability-block--disabled':''} `}
       onClick={() => showAbility(abilityData)}

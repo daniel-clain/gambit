@@ -1,0 +1,1 @@
+export type VictoryType = 'Sinister Victory' | 'Wealth Victory' | 'Domination Victory'

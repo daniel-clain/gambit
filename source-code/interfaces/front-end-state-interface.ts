@@ -19,6 +19,10 @@ import { PostFightReportItem } from "./game/post-fight-report-item"
 import FacingDirection from "../types/fighter/facing-direction"
 import FighterModelState from "../types/fighter/fighter-model-states"
 import { Skin } from "../types/fighter/skin"
+import { VictoryType } from "../types/game/victory-type"
+import { VideoName } from "../client/videos/videos"
+import { MatchupInfo } from "../game-components/round-controller/final-tournament/final-tournament"
+import Fight from "../game-components/abilities-general/fight/fight"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
@@ -55,7 +59,7 @@ export interface ClientUIState{
 export type AllManagerUIState = ClientManagerUIState & ManagerUIState
 
 
-export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Manager Report'
+export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Manager Report' | 'Win Options'
 
 
 
@@ -68,6 +72,7 @@ export class ClientManagerUIState{
   selectListActive: boolean
 }
 
+export type VictoryData = {name: string, victoryType: VictoryType}
 
 export class ServerGameUIState{
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
@@ -76,6 +81,16 @@ export class ServerGameUIState{
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
   fightUIState: FightUIState
+  showVideo: VideoName
+  finalTournamentBoard: FinalTournamentBoard
+  enoughFightersForFinalTournament: boolean
+}
+
+export class FinalTournamentBoard{
+  showTournamentBoard: boolean
+  finals: MatchupInfo
+  semiFinals: MatchupInfo[]
+  quarterFinals: MatchupInfo[]
 }
 
 
@@ -83,7 +98,7 @@ export interface FightUIState{
   startCountdown: number
   timeRemaining: number
   report: FightReport
-  managersBets: ManagersBet[]
+  managersBets?: ManagersBet[]
   fighterFightStates: FighterFightState[]
   knownFighterStates?: FighterStateData[]
 }

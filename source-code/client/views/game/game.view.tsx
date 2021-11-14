@@ -1,13 +1,16 @@
 import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
 import {connect} from 'react-redux'
-import { DisconnectedPlayerVote, FrontEndState } from '../../../interfaces/front-end-state-interface';
+import { DisconnectedPlayerVote, FinalTournamentBoard, FrontEndState } from '../../../interfaces/front-end-state-interface';
 import {Manager_View} from './manager-view/manager.view'
-import Fight_View from './fight-view/fight.view'
+import {Fight_View} from './fight-view/fight.view'
 import PreFightNews_View from './pre-fight-news-view/pre-fight-news.view'
 import DisconnectedPlayerModal from './disconnected-player-modal/disconnected-player-modal'
 import { RoundStage } from '../../../types/game/round-stage.type';
 import DisplayManagerOptionsUi from './manager-view/display-manager-options-ui/display-manager-options-ui';
+import ShowVideo_View from './show-video-view/show-video.view';
+import { VideoName } from '../../videos/videos';
+import { FinalTournament_View } from './final-tournament/final-tournament.view';
 
 
 
@@ -15,14 +18,22 @@ interface GameProps {
   roundStage: RoundStage
   disconnectedPlayerVotes: DisconnectedPlayerVote[]
   clientName: string
+  showVideo: VideoName
+  finalTournamentBoard: FinalTournamentBoard
 }
 
 
-const Game_View = ({
-  roundStage, disconnectedPlayerVotes, clientName
+const Game = ({
+  roundStage, disconnectedPlayerVotes, clientName, showVideo, finalTournamentBoard
 }: GameProps) => {
 
   const getActiveView = () => {
+    if(showVideo){
+      return <ShowVideo_View />
+    }
+    if(finalTournamentBoard){
+      return <FinalTournament_View />
+    }
     switch (roundStage) {
       case 'Manager Options': 
         return clientName == 'Game Display' ?
@@ -49,12 +60,13 @@ const Game_View = ({
 const mapStateToProps = ({
   clientUIState: { clientPreGameUIState: {clientName}},
   serverUIState: { serverGameUIState: {
-    disconnectedPlayerVotes, roundStage
+    disconnectedPlayerVotes, roundStage, finalTournamentBoard, showVideo
   }}
-}: FrontEndState) => ({
+}: FrontEndState): GameProps => ({
   disconnectedPlayerVotes,
   roundStage,
-  clientName
+  clientName,
+  finalTournamentBoard, showVideo
 })
 
-export default hot(connect(mapStateToProps)(Game_View))
+export const Game_View = hot(connect(mapStateToProps)(Game))

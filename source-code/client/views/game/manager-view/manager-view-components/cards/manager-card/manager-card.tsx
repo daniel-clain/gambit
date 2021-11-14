@@ -90,16 +90,16 @@ export const ManagerCard = connector(hot(({manager, clientName, managerInfo}: Pr
       infoBoxList = [
         { label: 'Name', value: name },
         { label: 'Money', value: money.lastKnownValue },
-        { label: 'Loan', value: loan.lastKnownValue.debt },
-        { label: 'Fighters', value: fighters.lastKnownValue.map(f => f.name) },
-        { label: 'Employees', value: employees.lastKnownValue.map(e => `${e.name}(${e.profession})`) },
+        { label: 'Loan', value: loan?.lastKnownValue?.debt || 0 },
+        { label: 'Fighters', value: fighters.lastKnownValue.length ? fighters.lastKnownValue.map(f => f.name) : 0 },
+        { label: 'Employees', value: employees.lastKnownValue.length ?employees.lastKnownValue.map(e => `${e.name}(${e.profession})` ) : 0 },
         { label: 'Evidence', value: evidence.lastKnownValue.length }
       ]
     } else {
       infoBoxList = [
         { label: 'Name', value: name },
         { label: 'Money', value: money ? `${money.lastKnownValue} (${money.roundsSinceUpdated})` : 'unknown' },
-        { label: 'Loan', value: loan ? `${loan.lastKnownValue.debt} (${loan.roundsSinceUpdated})` : 'unknown' },
+        { label: 'Loan', value: loan ? `${loan?.lastKnownValue?.debt} (${loan.roundsSinceUpdated})` : 'unknown' },
         { label: 'Fighters', value: fighters?.lastKnownValue ? `${!fighters.lastKnownValue.length ? '0' : fighters.lastKnownValue.map(f => `\n${f.name}`)} (${fighters.roundsSinceUpdated})` : 'unknown' },
         { label: 'Employees', value: employees?.lastKnownValue ? `${!employees.lastKnownValue.length ? '0' : employees.lastKnownValue.map(e => `\n${e.name}(${e.profession})`)} (${employees.roundsSinceUpdated})` : 'unknown' },
         { label: 'Evidence', value: evidence?.lastKnownValue ? `${!evidence.lastKnownValue.length ? '0' : evidence.lastKnownValue.length} (${evidence.roundsSinceUpdated})` : 'unknown' }

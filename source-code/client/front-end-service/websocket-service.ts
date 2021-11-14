@@ -5,15 +5,9 @@ import { ServerGameUIState, ServerPreGameUIState } from "../../interfaces/front-
 
 
 let socket: SocketIOClient.Socket
-//const port = process.env.WEBSOCKET_PORT
-//const websocketAddress = 'localhost'//'192.168.43.229'
-
-
   
 const clientToHostFuntions = {
   connectToHost: ({name, id}) => {
-    console.log('Socket emit connectToHost', name, id);
-    console.log('socket :>> ', socket);
     socket.emit('connectToHost', {name, id})
   },
   create: () => socket.emit('create'),
@@ -47,18 +41,15 @@ export const websocketService: FrontToBackInterface = {
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
     
     if(env == 'development'){
-      console.log('socket io running for local dev');
       socket = io('localhost:6969', { transports: ["websocket"]})
     } else {
       try{
       socket = io()
-      console.log('socket io running for remote prod', socket);
       }catch(e){
         console.log(e);
       }
     }
     
-    console.log(`client socket object initialized. connecting....`, socket);
     try{
       socket.connect()
     } catch(e){
@@ -67,7 +58,6 @@ export const websocketService: FrontToBackInterface = {
   
     socket.on('To Client From Server - Lobby Ui', 
       (serverPreGameUIState: ServerPreGameUIState) => {
-        console.log('message: ', serverPreGameUIState);
         this.onServerPreGameUIStateUpdate.next(serverPreGameUIState)
       }
     )    

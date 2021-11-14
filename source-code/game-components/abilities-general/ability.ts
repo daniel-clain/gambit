@@ -16,7 +16,7 @@ export class Ability {
   canOnlyTargetSameTargetOnce: boolean
   disabled?: boolean
   priority?: number
-
+  notActiveUntilRound?: number
 }
 
 
@@ -65,5 +65,7 @@ export type AbilityName =
 'Murder Fighter' |
 'Promote Fighter' |
 'Prepare For Prosecution' |
-'Try To Win' |
-'Investigate Manager'
+'Investigate Manager' |
+'Domination Victory' |
+'Wealth Victory' |
+'Sinister Victory'

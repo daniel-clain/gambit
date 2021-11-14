@@ -44,7 +44,7 @@ export default class Proximity {
     const directionAlongEdge: Angle = this.getDirectionOfEdgeCornerFurthestAwayFromEnemy(retreatEdge, enemy)
 
 
-    console.log(`${this.fighting.fighter.name} is CORNERED by ${enemy.name}, retreating along ${retreatEdge} in direction ${directionAlongEdge}`);
+    //console.log(`${this.fighting.fighter.name} is CORNERED by ${enemy.name}, retreating along ${retreatEdge} in direction ${directionAlongEdge}`);
 
     this.fighting.logistics.directionAlongEdge = directionAlongEdge
     this.fighting.timers.start('retreat along edge')
