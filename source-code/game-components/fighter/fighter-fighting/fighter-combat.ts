@@ -59,17 +59,17 @@ export default class FighterCombat {
       timers.start('had action recently')
       timers.start('just did attack')
   
-      let lanededAttack: boolean
+      let landedAttack: boolean
   
       const stillInRange = proximity.enemyWithinStrikingRange(enemy)
       
       if(stillInRange){
-        lanededAttack = enemy.fighting.combat.getAttacked(this.fighting.fighter, attackType)
+        landedAttack = enemy.fighting.combat.getAttacked(this.fighting.fighter, attackType)
       }
       /* else
         console.log(`*** ${fighter.name} no longer in rage to attack ${enemy.name}`); */
   
-      if(lanededAttack && stillInRange){
+      if(landedAttack && stillInRange){
         
         
         if(spirit < stats.maxSpirit)
@@ -104,8 +104,8 @@ export default class FighterCombat {
           attackType == 'critical strike' && 1000
         ))
       }
-      else if(!lanededAttack || !stillInRange){
-        if(!lanededAttack && stillInRange && this.fighting.spirit != 0)
+      else if(!landedAttack || !stillInRange){
+        if(!landedAttack && stillInRange && this.fighting.spirit != 0)
           this.fighting.spirit --
   
         await animation.start(
@@ -184,7 +184,7 @@ export default class FighterCombat {
       .then(() => animation.cooldown(300))
     }
     catch(reason){
-      //console.log(`${fighter.name}'s block was interupted because ${reason}`);
+      //console.log(`${fighter.name}'s block was interrupted because ${reason}`);
       return
     }
     this.fighting.actions.decideAction()
@@ -204,7 +204,7 @@ export default class FighterCombat {
       .then(() => animation.cooldown(200))
     }
     catch(reason){
-      //console.log(`${fighter.name}'s dodge was interupted because ${reason}`);
+      //console.log(`${fighter.name}'s dodge was interrupted because ${reason}`);
       return
     }
     this.fighting.actions.decideAction()
@@ -253,7 +253,7 @@ export default class FighterCombat {
       })  
     }
     catch(reason){
-      //console.log(`${fighter.name}'s take hit was interupted because ${reason}`);
+      //console.log(`${fighter.name}'s take hit was interrupted because ${reason}`);
       return
     }
 

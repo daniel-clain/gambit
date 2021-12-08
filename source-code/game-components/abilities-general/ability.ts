@@ -17,6 +17,7 @@ export class Ability {
   disabled?: boolean
   priority?: number
   notActiveUntilRound?: number
+  canOnlyBeUsedOnce?: boolean
 }
 
 

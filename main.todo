@@ -1,29 +1,47 @@
-InProgress: overlay scale
+
+Bug:
+
+Deal Breakers:
+  ☐ fix fighter selection, should be propper random
+  ☐ reposition should be lower priority if they are far away and not targeting this fighter
+  ☐ players can concede, if only 1 player left they win by default
+  ☐ reposiont doesnt dedicate tto going around, it can freeze left right twitching, back and forth
+  ☐ make sure top fighters are in main event
+
 
 Priority:
-  ☐ can only start tournament if there are 8 owned fighters minimum
-  ☐ no draw
-  ☐ fix start of fights, 1 start animation, clear last fighters, position new fighters at vvery start
-
-
-
+  ☐ main event fight, you can vote for 3 people to win
+  ☐ explain spirit and stamina mechanic
+  ☐ winning main event should give big base amount
+  ☐ explain stats go down over time
+  ☐ explain injured
+  ☐ do surveilance should report positive things when no negative things
+  ☐ add move type run away to recover, and when far away enought, higher chance to recover
+  ☐ more info about abilities, like what chance they have of success, and when it is actioned, if it can be done multiple times, 
+  ☐ thug guarding fight, when successful guard, chance to catch evidence
+  ☐ fighters recontract is more based on that fighters wins, so the fighter gets expensive over time also based on promotion rating
+  ☐ evidence can be sold for bribing, you give that player evidence for money, if sold back to person who was culprit, then evidence is destroyed for money
+  ☐ redo betting in a way that scales, and is based on ods
+  ☐ after videos, show winner and losers table
+  ☐ video for fail weath victory
   ☐ game display, during fight, show player bets and fighter stats
-  ☐ final tournament
-  ☐ songs toward end of manager phase
   ☐ set up display for fight, news
-  ☐ on player disconnect pause all stage (fight)
   ☐ defend + retreat never really has its value, because the backward movement makes all on range targeting miss, so the righter never has a chance to block and get the bonuses that come with that.
-  ☐ pause in fight is buggy
   ☐ user manual to check mechanics (when being prosecuted bad employees dont act)
   ☐ make an info object that is both the config for the game, and also the 'how to play manual'
   ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
   ☐ option to turn sound off if game display active
+  ☐ on player disconnect pause all stage (fight), pause in fight is buggy
   
 
 
 
 
 Quick minor fixes: 
+  ☐ fix display mode, fight shows bets not stats
+  ☐ offer mute option
+  ☐ no more emoji after knowckout
+  ☐ fix falling money, high numbers should be money bags instead
   ☐ remove flanking and maovering quotes
   ☐ fight ui: fighter stats, when knockout, put red cross over pic
   ☐ make evidence item copy better ('fighter not owned by manager')
@@ -39,6 +57,12 @@ QA:
   ☐ ability description says what ability does
 
 Other updates:
+  ☐ let player know that 50 paid back = weeks overdue reset
+  ☐ sponsored fighters for same manager team up in a group fight
+  ☐ sponsored fighter ability take a dive
+  ☐ late game, employee abilitites are too cheap
+  ☐ songs toward end of manager phase
+  ☐ drug money more random
   ☐ Lawyers skill level doesnt matter too much, make it relevant
   ☐ Private agent ability defensive counter private agents
   ☐ Doing surveillance on self protects against enemy private agents and enemy hitmen
@@ -59,15 +83,10 @@ Other updates:
   - police arest drug dealer
   - fighter get injured from excessive exercise
   ☐ more manager pics, random assignment, can choose in pregame
-  ☐ intelligent guy repositioning should attack enemy not facing
-  ☐ on draw, get 50% of ur money back
   ☐ win money based on fighter odds
   ☐ earn more min moey per num fighters
   ☐ Guard has chance to collect evidence
   ☐ guarding blocks doping
-  ☐ Have permanent hosting solution, where game wrapper is always running, and if server is not running or crashed, you can restart the game server from the wrapper
-  ☐ active games in lobby had bad data duplicates
-  ☐ frontend pol server for disconnected, show restart tool
   ☐ talent scout ability, discover list of unknown fighters with some random stats revealed
   ☐ talent scout skill level influences offer contract success
   ☐ injured or poisoned can persist more than 1 week, if injured/poisoned cant get put in fight
@@ -75,12 +94,8 @@ Other updates:
   ☐ drug dealers makes less money for each other active drug dealer selling that turn
   ☐ cornered guy 50/50 rampage 
   ☐ attack at retreating opponent should have extra space to connect
-  ☐ Have events with lots of fighters
   ☐ Fighters that lose 3 in a row retire
-  ☐ Handle friendly server restart
-  ☐ Handle friendly player dropout reconnect
   ☐ Have knowledgebase that gives players info about the game, where info reflects real values
-  ☐ Build in win conditions, including different types & requirements, and finish video
   ☐ When game ends, return all players to game lobby
   ☐ Allow private ingame messaging between players
   ☐ Design ui horizontal scroll areas to have my stretching arrow design that is like.   
@@ -105,6 +120,9 @@ Big wins (to remember my achievements)
 ✔ Refactored gamehost to be nicer @done(21-04-07 12:14)
 ✔ Got game hosted on heroku @done(21-04-07 12:14)
 ✔ got money and report done @done(21-04-07 12:14)
+✔ final tournament @done(21-11-20 21:54)
+☐ frontend pol server for disconnected, auto restart, and auto reconnect
+☐
 
 
 other players finished icons 

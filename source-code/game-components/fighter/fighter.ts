@@ -18,7 +18,6 @@ export default class Fighter{
     this.fighting = new FighterFighting(this)
 
     this.determineSkin()
-
   }
 
   determineSkin(){

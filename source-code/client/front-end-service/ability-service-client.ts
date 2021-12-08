@@ -13,7 +13,7 @@ import { prosecuteManagerClient } from "../../game-components/abilities-general/
 import { trainFighterClient } from "../../game-components/abilities-general/abilities/train-fighter"
 import { dopeFighterClient } from "../../game-components/abilities-general/abilities/dope-fighter"
 import { ManagerInfo } from "../../game-components/manager"
-import { Character, Employee, JobSeeker } from "../../interfaces/front-end-state-interface"
+import { Employee, JobSeeker } from "../../interfaces/front-end-state-interface"
 import { investigateManagerClient } from "../../game-components/abilities-general/abilities/investigate-manager"
 import { dominationVictoryClient } from "../../game-components/abilities-general/abilities/domination-victory"
 import { sinisterVictoryClient } from "../../game-components/abilities-general/abilities/sinister-victory"
@@ -106,6 +106,10 @@ export const abilityService = (() => ({
 
     const clientAbility: ClientAbility = this.abilities.find(ability => ability.name == abilityData.name)
 
+    if(clientAbility.canOnlyBeUsedOnce && delayedExecutionAbilities.some(a => a.name == clientAbility.name))
+      return false
+
+
     if (!this.canAffordAbility(clientAbility, managerInfo.money))
       return false
 
@@ -168,12 +172,18 @@ export const abilityService = (() => ({
     return ability.cost.money <= managerMoney
   },
 
-  validateAbilityConfirm(clientAbility: ClientAbility, managerInfo: ManagerInfo, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], currentRound: number) {
+  validateAbilityConfirm(clientAbility: ClientAbility, managerInfo: ManagerInfo, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], currentRound: number, enoughFightersForFinalTournament: boolean) {
 
     if (!abilityData.source)
       throw (`${clientAbility.name} requires a source`)
 
-      
+    
+    if(clientAbility.canOnlyBeUsedOnce && delayedExecutionAbilities.some(a => a.name == clientAbility.name))
+      throw ('Ability can only be used once')
+
+    if(clientAbility.name == 'Domination Victory' && !enoughFightersForFinalTournament){
+      throw (`Not enough manager owned fighters for final tournament (minimum 8)`)
+    }
 
 
     if (clientAbility?.notActiveUntilRound > currentRound)

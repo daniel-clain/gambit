@@ -12,20 +12,25 @@ interface FallingMoney{
 
 export const MoneyRain = hot(({money}: {money: number}) => {
   const [moneyFalling, setMoneyFalling] = useState<FallingMoney[]>([])
+  const [paused, setPaused] = useState<boolean>(false)
 
-  if(money){
+  
+
+  useEffect(() => {
+    if(!money) return
 
     const scrollUpDuration = 1
     const fallTime = 1
-    const duration = gameConfiguration.stageDurations.showWinningsDuration - (scrollUpDuration + fallTime)
-    const moneyDropTimeInterval = Math.round((duration / Math.ceil(money / 10)) * 1000)
-
+    const duration = gameConfiguration.stageDurations.showWinningsDuration
+    const moneyDropTimeInterval = Math.round(((duration - scrollUpDuration - fallTime) / Math.ceil(money / 10)) * 1000)
+    console.log('moneyDropTimeInterval :>> ', moneyDropTimeInterval);
 
 
     ;(async () => {
       if(!moneyFalling.length){
         await wait(scrollUpDuration * 1000)
       }
+      if(moneyFalling.length == money) return
       await wait(moneyDropTimeInterval)
 
       if(moneyFalling.length != Math.ceil(money/10) ){
@@ -37,8 +42,10 @@ export const MoneyRain = hot(({money}: {money: number}) => {
         setMoneyFalling([...moneyFalling.map(m => ({...m, falling: true}))])
       }
     })()
-    
-  }
+
+
+  })
+  
 
   return <>
     <div className="money-container">

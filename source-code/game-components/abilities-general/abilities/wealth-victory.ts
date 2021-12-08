@@ -4,13 +4,14 @@ import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 
 const wealthVictory: Ability = {
   name: 'Wealth Victory',
-  cost: { money: 200, actionPoints: 1 },
+  cost: { money: 10000, actionPoints: 1 },
   possibleSources: ['Manager'],
-  notValidTargetIf: [],
+  notValidTargetIf: ['fighter'],
   validTargetIf: [],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
-  notActiveUntilRound: 20
+  notActiveUntilRound: 20,
+  canOnlyBeUsedOnce: true
 
 }
 
@@ -18,6 +19,9 @@ export const wealthVictoryServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const manager = game.has.managers.find(manager => manager.has.name == abilityData.source.name)
 
+    const otherManagers = game.has.managers
+    .filter(m => m.has.name != manager.has.name)
+    
     console.log(`${manager.has.name} has attempted a wealth victory`);
 
     if(
@@ -31,8 +35,6 @@ export const wealthVictoryServer: ServerAbility = {
 
     // Implementation
     
-    const otherManagers = game.has.managers
-    .filter(m => m.has.name != manager.has.name)
 
     function averageOfOtherPlayersMoney(): number{
       return otherManagers.reduce((total, m) => total + m.has.money, 0)
@@ -52,6 +54,7 @@ export const wealthVictoryServer: ServerAbility = {
         name: manager.has.name,
         victoryType: 'Wealth Victory'
       }
+      game.state.isShowingVideo = game.i.getSelectedVideo()
 
     }
 
@@ -60,6 +63,7 @@ export const wealthVictoryServer: ServerAbility = {
         name: manager.has.name,
         victoryType: 'Sinister Victory'
       }
+      game.state.isShowingVideo = game.i.getSelectedVideo()
 
     }
 

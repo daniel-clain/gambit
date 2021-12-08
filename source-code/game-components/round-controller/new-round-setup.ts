@@ -40,7 +40,7 @@ export function setupNewRound(game: Game){
   }
 
   function addFightersToManagersKnownFightersList(manager: Manager){
-    const roundFighersAndJobSeekerFighters: FighterInfo[] = []
+    const roundFightersAndJobSeekerFighters: FighterInfo[] = []
     const roundFightersInfo: FighterInfo[] = 
     roundController.activeFight.fighters.map(fighter => fighter.getInfo())
 
@@ -48,10 +48,10 @@ export function setupNewRound(game: Game){
     .filter(jobSeeker => jobSeeker.type == 'Fighter')
     .map(jobSeekerFighter => fighters.find(fighter => fighter.name == jobSeekerFighter.name).getInfo())
 
-    roundFighersAndJobSeekerFighters.push(...roundFightersInfo, ...jobSeekerFighterInfo)
+    roundFightersAndJobSeekerFighters.push(...roundFightersInfo, ...jobSeekerFighterInfo)
 
 
-    roundFighersAndJobSeekerFighters.forEach(roundFighter => {
+    roundFightersAndJobSeekerFighters.forEach(roundFighter => {
       if(
         managerDoesNotOwnRoundFighter() &&
         managerDoesNotKnowRoundFighter()

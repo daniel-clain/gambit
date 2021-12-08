@@ -8,7 +8,7 @@ import { muscleSkinModelImages } from '../../../../../images/fight-view/fighter/
 import { punchSound, criticalStrikeSound, dodgeSound, blockSound } from '../../../../../sound-effects/sound-effects';
 import FighterFightState from '../../../../../../interfaces/front-end-state-interface';
 import './fighter.scss'
-import { defaultFighterImages, fastFighterImages, FighterImageObj, fightUiImages, muscleFigherImages } from '../../../../../images/images';
+import { defaultFighterImages, fastFighterImages, FighterImageObj, fightUiImages, muscleFighterImages } from '../../../../../images/images';
 
 export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightState: FighterFightState, arenaWidth}) => {	
 
@@ -108,7 +108,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 	}
 
 	const fighterImageObjs: FighterImageObj[] = 
-		skin == 'Muscle' ? muscleFigherImages : 
+		skin == 'Muscle' ? muscleFighterImages : 
 		skin == 'Fast' ? fastFighterImages : 
 		defaultFighterImages
 		

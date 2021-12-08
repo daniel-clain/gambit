@@ -23,7 +23,7 @@ export default class FighterStats {
     if(hallucinating) x *= .7
     if(doping) x = x * 1.25 + 1   
     if(doping && hallucinating) x *= .1
-    return x
+    return Math.round(x)
   }
 
   get intelligence(){
@@ -33,7 +33,7 @@ export default class FighterStats {
     if(injured) x *= .6
     if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
     if(doping) x *= .8  
-    return x
+    return Math.round(x)
   }
 
   get strength(){
@@ -42,7 +42,7 @@ export default class FighterStats {
     if(sick) x *= .7
     if(injured) x *= .6
     if(doping) x = x * 1.3 + 1    
-    return x
+    return Math.round(x)
   }
 
   get aggression(){
@@ -53,7 +53,7 @@ export default class FighterStats {
     if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
     if(doping) x *= 1.2   
     if(onARampage) x *= 2
-    return x
+    return Math.round(x)
   }
 
   get speed(){
@@ -84,7 +84,7 @@ export default class FighterStats {
     if(sick) x *= .8
     if(injured) x *= .8 
 
-    return x
+    return Math.round(x)
   }
 
   

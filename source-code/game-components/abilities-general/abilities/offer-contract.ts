@@ -70,6 +70,7 @@ export const offerContractServer: ServerAbility = {
           weeklyCost: contractOffer.weeklyCost,
           weeksRemaining: contractOffer.numberOfWeeks
         }
+        fighter.state.goalContract = null
       }
     }
 

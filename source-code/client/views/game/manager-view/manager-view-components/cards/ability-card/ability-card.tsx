@@ -27,6 +27,7 @@ export interface AbilityCardProps{
   managerInfo: ManagerInfo
   jobSeekers: JobSeeker[]
   round: number
+  enoughFightersForFinalTournament: boolean
 }
 
 
@@ -36,6 +37,7 @@ const mapState = ({
     clientManagerUIState: {activeModal}
   }},
   serverUIState: {serverGameUIState: {
+    enoughFightersForFinalTournament,
     playerManagerUIState: {
       managerInfo,
       delayedExecutionAbilities,
@@ -50,7 +52,8 @@ const mapState = ({
   jobSeekers,
   nextFightFighters,
   abilityData: activeModal.data,
-  round
+  round,
+  enoughFightersForFinalTournament
 })
 
 const mapDispatch = {
@@ -70,7 +73,8 @@ export const AbilityCard = connector(hot(({
   nextFightFighters,
   showFighter,
   closeModal,
-  round
+  round,
+  enoughFightersForFinalTournament
 }: PropsFromRedux) => {
 
 
@@ -128,12 +132,11 @@ export const AbilityCard = connector(hot(({
                 heading={'Ability Info'}
                 info={longDescription}
             />
-            {clientAbility.cost.money > 0 && 
-              <InfoBox 
-                heading={'Ability Requirements'}
-                list={abilityRequirementsInfo}
-              />
-            }
+            
+            <InfoBox 
+              heading={'Ability Requirements'}
+              list={abilityRequirementsInfo}
+            />
             {warningMessage ? 
               <div className="warning-message">{warningMessage}</div> : ''
             }
@@ -229,7 +232,7 @@ export const AbilityCard = connector(hot(({
   
   function confirmButtonClicked(){
     try{
-      abilityService.validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities, round)
+      abilityService.validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities, round, enoughFightersForFinalTournament)
 
       sendUpdate.abilityConfirmed(activeAbility)
     }

@@ -60,6 +60,7 @@ export default class ManagerOptionsStage implements IStage {
   setCountdownInterval(){
     return setInterval(() => {
       this.timeLeft --
+      this.roundController.triggerUIUpdate();
       if(
         this.timeLeft == 0 || 
         this.managers.every(this.isReady)

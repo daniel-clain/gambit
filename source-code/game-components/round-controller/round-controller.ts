@@ -9,8 +9,8 @@ import { doEndOfRoundUpdates } from './end-of-round-updates';
 import { setupNewRound } from './new-round-setup';
 import { Game } from '../game';
 import { JobSeeker } from '../../interfaces/front-end-state-interface';
-import TryToWinVideoStage from './stages/try-to-win-video-stage';
-import { FinalTournament } from './final-tournament/final-tournament';
+import { wait } from '../../helper-functions/helper-functions';
+import gameConfiguration from '../../game-settings/game-configuration';
 
 export class RoundController {
   roundNumber: number
@@ -20,6 +20,7 @@ export class RoundController {
   lastFightFighters: string[] = []
   nextWeekIsEvent = false
   thisWeekIsEvent = false
+  videos = gameConfiguration.videos
 
   fightUiDataSubject: Subject<void> = new Subject()
   endOfRoundSubject: Subject<void> = new Subject()
@@ -27,15 +28,13 @@ export class RoundController {
 
   managerOptionsStage: ManagerOptionsStage
   preFightNewsStage: PreFightNewsStage
-  tryToWinVideo: TryToWinVideoStage
   fightDayStage: FightDayStage
 
 
   constructor(private game: Game) {
     this.managerOptionsStage = new ManagerOptionsStage(this, this.game.has.managers)
     this.preFightNewsStage = new PreFightNewsStage(this)
-    this.fightDayStage = new FightDayStage(this, this.game.has.managers)
-    this.tryToWinVideo = new TryToWinVideoStage(this.game)
+    this.fightDayStage = new FightDayStage(this.game)
   }
 
   startRound(number) {
@@ -43,7 +42,7 @@ export class RoundController {
     this.setUpRound(number)
       .then(() => this.doStage(this.managerOptionsStage))
       .then(() => abilityProcessor.executeAbilities('End Of Manager Options Stage'))
-      .then(() => this.checkTryToWin())
+      .then(() => this.showVideo())
       .then(() => this.checkFinalTournament())
       .then(() => this.doStage(this.preFightNewsStage))
       .then(() => this.doStage(this.fightDayStage))
@@ -52,6 +51,8 @@ export class RoundController {
       .then(() => this.startRound(++this.roundNumber))
       .catch(e => {
         console.log('catch! ', e);
+        this.game.state.gameIsFinished = true
+        this.game.functions.tearDownGame()
       })
   }
 
@@ -72,12 +73,26 @@ export class RoundController {
     return Promise.resolve()
   }
 
-  checkTryToWin(): Promise<void>{
+  showVideo(): Promise<void>{
     return new Promise(async(resolve, reject) => {
-      const {playerHasVictory} = this.game.state
-      if(playerHasVictory){
-        await this.doStage(this.tryToWinVideo)
+      const {state} = this.game
+      if(!state.isShowingVideo){
+        return resolve()
+      }
+      const videoDuration = this.videos.find(v => {
+        return v.name == state.isShowingVideo.name
+      })
+      .videos[state.isShowingVideo.index].duration
+
+      await wait(videoDuration*1000)
+      state.isShowingVideo = undefined 
+      if(state.playerHasVictory){
+        state.playerHasVictory = null
         reject('player has victory')
+      }
+      else if (state.playerHasFailedVictory) {
+        state.playerHasFailedVictory = null
+        resolve()
       }
       else resolve()
     });
@@ -85,13 +100,14 @@ export class RoundController {
   }
 
   checkFinalTournament(): Promise<void>{
-    return new Promise((resolve, reject) => {
-      const {finalTournament} = this.game.state
+    return new Promise(async (resolve, reject) => {
+      const {state:{finalTournament}, has:{managers}} = this.game
       if(!finalTournament) resolve()
-      reject('final tournament')
-
-      finalTournament.startTournament()
-      
+      else {
+        await finalTournament.startTournament()
+        await this.showVideo()
+        reject('final tournament')
+      }      
     });
   }
 
@@ -106,4 +122,8 @@ export class RoundController {
       activeFight: this.activeFight
     }
   }
+}
+
+function showVideo(type: any) {
+  
 }

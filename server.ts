@@ -6,10 +6,9 @@ import * as http from 'http'
 console.log('Server script running... ', process.pid)
 env.config()
 
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 9999;
 const app = express();
 const httpServer = http.createServer(app)
-
 const environment = process.env.NODE_ENV.trim()
 
 let webSocketServer = 
@@ -26,9 +25,10 @@ if(environment == 'production'){
   app.use(express.static('host-packages'));
 
   app.get('/', (req, res) => {
-    console.log('test');
     res.write(`
-      <h1> Test </h1>
+      <a href='main-game'>Main Game</a><br/>
+      <a href='fight-test'>Fight Test</a><br/>
+      <a href='local-test'>Local Test</a><br/>
     `)
   })
   app.get('/favicon.ico', (req, res) => {

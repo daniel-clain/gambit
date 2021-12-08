@@ -19,7 +19,10 @@ export const OfferContractPartial = ({activeAbility, setActiveAbility, jobSeeker
 
     let goalContract: GoalContract
     if(activeAbility.target.type == 'fighter owned by manager'){
-      goalContract = managerInfo.knownFighters.find(fighter => fighter.name == activeAbility.target.name).goalContract
+      goalContract = [
+        ...managerInfo.knownFighters,
+        ...managerInfo.fighters
+      ].find(fighter => fighter.name == activeAbility.target.name).goalContract
     }
     else{
       goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == activeAbility.target.name).goalContract

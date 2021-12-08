@@ -253,7 +253,7 @@ export function doEndOfRoundUpdates(game: Game) {
 
       randomFighter.fighting.stats[randomStat] --
 
-      manager.functions.addToLog({type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat} has been reduced by 1`})
+      manager.functions.addToLog({type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat.replace('base', '')} has been reduced by 1`})
 
 
     }

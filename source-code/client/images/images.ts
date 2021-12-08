@@ -97,7 +97,7 @@ export const defaultFighterImages: FighterImageObj[] = [
   { modelState: 'Taking Hit', image: defaultTakingHit }
 ]
 
-export const muscleFigherImages: FighterImageObj[] = [
+export const muscleFighterImages: FighterImageObj[] = [
   { modelState: 'Blocking', image: muscleBlocking },
   { modelState: 'Defending', image: muscleDefending },
   { modelState: 'Dodging', image: muscleDodging },
@@ -129,7 +129,7 @@ export const fastFighterImages: FighterImageObj[] = [
 export const fightUiImages = [
   ...defaultFighterImages.map(imageObj => imageObj.image),
   ...fastFighterImages.map(imageObj => imageObj.image),
-  ...muscleFigherImages.map(imageObj => imageObj.image),
+  ...muscleFighterImages.map(imageObj => imageObj.image),
   fightBanner,
   arenaBehind, 
   arenaInfront

@@ -20,9 +20,10 @@ export default class Movement {
   moveActionInProgress: MoveAction
 
   stuckCounter = 0
+  
 
-
-  constructor(public fighting: FighterFighting){}
+  constructor(public fighting: FighterFighting){
+  }
 
 
   async doMoveAction(enemy: Fighter, moveAction: MoveAction): Promise<void>{    
@@ -54,7 +55,7 @@ export default class Movement {
 
     const moveActionFacesToward = ['move to attack', 'cautious retreat'].some(a => a == moveAction)
 
-    let interupted: boolean
+    let interrupted: boolean
     if(
       (moveActionFacesAway && !isFacingAwayFromEnemy(enemy, this.fighting.fighter))
       ||
@@ -73,9 +74,9 @@ export default class Movement {
         )
       )
     )
-      await this.turnAround().catch(() => interupted = true)
+      await this.turnAround().catch(() => interrupted = true)
 
-    if(!interupted)
+    if(!interrupted)
       await this.moveABit()
 
     return

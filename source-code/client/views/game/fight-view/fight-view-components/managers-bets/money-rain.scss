@@ -1,3 +1,14 @@
+
+@keyframes flip{
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(180deg);
+  }
+    
+}
+
 .money-container{
   position: absolute;
   bottom: 100%;
@@ -13,6 +24,7 @@
     width: 10px;
     height: 10px;
     background-size: contain;
+    animation: flip .3s linear infinite forwards;
     &--falling{
       top: 110%;
       transition: top 1s;

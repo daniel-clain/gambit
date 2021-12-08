@@ -39,6 +39,7 @@ export interface ServerPreGameUIState{
   gamesBeingCreated: GameBeingCreated[]
   globalChat: ChatMessage[]
   activeGames: GameInfo[]
+  testConnection: number
 }
 
 export interface ClientGameUIState{
@@ -81,9 +82,20 @@ export class ServerGameUIState{
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
   fightUIState: FightUIState
-  showVideo: VideoName
+  selectedVideo: SelectedVideo
   finalTournamentBoard: FinalTournamentBoard
   enoughFightersForFinalTournament: boolean
+  gameFinishedData: GameFinishedData
+}
+
+export type SelectedVideo = {
+  name: VideoName
+  index: number
+}
+
+export type GameFinishedData = {
+  winner: {name: string, victoryType: VictoryType, image}
+  players: {name: string, money: number}[]
 }
 
 export class FinalTournamentBoard{
@@ -104,7 +116,6 @@ export interface FightUIState{
 }
 export interface FightReport{
   draw?: boolean
-  remainingFighters?: FighterInfo[]
   winner?: FighterInfo
   managerWinnings?: ManagerWinnings[]
 }
@@ -187,11 +198,6 @@ export interface Loan{
   isNew: boolean
 }
 
-export interface Character{
-  name: string
-  type: 'Fighter' | 'Professional' | 'Manager' | 'Jobseeker'
-
-}
 
 export class Professional{
   abilities: AbilityName[]

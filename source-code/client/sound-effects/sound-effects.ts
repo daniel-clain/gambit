@@ -10,3 +10,4 @@ export const blockSound = new Audio(blockFile.default)
 export const outOfTimeSound = new Audio(outOfTimeFile.default)
 punchSound.volume = 0.6
 criticalStrikeSound.volume = 0.5
+outOfTimeSound.volume = 0.4

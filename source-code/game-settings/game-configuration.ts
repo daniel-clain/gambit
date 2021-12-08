@@ -50,6 +50,34 @@ const gameConfiguration = {
     {round: 0, fighters:2},
     {round: 7, fighters:3},
     {round: 14, fighters:4}
+  ],
+  videos: [
+    {
+      name: 'Sinister Victory',
+      videos:[{
+        duration: 78
+      }]
+    },
+    {
+      name: 'Wealth Victory',
+      videos:[{
+        duration: 32
+      }]
+    },
+    {
+      name: 'Sinister Victory Fail',
+      videos:[{
+        duration: 66
+      },{
+        duration: 45
+      }]
+    },
+    {
+      name: 'Domination Victory',
+      videos:[{
+        duration: 37
+      }]
+    }
   ]
 }
 

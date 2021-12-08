@@ -14,12 +14,14 @@
     "prod-mainGame-build": "webpack --mode=production --config-name mainGame",
     "start": "npm run prod-mainGame-build & npm run prod-startServer",
     "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
-    "dev-startServer": "set NODE_ENV=development & nodemon server.ts",
-    "prod-startServer": "set NODE_ENV=production & node -r ts-node/register server.ts"
+    "dev-startServer-mon": "cross-env NODE_ENV=development nodemon server.ts",
+    "dev-startServer": "cross-env NODE_ENV=development ts-node server.ts",
+    "prod-startServer": "cross-env NODE_ENV=production node --max-old-space-size=30000 -r ts-node/register server.ts"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "dotenv": "^8.2.0"
+    "cross-env": "^7.0.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "@babel/core": "^7.13.13",

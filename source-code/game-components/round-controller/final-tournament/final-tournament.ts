@@ -71,7 +71,7 @@ export class FinalTournament{
 
 
 
-  startTournament = async () => {
+  startTournament = async (): Promise<string> => {
     await this.showTournamentBoard()
     console.log('quarter finals');
     for(let matchup of this.quarterFinalsMatchups){
@@ -111,9 +111,21 @@ export class FinalTournament{
     console.log(`${this.finalsMatchup.fighter1.name} vs. ${this.finalsMatchup.fighter2.name}`);
     this.finalsMatchup.winner = await this.doFight(this.finalsMatchup)
     await this.showTournamentBoard()
+    await this.setPlayerVictory()
+    await this.showWinnerVideo()
 
-    this.showWinnerVideo()
+    return this.finalsMatchup.winner.name
     
+  }
+
+  private setPlayerVictory(){
+    const fightersManager = this.finalsMatchup.winner.state.manager
+    this.game.state.finalTournament = null
+    this.game.state.playerHasVictory = {
+      name: fightersManager.has.name,
+      victoryType: 'Domination Victory'
+    }
+
   }
 
   private updateTournamentBoard(){
@@ -146,16 +158,22 @@ export class FinalTournament{
   }
 
   private doFight(matchup: Matchup): Promise<Fighter>{
-    this.activeFight = new Fight([matchup.fighter1, matchup.fighter2])
+    this.activeFight = new Fight([matchup.fighter1, matchup.fighter2], null, true)
     this.activeFight.start()
+    this.game.functions.triggerUIUpdate()
     this.activeFight.fightUiDataSubject.subscribe(() => {
       this.game.functions.triggerUIUpdate()
     })
     return new Promise(resolve => {
       this.activeFight.fightFinishedSubject.subscribe(fightReport => {
+        if(!this.activeFight){
+          console.log('no fight bug');
+        }
         this.activeFight.doTeardown()
         this.activeFight.fighters.forEach(f => f.reset())
-        resolve(this.activeFight.fighters.find(f => f.name == fightReport.winner.name))
+        const winningFighter = this.activeFight.fighters.find(f => f.name == fightReport.winner.name)
+        this.activeFight = null
+        resolve(winningFighter)
       })
     });
   }
@@ -174,14 +192,7 @@ export class FinalTournament{
     this.game.functions.triggerUIUpdate()
   }
 
-  private showWinnerVideo = () => {
-    console.log(this.finalsMatchup.winner.name)
-    const fightersManager = this.finalsMatchup.winner.state.manager
-    this.game.state.finalTournament = null
-    this.game.state.playerHasVictory = {
-      name: fightersManager.has.name,
-      victoryType: 'Domination Victory'
-    }
+  private async showWinnerVideo(){
     this.game.functions.triggerUIUpdate()
   }
 }

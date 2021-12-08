@@ -118,7 +118,7 @@ export default class FighterActions {
       catch(reason){
         if(reason == "TypeError: Cannot read property 'fighting' of undefined")
           debugger
-        //console.log(`${fighter.name}' ${decidedAction} was interupted because ${reason}`);      
+        //console.log(`${fighter.name}' ${decidedAction} was interrupted because ${reason}`);      
       }
 
       await wait(5)

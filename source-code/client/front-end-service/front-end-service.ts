@@ -6,7 +6,7 @@ import { LocalService } from './local-service'
 import { websocketService } from './websocket-service'
 import {abilityService} from './ability-service-client';
 import { frontEndStore } from '../front-end-state/front-end-state'
-import { AllManagerUIState, FrontEndState, ServerPreGameUIState } from '../../interfaces/front-end-state-interface'
+import { AllManagerUIState, FrontEndState, ServerGameUIState, ServerPreGameUIState } from '../../interfaces/front-end-state-interface'
 import { ReportTypes } from '../../types/game/log-item-type';
 import { ActivityLogItem } from '../../types/game/activity-log-item';
 
@@ -25,6 +25,37 @@ const frontEndService = (() => {
     setName: clientName => dispatch('setName', clientName)
   }
 
+  let testTheServerTimeout = setInterval(() => {
+    testTheServer()
+  }, 1000)
+
+  let lastTestVal, pollInterval, refreshTimeout, testing
+
+  const resetTestTheServer = () => {
+    clearTimeout(refreshTimeout)
+    clearTimeout(testTheServerTimeout)
+    testTheServerTimeout = setInterval(() => {
+      testTheServer()
+    }, 1000)
+  }
+
+
+  function testTheServer(){    
+    const {clientName, clientId} = frontEndStore.getState().clientUIState.clientPreGameUIState 
+    if(!clientName || !clientId) return 
+    websocketService.sendUpdate.testConnection()
+    refreshTimeout = setTimeout(() => {
+
+      clearInterval(pollInterval)
+      clearTimeout(refreshTimeout)
+      doRefresh()
+    }, 2000);
+
+  }
+
+  const doRefresh = () => {
+    location.reload()
+  }
 
   
 
@@ -78,7 +109,6 @@ const frontEndService = (() => {
     },
 
 
-
     setConnectionType: function (type: ConnectionType){
       this.connectionType = type
       
@@ -106,12 +136,16 @@ const frontEndService = (() => {
         this.sendUpdate = websocketService.sendUpdate
         
         websocketService.onServerPreGameUIStateUpdate.subscribe(
-          serverPreGameUIState => frontEndStore.dispatch(
-            {type:'Update Lobby UI', payload: serverPreGameUIState}
-          )
+          serverPreGameUIState => {
+            resetTestTheServer()
+            frontEndStore.dispatch(
+              {type:'Update Lobby UI', payload: serverPreGameUIState}
+            )
+          }
         )
         websocketService.onServerGameUIStateUpdate.subscribe(
           serverGameUIState => {
+            resetTestTheServer()
             frontEndStore.dispatch(
               {type:'Update Game UI', payload: serverGameUIState}
             )

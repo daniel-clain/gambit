@@ -59,6 +59,10 @@ export class GameHost{
           })        
           console.log(`${client.name} created a game lobby`)        
         }
+      },      
+      testConnection: () => {
+        this.state.testConnection = new Date().getTime()
+        this.updateConnectedClients()
       },
       cancel: gameId => {
         if(this.i.isCancelGameValid(client, gameId)){

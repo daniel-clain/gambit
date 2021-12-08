@@ -1,19 +1,18 @@
-import { FinalTournamentBoard } from "../../../interfaces/front-end-state-interface"
+
 import { Game } from "../../game"
 import { FinalTournament } from "../../round-controller/final-tournament/final-tournament"
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import Fight from "../fight/fight"
-
 
 const dominationVictory: Ability = {
   name: 'Domination Victory',
-  cost: { money: 200, actionPoints: 1 },
+  cost: { money: 10000, actionPoints: 1 },
   possibleSources: ['Manager'],
-  notValidTargetIf: [],
+  notValidTargetIf: ['fighter'],
   validTargetIf: [],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
-  notActiveUntilRound: 20
+  notActiveUntilRound: 20,
+  canOnlyBeUsedOnce: true
 }
 
 export const dominationVictoryServer: ServerAbility = {

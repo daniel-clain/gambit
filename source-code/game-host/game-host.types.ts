@@ -31,6 +31,7 @@ export type GameBeingCreated = {
 export type FromClientToHost = {
   connectToHost({name, id}: {name: string, id: string}) 
   create() 
+  testConnection() 
   cancel(gameId: string) 
   start(gameId: string)
   join(gameId: string)
@@ -47,4 +48,5 @@ export class GameHostState {
   gamesBeingCreated: GameBeingCreated[] = []
   globalChat: ChatMessage[] = []
   activeGames: Game[] = []
+  testConnection: number
 }

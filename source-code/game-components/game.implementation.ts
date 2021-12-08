@@ -1,4 +1,4 @@
-import { Employee, FightUIState, Professional } from "../interfaces/front-end-state-interface";
+import { Employee, FightUIState, GameFinishedData, Professional, SelectedVideo } from "../interfaces/front-end-state-interface";
 import gameConfiguration from "../game-settings/game-configuration";
 import { random, shuffle } from "../helper-functions/helper-functions";
 import { Profession } from "../types/game/profession";
@@ -175,21 +175,27 @@ export class Game_Implementation{
     this.game.has.professionals.push(rest)
   }
 
-  getShowVideo(): VideoName{
+  getSelectedVideo(): SelectedVideo{
     const {playerHasVictory, playerHasFailedVictory} = this.game.state
-    if(playerHasVictory){
-      switch(playerHasVictory.victoryType){
-        case 'Sinister Victory': return 'Sinister Victory'
-        case 'Wealth Victory': return 'Wealth Victory'
-        case 'Domination Victory': return 'Domination Victory'
+    const name: VideoName = (() => {
+      if(playerHasVictory){
+        switch(playerHasVictory.victoryType){
+          case 'Sinister Victory': return 'Sinister Victory'
+          case 'Wealth Victory': return 'Wealth Victory'
+          case 'Domination Victory': return 'Domination Victory'
+        }
       }
-    }
-    if(playerHasFailedVictory){
-      switch(playerHasVictory.victoryType){
-        case 'Sinister Victory': return 'Sinister Victory Fail'
-        case 'Wealth Victory': return 'Wealth Victory Fail'
+      if(playerHasFailedVictory){
+        switch(playerHasFailedVictory.victoryType){
+          case 'Sinister Victory': return 'Sinister Victory Fail'
+          case 'Wealth Victory': return 'Wealth Victory Fail'
+        }
       }
-    }
+    })()
+    const videos = gameConfiguration.videos.find(v => v.name == name)!.videos
+    const index = random(videos.length - 1)
+
+    return {name, index}
   }
 
   getFightUiState(manager?: Manager): FightUIState{
@@ -210,6 +216,26 @@ export class Game_Implementation{
         !roundController.activeFight ? [] : manager?.functions.getKnownFighterStats(roundController.activeFight?.fighters)
     }
     return roundFight
+  }
+
+  getGamFinishedData(): GameFinishedData | null{
+    const {state, has} = this.game
+    if(state.gameIsFinished){
+      const winner = {
+        name: state.playerHasVictory.name,
+        victoryType: state.playerHasVictory.victoryType,
+        image: has.managers.find(m => m.has.name == state.playerHasVictory.name).has.image
+      }
+      const players = has.managers.map(m => {
+        return {
+          name: m.has.name,
+          money: m.has.money
+        }
+      })
+      return {winner, players}
+    } else {
+      return null
+    }
   }
 
 }

@@ -1,12 +1,12 @@
 import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
-import { FrontEndState } from '../../../../interfaces/front-end-state-interface';
+import { FrontEndState, SelectedVideo } from '../../../../interfaces/front-end-state-interface';
 import { connect } from 'react-redux';
 import { randomFloor } from '../../../../helper-functions/helper-functions';
 import {getVideos, VideoName} from '../../../videos/videos';
 
-const ShowVideo_View = ({showVideo}: {showVideo: VideoName}) => {
+const ShowVideo = ({selectedVideo: {name, index}}: {selectedVideo: SelectedVideo}) => {
   const videos = getVideos()
   console.log(videos)
   useEffect(() => {
@@ -14,10 +14,9 @@ const ShowVideo_View = ({showVideo}: {showVideo: VideoName}) => {
   }, [])
   const videoElement = useRef()
   const relevantVideos = videos?.find(v => 
-    v.name == showVideo
+    v.name == name
   ).videos
-  const randomIndex = randomFloor(relevantVideos.length)
-  const video = relevantVideos[randomIndex].source
+  const video = relevantVideos[index].source
 
   return <>
     <video 
@@ -29,7 +28,7 @@ const ShowVideo_View = ({showVideo}: {showVideo: VideoName}) => {
 }
 
 const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {showVideo}}
-}: FrontEndState) => ({showVideo})
+  serverUIState: {serverGameUIState: {selectedVideo}}
+}: FrontEndState) => ({selectedVideo})
 
-export default hot(connect(mapStateToProps)(ShowVideo_View))
+export const ShowVideo_View = hot(connect(mapStateToProps)(ShowVideo))

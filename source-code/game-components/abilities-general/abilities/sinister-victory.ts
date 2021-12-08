@@ -5,13 +5,14 @@ import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 
 const sinisterVictory: Ability = {
   name: 'Sinister Victory',
-  cost: { money: 200, actionPoints: 1 },
+  cost: { money: 10000, actionPoints: 1 },
   possibleSources: ['Manager'],
-  notValidTargetIf: [],
+  notValidTargetIf: ['fighter'],
   validTargetIf: [],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
-  notActiveUntilRound: 20
+  notActiveUntilRound: 20,
+  canOnlyBeUsedOnce: true
 }
 
 export const sinisterVictoryServer: ServerAbility = {
@@ -23,7 +24,7 @@ export const sinisterVictoryServer: ServerAbility = {
     console.log('thisManagersThugAndHitmanStrength() :>> ', thisManagersThugAndHitmanStrength());
     console.log('averageOfOtherPlayersThugAndHitmanStrength() / 2 :>> ', averageOfOtherPlayersThugAndHitmanStrength() / 2);
 
-    if(thisManagersThugAndHitmanStrength() >= averageOfOtherPlayersThugAndHitmanStrength() / 2){
+    if(thisManagersThugAndHitmanStrength() > averageOfOtherPlayersThugAndHitmanStrength() / 2){
       thisMangerHasSinisterVictory()
     } else {
       thisManagerFailsSinisterVictory()
@@ -45,6 +46,7 @@ export const sinisterVictoryServer: ServerAbility = {
         const hitmanCount = m.has.employees?.filter(e => e.profession == 'Hitman').length || 0
         return total + thugCount + (hitmanCount * 2)
       }, 0)
+      if(!totalThugHitmanStrength) return 0
       return totalThugHitmanStrength / otherManagers.length
     }
 
@@ -53,6 +55,7 @@ export const sinisterVictoryServer: ServerAbility = {
         name: manager.has.name,
         victoryType: 'Sinister Victory'
       }
+      game.state.isShowingVideo = game.i.getSelectedVideo()
     }
 
     function thisManagerFailsSinisterVictory(){
@@ -60,6 +63,7 @@ export const sinisterVictoryServer: ServerAbility = {
         name: manager.has.name,
         victoryType: 'Sinister Victory'
       }
+      game.state.isShowingVideo = game.i.getSelectedVideo()
 
     }
 

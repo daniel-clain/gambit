@@ -8,16 +8,19 @@
       "type": "node",
       "request": "launch",
       "name": "launch Run Server",
-      "program": "${workspaceFolder}/compiled-code/server/server.js",
-      "console": "integratedTerminal"
+      "runtimeExecutable": "node",
+      "preLaunchTask": "npm: dev-startServer",
+      "console": "internalConsole",
+      "cwd": "${workspaceRoot}",
+      "restart": true
     },
     {
       "type": "node",
       "request": "attach",
       "name": "attach Run Server",
-      "processId": "${command:PickProcess}",
       "restart": true,
-      "protocol": "inspector"
+      "protocol": "inspector",
+      "port": 9229
     },    
     {
       "type": "node",

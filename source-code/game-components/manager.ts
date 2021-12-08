@@ -177,9 +177,12 @@ class ManagerFunctions{
   getKnownFighterStats(nextFightFighters: Fighter[]){
     return nextFightFighters.map(fighter => {
       const {sick, injured, doping, hallucinating} = fighter.state
-      const foundFighter = this.manager.has.knownFighters?.find(kf => kf.name == fighter.name)
+      const foundFighter = [
+        ...this.manager.has.knownFighters,
+        ...this.manager.has.fighters.map(f => f.getInfo()),
+      ].find(kf => kf.name == fighter.name)
       if(foundFighter){
-        const {activeContract,  goalContract, name, ...knownFighterStats} = foundFighter
+        const {activeContract, goalContract, name, ...knownFighterStats} = foundFighter
 
         return {name, sick, hallucinating, injured, doping, ...knownFighterStats}
       }

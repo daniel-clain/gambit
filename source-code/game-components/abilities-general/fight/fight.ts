@@ -7,7 +7,7 @@ import Octagon from "./octagon"
 import Coords from '../../../interfaces/game/fighter/coords';
 import { Angle } from "../../../types/game/angle"
 import { Manager } from "../../manager"
-import { FightReport, FightUIState, ManagersBet } from "../../../interfaces/front-end-state-interface"
+import { FighterInfo, FightReport, FightUIState, ManagersBet } from "../../../interfaces/front-end-state-interface"
 
 
 
@@ -28,7 +28,7 @@ export default class Fight {
   private timesUpTimer
   private timeRemainingInterval
   
-  constructor(public fighters: Fighter[], public managers?: Manager[] ) {    
+  constructor(public fighters: Fighter[], public managers: Manager[], public isFinalTournament?: boolean ) {    
     fighters.forEach(fighter => fighter.getPutInFight(this))
   }
 
@@ -44,6 +44,7 @@ export default class Fight {
   watchForAWinner(){
     const watchForWinnerSubscription: Subscription = this.fightUiDataSubject.subscribe(() => {
       const remainingFighters: Fighter[] = this.getFightersThatArentKnockedOut()
+
       if(remainingFighters.length == 1){
         watchForWinnerSubscription.unsubscribe()
         this.declareWinner(remainingFighters[0])
@@ -53,17 +54,21 @@ export default class Fight {
 
   async start(){
     console.log('fight started');  
-    this.placeFighters()
-    await this.fightCountdown() 
-    this.startFightUpdateLoop()
-    this.tellFightersToStartFighting()
-    this.watchForAWinner()
-    const fightDuration =  gameConfiguration.stageDurations.maxFightDuration + this.fighters.length * gameConfiguration.stageDurations.extraTimePerFighter
-    this.timeRemaining = fightDuration
-    this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
-    this.timesUpTimer = setTimeout(() => this.timesUp(), fightDuration * 1000)
-    if(this.paused)
-      this.pause()
+    if(this.fighters.every(f => f.state.dead == true)){
+      this.finishFight({draw: true})
+    } else {
+      this.placeFighters()
+      await this.fightCountdown() 
+      this.startFightUpdateLoop()
+      this.tellFightersToStartFighting()
+      this.watchForAWinner()
+      const fightDuration =  gameConfiguration.stageDurations.maxFightDuration + this.fighters.length * gameConfiguration.stageDurations.extraTimePerFighter
+      this.timeRemaining = fightDuration
+      this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
+      this.timesUpTimer = setTimeout(() => this.timesUp(), fightDuration * 1000)
+      if(this.paused)
+        this.pause()
+    }
   }
   
   
@@ -121,14 +126,26 @@ export default class Fight {
   }
 
   timesUp(){
-    const remainingFighters = this.getFightersThatArentKnockedOut().map(
-      (fighter: Fighter) => fighter.getInfo()
-    )
-    const fightReport: FightReport = {
-      remainingFighters,
-      draw: true
+    const remainingFighters = this.getFightersThatArentKnockedOut()
+    let fightReport: FightReport
+    if(this.isFinalTournament){
+
+      const fighterWithMostStaminaLeft = remainingFighters.reduce((winner, fighter) => {
+        if(!winner) return fighter
+        if(fighter.fighting.stamina > winner.fighting.stamina)
+          return fighter
+        else 
+          return winner
+      }, null as Fighter)
+
+      this.declareWinner(fighterWithMostStaminaLeft)
+      return
+    } else {
+      fightReport = {
+        draw: true
+      }
+      console.log(`The fight was a draw between ${remainingFighters.map((f, i) => i == 0 ? f.name : ' and ' + f.name)}`);
     }
-    console.log(`The fight was a draw between ${remainingFighters.map((f, i) => i == 0 ? f.name : ' and ' + f.name)}`);
     this.finishFight(fightReport)
   }
 
@@ -191,7 +208,7 @@ export default class Fight {
         fighters.push(fighter)
       }
       return fighters
-    }, [])
+    }, [] as Fighter[])
   }
 
   private placeFighters(){    

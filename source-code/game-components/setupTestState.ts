@@ -4,24 +4,55 @@ import { Employee } from "../interfaces/front-end-state-interface"
 import Fighter from "./fighter/fighter"
 import { Game } from "./game"
 
+export const testSetupBeginning = () => {
+  //gameConfiguration.stageDurations.managerOptions = 10
+
+}
 
 export const setupTestState = (game: Game) => {
 
   //skipFight()
   //freezeOnFight()
   //longManagerOptions()
-  //setup1()
+  setup1()
   //testFighterStats()
-
-
+  //managerHasFighters()
+  //managerHasLoan()
 
 
 
   //implementation
 
+
+
+  function managerHasLoan(){
+    
+    const manager = game.has.managers[0]
+    manager.has.loan = {debt: 500, amountPaidBackThisWeek: 0, weeksOverdue: 3, isNew: false}
+
+  }
+
+  function managerHasFighters(){
+    const manager = game.has.managers[0]
+    const fighter: Fighter = game.has.fighters[0]
+    const fighter2: Fighter = game.has.fighters[1]
+    const fighter3: Fighter = game.has.fighters[2]
+    fighter.state.activeContract = {weeklyCost: 10, weeksRemaining: 10}
+    fighter2.state.activeContract = {weeklyCost: 10, weeksRemaining: 10}
+    fighter3.state.activeContract = {weeklyCost: 10, weeksRemaining: 10}
+    fighter.state.publicityRating = 10
+    fighter2.state.publicityRating = 10
+    fighter3.state.publicityRating = 10
+    fighter.state.manager = manager
+    fighter2.state.manager = manager
+    fighter3.state.manager = manager
+    manager.has.fighters.push(fighter,fighter2,fighter3)
+
+  }
   
 
   function skipFight(){
+    console.log('ding');
     gameConfiguration.stageDurations.extraTimePerFighter = 0 
     gameConfiguration.stageDurations.maxFightDuration = 1
     gameConfiguration.stageDurations.eachNewsSlide = 1
@@ -47,11 +78,12 @@ export const setupTestState = (game: Game) => {
     const dealer = new Employee('Drug Dealer')
     const lawyer = new Employee('Lawyer')
     const hitman = new Employee('Hitman')
+    const hitman2 = new Employee('Hitman')
     const thug = new Employee('Thug')
-    manager1.has.employees.push(lawyer, agent1)
-    manager2?.has.employees.push(agent2, agent3, dealer, hitman, thug)
-    manager1.has.money = 100000
-    if(manager2) manager2.has.money = 100000
+    manager1?.has.employees.push(agent2, agent3, dealer, hitman, thug, hitman2)
+    manager2?.has.employees.push(lawyer, agent1)
+    manager1.has.money = 1000
+    if(manager2) manager2.has.money = 1000
 
   }
 
@@ -71,13 +103,16 @@ export const setupTestState = (game: Game) => {
 
 export const postStartTestState = (game: Game) => {
   //setup2()
-  //testMainEvent()
+  testMainEvent()
   //testContractEnding()
   //quickSinisterVictory()
-  finalTournamentTest()
+  //lotsOfMoney()
+  //finalTournamentTest()
 
 
   function finalTournamentTest(){
+    gameConfiguration.stageDurations.maxFightDuration = 10
+    gameConfiguration.stageDurations.extraTimePerFighter = 0 
     game.has.roundController.roundNumber = 20
     const manager = game.has.managers[0]
     for(let i = 0; i < 8; i++){
@@ -85,6 +120,12 @@ export const postStartTestState = (game: Game) => {
       manager.has.fighters.push(fighter)
       fighter.state.manager = manager
     }
+
+  }
+
+  function lotsOfMoney(){
+    const manager = game.has.managers[0]
+    manager.has.money = 100000
 
   }
 

@@ -9,7 +9,7 @@ import { RoundController } from './round-controller/round-controller'
 import { GameInfo } from '../interfaces/game/game-info'
 import { Manager } from './manager'
 import { ConnectedClient } from '../game-host/game-host.types'
-import { postStartTestState, setupTestState } from './setupTestState'
+import { postStartTestState, setupTestState, testSetupBeginning } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
 import { FinalTournamentBoard, Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
 import { randomNumber } from "../helper-functions/helper-functions"
@@ -18,6 +18,7 @@ import { Lawsuit } from "../types/game/lawsuit.type"
 import { VictoryType } from "../types/game/victory-type"
 import Fight from "./abilities-general/fight/fight"
 import { FinalTournament } from "./round-controller/final-tournament/final-tournament"
+import { VideoName } from "../client/videos/videos"
 
 
 /* 
@@ -55,6 +56,13 @@ export class GameState{
     victoryType: VictoryType
   }
   finalTournament: FinalTournament
+
+  isShowingVideo: {
+    name: VideoName,
+    index: number
+  }
+
+  gameIsFinished: boolean
   
   constructor(public gameType: GameType){
 
@@ -175,7 +183,7 @@ class GameFunctions{
     }
   }
   
-
+  
   getGameUiState(manager?: Manager): ServerGameUIState{
     let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
     const {has:{fighters}, state:{finalTournament}} = this.game
@@ -201,13 +209,14 @@ class GameFunctions{
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
         delayedExecutionAbilities
       },
-      showVideo: this.i.getShowVideo(), 
-      enoughFightersForFinalTournament: !!fighters.filter(f => f.state.manager).length,
+      selectedVideo: this.game.state.isShowingVideo, 
+      enoughFightersForFinalTournament: fighters.filter(f => f.state.manager).length >= 8,
       finalTournamentBoard: finalTournament?.finalTournamentBoard,
       preFightNewsUIState: {
         newsItem: preFightNewsStage.activeNewsItem
       },
-      fightUIState: this.i.getFightUiState(manager)
+      fightUIState: this.i.getFightUiState(manager),
+      gameFinishedData: this.i.getGamFinishedData()
     }
     return serverGameUIState
   }
@@ -216,7 +225,7 @@ class GameFunctions{
 
 export class Game {
   state: GameState
-  private i: Game_Implementation = new Game_Implementation(this)
+  i: Game_Implementation = new Game_Implementation(this)
   functions: GameFunctions
   has: GameHas
 
@@ -226,6 +235,7 @@ export class Game {
     gameHost: GameHost,
     gameDisplays?: ConnectedClient[]
   ){
+    testSetupBeginning()
     this.state = new GameState(gameType)
     this.functions= new GameFunctions(this, this.i, gameHost)
     this.has = new GameHas(gameDisplays, this) 

@@ -178,55 +178,19 @@ export class AbilityProcessor{
   private handleOfferContractInstances(offerContractAbility: ServerAbility, offerContractInstances: AbilityData[]){
     const {roundController, fighters, managers} = this.game.has
     const {jobSeekers} = roundController
-    const offerContractTargets: {targetName: string, instances: AbilityData[]}[] = []
+    const offerContractTargets = getOffersArray()
 
-    
   
-  
-    offerContractInstances.forEach(offerContractInstance => {
-      const {target, source, additionalData} = offerContractInstance
-      const jobSeeker = jobSeekers.find(jobSeeker => jobSeeker.name == target.name)
-      const contractOffer: ContractOffer = additionalData.contractOffer
-      let goalContract: GoalContract
-      if(jobSeeker)
-        goalContract = jobSeeker.goalContract
-      else
-        goalContract = fighters.find(fighter => fighter.name == target.name).state.goalContract
-      const randomThreshold = (random(5) + 5) / 10
-      if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold){
-        const manager = source.type == 'Manager' ? managers.find(manager => manager.has.name == source.name) : managers.find(manager => manager.has.employees.some(employee => employee.name == source.name))
-        manager.functions.addToLog({message: `Job seeker ${target.name} (${!jobSeeker ? 'Fighter' : jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}) rejected your contract offer because you offered too little`, type: 'report'})
-        return
-      }
-  
-      const targetExists = offerContractTargets.find(offerContractTarget => offerContractTarget.targetName == offerContractInstance.target.name)
-      if(!targetExists)
-        offerContractTargets.push({
-          targetName: offerContractInstance.target.name,
-          instances: [offerContractInstance]
-        })
-      else
-        targetExists.instances.push(offerContractInstance)
-    })
-  
-  
-    function sortBestOffer(offerContractInstances: AbilityData[]): AbilityData[]{    
-      return offerContractInstances.sort((abilityDataA: AbilityData, abilityDataB: AbilityData) => { 
-        const a = abilityDataA.additionalData.contractOffer.weeklyCost
-        const b = abilityDataB.additionalData.contractOffer.weeklyCost
-        return a > b ? -1 : a < b ? 1 : 0
-      })
-    }
     
     offerContractTargets.forEach(offerContractTarget => {
-    const jobSeeker = jobSeekers.find(j => j.name == offerContractTarget.targetName)
+      const jobSeeker = jobSeekers.find(j => j.name == offerContractTarget.targetName)
       if(offerContractTarget.instances.length == 1){
         offerContractAbility.execute(offerContractTarget.instances[0], this.game)
         return
       }
   
       const sortedInstances = sortBestOffer(offerContractTarget.instances)
-      
+      // get all equal hightest offers
       const bestOfferInstances = sortedInstances.filter(instance => instance.additionalData.contractOffer.weeklyCost == sortedInstances[0].additionalData.contractOffer.weeklyCost)
   
       let selectedSourceName
@@ -245,13 +209,61 @@ export class AbilityProcessor{
           const {target} = offerContractInstance
           const manager = this.getAbilitySourceManager(offerContractInstance)
   
-          manager.functions.addToLog({message: `${target.name} (${jobSeeker ? jobSeeker.profession : 'Fighter'}) rejected your contract offer because he has accepted the offer of another manager`, type: 'report'})
+          manager.functions.addToLog({message: `${target.name} (${jobSeeker?.profession ? jobSeeker.profession : jobSeeker.type}) rejected your contract offer because he has accepted the offer of another manager`, type: 'report'})
         }
       })
   
     }) 
     
     this.game.functions.triggerUIUpdate()
+  
+    
+
+    /* implementation */
+  
+    function getOffersArray(): {targetName: string, instances: AbilityData[]}[]{
+      
+      const offers: {targetName: string, instances: AbilityData[]}[] = []
+
+      offerContractInstances.forEach(offerContractInstance => {
+        const {target, source, additionalData} = offerContractInstance
+        const jobSeeker = jobSeekers.find(jobSeeker => jobSeeker.name == target.name)
+        const contractOffer: ContractOffer = additionalData.contractOffer
+
+        let goalContract: GoalContract
+        if(jobSeeker)
+          goalContract = jobSeeker.goalContract
+        else
+          goalContract = fighters.find(fighter => fighter.name == target.name).state.goalContract
+
+        const randomThreshold = (random(5) + 5) / 10
+        if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold){
+          const manager = source.type == 'Manager' ? managers.find(manager => manager.has.name == source.name) : managers.find(manager => manager.has.employees.some(employee => employee.name == source.name))
+          manager.functions.addToLog({message: `Job seeker ${target.name} (${!jobSeeker ? 'Fighter' : jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}) rejected your contract offer because you offered too little`, type: 'report'})
+          return
+        }
+    
+        const targetExists = offers.find(offerContractTarget => offerContractTarget.targetName == offerContractInstance.target.name)
+        if(!targetExists)
+          offers.push({
+            targetName: offerContractInstance.target.name,
+            instances: [offerContractInstance]
+          })
+        else
+          targetExists.instances.push(offerContractInstance)
+      })
+      return offers
+    }
+
+
+
+    function sortBestOffer(offerContractInstances: AbilityData[]): AbilityData[]{    
+      return offerContractInstances.sort((abilityDataA: AbilityData, abilityDataB: AbilityData) => { 
+        const a = abilityDataA.additionalData.contractOffer.weeklyCost
+        const b = abilityDataB.additionalData.contractOffer.weeklyCost
+        return a > b ? -1 : a < b ? 1 : 0
+      })
+    }
     
   }
 

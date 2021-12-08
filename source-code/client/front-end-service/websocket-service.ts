@@ -11,6 +11,7 @@ const clientToHostFuntions = {
     socket.emit('connectToHost', {name, id})
   },
   create: () => socket.emit('create'),
+  testConnection: () => socket.emit('testConnection'),
   cancel: gameId => socket.emit('cancel', gameId),
   start: gameId => socket.emit('start', gameId),
   join: gameId => socket.emit('join', gameId),
@@ -42,6 +43,23 @@ export const websocketService: FrontToBackInterface = {
     
     if(env == 'development'){
       socket = io('localhost:6969', { transports: ["websocket"]})
+
+      
+      socket.on('error', x => {
+        console.log('error :>> ', x);
+      })
+      socket.on('disconnect', x => {
+        console.log('disconnect :>> ', x);
+      })
+      socket.on('reconnect', x => {
+        console.log('reconnect :>> ', x);
+      })
+      socket.on('reconnect_error', x => {
+        console.log('reconnect_error :>> ', x);
+      })
+      socket.on('reconnect_failed', x => {
+        console.log('reconnect_failed :>> ', x);
+      })
     } else {
       try{
       socket = io()

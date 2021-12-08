@@ -6,21 +6,24 @@ import Fighter from "../../fighter/fighter";
 import { Manager } from "../../manager";
 import { RoundStage } from "../../../types/game/round-stage.type";
 import { FightReport, ManagerWinnings } from "../../../interfaces/front-end-state-interface";
+import { Game } from "../../game";
 
 export default class FightDayStage implements IStage {
   name: RoundStage = 'Fight Day'
   endStage
   
-  constructor(private roundController: RoundController, private managers: Manager[]){}
+  constructor(private game: Game){}
 
   start(): Promise<void> {
+    const {roundController} = this.game.has
     return new Promise(resolve => {
       this.endStage = resolve
+      
 
-      const {fightFinishedSubject} = this.roundController.activeFight
+      const {fightFinishedSubject} = this.game.has.roundController.activeFight
 
 
-      this.roundController.activeFight.start()
+      roundController.activeFight.start()
 
       fightFinishedSubject.subscribe(
         fightReport => {
@@ -31,23 +34,23 @@ export default class FightDayStage implements IStage {
         }
       )
 
-      this.roundController.triggerUIUpdate()
+      roundController.triggerUIUpdate()
     })   
 
   }
 
   makeItRain(fightReport: FightReport){
     this.processManagerBets(fightReport)
-    this.roundController.triggerUIUpdate()
+    this.game.has.roundController.triggerUIUpdate()
 
   }
 
 
   pause(){
-    this.roundController.activeFight.pause()
+    this.game.has.roundController.activeFight.pause()
   }
   unpause(){
-    this.roundController.activeFight.unpause()
+    this.game.has.roundController.activeFight.unpause()
   }
 
   stageFinished = () => {
@@ -60,13 +63,13 @@ export default class FightDayStage implements IStage {
   }
 
   resetFighters() {
-    this.roundController.activeFight.fighters.forEach(fighter => fighter.reset())
+    this.game.has.roundController.activeFight.fighters.forEach(fighter => fighter.reset())
   }
   
   private processManagerBets(fightReport: FightReport) {
     const { winner, draw } = fightReport
 
-    const managerWinnings: ManagerWinnings[] = this.managers.map((manager: Manager) => {
+    const managerWinnings: ManagerWinnings[] = this.game.has.managers.map((manager: Manager) => {
 
 
       let winnings = 0
@@ -98,7 +101,7 @@ export default class FightDayStage implements IStage {
         const {playersFighterMultiplier, playersFighterWinBase, betWinningsBase, betAmountMultiplier, totalPublicityMultiplier} = gameConfiguration.fightWinnings
 
         const managerWonBet = winner.name == managersBet?.fighterName
-        const bonusFromPublicityRating = this.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * totalPublicityMultiplier
+        const bonusFromPublicityRating = this.game.has.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * totalPublicityMultiplier
 
         if (managersBet) {
         
@@ -118,6 +121,10 @@ export default class FightDayStage implements IStage {
           winnings += playersFighterWinnings
         }
 
+
+        if(this.game.has.roundController.thisWeekIsEvent){
+          winnings *= 3
+        }
 
         // manager logs
         if(managerWonBet){

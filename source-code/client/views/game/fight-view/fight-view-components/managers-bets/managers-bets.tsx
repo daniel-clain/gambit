@@ -8,10 +8,11 @@ import { ManagersBet, FightReport } from '../../../../../../interfaces/front-end
 interface ManagersBetProps {
   managersBets: ManagersBet[]
   report: FightReport
+  isDisplay?: boolean
 }
 
-const ManagersBets = ({ managersBets, report }: ManagersBetProps) => {
-  let [isHidden, setIsHidden] = useState(true)
+const ManagersBets = ({ managersBets, report, isDisplay }: ManagersBetProps) => {
+  let [isHidden, setIsHidden] = useState(isDisplay?false:true)
 
   const hasWinnings = report?.managerWinnings?.some(({ winnings }) => winnings > 0)
 
