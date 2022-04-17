@@ -1,3 +1,4 @@
+import { VideoName } from "../client/videos/videos"
 
 const gameConfiguration = {
   freezeFight: false,
@@ -51,7 +52,13 @@ const gameConfiguration = {
     {round: 7, fighters:3},
     {round: 14, fighters:4}
   ],
-  videos: [
+  videos: <{name: VideoName, videos}[]>[
+    {
+      name: 'Final Tournament',
+      videos:[{
+        duration: 21
+      }]
+    },
     {
       name: 'Sinister Victory',
       videos:[{

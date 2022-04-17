@@ -2,9 +2,6 @@
   "name": "gambit",
   "version": "1.0.0",
   "license": "UNLICENSED",
-  "engines": {
-    "node": "14.16.0"
-  },
   "scripts": {
     "dev-fightTest-serve": "webpack serve --config-name fightTest",
     "dev-localTest-serve": "webpack serve --config-name localTest",
@@ -15,7 +12,7 @@
     "start": "npm run prod-mainGame-build & npm run prod-startServer",
     "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
     "dev-startServer-mon": "cross-env NODE_ENV=development nodemon server.ts",
-    "dev-startServer": "cross-env NODE_ENV=development ts-node server.ts",
+    "dev-startServer": "cross-env NODE_ENV=development nodemon server.ts",
     "prod-startServer": "cross-env NODE_ENV=production node --max-old-space-size=30000 -r ts-node/register server.ts"
   },
   "dependencies": {

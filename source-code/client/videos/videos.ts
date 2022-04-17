@@ -1,12 +1,13 @@
-import { VictoryType } from "../../types/game/victory-type";
+
 import sinisterVictoryVideo from './sinister-victory.mp4'
 import wealthVictoryVideo from './wealth-victory.mp4'
-//import dominationVictoryVideo from './domination-victory.mp4'
+
 import failSinisterVictoryVideo1 from './fail-sinister-victory1.mp4'
 import failSinisterVictoryVideo2 from './fail-sinister-victory2.mp4'
-//import dominationVictory from './domination-victory.mp4'
+import finalTournament from './final-tournament.mp4'
+import dominationVictory from './domination-victory.mp4'
 
-export type VideoName = 'Sinister Victory' | 'Sinister Victory Fail' | 'Wealth Victory' | 'Domination Victory' | 'Wealth Victory Fail'
+export type VideoName = 'Sinister Victory' | 'Sinister Victory Fail' | 'Wealth Victory' | 'Domination Victory' | 'Wealth Victory Fail' | 'Final Tournament'
 
 type VideoInfo = {
   source: string,
@@ -18,6 +19,13 @@ export type VideoData = {
 }
 
 export const getVideos = (): VideoData[] => [
+  {
+    name: 'Final Tournament',
+    videos:[{
+      source: finalTournament,
+      duration: 21
+    }]
+  },
   {
     name: 'Sinister Victory',
     videos:[{
@@ -45,7 +53,7 @@ export const getVideos = (): VideoData[] => [
   {
     name: 'Domination Victory',
     videos:[{
-      source: null,//dominationVictory,
+      source: dominationVictory,
       duration: 37
     }]
   },

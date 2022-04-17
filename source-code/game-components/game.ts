@@ -112,12 +112,17 @@ class GameFunctions{
   startGame(){
     const game = this.game
     setTimeout(() => {
-      setupTestState(game)
+      if(process.env.NODE_ENV == 'development'){
+        setupTestState(game)
+      }
       game.has.roundController.startRound(gameConfiguration.startingRoundNumber)
-      postStartTestState(game)
+      if(process.env.NODE_ENV == 'development'){
+        postStartTestState(game)
+      }
       
     }, 1000);
   }
+
 
   resignEmployee = this.i.resignEmployee
 

@@ -17,7 +17,7 @@ const ShowVideo = ({selectedVideo: {name, index}}: {selectedVideo: SelectedVideo
     v.name == name
   ).videos
   const video = relevantVideos[index].source
-
+  console.log(`${name} - ${video}`);
   return <>
     <video 
       style={{width: '100%'}}

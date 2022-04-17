@@ -1,5 +1,25 @@
 
 Bug:
+  ☐ bug: news articles show multiple times
+  ☐ if many news articles, they show too quickly
+  ☐ reduce height to avoid scroll
+  ☐ make re check server code different so no need for client refresh
+  ☐ end game stats
+  ☐ info icons for more details on what things do
+  ☐ more time, especially in late game eg 4 fighters or main event
+  ☐ game display try to frame arena better
+  ☐ make sure at least 1 lawyer
+  ☐ change wealth victory to require lawyers, new wealth victory video more about using money to crush all opponents rather than court cases
+  ☐ explain multiple doping can lead to death
+  ☐ explain multiple guarding, skill level and probability
+  ☐ explain assasin probability
+  ☐ explain agent do survailance
+  ☐ explain agent investigate manager, show stats straight away
+  ☐ when players make heaps of money, show money bags to represent x100
+  ☐ commentator declaring who has knocked out who
+  ☐ explain spirit, rampage, recovery, aggression, strenght, fitness, and intellignce
+  
+  
 
 Deal Breakers:
   ☐ fix fighter selection, should be propper random
@@ -7,6 +27,11 @@ Deal Breakers:
   ☐ players can concede, if only 1 player left they win by default
   ☐ reposiont doesnt dedicate tto going around, it can freeze left right twitching, back and forth
   ☐ make sure top fighters are in main event
+
+  ☐ coins doint all spill at same point
+  ☐ rampage too often
+  ☐ flanked retreat speed too fast
+  ☐ trappend in the corner doesnt go rampage, different mode desperation (turn left and right blocking only counter attacking)
 
 
 Priority:

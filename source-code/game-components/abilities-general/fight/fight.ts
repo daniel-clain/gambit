@@ -47,7 +47,9 @@ export default class Fight {
 
       if(remainingFighters.length == 1){
         watchForWinnerSubscription.unsubscribe()
-        this.declareWinner(remainingFighters[0])
+        const winner = remainingFighters[0]
+        console.log(`${winner.name} knockout victory`);
+        this.declareWinner(winner)
       }
     })
   }
@@ -126,6 +128,7 @@ export default class Fight {
   }
 
   timesUp(){
+    console.log('fight timeout');
     const remainingFighters = this.getFightersThatArentKnockedOut()
     let fightReport: FightReport
     if(this.isFinalTournament){
@@ -162,6 +165,7 @@ export default class Fight {
   private finishFight(fightReport){
     this.report = fightReport
     this.timeRemaining = 0
+    console.log('clear fight timeout');
     clearTimeout(this.timesUpTimer)
     clearInterval(this.timeRemainingInterval)
 
@@ -203,8 +207,7 @@ export default class Fight {
 
   private getFightersThatArentKnockedOut(){
     return this.fighters.reduce((fighters, fighter) => {
-      const fighterNotKnockedOut: boolean = fighter.fighting.getState().modelState !== 'Knocked Out'
-      if(fighterNotKnockedOut){
+      if(!fighter.fighting.knockedOut){
         fighters.push(fighter)
       }
       return fighters

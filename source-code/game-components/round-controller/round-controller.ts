@@ -87,7 +87,6 @@ export class RoundController {
       await wait(videoDuration*1000)
       state.isShowingVideo = undefined 
       if(state.playerHasVictory){
-        state.playerHasVictory = null
         reject('player has victory')
       }
       else if (state.playerHasFailedVictory) {
@@ -105,8 +104,8 @@ export class RoundController {
       if(!finalTournament) resolve()
       else {
         await finalTournament.startTournament()
-        await this.showVideo()
-        reject('final tournament')
+        await this.showVideo().catch(reject)
+        
       }      
     });
   }

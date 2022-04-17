@@ -1,4 +1,5 @@
 
+import gameConfiguration from "../../../game-settings/game-configuration"
 import { Game } from "../../game"
 import { FinalTournament } from "../../round-controller/final-tournament/final-tournament"
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
@@ -25,6 +26,11 @@ export const dominationVictoryServer: ServerAbility = {
       return
     }
     game.state.finalTournament = new FinalTournament(game)
+    const video = {
+      name: gameConfiguration.videos.find(v => v.name == 'Final Tournament').name,
+      index: 0
+    }
+    game.state.isShowingVideo = video
     
   },
   ...dominationVictory

@@ -14,7 +14,7 @@ export const setupTestState = (game: Game) => {
   //skipFight()
   //freezeOnFight()
   //longManagerOptions()
-  setup1()
+  //setup1()
   //testFighterStats()
   //managerHasFighters()
   //managerHasLoan()
@@ -52,7 +52,6 @@ export const setupTestState = (game: Game) => {
   
 
   function skipFight(){
-    console.log('ding');
     gameConfiguration.stageDurations.extraTimePerFighter = 0 
     gameConfiguration.stageDurations.maxFightDuration = 1
     gameConfiguration.stageDurations.eachNewsSlide = 1
@@ -103,15 +102,17 @@ export const setupTestState = (game: Game) => {
 
 export const postStartTestState = (game: Game) => {
   //setup2()
-  testMainEvent()
+  //testMainEvent()
   //testContractEnding()
   //quickSinisterVictory()
   //lotsOfMoney()
-  //finalTournamentTest()
+
+  finalTournamentTest()
 
 
   function finalTournamentTest(){
-    gameConfiguration.stageDurations.maxFightDuration = 10
+    lotsOfMoney()
+    gameConfiguration.stageDurations.maxFightDuration = 1
     gameConfiguration.stageDurations.extraTimePerFighter = 0 
     game.has.roundController.roundNumber = 20
     const manager = game.has.managers[0]

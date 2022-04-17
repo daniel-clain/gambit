@@ -165,16 +165,17 @@ export class FinalTournament{
       this.game.functions.triggerUIUpdate()
     })
     return new Promise(resolve => {
-      this.activeFight.fightFinishedSubject.subscribe(fightReport => {
+      this.activeFight.fightFinishedSubject.subscribe((fightReport => {
         if(!this.activeFight){
           console.log('no fight bug');
         }
         this.activeFight.doTeardown()
         this.activeFight.fighters.forEach(f => f.reset())
         const winningFighter = this.activeFight.fighters.find(f => f.name == fightReport.winner.name)
+        console.log('fight destroyed');
         this.activeFight = null
         resolve(winningFighter)
-      })
+      }))
     });
   }
 
@@ -193,6 +194,10 @@ export class FinalTournament{
   }
 
   private async showWinnerVideo(){
+    this.game.state.isShowingVideo = {
+      name: 'Domination Victory',
+      index: 0
+    }
     this.game.functions.triggerUIUpdate()
   }
 }
