@@ -132,7 +132,9 @@ class ManagerFunctions{
 
   betOnFighter = (bet: Bet) => {
     
-    bet && this.addToLog({message: `Made a ${bet.size} bet on ${bet.fighterName}`})
+    bet && this.addToLog({
+      roundNumber: this.game.has.roundController.roundNumber,
+      message: `Made a ${bet.size} bet on ${bet.fighterName}`})
     this.manager.has.nextFightBet = bet
   }
 
@@ -144,7 +146,9 @@ class ManagerFunctions{
     }
   }
   paybackMoney = (amount: number) =>  {
-    this.addToLog({message: `Paid back ${amount} to the Loan Shark`})
+    this.addToLog({
+      roundNumber: this.game.has.roundController.roundNumber,
+      message: `Paid back ${amount} to the Loan Shark`})
     const {has} = this.manager
     has.money -= amount
     has.loan = {
@@ -155,7 +159,9 @@ class ManagerFunctions{
   }
 
   borrowMoney = (amount: number) => {
-    this.addToLog({message: `Borrowed ${amount} from the Loan Shark`})
+    this.addToLog({
+      roundNumber: this.game.has.roundController.roundNumber,
+      message: `Borrowed ${amount} from the Loan Shark`})
     const {has} = this.manager
     has.money += amount
     if(!has.loan){

@@ -16,6 +16,7 @@ const sellDrugs: Ability = {
 export const sellDrugsServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const manager = game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
+    const {roundNumber} = game.has.roundController
 
     if(!manager){
       return
@@ -31,7 +32,9 @@ export const sellDrugsServer: ServerAbility = {
 
     manager.has.money += moneyFromDrugDealing
 
-    manager.functions.addToLog({message: `${abilityData.source.name} has made ${moneyFromDrugDealing} money from selling drugs`, type:'employee outcome'})
+    manager.functions.addToLog({
+      roundNumber,
+      message: `${abilityData.source.name} has made ${moneyFromDrugDealing} money from selling drugs`, type:'employee outcome'})
   },
   ...sellDrugs
 }

@@ -19,6 +19,9 @@ const assaultFighter: Ability = {
 export const assaultFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+
+    
+    const {roundNumber} = game.has.roundController
     
 
     let assaulter: Employee
@@ -37,7 +40,9 @@ export const assaultFighterServer: ServerAbility = {
 
     
     if(fighter.state.dead){
-      assaultersManager.functions.addToLog({message: `Attempt to assault ${abilityData.target.name} failed because he was already found dead`, type: 'report'})
+      assaultersManager.functions.addToLog({
+        roundNumber,
+        message: `Attempt to assault ${abilityData.target.name} failed because he was already found dead`, type: 'report'})
       return
     }
     
@@ -71,7 +76,8 @@ export const assaultFighterServer: ServerAbility = {
         headline: `${fighter.name} Assaulted!`,
         message: `${fighter.name} has been assaulted, his injuries will affect his fight performance`
       })
-      assaultersManager.functions.addToLog({
+      assaultersManager.functions.addToLog({        
+        roundNumber,
         message: `${assaulter.name} has successfully assaulted ${fighter.name} and he is now injured`, type: 'report'
       })
     }
@@ -81,13 +87,15 @@ export const assaultFighterServer: ServerAbility = {
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${fighter.name} from an attempted assault`
       })   
-      assaultersManager.functions.addToLog({
+      assaultersManager.functions.addToLog({        
+        roundNumber,
         message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name} because he was guarded by thugs`, type: 'employee outcome'
       })  
     }
     else
       assaultersManager.functions.addToLog({
-        type: 'employee outcome', 
+        roundNumber,
+        type: 'employee outcome',         
         message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name}`
       })
       

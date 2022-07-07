@@ -1,6 +1,6 @@
 
 import gameConfiguration from "../game-settings/game-configuration"
-import { Employee } from "../interfaces/front-end-state-interface"
+import { Employee, FighterInfo, JobSeeker } from "../interfaces/front-end-state-interface"
 import Fighter from "./fighter/fighter"
 import { Game } from "./game"
 
@@ -18,6 +18,7 @@ export const setupTestState = (game: Game) => {
   //testFighterStats()
   //managerHasFighters()
   //managerHasLoan()
+
 
 
 
@@ -106,8 +107,31 @@ export const postStartTestState = (game: Game) => {
   //testContractEnding()
   //quickSinisterVictory()
   //lotsOfMoney()
+  testFighterJobSeeker()
 
   finalTournamentTest()
+
+
+  function testFighterJobSeeker(){
+    console.log('ding');
+
+    const testFighter = new Fighter('Test Fighter')
+    game.has.fighters.push(testFighter)
+
+    testFighter.state.goalContract = {weeklyCost: 1, numberOfWeeks: 1}
+
+    const testJobSeeker = {
+      name: testFighter.name,
+      type: 'Fighter',
+      goalContract: testFighter.state.goalContract
+    } as JobSeeker
+
+    game.has.roundController.jobSeekers.push(testJobSeeker)
+
+    game.has.managers.forEach(manager =>
+      manager.has.knownFighters.push(testFighter.getInfo())
+    )
+  }
 
 
   function finalTournamentTest(){

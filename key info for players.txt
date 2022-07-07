@@ -1,0 +1,3 @@
+
+* when you research, the number next to the value is the weeks since learned, and it man not reflect the true value
+* recontracting your fighter on the last week of contract

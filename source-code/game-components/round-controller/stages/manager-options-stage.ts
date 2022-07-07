@@ -1,10 +1,11 @@
 
-import { Subject, Subscription } from "rxjs";
-import { RoundController } from "../round-controller";
+import { Subject } from "rxjs";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import { Manager } from "../../manager";
 import { RoundStage } from "../../../types/game/round-stage.type";
+import { check } from "../../../helper-functions/helper-functions";
+import { Game } from "../../game";
 
 export default class ManagerOptionsStage implements IStage {
 
@@ -14,19 +15,21 @@ export default class ManagerOptionsStage implements IStage {
   timeLeft
   private timeLeftInterval
   private timesUpTimer
-  private duration
+  private baseDuration: number
   paused: boolean
 
-  constructor(private roundController: RoundController, private managers: Manager[]){
+  constructor(private game: Game){
 
-    this.duration = gameConfiguration.stageDurations.managerOptions
+    this.baseDuration = gameConfiguration.stageDurations.managerOptions
   }
 
   start(): Promise<void> {
     return new Promise(resolve => {
       this.endStage = resolve
+
+      const duration = this.extendDuration()
             
-      this.timeLeft = this.duration 
+      this.timeLeft = duration
 
       this.timeLeftInterval = this.setCountdownInterval()
 
@@ -36,7 +39,7 @@ export default class ManagerOptionsStage implements IStage {
       if(this.paused)
         this.pause()
 
-      this.roundController.triggerUIUpdate()
+      this.game.has.roundController.triggerUIUpdate()
     })
 
 
@@ -47,7 +50,7 @@ export default class ManagerOptionsStage implements IStage {
 
   private stageFinished(){
     this.timeLeft = null
-    this.roundController.triggerUIUpdate()
+    this.game.has.roundController.triggerUIUpdate()
     clearInterval(this.timesUpTimer)
     clearInterval(this.timeLeftInterval)
     
@@ -60,10 +63,10 @@ export default class ManagerOptionsStage implements IStage {
   setCountdownInterval(){
     return setInterval(() => {
       this.timeLeft --
-      this.roundController.triggerUIUpdate();
+      this.game.has.roundController.triggerUIUpdate();
       if(
         this.timeLeft == 0 || 
-        this.managers.every(this.isReady)
+        this.game.has.managers.every(this.isReady)
       ){
         this.stageFinished()
       }
@@ -87,5 +90,28 @@ export default class ManagerOptionsStage implements IStage {
       this.timesUpTimer = this.setTimesUpTimeout()
       this.paused = false
   }
-  
+
+  private extendDuration(){
+    const {roundController, players} = this.game.has
+    const extendedDuration = 
+      check(roundController.roundNumber, x => [
+        [x > 10, 10],
+        [x > 15, 20],
+        [x > 20, 40]
+      ]) +
+      check(roundController.activeFight.fighters, x => [
+        [x == 3, 10],
+        [x == 4, 30],
+        [x > 4, 60]
+      ]) +
+      check(players.length, x => [
+        [x == 3, 10],
+        [x == 4, 30],
+        [x > 4, 50]
+      ])
+    
+    console.log('extendedDuration :>> ', extendedDuration);
+    return this.baseDuration + extendedDuration
+    
+  }
 };

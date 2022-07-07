@@ -10,7 +10,7 @@ export const dodgeSound = new Audio(dodgeFile.default)
 export const blockSound = new Audio(blockFile.default)
 export const outOfTimeSound = new Audio(outOfTimeFile.default)
 export const fightSound = new Audio(fight.default)
-
+fightSound.volume = .5
 punchSound.volume = 0.6
 criticalStrikeSound.volume = 0.5
 outOfTimeSound.volume = 0.4

@@ -59,7 +59,9 @@ export const handleUnderSurveillance = ({surveilledManager, surveilledFighter, a
   
     managerDoingSurveillance.has.evidence.push({id: Number(randomNumber({digits: 8})),managerName: surveilledManager.has.name, abilityData, illegalActivity, evidenceDescription})
   
-    managerDoingSurveillance.functions.addToLog({type: 'employee outcome', message: `Your private agent ${privateAgentName} has caught ${source.name} doing "${name}" ${abilityData.source.type != 'Manager' ? `. ${source.name}  works for ${surveilledManager.has.name}` : ''}. You have stored this information away as evidence`})
+    managerDoingSurveillance.functions.addToLog({
+      roundNumber,
+      type: 'employee outcome', message: `Your private agent ${privateAgentName} has caught ${source.name} doing "${name}" ${abilityData.source.type != 'Manager' ? `. ${source.name}  works for ${surveilledManager.has.name}` : ''}. You have stored this information away as evidence`})
   }
 
 
@@ -76,7 +78,9 @@ export const handleUnderSurveillance = ({surveilledManager, surveilledFighter, a
   
     managerDoingSurveillance.has.evidence.push({id: randomNumber({digits: 8}), managerName: soureManager.has.name, abilityData, illegalActivity, evidenceDescription})
   
-    managerDoingSurveillance.functions.addToLog({type: 'employee outcome', message: `Your private agent ${privateAgentName} has caught ${source.name} doing "${name}" ${abilityData.source.type != 'Manager' ? `. ${source.name}  works for ${surveilledFighter.name}` : ''}. You have stored this information away as evidence`})
+    managerDoingSurveillance.functions.addToLog({
+      roundNumber,
+      type: 'employee outcome', message: `Your private agent ${privateAgentName} has caught ${source.name} doing "${name}" ${abilityData.source.type != 'Manager' ? `. ${source.name}  works for ${surveilledFighter.name}` : ''}. You have stored this information away as evidence`})
   }
 }
 

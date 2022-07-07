@@ -62,35 +62,29 @@ const frontEndService = (() => {
   let connectionType: ConnectionType
 
 
+  function getSortedActivityLogs(): ActivityLogItem[]{
+    const {activityLogs} = frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+    
+    const sortedLogs = activityLogs.sort((a, b) => {
+      const sameRound = a.roundNumber == b.roundNumber
+      if(
+        a.roundNumber > b.roundNumber || 
+       (sameRound && a.type == 'critical') ||
+       (sameRound && a.type == 'new round')
+
+      ) return  -1 
+      else return 1
+    })
+    return sortedLogs
+  }
+
+
   return {
     sendUpdate: null,
     abilityService,
     frontEndStore,
     connectionType,
-    getReportItems(): ActivityLogItem[]{
-      const {activityLogs} = frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
-
-      const types: ReportTypes[] = ['employee outcome', 'betting', 'critical', 'report']
-      const reduced = [...activityLogs].reverse().reduce((obj, logItem) => {
-        if(!obj.first && logItem.type == 'new round') return {...obj, first: true}
-        else if(obj.second) return obj
-        else if(logItem.type == 'new round') return {...obj, second: true}
-        else if(types.some(t => t == logItem.type)) return {...obj, returnArray: [...obj.returnArray, logItem]}
-        else return obj
-      },{first: null, second: null, returnArray: []})
-      return reduced.returnArray
-    },
-
-    /* hotConnection<T>(, component: (props: T) => JSX.Element){
-      return connect(this.managerMap(mapping))(hot(component))
-    }, */
-
-    managerMap<T>(mapping: (allManagerUIState: AllManagerUIState) => T){
-      return () => ({
-        clientUIState:{clientGameUIState:{clientManagerUIState}},
-        serverUIState:{serverGameUIState:{playerManagerUIState}}
-      }: FrontEndState):T => mapping({...clientManagerUIState, ...playerManagerUIState})
-    },
+    getSortedActivityLogs,
 
     toManagerState(mapping){
       return () => ({

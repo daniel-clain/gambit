@@ -11,6 +11,8 @@ import { Game } from "../game";
 export function setupNewRound(game: Game){
   const {managers, professionals, fighters, roundController} = game.has
 
+  const {roundNumber} = roundController
+
   chanceNextFightEvent()
   setRoundJobSeekers()
   setupRoundFight()
@@ -20,7 +22,10 @@ export function setupNewRound(game: Game){
     addNewRoundToManagerLog(manager)
     addFightersToManagersKnownFightersList(manager)
     if(manager.state.inJail){
-      manager.functions.addToLog({type: 'critical', message: `You are in jail! (${manager.state.inJail.weeksRemaining} weeks remaining)`});
+      manager.functions.addToLog({
+        roundNumber,
+        type: 'critical', 
+        message: `You are in jail! (${manager.state.inJail.weeksRemaining} weeks remaining)`});
     }
   })
 
@@ -85,7 +90,9 @@ export function setupNewRound(game: Game){
   }
 
   function addNewRoundToManagerLog(manager: Manager){
-    manager.functions.addToLog({type: 'new round', message: `Round ${roundController.roundNumber}`});
+    manager.functions.addToLog({
+      roundNumber,
+      type: 'new round', message: `Round ${roundController.roundNumber}`});
   }
 
   function setRoundJobSeekers(){

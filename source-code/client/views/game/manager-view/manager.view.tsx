@@ -2,7 +2,6 @@ import * as React from "react"
 import Headbar from './manager-view-components/main-components/headbar/headbar'
 import {NextFightPanel} from './manager-view-components/main-components/next-fight-panel/next-fight-panel'
 import {EmployeesPanel} from './manager-view-components/main-components/employees-panel/employees-panel'
-import { LoanSharkCard } from "./manager-view-components/cards/loan-shark-card/loan-shark-card"
 import {AbilityCard} from "./manager-view-components/cards/ability-card/ability-card"
 import {JobSeekerCard} from "./manager-view-components/cards/job-seeker-card/job-seeker-card"
 import { KnownManager } from "../../../../game-components/manager"
@@ -25,9 +24,10 @@ import { ManagerCard } from "./manager-view-components/cards/manager-card/manage
 import { EmployeeCard } from "./manager-view-components/cards/employee-card/employee-card"
 import { outOfTimeSound } from "../../../sound-effects/sound-effects"
 import { WinOptionsCard } from "./manager-view-components/cards/win-options-card/win-options-card"
+import { LoanSharkCard } from "./manager-view-components/cards/loan-shark-card/loan-shark-card"
 
 
-const {toManagerState, getReportItems} = frontEndService
+const {toManagerState, getSortedActivityLogs} = frontEndService
 
 
 const mapState = toManagerState(({activeModal, round, managerInfo, managerOptionsTimeLeft}: AllManagerUIState) => ({activeModal, round, managerInfo, managerOptionsTimeLeft}))
@@ -50,7 +50,7 @@ export const Manager_View = connector(hot(
   ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManager, showReport, showWinOptions, managerOptionsTimeLeft}: PropsFromRedux) => {
 
   useEffect(() => {
-    getReportItems().length && showReport()
+    getSortedActivityLogs().length && showReport()
   },[round])
 
   useEffect(() => {

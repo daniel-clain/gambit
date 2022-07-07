@@ -1,4 +1,5 @@
 import { ClientPreGameUIState } from "../../../interfaces/front-end-state-interface"
+import { SetStatePreGameUIFunctionName } from "../../front-end-service/front-end-service-types"
 
 
 
@@ -18,7 +19,6 @@ function getClientid(){
   }
 }
 
-export type SetStatePreGameUIFunctionName = 'setName'
 
 export type SetStatePreGameUIAction = {
   type: SetStatePreGameUIFunctionName

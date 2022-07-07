@@ -20,6 +20,7 @@ const trainFighter: Ability = {
 export const trainFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter: Fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const {roundNumber} = game.has.roundController
 
     let manager: Manager
     let trainer: Employee
@@ -60,11 +61,15 @@ export const trainFighterServer: ServerAbility = {
       const randomNum = random(1)
       if(randomNum === 0){
         fighter.fighting.stats.baseStrength ++
-        manager.functions.addToLog({message: `${fighter.name}'s strength has gone up by 1 as a result of being trained`, type:'employee outcome'})
+        manager.functions.addToLog({
+          roundNumber,
+          message: `${fighter.name}'s strength has gone up by 1 as a result of being trained`, type:'employee outcome'})
       }
       else if(randomNum === 1){
         fighter.fighting.stats.baseFitness ++
-        manager.functions.addToLog({message: `${fighter.name}'s fitness has gone up by 1 as a result of being trained`, type:'employee outcome'})
+        manager.functions.addToLog({
+          roundNumber,
+          message: `${fighter.name}'s fitness has gone up by 1 as a result of being trained`, type:'employee outcome'})
       }
     }
 

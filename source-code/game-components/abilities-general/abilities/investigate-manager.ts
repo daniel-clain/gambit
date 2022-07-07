@@ -29,6 +29,8 @@ export const investigateManagerServer: ServerAbility = {
     const sourceManager: Manager = determineSourceManager()
     const privateAgent: Employee = determinePrivateAgent()
     const skillLevel: SkillLevel = privateAgent.skillLevel
+
+    const {roundNumber} = game.has.roundController
     
     const targetManager: Manager = game.has.managers.find(m => m.has.name == abilityData.target.name)
 
@@ -45,7 +47,9 @@ export const investigateManagerServer: ServerAbility = {
       } as KnownManagerStat
     })
 
-    sourceManager.functions.addToLog({message: `${abilityData.source.type} ${abilityData.source.name} used ${abilityData.name} and found out the following stats about ${abilityData.target.name} \n ${discoveredStats.map(s => s.key)}`});
+    sourceManager.functions.addToLog({
+      roundNumber,
+      message: `${abilityData.source.type} ${abilityData.source.name} used ${abilityData.name} and found out the following stats about ${abilityData.target.name} \n ${discoveredStats.map(s => s.key)}`});
 
 
     //implementation

@@ -17,6 +17,7 @@ const offerContract: Ability = {
 
 export const offerContractServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
+    const {roundNumber} = game.has.roundController
     let manager: Manager
  
     if(abilityData.source.type == 'Manager'){
@@ -49,7 +50,9 @@ export const offerContractServer: ServerAbility = {
       if(jobSeeker.type == 'Fighter'){
         const fighter: Fighter = game.has.fighters.find(fighter => fighter.name == jobSeeker.name)
         if(fighter.state.dead){
-          manager.functions.addToLog({message: `Offer contract to ${abilityData.target.name} failed because he was murdered`, type: 'employee outcome'})
+          manager.functions.addToLog({
+            roundNumber,
+            message: `Offer contract to ${abilityData.target.name} failed because he was murdered`, type: 'employee outcome'})
           return
         }
         manager.has.fighters.push(fighter)
@@ -74,7 +77,9 @@ export const offerContractServer: ServerAbility = {
       }
     }
 
-    manager.functions.addToLog({message: `${abilityData.target.name} has agreed to the contract offed.`, type: 'employee outcome'});
+    manager.functions.addToLog({
+      roundNumber,
+      message: `${abilityData.target.name} has agreed to the contract offed.`, type: 'employee outcome'});
 
     return 
   },

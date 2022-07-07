@@ -32,7 +32,7 @@ export class RoundController {
 
 
   constructor(private game: Game) {
-    this.managerOptionsStage = new ManagerOptionsStage(this, this.game.has.managers)
+    this.managerOptionsStage = new ManagerOptionsStage(this.game)
     this.preFightNewsStage = new PreFightNewsStage(this)
     this.fightDayStage = new FightDayStage(this.game)
   }

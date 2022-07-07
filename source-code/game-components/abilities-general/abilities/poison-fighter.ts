@@ -19,6 +19,7 @@ const poisonFighter: Ability = {
 export const poisonFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const {roundNumber} = game.has.roundController
     
     let poisoner: Employee
     let poisonersManager: Manager
@@ -35,7 +36,10 @@ export const poisonFighterServer: ServerAbility = {
     }
     
     if(fighter.state.dead){
-      poisonersManager.functions.addToLog({message: `Attempt to poison ${abilityData.target.name} failed because he was already found dead`, type: 'employee outcome'})
+      poisonersManager.functions.addToLog({
+        roundNumber,
+        message: `Attempt to poison ${abilityData.target.name} failed because he was already found dead`, 
+        type: 'employee outcome'})
       return
     }
 
@@ -81,7 +85,9 @@ export const poisonFighterServer: ServerAbility = {
           message: `${fighter.name} has been found dead, frothing at the mouth, eyes a strange yellow color`
         })
         poisonersManager.functions.addToLog({
-          message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'
+          roundNumber,          
+          message: `${poisoner.name} has successfully poisoned ${fighter.name}`, 
+          type: 'employee outcome'
         })
       }
       if(severityLevel == 'sick'){
@@ -92,6 +98,7 @@ export const poisonFighterServer: ServerAbility = {
           message: `${fighter.name} has been nauseous and is pale in complexion, there is reason to believe he has been poisoned`
         })
         poisonersManager.functions.addToLog({
+          roundNumber,
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'
         })
       }
@@ -104,6 +111,7 @@ export const poisonFighterServer: ServerAbility = {
           message: `${fighter.name} has been acting delirious and highly erratic, he says he cant remember`
         })
         poisonersManager.functions.addToLog({
+          roundNumber,          
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'
         })
       }
@@ -116,12 +124,14 @@ export const poisonFighterServer: ServerAbility = {
       })      
       poisonersManager.functions.addToLog({
         type: 'employee outcome',
+        roundNumber,        
         message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name} because he was guarded by thugs`
       })
     }
     else
       poisonersManager.functions.addToLog({
-        type: 'employee outcome', 
+        type: 'employee outcome',
+        roundNumber,        
         message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name}`
       })
   },

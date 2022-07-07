@@ -34,6 +34,15 @@ export const percentageChance = ({percentage}: {percentage: number}): boolean =>
   return percentage > Math.floor((Math.random() * 100))
 }
 
+export function check(value, func: (value: number) => [boolean, number][]){
+  const array = func(value)
+  let result = 0
+  array.forEach(([condition, val]: [boolean, number]) => {
+    if(condition) result = val
+  })
+  return result
+}
+
 
 
 export const randomNumber = ({digits}:{digits: number}) => Math.round(Math.random() * Math.pow(10, digits))

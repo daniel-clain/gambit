@@ -25,6 +25,7 @@ type Verdict = {
 export const prosecuteManagerServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const {managers} = game.has
+    const {roundNumber} = game.has.roundController
     const {source, target} = abilityData
     const prosecutingManager = managers.find(m => m.has.employees.find(e => e.name == source.name))
     const prosecutedManager = managers.find(m => m.has.name == target.name)
@@ -78,14 +79,22 @@ export const prosecuteManagerServer: ServerAbility = {
         }
       `
 
-      prosecutedManager.functions.addToLog({type: 'critical', message: logMessage})
+      prosecutedManager.functions.addToLog({
+        roundNumber,
+        type: 'critical', 
+        message: logMessage
+      })
     }
 
 
     function giveHalfToProsecutingManager(){
       const amount = moneyTakenOffPlayer / 2
       prosecutingManager.has.money += amount
-      prosecutingManager.functions.addToLog({type: 'employee outcome', message: `You have been awarded $${amount} from a successful court case`})
+      prosecutingManager.functions.addToLog({
+        roundNumber,
+        type: 'employee outcome', 
+        message: `You have been awarded $${amount} from a successful court case`
+      })
     }
 
     function takeMoneyOffManager(): number{

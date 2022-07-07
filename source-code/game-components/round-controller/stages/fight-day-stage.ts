@@ -69,6 +69,8 @@ export default class FightDayStage implements IStage {
   private processManagerBets(fightReport: FightReport) {
     const { winner, draw } = fightReport
 
+    const {roundNumber} = this.game.has.roundController
+
     const managerWinnings: ManagerWinnings[] = this.game.has.managers.map((manager: Manager) => {
 
 
@@ -84,15 +86,21 @@ export default class FightDayStage implements IStage {
         const betSizePercentage = gameConfiguration.betSizePercentages[managersBet.size]
         managersBetAmount = Math.round(manager.has.money * betSizePercentage / 100)
         manager.has.money -= managersBetAmount
-        manager.functions.addToLog({message: `You spent ${managersBetAmount} on a ${managersBet.size} bet on ${managersBet.fighterName}`, type: 'betting'})
+        manager.functions.addToLog({
+          roundNumber,
+          message: `You spent ${managersBetAmount} on a ${managersBet.size} bet on ${managersBet.fighterName}`, type: 'betting'})
       }
       
       if(draw){
         if (managersBet) {
-          manager.functions.addToLog({message: `The fight was a draw, all managers will get back half of their bet money. You get back ${Math.round(managersBetAmount / 2)} of the ${managersBetAmount} you bet on ${managersBet.fighterName}`, type: 'betting'})
+          manager.functions.addToLog({
+            roundNumber,
+            message: `The fight was a draw, all managers will get back half of their bet money. You get back ${Math.round(managersBetAmount / 2)} of the ${managersBetAmount} you bet on ${managersBet.fighterName}`, type: 'betting'})
           manager.has.money -= Math.round(managersBetAmount / 2)
         } else {
-          manager.functions.addToLog({message: `The fight was a draw, all managers will get back half of their bet money.`, type: 'betting'})
+          manager.functions.addToLog({
+            roundNumber,
+            message: `The fight was a draw, all managers will get back half of their bet money.`, type: 'betting'})
 
         }
       }
@@ -128,7 +136,9 @@ export default class FightDayStage implements IStage {
 
         // manager logs
         if(managerWonBet){
-          manager.functions.addToLog({message: `
+          manager.functions.addToLog({
+            roundNumber,
+            message: `
           ${managersBet.fighterName} has won the fight! Your ${managersBet.size} bet on ${managersBet.fighterName} has won you $${winnings}. 
           ${playersFighterWinnings || bonusFromPublicityRating ? 'Including: ': ''}
           ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
@@ -136,12 +146,16 @@ export default class FightDayStage implements IStage {
         `, type: 'betting'})
         }
         if(managersBet && !managerWonBet && managersFighter){
-          manager.functions.addToLog({message: `
+          manager.functions.addToLog({
+            roundNumber,
+            message: `
           Unfortunately ${managersBet.fighterName} did not win the fight. However your sponsored fighter ${winner.name} did win earning you ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
         `, type: 'betting'})
         }
         if(!managersBet && managersFighter){
-          manager.functions.addToLog({message: `
+          manager.functions.addToLog({
+            roundNumber,
+            message: `
           Although you did not bet on the fight, Your sponsored fighter ${winner.name} did win earning you ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
         `, type: 'betting'})
         }

@@ -3,6 +3,7 @@ import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 
 
 const wealthVictory: Ability = {
+  disabled: true,
   name: 'Wealth Victory',
   cost: { money: 10000, actionPoints: 1 },
   possibleSources: ['Manager'],

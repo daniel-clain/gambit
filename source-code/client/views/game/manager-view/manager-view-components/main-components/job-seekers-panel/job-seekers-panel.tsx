@@ -6,12 +6,10 @@ import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../..//../int
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
 import { hot } from 'react-hot-loader/root';
 
-export interface JobSeekersPanelProps{
-  jobSeekers: JobSeeker[]
-}
+
 const mapStateToProps = ({
   serverUIState:{ serverGameUIState: {playerManagerUIState: {jobSeekers}}}
-}: FrontEndState): JobSeekersPanelProps => ({jobSeekers})
+}: FrontEndState) => ({jobSeekers})
 const mapDispatch = {
   showFighter: (name: string) => ({type: 'showFighter', payload: name}),
   showJobSeeker: (j: JobSeeker) => ({type: 'showJobSeeker', payload: j})
@@ -20,7 +18,8 @@ const connector = connect(mapStateToProps, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 
-export const JobSeekersPanel = connector(hot(({jobSeekers, showFighter, showJobSeeker}: PropsFromRedux) => {
+export const JobSeekersPanel = connector(hot(
+  ({jobSeekers, showFighter, showJobSeeker}: PropsFromRedux) => {
 
     
   return (

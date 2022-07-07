@@ -8,11 +8,8 @@ import { KnownManager, KnownManagerStat, Manager } from "../manager";
 
 export function doEndOfRoundUpdates(game: Game) {
 
-  const roundController = game.has.roundController
-  const fighters = game.has.fighters
-  const professionals = game.has.professionals
-  const managers = game.has.managers
-
+  const {roundController, fighters, professionals, managers} = game.has
+  const {roundNumber} = roundController
   
   managers.forEach((manager) => {
     manager.has.nextFightBet = null
@@ -24,8 +21,8 @@ export function doEndOfRoundUpdates(game: Game) {
     updateEmployeeAndFighterWeeksLeft(manager)
     payEmployeeAndFighterWages(manager)
     resetEmployeeActionPoints(manager.has.employees)
-    updateNumberOfRoundsForKnowFighterStats(manager.has.knownFighters)
-    updateNumberOfRoundsForKnowManagerStats(manager.has.otherManagers)
+    fighterStatsRoundsKnown(manager.has.knownFighters)
+    managerStatsRoundsKnown(manager.has.otherManagers)
     
     updateLoanSharkData(manager)
     if(manager.state.inJail){
@@ -142,7 +139,9 @@ export function doEndOfRoundUpdates(game: Game) {
     const allExpenses = employeeExpenses + fighterExpenses
     manager.has.money -= allExpenses
     if(allExpenses)
-    manager.functions.addToLog({message: `Spent ${allExpenses} on employee wages`, type: 'report'})
+    manager.functions.addToLog({
+      roundNumber,
+      message: `Spent ${allExpenses} on employee wages`, type: 'report'})
   }
 
   function resetEmployeeActionPoints(employees: Employee[]){
@@ -152,22 +151,27 @@ export function doEndOfRoundUpdates(game: Game) {
 
 
   function updateEmployeeAndFighterWeeksLeft(manager: Manager){
-    manager.has.fighters.forEach(fighter => {
+    const {fighters, employees} = manager.has
+    fighters.forEach(fighter => {
       fighter.state.activeContract.weeksRemaining --
       if(fighter.state.activeContract.weeksRemaining == 0){
         fighter.determineGoalContract()
         console.log(`no weeks left fighter ${fighter.name}. goal contract:`, fighter.state.goalContract);
-        manager.functions.addToLog({message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
+        manager.functions.addToLog({
+          roundNumber,
+          message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
       }
     })
-    manager.has.employees.forEach(employee => {
+    employees.forEach(employee => {
       employee.activeContract.weeksRemaining --
       if(employee.activeContract.weeksRemaining == 0)
-        manager.functions.addToLog({message: `Your employee ${employee.name}'s contract expires after this round`, type: 'critical'})
+        manager.functions.addToLog({
+          roundNumber,
+          message: `Your employee ${employee.name}'s contract expires after this round`})
     })
   }
 
-  function updateNumberOfRoundsForKnowFighterStats(knownFighters: FighterInfo[]){
+  function fighterStatsRoundsKnown(knownFighters: FighterInfo[]){
     knownFighters.forEach(knownFighter => {
 
       Object.keys(knownFighter).forEach(incrementStatRounds)
@@ -178,7 +182,7 @@ export function doEndOfRoundUpdates(game: Game) {
       }
     })
   }
-  function updateNumberOfRoundsForKnowManagerStats(knownManagers: KnownManager[]){
+  function managerStatsRoundsKnown(knownManagers: KnownManager[]){
     knownManagers.forEach(knownManager => {
 
       Object.keys(knownManager).forEach(incrementStatRounds)
@@ -216,7 +220,9 @@ export function doEndOfRoundUpdates(game: Game) {
 
 
     function sendWarning(){
-      manager.functions.addToLog({type: 'critical', message: `you have not a repayment in ${manager.has.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
+      manager.functions.addToLog({
+        roundNumber,
+        type: 'critical', message: `you have not a repayment in ${manager.has.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
     }
     function dayBeforeOverdue(): boolean{
       return manager.has.loan.weeksOverdue == weeksOfNoPaybackUntilRespond - 1
@@ -229,7 +235,9 @@ export function doEndOfRoundUpdates(game: Game) {
     function addInterestToLoan(){
       const addedAmount = Math.round(manager.has.loan.debt * interestAddedPerWeek)
       manager.has.loan.debt += addedAmount
-      manager.functions.addToLog({message: `You loan debt has increased by ${addedAmount} because of ${interestAddedPerWeek * 100}% interest, you now owe ${manager.has.loan.debt}`, type:'report'})
+      manager.functions.addToLog({
+        roundNumber,
+        message: `You loan debt has increased by ${addedAmount} because of ${interestAddedPerWeek * 100}% interest, you now owe ${manager.has.loan.debt}`, type:'report'})
 
     }
     function managerHasNotMadeRepaymentInSpecifiedNumberOfWeeks(): boolean{
@@ -253,7 +261,9 @@ export function doEndOfRoundUpdates(game: Game) {
 
       randomFighter.fighting.stats[randomStat] --
 
-      manager.functions.addToLog({type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat.replace('base', '')} has been reduced by 1`})
+      manager.functions.addToLog({
+        roundNumber,
+        type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat.replace('base', '')} has been reduced by 1`})
 
 
     }

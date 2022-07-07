@@ -1,5 +1,8 @@
 
 Bug:
+  ☐ more obvious to recontract your fighter
+  ☐ must be a memory leak, starts at 780kb, goes to 23mb, after 55days
+  ☐ game.implementation.ts:225,  name: state.playerHasVictory.name, Cannot read property 'name' of null
   ☐ bug: news articles show multiple times
   ☐ if many news articles, they show too quickly
   ☐ reduce height to avoid scroll
@@ -35,6 +38,10 @@ Deal Breakers:
 
 
 Priority:
+  ☐ wealth victory has been disabled, is it better to include it, how should it work exactly
+  ☐ shorten the view to account for the browser space at the top (see if you can capture the actual browser bar height value)
+  ☐ fight view mute button
+  ☐ loan shark removes broke players from the game
   ☐ main event fight, you can vote for 3 people to win
   ☐ explain spirit and stamina mechanic
   ☐ winning main event should give big base amount
@@ -146,6 +153,7 @@ Big wins (to remember my achievements)
 ✔ Got game hosted on heroku @done(21-04-07 12:14)
 ✔ got money and report done @done(21-04-07 12:14)
 ✔ final tournament @done(21-11-20 21:54)
+☐ more time for late game, and more players
 ☐ frontend pol server for disconnected, auto restart, and auto reconnect
 ☐
 

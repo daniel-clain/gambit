@@ -28,8 +28,6 @@ export class SetStateManagerUI {
 
 }
 
-export type SetStateManagerUIFunctionName = 
-'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport' | 'showWinOptions'
 
 
 export interface SetStateManagerUIAction{

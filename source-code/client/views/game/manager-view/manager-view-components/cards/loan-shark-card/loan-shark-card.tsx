@@ -3,20 +3,24 @@ import * as React from 'react';
 import './loan-shark-card.scss'
 import { useState } from 'react';
 import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { Loan } from '../../../../../../../interfaces/front-end-state-interface';
-import { connect } from 'react-redux';
+import { FrontEndState, Loan } from '../../../../../../../interfaces/front-end-state-interface';
+import { connect, ConnectedProps } from 'react-redux';
 import { hot } from 'react-hot-loader/root';
 import { Modal } from '../../partials/modal/modal';
 import gameConfiguration from '../../../../../../../game-settings/game-configuration';
-export interface LoanSharkCardProps{
-  loan: Loan
-  money: number
-}
 
-const {managerMap} = frontEndService
-const mapping = managerMap<LoanSharkCardProps>(({managerInfo:{loan, money}}) => ({loan, money}))
 
-export const LoanSharkCard = connect(mapping)(hot(({loan, money}) => {
+
+const mapStateToProps = ({
+  serverUIState: {serverGameUIState: {
+    playerManagerUIState: {managerInfo: {loan, money}}
+  }}
+}: FrontEndState) => ({loan, money})
+const connector = connect(mapStateToProps)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export const LoanSharkCard = connector(hot(
+  ({loan, money}: PropsFromRedux) => {
   const [state, setState] = useState({
     paybackAmount: undefined,
     borrowAmount: undefined

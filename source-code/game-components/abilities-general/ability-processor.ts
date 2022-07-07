@@ -140,10 +140,14 @@ export class AbilityProcessor{
     const ability: ServerAbility = this.abilities.find(ability => ability.name == abilityData.name)
     this.subtractCost(ability, abilityData)
     console.log();
+    const {roundNumber} = this.game.has.roundController
 
     const manager = this.getAbilitySourceManager(abilityData)
 
-    manager.functions.addToLog({message: `Used ability ${abilityData.name}${abilityData.target ? `, targeting ${abilityData.target.name}` : ''}`})
+    manager.functions.addToLog({
+      message: `Used ability ${abilityData.name}${abilityData.target ? `, targeting ${abilityData.target.name}` : ''}`,
+      roundNumber
+    })
     
     ability.onSelected?.(abilityData, this.game)
 
@@ -177,7 +181,7 @@ export class AbilityProcessor{
 
   private handleOfferContractInstances(offerContractAbility: ServerAbility, offerContractInstances: AbilityData[]){
     const {roundController, fighters, managers} = this.game.has
-    const {jobSeekers} = roundController
+    const {jobSeekers, roundNumber} = roundController
     const offerContractTargets = getOffersArray()
 
   
@@ -208,8 +212,12 @@ export class AbilityProcessor{
         else{        
           const {target} = offerContractInstance
           const manager = this.getAbilitySourceManager(offerContractInstance)
+          const {roundNumber} = this.game.has.roundController
   
-          manager.functions.addToLog({message: `${target.name} (${jobSeeker?.profession ? jobSeeker.profession : jobSeeker.type}) rejected your contract offer because he has accepted the offer of another manager`, type: 'report'})
+          manager.functions.addToLog({
+            roundNumber,
+            message: `${target.name} (${jobSeeker?.profession ? jobSeeker.profession : jobSeeker.type}) rejected your contract offer because he has accepted the offer of another manager`, 
+            type: 'report'})
         }
       })
   
@@ -239,7 +247,10 @@ export class AbilityProcessor{
         const randomThreshold = (random(5) + 5) / 10
         if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold){
           const manager = source.type == 'Manager' ? managers.find(manager => manager.has.name == source.name) : managers.find(manager => manager.has.employees.some(employee => employee.name == source.name))
-          manager.functions.addToLog({message: `Job seeker ${target.name} (${!jobSeeker ? 'Fighter' : jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}) rejected your contract offer because you offered too little`, type: 'report'})
+          manager.functions.addToLog({
+            roundNumber,
+            message: `Job seeker ${target.name} (${!jobSeeker ? 'Fighter' : jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}) rejected your contract offer because you offered too little`, 
+            type: 'report'})
           return
         }
     

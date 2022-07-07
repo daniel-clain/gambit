@@ -1,23 +1,29 @@
 import * as React from "react"
 import { ActivityLogItem } from "../../../../../../../types/game/activity-log-item"
 import { frontEndService } from "../../../../../../front-end-service/front-end-service"
-import { connect } from "react-redux"
+import { connect, ConnectedProps } from "react-redux"
 import { hot } from "react-hot-loader/root"
-import { LogItemTypes } from "../../../../../../../types/game/log-item-type"
-import './report-card.scss'
+import { FrontEndState } from "../../../../../../../interfaces/front-end-state-interface"
 
-const {managerMap, getReportItems} = frontEndService
 
-const map = managerMap<{activityLogs: ActivityLogItem[]}>(({managerInfo: {activityLogs}}) => ({activityLogs}))
-export const ReportCard = connect(map)(hot(({activityLogs, dispatch}) =>   
-  <div className='report-card-modal' onClick={() => dispatch({type: 'closeModal'})}>
+const {getSortedActivityLogs} = frontEndService
+
+
+const mapDispatchToProps = {
+  closeModal: () => ({type: 'closeModal'})
+}
+const connector = connect(null, mapDispatchToProps)
+type PropsFromRedux = ConnectedProps<typeof connector>
+export const ReportCard = connector(hot(
+  ({closeModal}: PropsFromRedux) =>   
+  <div className='report-card-modal' onClick={closeModal}>
     <div className='background'></div>
     <div className="report-card-container">
       <div className="report-card">
         <div className="report-card__content">
           <div className='heading'>Last Week Report</div>
           <div className='list'>
-            {getReportItems().reverse().map((logItem, i) => 
+            {getSortedActivityLogs().map((logItem, i) => 
               <div
                 className={`
                   list__row 
