@@ -30,7 +30,7 @@ export const FighterStates = hot(({ fighterStates }: FighterStatesProps) => {
                 {fighter.fitness ? fighter.fitness.lastKnownValue : 'unknown'}
               </div>
               <div className="fighter-state__stats__fighter-stat fighter-state__stats__agression">
-                <span className="fighter-state__stats__fighter-stat__label">Agression:</span>
+                <span className="fighter-state__stats__fighter-stat__label">Aggression:</span>
                 {fighter.aggression ? fighter.aggression.lastKnownValue : 'unknown'}
               </div>
               <div className="fighter-state__stats__fighter-stat fighter-state__stats__intelligence">

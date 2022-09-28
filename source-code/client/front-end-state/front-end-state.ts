@@ -47,3 +47,5 @@ export const frontEndStore = createStore(frontEndStoreReducer,
   window['__REDUX_DEVTOOLS_EXTENSION__'] && 
   window['__REDUX_DEVTOOLS_EXTENSION__']()
 )
+
+;(window as any).frontEndStore = frontEndStore

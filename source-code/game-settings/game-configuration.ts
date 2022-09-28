@@ -3,11 +3,14 @@ import { VideoName } from "../client/videos/videos"
 const gameConfiguration = {
   freezeFight: false,
   startingRoundNumber: 1,
-  numberOfFighters: 30,
-  numberOfProfessionals: 40,
+  baseFightersCount: 30,
+  baseProfessionalsCount: 40,
+  countPlayerFactor: .2,
   numberOfProfessionalJobSeekersPerRound: 3,
   numberOfFighterJobSeekersPerRound: 2,
-  listOfNames: ['Daniel', 'Tom', 'Alex', 'Angelo', 'Paul', 'Mark', 'Mat', 'Mike', 'Brad', 'Steve', 'James', 'Harry', 'Kevin', 'Stan', 'Dave', 'Chris', 'Sam', 'Bob', 'Fred', 'Frank', 'Jake', 'Alan', 'Ben', 'Chad', 'Denis', 'Eric', 'Greg', 'Lewis', 'Larry', 'Neil', 'Nathan', 'Norbit', 'Phil', 'Ryan', 'Simon', 'Seth', 'Troy', 'Tyler', 'Zach', 'Gavin', 'Robert', 'Tim', 'Tyson', 'Hugh', 'Ronald', 'Spencer', 'Jason', 'Arnold', 'Tod', 'Shawn', 'Liam', 'Will', 'Oliver', 'Ethan', 'John', 'Luke', 'Dylan', 'Anthony', 'Josh', 'Charles', 'Connor', 'Cameron', 'Adam', 'Ian', 'Evan', 'Henry', 'Owen', 'Isaac', 'Jackson', 'Leo', 'Jonathan', 'Declan', 'Vincent', 'Tristan', 'Dom', 'Patrick', 'Arie', 'Adrien', 'Bruce', 'Miles', 'Garrick', 'Barry', 'Jerry', 'George', 'Julian',  'Andy', 'Peter', 'Parth'],
+  listOfNames: [
+    'Daniel', 'Tom', 'Alex', 'Angelo', 'Paul', 'Mark', 'Mat', 'Mike', 'Brad', 'Steve', 'James', 'Harry', 'Kevin', 'Stan', 'Dave', 'Chris', 'Sam', 'Bob', 'Fred', 'Frank', 'Jake', 'Alan', 'Ben', 'Chad', 'Denis', 'Eric', 'Greg', 'Lewis', 'Larry', 'Neil', 'Nathan', 'Norbit', 'Phil', 'Ryan', 'Simon', 'Seth', 'Troy', 'Tyler', 'Zach', 'Gavin', 'Robert', 'Tim', 'Tyson', 'Hugh', 'Ronald', 'Spencer', 'Jason', 'Arnold', 'Tod', 'Shawn', 'Liam', 'Will', 'Oliver', 'Ethan', 'John', 'Luke', 'Dylan', 'Anthony', 'Josh', 'Charles', 'Connor', 'Cameron', 'Adam', 'Ian', 'Evan', 'Henry', 'Owen', 'Isaac', 'Jackson', 'Leo', 'Jonathan', 'Declan', 'Vincent', 'Tristan', 'Dom', 'Patrick', 'Arie', 'Adrien', 'Bruce', 'Miles', 'Garrick', 'Barry', 'Jerry', 'George', 'Julian', 'Andy', 'Peter', 'Drew', 'Craig', 'Angus', 'Boris', 'Jake', 'Raymond', 'Martin', 'Harold', 'Justin', 'Jeff', 'Matthew'
+  ],
   betSizePercentages: {
     small: 10,
     medium: 30,
@@ -49,7 +52,7 @@ const gameConfiguration = {
   },
   fightersAfterRounds:[
     {round: 0, fighters:2},
-    {round: 7, fighters:3},
+    {round: 6, fighters:3},
     {round: 14, fighters:4}
   ],
   videos: <{name: VideoName, videos}[]>[

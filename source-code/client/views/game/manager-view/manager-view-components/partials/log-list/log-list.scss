@@ -1,0 +1,14 @@
+
+.list{
+  &__row{
+
+    &--critical{
+      background-color: #ffdede;
+      color: #ce0000;
+    }
+    &--new-round {
+      border-bottom: 2px black solid;
+      background: rgba(0,0,0,0.1);
+    }
+  }
+}

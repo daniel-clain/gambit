@@ -30,7 +30,7 @@ export const JobSeekersPanel = connector(hot(
           <div 
             className={'list__row'} 
             key={`${jobSeeker.name}${i}`} 
-            onClick={() => {console.log(jobSeeker); jobSeeker.type == 'Fighter' ?
+            onClick={() => {jobSeeker.type == 'Fighter' ?
               showFighter(jobSeeker.name):
               showJobSeeker(jobSeeker)
             }}

@@ -50,7 +50,7 @@ export const Manager_View = connector(hot(
   ({activeModal, round, managerInfo, showLoanShark, showKnownFighters, showOtherManagers, showManager, showReport, showWinOptions, managerOptionsTimeLeft}: PropsFromRedux) => {
 
   useEffect(() => {
-    getSortedActivityLogs().length && showReport()
+    round != 1 && showReport()
   },[round])
 
   useEffect(() => {

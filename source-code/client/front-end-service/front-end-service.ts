@@ -65,7 +65,7 @@ const frontEndService = (() => {
   function getSortedActivityLogs(): ActivityLogItem[]{
     const {activityLogs} = frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
     
-    const sortedLogs = activityLogs.sort((a, b) => {
+    function mainAtTop(a, b){
       const sameRound = a.roundNumber == b.roundNumber
       if(
         a.roundNumber > b.roundNumber || 
@@ -74,7 +74,10 @@ const frontEndService = (() => {
 
       ) return  -1 
       else return 1
-    })
+
+    }
+
+    const sortedLogs = activityLogs.sort((a, b) => b.roundNumber - a.roundNumber)
     return sortedLogs
   }
 

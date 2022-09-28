@@ -1,5 +1,7 @@
 
 Bug:
+  ☐ fighter and pro pool relative to player count
+  ☐ loadshark debt warning logs, pay 50 reset weeks, bug
   ☐ more obvious to recontract your fighter
   ☐ must be a memory leak, starts at 780kb, goes to 23mb, after 55days
   ☐ game.implementation.ts:225,  name: state.playerHasVictory.name, Cannot read property 'name' of null

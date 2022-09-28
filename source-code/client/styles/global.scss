@@ -17,6 +17,7 @@ body{
 }
 #react-rendering-div{
   height: 100vh;
+  max-height: -webkit-fill-available;
 }
 
 *{  
@@ -30,11 +31,11 @@ body{
   max-height: 850px;
   background-color: #03263b;
   
-  @media (max-width: $layoutChangeBreakpoint - 1){
+  @media (max-width: '#{$layoutChangeBreakpoint - 1}px'){
     min-width: 320px;
   }
 
-  @media (min-width: $layoutChangeBreakpoint){
+  @media (min-width: '#{$layoutChangeBreakpoint}px'){
     margin: 0 auto;
   
   }
@@ -45,7 +46,7 @@ body{
 .direction-box{
   display: flex;
   flex-direction: column;
-  @media (max-width: $layoutChangeBreakpoint - 1){
+  @media (max-width: '#{$layoutChangeBreakpoint - 1}px'){
     flex-direction: column;
   }
   @media (min-width: $layoutChangeBreakpoint){

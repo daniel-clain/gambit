@@ -9,22 +9,23 @@ import { Manager } from "./manager";
 import { VideoName } from "../client/videos/videos";
 
 export class Game_Implementation{
-  shuffledNames 
+  shuffledNames: string[]
 
   constructor(public game: Game){}
 
   setupFightersAndProfessionals(){
     this.shuffledNames = shuffle([...gameConfiguration.listOfNames.filter(name => !this.game.has.players.some(p => p.name == name))])
     
-    this.game.has.fighters = this.createRandomFighters()
     this.game.has.professionals = this.createRandomProfessionals()
+    this.game.has.fighters = this.createRandomFighters()
   }
 
 
   createRandomFighters(): Fighter[]{
-    const amount: number = gameConfiguration.numberOfFighters
+    const {baseFightersCount} = gameConfiguration
+
     const newFighters: Fighter[] = []
-    for(;newFighters.length < amount;){
+    for(;newFighters.length < baseFightersCount;){
       const newFighter = new Fighter(this.shuffledNames.pop())
       newFighter.fighting.stats.baseStrength = random(5, true)
       newFighter.fighting.stats.baseFitness = random(5, true)
@@ -35,6 +36,7 @@ export class Game_Implementation{
       newFighters.push(newFighter)
       
     }
+    console.log('newFighters :>> ', newFighters.length);
 
     generateFighterHistory()
     return newFighters
@@ -103,11 +105,26 @@ export class Game_Implementation{
   createRandomProfessionals(): Professional[]{
     
     
-    const {numberOfProfessionals} = gameConfiguration
-    const professionals: Professional[] = []
+    const numberOfProfessionals = gameConfiguration.baseProfessionalsCount
+
+    const professionals: Professional[] = (
+      Object.keys(gameConfiguration.professionalTypeProbability)
+      .map(key => 
+        new Professional(
+          (key as Profession), 
+          <SkillLevel>random(3, true), 
+          this.shuffledNames.pop()
+        )
+      )
+    )
+      
+    
     for(;professionals.length < numberOfProfessionals;){
       professionals.push(getRandomProfessional(this.shuffledNames))
     }
+
+    console.log('professionals Lawyer :>> ', professionals.filter(p => p.profession == 'Lawyer').length);
+    console.log('professionals Hitman :>> ', professionals.filter(p => p.profession == 'Hitman').length);
     return professionals
 
     

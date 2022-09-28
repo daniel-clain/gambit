@@ -152,22 +152,21 @@ export function doEndOfRoundUpdates(game: Game) {
 
   function updateEmployeeAndFighterWeeksLeft(manager: Manager){
     const {fighters, employees} = manager.has
-    fighters.forEach(fighter => {
-      fighter.state.activeContract.weeksRemaining --
-      if(fighter.state.activeContract.weeksRemaining == 0){
-        fighter.determineGoalContract()
-        console.log(`no weeks left fighter ${fighter.name}. goal contract:`, fighter.state.goalContract);
-        manager.functions.addToLog({
-          roundNumber,
-          message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
-      }
-    })
     employees.forEach(employee => {
       employee.activeContract.weeksRemaining --
       if(employee.activeContract.weeksRemaining == 0)
         manager.functions.addToLog({
           roundNumber,
-          message: `Your employee ${employee.name}'s contract expires after this round`})
+          message: `Your employee ${employee.profession} ${employee.name}'s contract expires after this round`})
+    })
+    fighters.forEach(fighter => {
+      fighter.state.activeContract.weeksRemaining --
+      if(fighter.state.activeContract.weeksRemaining == 0){
+        fighter.determineGoalContract()
+        manager.functions.addToLog({
+          roundNumber,
+          message: `Your fighter ${fighter.name}'s contract expires after this round. You must recontract him if you want him to stay`, type: 'critical'})
+      }
     })
   }
 
@@ -252,12 +251,14 @@ export function doEndOfRoundUpdates(game: Game) {
       let randomStat
       let failSafeTries = 0
       while(!randomStat || randomFighter.fighting.stats[randomStat] == 0){
-        const stats = ['baseStrength', 'baseFitness', 'baseIntelligence', 'baseAgression']
+        const stats = ['baseStrength', 'baseFitness', 'baseIntelligence']
         randomStat = stats[random(3)]
         failSafeTries ++
         if(failSafeTries == 10)
           return        
       }
+
+      randomFighter.state.injured = true
 
       randomFighter.fighting.stats[randomStat] --
 

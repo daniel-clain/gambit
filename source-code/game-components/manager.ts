@@ -113,14 +113,15 @@ class ManagerHas{
 
 
 class ManagerFunctions{
+  logCount = 0
 
   constructor(private manager: Manager, private game: Game){}
 
-  addToLog(activityLogItem: ActivityLogItem): void{
-    
+  addToLog(activityLogItem: Omit<ActivityLogItem, 'id'>): void{
+    this.logCount ++
     const {has} = this.manager
     has.logColorNumber >= 345 ? has.logColorNumber = 0 : has.logColorNumber += 10
-    this.manager.has.activityLogs.push({...activityLogItem, color1: `hsl(${has.logColorNumber}deg 50% 50% / 80%)`, color2: `hsl(${has.logColorNumber - 10}deg 50% 50% / 80%)`})
+    this.manager.has.activityLogs.unshift({...activityLogItem, color1: `hsl(${has.logColorNumber}deg 50% 50%)`, color2: `hsl(${has.logColorNumber - 10}deg 50% 50%)`, id: this.logCount})
     
   }
 

@@ -26,7 +26,9 @@ export const YourFightersPanel = connector(hot(({fighters, showFighter}: PropsFr
       <div className='list fighter-list'>
         {fighters.map(fighter =>
           <div 
-            className={'list__row'} 
+            className={`
+            list__row
+            `} 
             key={fighter.name} 
             onClick={() => showFighter(fighter.name)}
           >
