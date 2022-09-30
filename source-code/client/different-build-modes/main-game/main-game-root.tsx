@@ -6,8 +6,10 @@ import { Provider } from 'react-redux'
 import { frontEndService } from '../../front-end-service/front-end-service';
 import { MainGame } from './main-game';
 
+console.log('Start');
 frontEndService.setConnectionType('Websockets')
 const reactRenderingTag = document.createElement('react')
+console.log('Adding game to DOM');
 document.body.appendChild(reactRenderingTag)
 render(
   <Provider store={frontEndService.frontEndStore}>

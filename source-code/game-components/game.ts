@@ -4,7 +4,7 @@ import { Player } from "./player"
 import { GameType } from "../types/game/game-type"
 import ConnectionManager from "./connection-manager"
 import {AbilityProcessor} from './abilities-general/ability-processor'
-import { Game_Implementation } from "./game.implementation"
+import { Game_Implementation } from "./game-setup"
 import { RoundController } from './round-controller/round-controller'
 import { GameInfo } from '../interfaces/game/game-info'
 import { Manager } from './manager'
@@ -191,7 +191,7 @@ class GameFunctions{
   
   getGameUiState(manager?: Manager): ServerGameUIState{
     let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
-    const {has:{fighters}, state:{finalTournament}} = this.game
+    const {has:{fighters, managers}, state:{finalTournament}} = this.game
     let {delayedExecutionAbilities} = this.game.has.abilityProcessor
 
     const serverGameUIState: ServerGameUIState = {
@@ -212,7 +212,9 @@ class GameFunctions{
         managerOptionsTimeLeft: timeLeft,
         jobSeekers,
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
-        delayedExecutionAbilities
+        delayedExecutionAbilities,
+        otherPlayersReady: managers.filter(m => m.has.name !== manager.has.name).map(m => !!m.state.readyForNextFight),
+        thisManagerReady: manager.state.readyForNextFight
       },
       selectedVideo: this.game.state.isShowingVideo, 
       enoughFightersForFinalTournament: fighters.filter(f => f.state.manager).length >= 8,

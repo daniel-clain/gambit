@@ -11,6 +11,7 @@ export default class FighterState{
   injured: boolean = false
   hallucinating: boolean = false
   sick: boolean = false
+  takingADive: boolean = false
   dead: boolean = false
   activeContract?: ActiveContract
   goalContract?: GoalContract

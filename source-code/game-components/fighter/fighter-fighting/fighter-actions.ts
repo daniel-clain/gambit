@@ -136,7 +136,7 @@ export default class FighterActions {
     const {animation, fighter, stats} = this.fighting
     return animation.start({
       name: 'recovering',
-      duration: 2500 - stats.fitness * 50,
+      duration: 2500 - stats.fitness * 150,
       model: 'Recovering',
     })
     .then(() => {      

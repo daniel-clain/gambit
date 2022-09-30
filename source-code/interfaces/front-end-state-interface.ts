@@ -134,6 +134,7 @@ export interface FighterStateData{
   hallucinating: boolean
   injured: boolean
   doping: boolean
+  takingADive: boolean
   strength: KnownFighterStat
   intelligence: KnownFighterStat
   fitness: KnownFighterStat
@@ -261,6 +262,8 @@ export interface ManagerUIState{
   nextFightFighters: string[]
   delayedExecutionAbilities: AbilityData[]
   round: number
+  otherPlayersReady: boolean[]
+  thisManagerReady: boolean
 }
 
 

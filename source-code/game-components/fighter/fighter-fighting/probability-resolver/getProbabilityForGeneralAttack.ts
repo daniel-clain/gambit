@@ -17,8 +17,8 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
     closestEnemy.fighting.animation.inProgress == 'recovering' ||
     closestEnemy.fighting.animation.inProgress == 'doing cooldown'
   ){
-    probability += intelligence * 2
-    probability += aggression * 2
+    probability += intelligence * 3
+    probability += aggression
   }
   
   if(closestEnemy.fighting.animation.inProgress == 'defending')
@@ -32,13 +32,15 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
 
     
   if (!logistics.hadActionRecently)
-    probability += 5 + aggression
+    probability += 5 + aggression * 2
 
   if (logistics.hasFullStamina())
     probability += intelligence * 2
 
-  if (logistics.justBlocked || logistics.justDodged)
-    probability += intelligence * 2
+  if (logistics.justBlocked || logistics.justDodged){
+    probability += intelligence * 3
+    probability += aggression
+  }
   else if(!proximity.trapped)
     probability -= intelligence * 2
     
@@ -58,14 +60,14 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
       probability -= intelligence
 
     if (logistics.hasLowStamina())
-      probability -= intelligence * 3
+      probability -= intelligence * 4
 
     if (logistics.hasLowSpirit())
       probability -= intelligence * 3
   }
 
   if (isEnemyFacingAway(closestEnemy, fighter))
-    probability += intelligence * 4
+    probability += intelligence * 5
 
   return probability
   

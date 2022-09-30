@@ -61,11 +61,12 @@ export const ConfigureTestFighters = ({onFightersUpdated}) => {
   }
 
   return <>
-    <div className={`fighter-stats-drawer ${configOpen ? 'is-open' : ''}`} onClick={({currentTarget:{classList}}) => {
-      if(classList.contains('fighter-stats-drawer'))
-      setConfigOpen(false)
-    }}>
-      <div className="open-close-tag" onClick={(e) => (e.stopPropagation(), setConfigOpen(true))}>Open config</div>
+    <div className={`fighter-stats-drawer ${configOpen ? 'is-open' : ''}`} >
+      <div className="open-close-tag" onClick={(e) => {
+        e.stopPropagation() 
+        e.preventDefault()
+        setConfigOpen(!configOpen)
+      }}>{configOpen ? 'Close' : 'Open'} config</div>
       {fighterItem()}
       {fighters.map(fighterItem)}
     </div>

@@ -9,7 +9,7 @@ env.config()
 const PORT = process.env.PORT || 9999;
 const app = express();
 const httpServer = http.createServer(app)
-const environment = process.env.NODE_ENV.trim()
+const environment = process.env.NODE_ENV!.trim()
 
 let webSocketServer = 
   environment == 'development' ? 

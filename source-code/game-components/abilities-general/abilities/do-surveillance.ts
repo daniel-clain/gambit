@@ -44,7 +44,11 @@ export const doSurveillanceClient: ClientAbility = {
   longDescription: 'Find out what is happening with target manager or fighter. If the manager does anything or if anything happens to the fighter while they are being watched, the private agent will collect evidence.',
   ...doSurveillance
 }
+
+
 type HandleSurveillanceProps = {surveilledManager?: Manager, surveilledFighter?: Fighter, abilityData: AbilityData, game: Game}
+
+
 export const handleUnderSurveillance = ({surveilledManager, surveilledFighter, abilityData, game}: HandleSurveillanceProps) => {
   const {source, name, target} = abilityData
   const {roundNumber} = game.has.roundController

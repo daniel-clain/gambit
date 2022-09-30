@@ -16,7 +16,9 @@ export interface HeadbarProps{
   money: number
   managerOptionsTimeLeft: number
   nextFightBet: Bet
-  disconnectedPlayerVotes: DisconnectedPlayerVote[]
+  disconnectedPlayerVotes: DisconnectedPlayerVote[] 
+  otherPlayersReady
+  thisManagerReady
 }
 
 const Headbar = ({
@@ -24,7 +26,9 @@ const Headbar = ({
   money,
   managerOptionsTimeLeft,
   nextFightBet,
-  disconnectedPlayerVotes
+  disconnectedPlayerVotes,
+  otherPlayersReady,
+  thisManagerReady
 }: HeadbarProps) => {
 
   let {sendUpdate} = frontEndService 
@@ -59,6 +63,12 @@ const Headbar = ({
       <div className='headbar__left'>
         <div>Time left: {timeLeft}</div>
       </div>
+      {otherPlayersReady?.map(ready => 
+        <div className={`
+          player-ready
+          player-ready${ready ? '--true' : '--false'}
+        `}></div>
+      )}
       <div className='headbar__right'>
 
 
@@ -66,6 +76,7 @@ const Headbar = ({
           <input 
             type='checkbox' 
             onChange={sendUpdate.toggleReady} 
+            defaultChecked={thisManagerReady}
           />          
         </span>
 
@@ -80,7 +91,7 @@ const Headbar = ({
 const mapStateToProps = ({
   serverUIState: {serverGameUIState: {disconnectedPlayerVotes, playerManagerUIState: {
     managerOptionsTimeLeft,
-    managerInfo: {actionPoints, money, nextFightBet}
+    managerInfo: {actionPoints, money, nextFightBet}, otherPlayersReady, thisManagerReady
   }}}
 }: FrontEndState) : HeadbarProps => {
   return {
@@ -88,7 +99,9 @@ const mapStateToProps = ({
     managerOptionsTimeLeft,
     money,
     nextFightBet,
-    actionPoints
+    actionPoints, 
+    otherPlayersReady,
+    thisManagerReady
   } 
 }
 

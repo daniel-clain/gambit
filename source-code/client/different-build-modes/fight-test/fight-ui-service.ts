@@ -15,19 +15,22 @@ const fighters = [
 	new Fighter('Kevin'),
 	new Fighter('Joe'),
 	new Fighter('Steve'),
-	new Fighter('Dave'),
 	new Fighter('Fast'),
-	new Fighter('Intelligent'),
-	new Fighter('Aggressive'),
-	new Fighter('Strong'),
-	new Fighter('Fit'),
 	new Fighter('Average'),
 	new Fighter('Stupid'),
 	new Fighter('Passive'),
 	new Fighter('Hyper'),
 	new Fighter('Tough'),
 
-	//new Fighter('Superman')
+	new Fighter('Intelligent'),
+	new Fighter('Fit'),
+	new Fighter('Strong'),
+	new Fighter('Aggressive')
+	/* new Fighter('Dave'),
+	new Fighter('test1'),
+	new Fighter('test2')
+	new Fighter('Superman')
+	*/
 ]
 
 
@@ -139,6 +142,18 @@ f('Hyper').state.injured = true
  */
 
 
+s(f('test1'),{
+	baseStrength: 0,
+	baseFitness: 10,
+	baseIntelligence: 10,
+	baseAggression: 0
+})
+s(f('test2'),{
+	baseStrength: 0,
+	baseFitness: 10,
+	baseIntelligence: 10,
+	baseAggression: 0
+})
 
 
 

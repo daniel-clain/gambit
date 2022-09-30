@@ -104,7 +104,7 @@ class ManagerHas{
   otherManagers: KnownManager[] = []
   knownFighters: FighterInfo[] = []
   activityLogs: ActivityLogItem[] = []
-  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract', 'Domination Victory', 'Sinister Victory', 'Wealth Victory']
+  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract', 'Domination Victory', 'Sinister Victory', 'Wealth Victory', 'Take A Dive']
   postFightReportItems: PostFightReportItem[] = []
   evidence: Evidence[] = []
 
@@ -183,7 +183,7 @@ class ManagerFunctions{
 
   getKnownFighterStats(nextFightFighters: Fighter[]){
     return nextFightFighters.map(fighter => {
-      const {sick, injured, doping, hallucinating} = fighter.state
+      const {sick, injured, doping, hallucinating, takingADive} = fighter.state
       const foundFighter = [
         ...this.manager.has.knownFighters,
         ...this.manager.has.fighters.map(f => f.getInfo()),
@@ -191,9 +191,9 @@ class ManagerFunctions{
       if(foundFighter){
         const {activeContract, goalContract, name, ...knownFighterStats} = foundFighter
 
-        return {name, sick, hallucinating, injured, doping, ...knownFighterStats}
+        return {name, sick, hallucinating, injured, doping, takingADive, ...knownFighterStats}
       }
-      return {name: fighter.name, sick, injured, hallucinating, doping, fitness: undefined, strength: undefined, aggression: undefined, intelligence: undefined, numberOfFights: undefined, manager: undefined, numberOfWins: undefined}
+      return {name: fighter.name, sick, injured, hallucinating, doping, fitness: undefined, strength: undefined, aggression: undefined, intelligence: undefined, numberOfFights: undefined, manager: undefined, numberOfWins: undefined, takingADive: undefined}
 
     })
   }

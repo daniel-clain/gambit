@@ -115,7 +115,10 @@ export const AbilityCard = connector(hot(({
     })
   }
 
-  const noNeedForSourceSelect: boolean = possibleSources.length == 1 && possibleSources[0] == 'Manager'
+  const noNeedForSourceSelect: boolean = (
+    !(possibleSources?.length) ||
+    possibleSources.length == 1 && possibleSources[0] == 'Manager'
+  )
 
   const noNeedForTargetSelect: boolean = !validTargetIf.length
 

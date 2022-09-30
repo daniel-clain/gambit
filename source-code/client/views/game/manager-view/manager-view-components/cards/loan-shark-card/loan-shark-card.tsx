@@ -26,6 +26,8 @@ export const LoanSharkCard = connector(hot(
     borrowAmount: undefined
   })
 
+  console.log(loan)
+
   const {sendUpdate} = frontEndService 
 
   const {borrowAmount, paybackAmount} = state
@@ -49,10 +51,11 @@ export const LoanSharkCard = connector(hot(
           <div className='loan-shark-card__debt'>
             Your Debt is: {loan.debt}
           </div>
-          {loan.weeksOverdue > 0 && 
+          {loan.weeksOverdue > 0 && loan.amountPaidBackThisWeek < 50 ?
             <div className='loan-shark-card__debt'>
               You are <strong>{loan.weeksOverdue}</strong> week{loan.weeksOverdue > 1 && 's'} overdue!
             </div>
+            : ''
           }
         </>: ''}
         

@@ -1,6 +1,6 @@
 import { Employee, FightUIState, GameFinishedData, Professional, SelectedVideo } from "../interfaces/front-end-state-interface";
 import gameConfiguration from "../game-settings/game-configuration";
-import { random, shuffle } from "../helper-functions/helper-functions";
+import { numberLoop, random, shuffle } from "../helper-functions/helper-functions";
 import { Profession } from "../types/game/profession";
 import SkillLevel from "../types/game/skill-level.type";
 import Fighter from "./fighter/fighter";
@@ -107,50 +107,69 @@ export class Game_Implementation{
     
     const numberOfProfessionals = gameConfiguration.baseProfessionalsCount
 
+    const {shuffledNames} = this
+
     const professionals: Professional[] = (
       Object.keys(gameConfiguration.professionalTypeProbability)
-      .map(key => 
-        new Professional(
-          (key as Profession), 
-          <SkillLevel>random(3, true), 
-          this.shuffledNames.pop()
-        )
-      )
+      .reduce((professionals, profession: Profession): Professional[] => {
+        console.log('profession :>> ', profession);
+        const {minimum} = gameConfiguration.professionalTypeProbability[profession]
+        console.log('minimum :>> ', minimum);
+        return [
+          ...professionals, 
+          ...numberLoop(minimum, () => 
+            new Professional(
+              profession, 
+              <SkillLevel>random(3, true), 
+              this.shuffledNames.pop()
+            )
+          )
+        ]
+      }, [])
     )
       
     
     for(;professionals.length < numberOfProfessionals;){
-      professionals.push(getRandomProfessional(this.shuffledNames))
+      professionals.push(getRandomProfessional())
     }
 
     console.log('professionals Lawyer :>> ', professionals.filter(p => p.profession == 'Lawyer').length);
     console.log('professionals Hitman :>> ', professionals.filter(p => p.profession == 'Hitman').length);
+    console.log('professionals Thug :>> ', professionals.filter(p => p.profession == 'Thug').length);
+    console.log('professionals Talent :>> ', professionals.filter(p => p.profession == 'Talent Scout').length);
     return professionals
 
     
-    function getRandomProfessional(shuffledNames): Professional {
-      const randomProfession: Profession = getRandomProfession()
+    function getRandomProfessional(): Professional {
       
-      return new Professional(randomProfession, <SkillLevel>random(3, true), shuffledNames.pop())
+      return createProfessional(getRandomProfession())
       
       function getRandomProfession(): Profession {
         let totalProbability = 0
         
         for( let profession in gameConfiguration.professionalTypeProbability){
-          totalProbability += gameConfiguration.professionalTypeProbability[profession]
+          totalProbability += gameConfiguration.professionalTypeProbability[profession].probability
         }
         const randomNumber = random(totalProbability, true)
+        console.log('randomNumber :>> ', randomNumber);
         let probabilityRange = 0
         for ( let profession in gameConfiguration.professionalTypeProbability) {
           if (
             randomNumber > probabilityRange &&
-            randomNumber <= probabilityRange + gameConfiguration.professionalTypeProbability[profession]
-          )
+            randomNumber <= probabilityRange + gameConfiguration.professionalTypeProbability[profession].probability
+          ){
+            console.log('professionxx :>> ', profession);
             return profession as Profession
+          }
           else
-            probabilityRange += gameConfiguration.professionalTypeProbability[profession]
+            probabilityRange += gameConfiguration.professionalTypeProbability[profession].probability
         }
       }
+    }
+
+    function createProfessional(profession: Profession){
+      return new Professional(profession, <SkillLevel>random(3, true), shuffledNames.pop())
+
     }
   }
 

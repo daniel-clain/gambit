@@ -25,8 +25,8 @@ const gameConfiguration = {
   },
   loanSharkSettings: {
     minimumAmountToPayBackEachWeek: 50,
-    interestAddedPerWeek: .05,
-    weeksOfNoPaybackUntilRespond: 3
+    interestAddedPerWeek: .1,
+    weeksOfNoPaybackUntilRespond: 2
   },
   stageDurations: {
     managerOptions: 180,
@@ -41,14 +41,46 @@ const gameConfiguration = {
     startingMoney: 750
   },
   professionalTypeProbability: {    
-    "Lawyer": 1,
-    "Thug": 4,
-    "Drug Dealer": 2,
-    "Talent Scout": 5,
-    "Private Agent": 2,
-    "Hitman": 1,
-    "Promoter": 3,
-    "Trainer": 4
+    "Lawyer": {
+      minimum: 2,
+      maximum: 5,
+      probability: 1
+    },
+    "Thug": {
+      minimum: 5,
+      maximum: 9,
+      probability: 4
+    },
+    "Drug Dealer": {
+      minimum: 4,
+      maximum: 7,
+      probability: 2
+    },
+    "Talent Scout": {
+      minimum: 6,
+      maximum: 9,
+      probability: 5
+    },
+    "Private Agent": {
+      minimum: 2,
+      maximum: 7,
+      probability: 2
+    },
+    "Hitman": {
+      minimum: 2,
+      maximum: 5,
+      probability: 1
+    },
+    "Promoter": {
+      minimum: 3,
+      maximum: 6,
+      probability: 3
+    },
+    "Trainer": {
+      minimum: 4,
+      maximum: 7,
+      probability: 4
+    },
   },
   fightersAfterRounds:[
     {round: 0, fighters:2},

@@ -221,7 +221,7 @@ export function doEndOfRoundUpdates(game: Game) {
     function sendWarning(){
       manager.functions.addToLog({
         roundNumber,
-        type: 'critical', message: `you have not a repayment in ${manager.has.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
+        type: 'critical', message: `You have not made a repayment in ${manager.has.loan.weeksOverdue} weeks, the loan shark is becoming impatient`})
     }
     function dayBeforeOverdue(): boolean{
       return manager.has.loan.weeksOverdue == weeksOfNoPaybackUntilRespond - 1
@@ -250,7 +250,8 @@ export function doEndOfRoundUpdates(game: Game) {
 
       let randomStat
       let failSafeTries = 0
-      while(!randomStat || randomFighter.fighting.stats[randomStat] == 0){
+      const decrement = 2
+      while(!randomStat || randomFighter.fighting.stats[randomStat] < decrement){
         const stats = ['baseStrength', 'baseFitness', 'baseIntelligence']
         randomStat = stats[random(3)]
         failSafeTries ++
@@ -260,11 +261,11 @@ export function doEndOfRoundUpdates(game: Game) {
 
       randomFighter.state.injured = true
 
-      randomFighter.fighting.stats[randomStat] --
+      randomFighter.fighting.stats[randomStat] -= decrement
 
       manager.functions.addToLog({
         roundNumber,
-        type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat.replace('base', '')} has been reduced by 1`})
+        type: 'critical', message: `The loan shark is mad that you didn't pay him back, so he has abducted ${randomFighter.name} and tortured him, his ${randomStat.replace('base', '')} has been reduced by ${decrement}`})
 
 
     }

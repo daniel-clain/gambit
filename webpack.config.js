@@ -124,10 +124,7 @@ module.exports = ({remote}, {mode, configName}) => {
       mode: 'development',
       devtool: 'eval-source-map',
       devServer: { 
-        liveReload: true,
         port: port,
-        hot: true,
-        open: true,
         proxy: {
           '/api': {
             target: 'ws://localhost:6969',

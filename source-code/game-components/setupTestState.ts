@@ -16,7 +16,6 @@ export const setupTestState = (game: Game) => {
   //longManagerOptions()
   //setup1()
   //testFighterStats()
-  //managerHasFighters()
   //managerHasLoan()
 
 
@@ -33,23 +32,6 @@ export const setupTestState = (game: Game) => {
 
   }
 
-  function managerHasFighters(){
-    const manager = game.has.managers[0]
-    const fighter: Fighter = game.has.fighters[0]
-    const fighter2: Fighter = game.has.fighters[1]
-    const fighter3: Fighter = game.has.fighters[2]
-    fighter.state.activeContract = {weeklyCost: 10, weeksRemaining: 10}
-    fighter2.state.activeContract = {weeklyCost: 10, weeksRemaining: 10}
-    fighter3.state.activeContract = {weeklyCost: 10, weeksRemaining: 10}
-    fighter.state.publicityRating = 10
-    fighter2.state.publicityRating = 10
-    fighter3.state.publicityRating = 10
-    fighter.state.manager = manager
-    fighter2.state.manager = manager
-    fighter3.state.manager = manager
-    manager.has.fighters.push(fighter,fighter2,fighter3)
-
-  }
   
 
   function skipFight(){
@@ -102,15 +84,24 @@ export const setupTestState = (game: Game) => {
 }
 
 export const postStartTestState = (game: Game) => {
-  //setup2()
   //testMainEvent()
   //testContractEnding()
   //quickSinisterVictory()
   //lotsOfMoney()
   //testFighterJobSeeker()
+  managerHasFighters()
 
   //finalTournamentTest()
 
+  //addPrivateAgent()
+
+
+  function addPrivateAgent(){
+
+    game.has.managers[0].has.employees.push(new Employee('Private Agent', 3))
+    
+
+  }
 
   function testFighterJobSeeker(){
     console.log('ding');
@@ -148,6 +139,29 @@ export const postStartTestState = (game: Game) => {
 
   }
 
+
+  function managerHasFighters(){
+    
+    const manager1 = game.has.managers[0]
+
+    const testFighters = game.has.fighters.slice(0, 3)
+
+    manager1.has.fighters.push(...testFighters)
+    game.has.roundController.activeFight.fighters.push(...testFighters)
+
+    testFighters.forEach(f => {
+      f.state.manager = manager1
+      f.state.activeContract = {
+        weeklyCost: 0,
+        weeksRemaining: 10
+      }
+      f.state.publicityRating = 10
+      f.state.fight = game.has.roundController.activeFight
+    })
+
+
+  }
+
   function lotsOfMoney(){
     const manager = game.has.managers[0]
     manager.has.money = 100000
@@ -163,13 +177,6 @@ export const postStartTestState = (game: Game) => {
     manager1?.has.employees.push(hitman, thug)
   }
   
-  function setup2(){
-    const manager1 = game.has.managers[0]
-    const fighter: Fighter = game.has.fighters[0]
-    fighter.state.manager = manager1
-    manager1.has.fighters.push(fighter)
-    game.has.roundController.activeFight.fighters.push(fighter)
-  }
 
   function testMainEvent(){
     game.has.roundController.roundNumber = 20

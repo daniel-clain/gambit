@@ -18,6 +18,7 @@ import { investigateManagerClient } from "../../game-components/abilities-genera
 import { dominationVictoryClient } from "../../game-components/abilities-general/abilities/domination-victory"
 import { sinisterVictoryClient } from "../../game-components/abilities-general/abilities/sinister-victory"
 import { wealthVictoryClient } from "../../game-components/abilities-general/abilities/wealth-victory"
+import { takeADiveClient } from "../../game-components/abilities-general/abilities/take-a-dive"
 
 export const abilityService = (() => ({
   abilities: <ClientAbility[]>[
@@ -36,7 +37,8 @@ export const abilityService = (() => ({
     investigateManagerClient,
     dominationVictoryClient, 
     sinisterVictoryClient, 
-    wealthVictoryClient
+    wealthVictoryClient,
+    takeADiveClient
   ],
 
   getTryToWinAbilities(){
@@ -53,6 +55,7 @@ export const abilityService = (() => ({
       ...managerInfo.employees
         .filter(employee =>
           employee.abilities.includes(ability.name) &&
+          ability.possibleSources.includes(employee.profession) &&
           employee.actionPoints >= ability.cost.actionPoints
         )
         .map(({ name, profession }: Employee): AbilitySourceInfo => ({
@@ -77,6 +80,8 @@ export const abilityService = (() => ({
     const employeeThatCanDoAbility = managerInfo.employees.find(employee => employee.abilities.includes(clientAbility.name) && employee.actionPoints >= clientAbility.cost.actionPoints)
     let managerSource
     let employeeSource
+
+    if(!(clientAbility.possibleSources?.length)) return undefined
 
     if (
       managerInfo.abilities.includes(clientAbility.name) &&
@@ -106,25 +111,31 @@ export const abilityService = (() => ({
 
     const clientAbility: ClientAbility = this.abilities.find(ability => ability.name == abilityData.name)
 
+    // ability already used
     if(clientAbility.canOnlyBeUsedOnce && delayedExecutionAbilities.some(a => a.name == clientAbility.name))
       return false
 
-
+    // can afford money
     if (!this.canAffordAbility(clientAbility, managerInfo.money))
       return false
 
-    const possibleSources: AbilitySourceInfo[] = this.getPossibleSources(clientAbility, managerInfo)
 
+    // active at round number
     if(clientAbility?.notActiveUntilRound > currentRound){
       return false
     }
 
+    // need fighters for domination victory
     if(clientAbility.name == 'Domination Victory' && !enoughFightersForFinalTournament){
       return false
     }
 
-    if (possibleSources.length == 0)
-      return false
+    // has a source
+    if(clientAbility.possibleSources?.length){
+      const possibleSources: AbilitySourceInfo[] = this.getPossibleSources(clientAbility, managerInfo)
+      if (possibleSources.length == 0)
+        return false
+    }
 
     const hasDrugDealer = managerInfo.employees.some(employee => employee.profession == 'Drug Dealer')
     if(
@@ -174,7 +185,7 @@ export const abilityService = (() => ({
 
   validateAbilityConfirm(clientAbility: ClientAbility, managerInfo: ManagerInfo, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], currentRound: number, enoughFightersForFinalTournament: boolean) {
 
-    if (!abilityData.source)
+    if (clientAbility.possibleSources?.length && !abilityData.source)
       throw (`${clientAbility.name} requires a source`)
 
     
@@ -195,14 +206,16 @@ export const abilityService = (() => ({
       throw (`manager does not have enough money to pay for ${clientAbility.name}`)
 
     
-    let sourceActionPoints: number
-    if (abilityData.source.type == 'Manager')
-      sourceActionPoints = managerInfo.actionPoints
-    else
-      sourceActionPoints = managerInfo.employees.find(employee => employee.name == abilityData.source.name).actionPoints
+    if(abilityData.source){
+      let sourceActionPoints: number
+      if (abilityData.source.type == 'Manager')
+        sourceActionPoints = managerInfo.actionPoints
+      else
+        sourceActionPoints = managerInfo.employees.find(employee => employee.name == abilityData.source.name).actionPoints
 
-    if (sourceActionPoints < clientAbility.cost.actionPoints)
-      throw (`${abilityData.source.type} ${abilityData.source.name} does not have enough action points for ${clientAbility.name}`)
+      if (sourceActionPoints < clientAbility.cost.actionPoints)
+        throw (`${abilityData.source.type} ${abilityData.source.name} does not have enough action points for ${clientAbility.name}`)
+    }
 
     
     if (prosecuteManagerHasNoEvidence())
@@ -225,16 +238,22 @@ export const abilityService = (() => ({
     }
 
   },
+
   getAbilitiesFighterCanBeTheTargetOf(fighterOwnedByManager: boolean, fighterInNextFight: boolean): ClientAbility[] {
     return this.abilities.filter((ability: ClientAbility) => {
       if(ability.disabled) return false
-      if(
-        ability.notValidTargetIf?.includes('fighter')  
-      ) return false
-      if(
-        fighterOwnedByManager &&
-        ability.notValidTargetIf?.includes('fighter owned by manager')  
-      ) return false
+      if(ability.notValidTargetIf?.length){
+        if(
+          ability.notValidTargetIf.includes('fighter')  
+        ) return false
+        if(
+          ability.notValidTargetIf.includes('fighter')  
+        ) return false
+        if(
+          !fighterOwnedByManager &&
+          ability.notValidTargetIf.includes('fighter not owned by manager')  
+        ) return false
+      }
 
       if(!ability.validTargetIf.length) return true
       if(

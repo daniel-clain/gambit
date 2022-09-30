@@ -51,6 +51,7 @@ export const FighterStates = hot(({ fighterStates }: FighterStatesProps) => {
             {fighter.hallucinating || fighter.sick && <div className="fighter-state__state__poisoned-icon"></div>}
             {fighter.injured && <div className="fighter-state__state__injured-icon"></div>}
             {fighter.doping && <div className="fighter-state__state__doped-icon"></div>}
+            {fighter.takingADive && <div className="fighter-state__state__dive-icon"></div>}
           </div>
         </div>
       )}

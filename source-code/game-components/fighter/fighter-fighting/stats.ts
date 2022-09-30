@@ -46,23 +46,26 @@ export default class FighterStats {
   }
 
   get aggression(){
-    const {sick, injured, hallucinating, doping, onARampage} = this.fighter.state
+    const {sick, injured, hallucinating, doping, onARampage, takingADive} = this.fighter.state
     let x = this.baseAggression
     if(sick) x *= .6
     if(injured) x *= .6
     if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
     if(doping) x *= 1.2   
-    if(onARampage) x *= 2
+    if(onARampage) x *= 1.5
+    if(!onARampage && takingADive) return 0
     return Math.round(x)
   }
 
   get speed(){
+    const {onARampage, takingADive} = this.fighter.state
     const speed = Math.round(
       2 + 
-      this.aggression*.5 + 
-      -this.strength*.3 + 
-      this.fitness
+      this.aggression*.3 + 
+      -this.strength*.2 + 
+      this.fitness*.9
     )
+    if(!onARampage && takingADive) return speed * .5
 
     return speed
   }
@@ -79,10 +82,11 @@ export default class FighterStats {
   }
 
   get maxSpirit(){
-    const {sick, injured, hallucinating, doping} = this.fighter.state
+    const {sick, injured, hallucinating, takingADive} = this.fighter.state
     let x = 5
     if(sick) x *= .8
     if(injured) x *= .8 
+    if(takingADive) x *= .5
 
     return Math.round(x)
   }

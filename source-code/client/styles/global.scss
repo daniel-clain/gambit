@@ -12,12 +12,8 @@ html{
 }
 body{
   margin: 0;
-  height: 100vh;
+  height: 90vh;
   background-image: linear-gradient(#03151f, #012a3f);
-}
-#react-rendering-div{
-  height: 100vh;
-  max-height: -webkit-fill-available;
 }
 
 *{  
@@ -27,7 +23,7 @@ body{
 
 #Gambit{
   position: relative;
-  height: 100vh;
+  height: 100%;
   max-height: 850px;
   background-color: #03263b;
   

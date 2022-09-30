@@ -9,7 +9,7 @@ import { Game } from "../game";
 export class Ability {
   name: AbilityName
   cost: Cost
-  possibleSources: AbilitySourceType[]
+  possibleSources?: AbilitySourceType[]
   notValidTargetIf?: AbilityTargetType[]
   validTargetIf: AbilityTargetType[]
   executes: ExecutesWhenOptions | ExecutesWhenOptions[]
@@ -69,4 +69,5 @@ export type AbilityName =
 'Investigate Manager' |
 'Domination Victory' |
 'Wealth Victory' |
-'Sinister Victory'
+'Sinister Victory' |
+'Take A Dive'

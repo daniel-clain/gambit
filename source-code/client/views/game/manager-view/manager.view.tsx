@@ -79,6 +79,7 @@ export const Manager_View = connector(hot(
                 <button onClick={() => showManager(convertThisManagerToKnownManager())}>Manager Options</button>
                 <button onClick={showOtherManagers}>Other Managers</button>
                 <button onClick={showWinOptions}>Try To Win</button>
+                <button onClick={() => alert('ya mum is so fat!')}>Game Info</button>
               </ButtonPanel>
             </div>
             <div className="right-column">

@@ -23,6 +23,29 @@ Bug:
   ☐ when players make heaps of money, show money bags to represent x100
   ☐ commentator declaring who has knocked out who
   ☐ explain spirit, rampage, recovery, aggression, strenght, fitness, and intellignce
+
+Test Play Notes:
+  ☐ take a dive costs 200 and action point
+  ☐ fighter state need icon for halucinating
+  ☐ fighter state box col span header row
+  ☐ fight arena positioned more center when full screen
+  ☐ remove background audio from 'fight!'
+  ☐ add on close are you sure
+  ☐ make drug dealer return less for ech other active dealer, reportsays how many other dealers are active
+  ☐ fight view, manager best, if no bet, no portrait of fighter
+  ☐ take a dive not active if fighter not in fight
+
+
+Game Info:
+  Its important that players can get ansers to key questions without an instructor
+  ☐ talent scout is better for researching than manager
+  ☐ make clear why options are unavailable and how to make them available
+  ☐ explain victory options
+  ☐ explain why to have ur own fighter, make more money
+  ☐ doping, stength fitness return to normal, agression stays up
+  ☐ more info on diff between investigate manager, and surveillance on a manager
+  ☐ manager gives .5 in training, strength fitness 50/50
+
   
   
 
@@ -72,6 +95,7 @@ Priority:
 
 
 Quick minor fixes: 
+  ☐ if they cant affor employees then they leave
   ☐ fix display mode, fight shows bets not stats
   ☐ offer mute option
   ☐ no more emoji after knowckout

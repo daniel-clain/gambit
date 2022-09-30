@@ -146,7 +146,10 @@ export default class Logistics {
       this.justBlocked || 
       this.justTookHit ||
       enemyAction == 'recovering' || 
-      enemyAction != 'defending'
+      enemyAction == 'doing cooldown' || 
+      enemyAction == 'doing nothing' || 
+      enemyAction == 'missed critical strike' || 
+      enemyAction == 'defending'
 
     )
   

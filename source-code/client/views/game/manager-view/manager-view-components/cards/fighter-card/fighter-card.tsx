@@ -57,10 +57,10 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
   if (isYourFighter) {
     const {strength, fitness, intelligence, aggression} = fighter
     infoBoxList = [
-      { label: 'Strength', value: strength.lastKnownValue },
-      { label: 'Fitness', value: fitness.lastKnownValue },
-      { label: 'Intelligence', value: intelligence.lastKnownValue },
-      { label: 'Aggression', value: aggression.lastKnownValue },
+      { label: 'Strength', value: strength?.lastKnownValue },
+      { label: 'Fitness', value: fitness?.lastKnownValue },
+      { label: 'Intelligence', value: intelligence?.lastKnownValue },
+      { label: 'Aggression', value: aggression?.lastKnownValue },
       { label: 'Manager', value: thisPlayersName }
     ]
   }

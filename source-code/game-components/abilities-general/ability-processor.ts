@@ -22,6 +22,7 @@ import { investigateManagerServer } from './abilities/investigate-manager';
 import { dominationVictoryServer } from './abilities/domination-victory';
 import { sinisterVictoryServer } from './abilities/sinister-victory';
 import { wealthVictoryServer } from './abilities/wealth-victory';
+import { takeADiveServer } from './abilities/take-a-dive';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]
@@ -44,6 +45,7 @@ export class AbilityProcessor{
     researchFighterServer,
     sellDrugsServer,
     prosecuteManagerServer,
+    takeADiveServer,
     trainFighterServer,
     dopeFighterServer,
     investigateManagerServer,

@@ -66,13 +66,16 @@
       }
 
       &__poisoned-icon{
-        background-image: url('../../../../../images/fight-view/state/poisoned.jpg');
+        background-image: url('../../../../../images/fight-view/state/poisoned.png');
       }
       &__injured-icon{
-        background-image: url('../../../../../images/fight-view/state/injured.jpg');
+        background-image: url('../../../../../images/fight-view/state/injured.png');
       }
       &__doped-icon{
-        background-image: url('../../../../../images/fight-view/state/doped.jpg');
+        background-image: url('../../../../../images/fight-view/state/doped.png');
+      }
+      &__dive-icon{
+        background-image: url('../../../../../images/fight-view/state/dive.png');
       }
     }
   }

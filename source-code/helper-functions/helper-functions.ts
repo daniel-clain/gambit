@@ -43,6 +43,13 @@ export function check(value, func: (value: number) => [boolean, number][]){
   return result
 }
 
+export function numberLoop(amount, func: (number?: number) => void): any[] {
+  let returnVal: any[] = []
+  for(let number = 1; number <= amount; number++){
+    returnVal.push(func(number || null))
+  }
+  return returnVal
+}
 
 
 export const randomNumber = ({digits}:{digits: number}) => Math.round(Math.random() * Math.pow(10, digits))
