@@ -1,11 +1,11 @@
 
-import sinisterVictoryVideo from './sinister-victory.mp4'
-import wealthVictoryVideo from './wealth-victory.mp4'
+import sinisterVictoryVideo from 'url:./sinister-victory.mp4'
+import wealthVictoryVideo from 'url:./wealth-victory.mp4'
 
-import failSinisterVictoryVideo1 from './fail-sinister-victory1.mp4'
-import failSinisterVictoryVideo2 from './fail-sinister-victory2.mp4'
-import finalTournament from './final-tournament.mp4'
-import dominationVictory from './domination-victory.mp4'
+import failSinisterVictoryVideo1 from 'url:./fail-sinister-victory1.mp4'
+import failSinisterVictoryVideo2 from 'url:./fail-sinister-victory2.mp4'
+import finalTournament from 'url:./final-tournament.mp4'
+import dominationVictory from 'url:./domination-victory.mp4'
 
 export type VideoName = 'Sinister Victory' | 'Sinister Victory Fail' | 'Wealth Victory' | 'Domination Victory' | 'Wealth Victory Fail' | 'Final Tournament'
 

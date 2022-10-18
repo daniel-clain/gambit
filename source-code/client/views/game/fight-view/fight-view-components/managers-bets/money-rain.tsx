@@ -1,6 +1,5 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
-import { hot } from "react-hot-loader/root"
 import gameConfiguration from "../../../../../../game-settings/game-configuration"
 import { wait } from "../../../../../../helper-functions/helper-functions"
 import './money-rain.scss'
@@ -10,7 +9,7 @@ interface FallingMoney{
   xVal: number
 }
 
-export const MoneyRain = hot(({money}: {money: number}) => {
+export const MoneyRain = ({money}: {money: number}) => {
   const [moneyFalling, setMoneyFalling] = useState<FallingMoney[]>([])
   const [paused, setPaused] = useState<boolean>(false)
 
@@ -23,7 +22,7 @@ export const MoneyRain = hot(({money}: {money: number}) => {
     const fallTime = 1
     const duration = gameConfiguration.stageDurations.showWinningsDuration
     const moneyDropTimeInterval = Math.round(((duration - scrollUpDuration - fallTime) / Math.ceil(money / 10)) * 1000)
-    console.log('moneyDropTimeInterval :>> ', moneyDropTimeInterval);
+    //console.log('moneyDropTimeInterval :>> ', moneyDropTimeInterval);
 
 
     ;(async () => {
@@ -58,4 +57,4 @@ export const MoneyRain = hot(({money}: {money: number}) => {
       )} 
     </div>
   </>
-})
+}

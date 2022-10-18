@@ -1,17 +1,9 @@
 import * as React from "react"
-import { connect, ConnectedProps } from "react-redux"
-import { hot } from "react-hot-loader/root"
 import './report-card.scss'
 import { LogList } from "../../partials/log-list/log-list"
+import { closeModal } from "../../../../../../front-end-service/front-end-service"
 
-
-const mapDispatchToProps = {
-  closeModal: () => ({type: 'closeModal'})
-}
-const connector = connect(null, mapDispatchToProps)
-type PropsFromRedux = ConnectedProps<typeof connector>
-export const ReportCard = connector(hot(
-  ({closeModal}: PropsFromRedux) =>   
+export const ReportCard = () =>   
   <div className='report-card-modal' onClick={closeModal}>
     <div className='background'></div>
     <div className="report-card-container">
@@ -23,6 +15,5 @@ export const ReportCard = connector(hot(
       </div>
     </div>
   </div>
-))
 
 

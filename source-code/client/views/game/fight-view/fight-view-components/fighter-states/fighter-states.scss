@@ -49,7 +49,7 @@
       }
       /* &__strength{}
       &__fitness{}
-      &__agression{}
+      &__aggression{}
       &__intelligence{}
       &__fights{}
       &__wins{} */
@@ -76,6 +76,9 @@
       }
       &__dive-icon{
         background-image: url('../../../../../images/fight-view/state/dive.png');
+      }
+      &__hallucinating-icon{
+        background-image: url('../../../../../images/fight-view/state/hallucinating.png');
       }
     }
   }

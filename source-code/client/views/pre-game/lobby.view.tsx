@@ -1,43 +1,34 @@
+import { observer } from "mobx-react"
 import * as React from "react"
-import { createRef, useState } from "react"
-import { hot } from "react-hot-loader/root"
-import {connect} from 'react-redux'
+import { useEffect, useState } from "react"
 import { GameBeingCreated, JoinedClient } from "../../../game-host/game-host.types"
 import ChatMessage from "../../../interfaces/chat-message.interface"
-import { ServerPreGameUIState, FrontEndState } from "../../../interfaces/front-end-state-interface"
 import { GameInfo } from "../../../interfaces/game/game-info"
-import { frontEndService } from "../../front-end-service/front-end-service"
+import {  } from "../../front-end-service/front-end-service"
+import { websocketService } from "../../front-end-service/websocket-service"
+import { frontEndState } from "../../front-end-state/front-end-state"
 import './lobby.view.scss'
 
-interface LobbyProps extends ServerPreGameUIState{
-  clientId: string
-}
 
-const mapStateToProps = ({
-  serverUIState: {serverPreGameUIState},
-  clientUIState: {clientPreGameUIState: {clientId}}
-}: FrontEndState): LobbyProps => {
-  return {...serverPreGameUIState, clientId}
-}
+export const Lobby_View = observer(() => {
 
+  const {sendUpdate: { create, cancel, start, join, readyToStart, 
+    leave, reJoin, submitGlobalChat, 
+  }} = websocketService
+  const {
+    serverUIState: {serverPreGameUIState},
+    clientUIState: {clientPreGameUIState: {clientId}}
+  } = frontEndState
 
-export const Lobby_View = connect(mapStateToProps)(hot(({
-  connectedClients, 
-  gamesBeingCreated, 
-  globalChat, 
-  activeGames,
-  clientId
-}: LobbyProps) => {
+  const {
+    gamesBeingCreated, connectedClients, activeGames, globalChat,
+  } = serverPreGameUIState
 
   const [chatVal, setChatVal] = useState('')
 
   const joinedGameBeingCreated: GameBeingCreated = gamesBeingCreated.find((g: GameBeingCreated) =>
     g.clients.some(c => c.id == clientId) || g.creator.id == clientId
   )
-  
-  let { create, cancel, start, join, readyToStart, 
-    leave, reJoin, submitGlobalChat, 
-  } = frontEndService.sendUpdate
 
   return (
     <div className='game-host'>
@@ -72,7 +63,7 @@ export const Lobby_View = connect(mapStateToProps)(hot(({
                     <div>game id: {game.id}</div>
                     <div>players: {game.players.map(player => <div key={player.id}>{player.name}</div>)}</div>
                     {game.disconnectedPlayerVotes.some(d => d.disconnectedPlayer.id == clientId) ?
-                      <button onClick={() => reJoin(game.id)}>Re-Join Game</button> : ''}
+                      <button onClick={() => reJoin(game.id.toString())}>Re-Join Game</button> : ''}
                   </div>
                 )}
               </div>
@@ -110,12 +101,30 @@ export const Lobby_View = connect(mapStateToProps)(hot(({
             Ready?: <input type='checkbox' onChange={({currentTarget: {checked}}) => readyToStart({gameId: joinedGameBeingCreated.id, ready: checked})} />
             <br /><br />
             <div className="bottom-buttons">
-              {joinedGameBeingCreated.creator.id == clientId ? [
-                <button key='cancel-button' onClick={() => cancel(joinedGameBeingCreated.id)}>Cancel Game</button>,
-                <button key='start-button' onClick={() => start(joinedGameBeingCreated.id)}>Start Game</button>
-              ]
+              {
+                joinedGameBeingCreated.creator.id == clientId ? 
+                  <>
+                    <button 
+                      key='cancel-button' 
+                      onClick={() => cancel(joinedGameBeingCreated.id)}
+                    >
+                      Cancel Game
+                    </button>
+                    <button 
+                      key='start-button' 
+                      onClick={() => start(joinedGameBeingCreated.id)}
+                    >
+                      Start Game
+                    </button>
+                  </>
                 :
-                <button key='leave-button' onClick={() => leave(joinedGameBeingCreated.id)}>Leave Game</button>}
+                  <button 
+                    key='leave-button' 
+                    onClick={() => leave(joinedGameBeingCreated.id)}
+                  >
+                    Leave Game
+                  </button>
+              }
             </div>
           </div>
         </div>
@@ -123,4 +132,4 @@ export const Lobby_View = connect(mapStateToProps)(hot(({
     </div>
   )
   
-}))
+})

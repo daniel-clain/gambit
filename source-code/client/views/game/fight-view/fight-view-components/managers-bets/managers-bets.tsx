@@ -1,6 +1,5 @@
 import * as React from 'react';
 import './managers-bets.scss'
-import { hot } from 'react-hot-loader/root';
 import { useEffect, useState } from 'react';
 import { MoneyRain } from './money-rain';
 import { ManagersBet, FightReport } from '../../../../../../interfaces/front-end-state-interface';
@@ -16,6 +15,7 @@ const ManagersBets = ({ managersBets, report, isDisplay }: ManagersBetProps) => 
 
   const hasWinnings = report?.managerWinnings?.some(({ winnings }) => winnings > 0)
 
+  console.log('isHidden :>> ', isHidden);
 
   const managerWinnings = (manager): number => {
     return report?.managerWinnings?.find(m => m.managerName == manager.name)?.winnings
@@ -52,4 +52,4 @@ const ManagersBets = ({ managersBets, report, isDisplay }: ManagersBetProps) => 
   )
 };
 
-export default hot(ManagersBets)
+export default ManagersBets

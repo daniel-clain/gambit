@@ -165,7 +165,6 @@ export default class Fight {
   private finishFight(fightReport){
     this.report = fightReport
     this.timeRemaining = 0
-    console.log('clear fight timeout');
     clearTimeout(this.timesUpTimer)
     clearInterval(this.timeRemainingInterval)
 

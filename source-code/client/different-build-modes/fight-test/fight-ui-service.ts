@@ -3,7 +3,8 @@ import Fight from '../../../game-components/abilities-general/fight/fight';
 import Fighter from '../../../game-components/fighter/fighter';
 import gameConfiguration from '../../../game-settings/game-configuration';
 import { shuffle } from '../../../helper-functions/helper-functions';
-import { frontEndStore } from '../../front-end-state/front-end-state';
+import { ServerGameUIState, ServerUIState } from '../../../interfaces/front-end-state-interface';
+import { frontEndState } from '../../front-end-state/front-end-state';
 gameConfiguration.stageDurations.maxFightDuration = 10000000
 
 
@@ -53,18 +54,16 @@ export const fightUiService = {
 		fighters.forEach(f => f.reset())
 		this.fight = new Fight(fighters, null)
 		
-		this.fightSubscription = this.fight.fightUiDataSubject.subscribe(fightUiData => {
-			frontEndStore.dispatch({
-				type: 'Update Game UI',
-				payload: {
+		this.fightSubscription = (this.fight as Fight).fightUiDataSubject.subscribe(fightUiData => {
+			frontEndState.serverUIState = {
+				serverGameUIState: {
 					fightUIState: fightUiData
-				}
-			})
+				} as ServerGameUIState
+			}
 		})
 		this.fight.start()
 	},
-	fighters: shuffle(fighters),
-	frontEndStore
+	fighters: shuffle(fighters)
 }
 
 

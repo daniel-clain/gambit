@@ -10,9 +10,6 @@ module.exports = ({remote}, {mode, configName}) => {
   buildType = configName?.[0]
   mode = mode || 'development'
 
-  console.log('buildType :>> ', buildType);
-  console.log('mode :>> ', mode);
-  console.log('remote :>> ', remote);
 
 
   const {buildDir, title, port, outputDir, outputFile} = 
@@ -38,9 +35,13 @@ module.exports = ({remote}, {mode, configName}) => {
     outputFile: 'mainGame.js'
   } : {}
   
+  console.log('buildType :>> ', buildType);
   console.log('title :>> ', title);
   console.log('buildDir :>> ', buildDir);
   console.log('outputDir :>> ', outputDir);
+  console.log('mode :>> ', mode);
+  console.log('port :>> ', port);
+
 
 
   let config = {

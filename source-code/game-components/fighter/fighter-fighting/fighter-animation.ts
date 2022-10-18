@@ -16,18 +16,10 @@ export default class FighterAnimation{
 
     const randomNum = random(100)
 
-    const logSupressedActions: AnimationName[] = [
-      //'turning around', 
-      'doing cooldown'
-    ]
-
     if(this.inProgress){
       this.cancel(`${name} started (${randomNum})`)      
       await wait(5)
     }
-    
-    /* if(!logSupressedActions.some(n => n == name))
-      console.log(`${this.fighting.fighter.name} started ${name} (${randomNum})`); */
 
     this.inProgress = name  
 
@@ -43,18 +35,12 @@ export default class FighterAnimation{
     })
     .then(() => {      
       this.inProgress = null
-     /*  if(!logSupressedActions.some(n => n == name))
-        console.log(`${this.fighting.fighter.name} finished ${name} (${randomNum})`); */
       return
         
     })
     .catch(reason => {
       this.inProgress = null
       clearTimeout(timeoutRef)
-
-      /* if(!logSupressedActions.some(n => n == name)){
-        console.log(`${this.fighting.fighter.name}'s ${name} was cancled because ${reason} (${randomNum})`);
-      } */
       throw(reason)
     })
   }
@@ -70,8 +56,7 @@ export default class FighterAnimation{
   
   speedModifier(baseAnimationSpeed){
     const {speed, aggression, strength} = this.fighting.stats
-    const modifiedSpeed = baseAnimationSpeed * (1-(speed*.0018)) * (1-(aggression*.0013)) * (1+(strength*.0013))
-    console.log('modifiedSpeed :>> ', modifiedSpeed);
+    const modifiedSpeed = baseAnimationSpeed * (1-(speed*.0005)) * (1+(aggression*.0025)) * (1+(strength*.0005))
     return modifiedSpeed
   }
 

@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
     "sourceMap": true,
     "strict":false,
-    "module": "commonjs",
+    "module": "CommonJS",
     "target": "es6",
     "jsx": "react",
     "skipLibCheck": true,
+    "moduleResolution": "node",
   },
   "include": [
     "./source-code/**/*"

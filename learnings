@@ -1,0 +1,24 @@
+{
+  unit tests
+  ==============
+  * unit test are valuable when the code if refactored or if the requirements chang
+  - when code is refactored, you may get the false impression that there are no bugs, because the code compiles, there are no run time errors, and the main usecases you manually test are ok. but there are a lot of courses that the code can run, and different modules relate differently. there could be a scenario where an object gets wrong data and bugs out
+  - bugs will eventually surface, you dont want them to surface while in production, because then nobody can use the app, and you feel pressure to fix quickly which can lead to problems
+    ~ a better idea is have a trigger, when commit to master only works if all unit tests pass. no only can you not put broken stuff live, but you know that each version in history will be bug free
+
+  * problem, how do you know what to write tests for
+    - take advantage of the bugs you discover when making changes, when you make the changes, deliberally dont be thorough and thoughtful, just make the direct change you want to, and see what side effects occcur. identify exactly which parts of you code breaks. make note of each broken thing, see what they do and dont have in common. maybe you can make a rule that only code that match this pattern/criteria are vulnerable to breaks as a result of change
+
+  
+}
+
+{ 
+  code architecture strategy
+  ============================
+  * there are lots of ways to do something
+    - some are better than others
+    - its quicker and easier to do it the best way the first time
+    - its worth refactoring to a better way
+    - sometimes the current way isnt perfect, and there are better ways, but its not worth the time. the current way is sometimes good enough. its not right to ocd on being perfectionist, it drains too much time for not enough value
+    
+}

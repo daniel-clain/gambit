@@ -1,28 +1,28 @@
 import IStage from "../../../interfaces/game/stage";
-import { RoundController } from "../round-controller";
+import { WeekController } from "../week-controller";
 import { NewsItem } from "../../../types/game/news-item";
 import gameConfiguration from "../../../game-settings/game-configuration";
-import { RoundStage } from "../../../types/game/round-stage.type";
+import { WeekStage } from "../../../types/game/week-stage.type";
 export default class PreFightNewsStage implements IStage {
-  name: RoundStage = 'Pre Fight News'
-  private endRound
+  name: WeekStage = 'Pre Fight News'
+  private endWeek
   newsItems: NewsItem[] = []
   activeNewsItem: NewsItem
   
-  constructor(private roundController: RoundController){}
+  constructor(private weekController: WeekController){}
   newsItemDuration = gameConfiguration.stageDurations.eachNewsSlide * 1000
 
   start(): Promise<void> {
     return new Promise(async resolve => {
-      this.endRound = resolve
+      this.endWeek = resolve
       if(!this.newsItems.length){
-        this.endRound()
+        this.endWeek()
       }
 
       for(let i = 0; i < this.newsItems.length; i++ ){
         await this.showNewsItem(this.newsItems[i])
       }
-      this.endRound()
+      this.endWeek()
 
 
     })
@@ -33,7 +33,7 @@ export default class PreFightNewsStage implements IStage {
 
   showNewsItem(newsItem){
     this.activeNewsItem = newsItem
-    this.roundController.triggerUIUpdate()
+    this.weekController.triggerUIUpdate()
 
     return new Promise(newsItemFinished => 
       setTimeout(newsItemFinished, newsItem.duration ? newsItem.duration*1000 : this.newsItemDuration)

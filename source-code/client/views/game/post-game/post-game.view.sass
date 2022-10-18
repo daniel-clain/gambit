@@ -1,0 +1,117 @@
+@use '../../../styles/variables' as *
+
+post-game
+  display: block
+  overflow: hidden
+  padding: 20px
+  display: flex
+  flex-direction: column
+  gap: 20px
+  background: white  
+  overflow: auto
+  position: fixed
+  inset: 20px
+  overflow: hidden
+  border: ridge 6px #76756b
+
+  button.return-button
+    width: 200px
+    align-self: center
+    margin-top: auto
+
+  winner-block
+    winner-text
+      font-size: 28px
+      font-weight: bold
+
+  player-stats-list
+    gap: 20px
+    display: flex
+    flex-direction: column
+    overflow: auto
+
+    player-stats
+      display: flex
+      gap: 10%
+      padding: 30px 26px
+      border: ridge 2px black
+      background-color: #e5e5e5
+
+      &.is-winner
+        background-color: #fcf4e1
+        border-color: #caaa00
+
+      & > left-block
+        width: 20%
+        max-width: 200px
+
+      player-name
+        display: block
+        font-size: 26px
+
+      player-money
+        display: block
+        font-size: 20px
+
+      player-image
+        display: block
+        background-size: contain
+        max-width: 150px
+        margin-top: 20px
+        &.fat-man
+          background-image: url('../../../images/icons/manager1.png')
+          aspect-ratio: 125/179
+        &.moustache-man
+          background-image: url('../../../images/icons/manager2.jpg')
+          aspect-ratio: 5/4
+
+      players-fighters
+        display: flex
+        gap: 30px 50px
+        flex-wrap: wrap
+        flex: 1
+
+        players-fighter
+          display: flex
+          flex-direction: column
+
+          fighter-name
+            display: block
+            font-size: 20px
+
+          & > bottom-block
+            display: flex
+            gap: 20px
+
+            fighter-model-image
+              display: block    
+              background-size: contain
+              background-repeat: no-repeat
+              align-self: end
+
+              &.muscle
+                background-image: url('../../../images/fight-view/fighter/muscle-skin/victory.png')
+                aspect-ratio: 58/139
+                width: 50px
+                
+              &.fast
+                background-image: url('../../../images/fight-view/fighter/fast-skin/victory.png')
+                aspect-ratio: 7/18
+                width: 45px
+                
+              &.default
+                background-image: url('../../../images/fight-view/fighter/default-skin/victory.png')
+                aspect-ratio: 17/26
+                width: 58px
+            
+            & > right-block
+              .fights, .wins
+                margin-bottom: 10px
+              .info-box
+                margin-bottom: 0
+                .grid__label
+                  text-transform: capitalize
+
+
+
+  

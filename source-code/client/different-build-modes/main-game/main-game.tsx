@@ -1,45 +1,36 @@
 
 import * as React from 'react';
 import '../../styles/global.scss';
-import { connect, Provider } from 'react-redux'
-import { FrontEndState } from '../../../interfaces/front-end-state-interface';
 import {Game_View} from '../../views/game/game.view'
-import { frontEndService } from '../../front-end-service/front-end-service';
-import { hot } from 'react-hot-loader/root';
+import { initialSetup } from '../../front-end-service/front-end-service';
 import { Login_View } from '../../views/pre-game/login.view';
 import { Lobby_View } from '../../views/pre-game/lobby.view';
-import { useEffect, useState } from 'react';
+import { observer } from 'mobx-react';
+import { frontEndState } from '../../front-end-state/front-end-state';
+import { useEffect } from 'react';
 
-interface MainGameProps {
-  connectedToGameHost: boolean
-  inGame: boolean
-  clientName: string
-}
+initialSetup()
 
-const MainGameComponent = ({
-  connectedToGameHost, inGame, clientName
-}: MainGameProps) => {
+export const MainGame_C = observer(() => {
 
-  if (
-    frontEndService.connectionType == 'Websockets' &&
-    !connectedToGameHost && 
-    clientName
-  ) {
-    frontEndService.connectToGameHost()
-  }
-  return (
-    !connectedToGameHost ?
-      <Login_View /> :
-      !inGame ?
-        <Lobby_View /> :
-        <Game_View />
-  )
-}
+  const {
+    serverUIState: { serverPreGameUIState },
+    clientUIState: { clientPreGameUIState: {hasGameData} }
+  } = frontEndState
 
-const mapStateToProps = ({
-  serverUIState: { serverPreGameUIState, serverGameUIState },
-  clientUIState: { clientPreGameUIState: { clientName } }
-}: FrontEndState
-): MainGameProps => ({ connectedToGameHost: !!serverPreGameUIState, inGame: !!serverGameUIState, clientName })
+  useEffect(() => {
+    window.onbeforeunload = function() {
+      return true
+    };
+  })
 
-export const MainGame = connect(mapStateToProps)(hot(MainGameComponent))
+  const connectedToGameHost = !!serverPreGameUIState
+
+
+  return hasGameData ? 
+  <Game_View />
+  : connectedToGameHost ? 
+    <Lobby_View />
+    : <Login_View /> 
+       
+})

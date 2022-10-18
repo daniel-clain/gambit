@@ -1,18 +1,17 @@
-import { Ability, ClientAbility, ServerAbility, AbilityData, AbilitySourceInfo } from "../ability"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 import SkillLevel from "../../../types/game/skill-level.type"
-import { AbilitySourceType } from "../../../types/game/ability-source-type"
-import { random, randomFloor } from "../../../helper-functions/helper-functions"
+import { randomFloor, toWrittenList } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
-import { KnownManagerStat, Manager } from "../../manager"
-import { FighterInfo, KnownFighterStat, Employee } from "../../../interfaces/front-end-state-interface"
+import { KnownManager, KnownManagerStat, Manager } from "../../manager"
+import { Employee } from "../../../interfaces/front-end-state-interface"
+import { getAbilitySourceManager, getSourceType } from "../ability-service-server"
+import { ifSourceIsEmployee } from "../../../client/front-end-service/ability-service-client"
 
 
-const investigateManager: Ability = {
+export const investigateManager: Ability = {
   name: 'Investigate Manager',
   cost: { money: 50, actionPoints: 1 },
-  possibleSources: ['Private Agent'],
-  validTargetIf: ['opponent manager'],
-  executes: 'End Of Round',
+  executes: 'Instantly',
   canOnlyTargetSameTargetOnce: false
 }
 
@@ -25,45 +24,42 @@ type KnownStatsItem = {
 
 export const investigateManagerServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-
-    const sourceManager: Manager = determineSourceManager()
-    const privateAgent: Employee = determinePrivateAgent()
-    const skillLevel: SkillLevel = privateAgent.skillLevel
-
-    const {roundNumber} = game.has.roundController
     
-    const targetManager: Manager = game.has.managers.find(m => m.has.name == abilityData.target.name)
+    const {target, source} = abilityData
 
-    const knownManager = sourceManager.has.otherManagers.find(m => m.name == targetManager.has.name)
+    const sourceManager: Manager = getAbilitySourceManager(source, game)
+    let privateAgent: Employee
+    ifSourceIsEmployee(source, employee => privateAgent = employee)
 
-    const targetManagerInfo = targetManager.functions.getInfo()
+    const {weekNumber} = game.has.weekController
+    
+    const targetManager: Manager = game.has.managers.find(m => m.has.name == target.name)
+
+    const knownManager: KnownManager = sourceManager.has.otherManagers.find(m => m.name == target.name)
+
+    const sourceType = getSourceType(source)
+
 
     const discoveredStats: KnownStatsItem[] = getRandomStatsFromManager()
-
+    
     discoveredStats.forEach(stat => {
       knownManager[stat.key] = {
         lastKnownValue: stat.value,
-        roundsSinceUpdated: 0
+        weeksSinceUpdated: 0
       } as KnownManagerStat
     })
 
     sourceManager.functions.addToLog({
-      roundNumber,
-      message: `${abilityData.source.type} ${abilityData.source.name} used ${abilityData.name} and found out the following stats about ${abilityData.target.name} \n ${discoveredStats.map(s => s.key)}`});
+      weekNumber,
+      message: `${sourceType} ${source.name} used ${abilityData.name} and found out the following stats about ${target.name}: \n ${toWrittenList(discoveredStats.map(s => s.key))}`});
 
 
     //implementation
     
-    function determineSourceManager(): Manager {
-      return game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
-    }
-    function determinePrivateAgent(): Employee{
-      return sourceManager.has.employees.find(e => e.name == abilityData.source.name)
-    }
     
     function getRandomStatsFromManager(): any{
-      const invalidKeys = ['name', 'image']
-      let numberOfStats =  skillLevel
+      const invalidKeys = ['name', 'image', 'characterType'] as (keyof KnownManager)[]
+      let numberOfStats =  privateAgent.skillLevel
 
       return getUpdatedStats()
 
@@ -91,7 +87,7 @@ export const investigateManagerServer: ServerAbility = {
 
         function getStat(): KnownStatsItem{
           let count = 0
-          return Object.keys(knownManager)
+          return (Object.keys(knownManager) as (keyof KnownManager)[])
           .filter(key => !invalidKeys.includes(key))
           .filter(key => !knownStats.includes(key))
           .filter(key => !updatedStats.some(stat => stat.key == key))
@@ -101,7 +97,7 @@ export const investigateManagerServer: ServerAbility = {
               if(count < randomNumber) return count++ && null
               return {
                 key: stat,
-                value: targetManagerInfo[stat]
+                value: targetManager.has[stat]
               }
             }, null
           )
@@ -109,9 +105,9 @@ export const investigateManagerServer: ServerAbility = {
 
 
         function getKnownStats(): string[]{
-          return Object.keys(knownManager)
+          return (Object.keys(knownManager) as (keyof Omit<KnownManager, 'name' | 'image' | 'characterType'>)[])
           .filter(key => !invalidKeys.includes(key))
-          .filter(key => knownManager[key]?.roundsSinceUpdated == 0)
+          .filter(key => knownManager[key]?.weeksSinceUpdated == 0)
         }
       }
 
@@ -121,32 +117,3 @@ export const investigateManagerServer: ServerAbility = {
   },
   ...investigateManager
 }
-
-export const investigateManagerClient: ClientAbility = {
-  shortDescription: 'Learn info about a manager',
-  longDescription: `Find out stats about opponent manager, including: money, loan debt, employees, fighters, evidence on other managers. This ability resolves at the end of the round`,
-  ...investigateManager
-}
-
-/* 
-  - other managers has unknown stats
-  - when you investigate you gain known stats
-  - each unknow item is inclusive of array items
-  - array items should be stored as
-  knownManager = {
-    name: 'bob'
-    evidence: [
-      {
-        lastKnownValue: {},
-        roundsSinceLearnt: x
-      }
-    ]
-  }
-
-
-  - how do i know if array item already added
-  - how do i clear out array items that have gone
-  - how do i update array items taht exist
-
-
-*/

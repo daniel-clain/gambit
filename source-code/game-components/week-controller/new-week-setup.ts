@@ -8,33 +8,33 @@ import { Manager } from "../manager";
 import { JobSeeker, FighterInfo } from "../../interfaces/front-end-state-interface";
 import { Game } from "../game";
 
-export function setupNewRound(game: Game){
-  const {managers, professionals, fighters, roundController} = game.has
+export function setupNewWeek(game: Game){
+  const {managers, professionals, fighters, weekController} = game.has
 
-  const {roundNumber} = roundController
+  const {weekNumber} = weekController
 
   chanceNextFightEvent()
-  setRoundJobSeekers()
-  setupRoundFight()
+  setWeekJobSeekers()
+  setupWeekFight()
 
 
   managers.forEach(manager => {
-    addNewRoundToManagerLog(manager)
+    addNewWeekToManagerLog(manager)
     addFightersToManagersKnownFightersList(manager)
     if(manager.state.inJail){
       manager.functions.addToLog({
-        roundNumber,
+        weekNumber,
         type: 'critical', 
         message: `You are in jail! (${manager.state.inJail.weeksRemaining} weeks remaining)`});
     }
   })
 
   function chanceNextFightEvent(){
-    const {nextWeekIsEvent, thisWeekIsEvent, roundNumber} = roundController
-    if(!nextWeekIsEvent && !thisWeekIsEvent && roundNumber > 15 && percentageChance({percentage: 20})){
-      roundController
-      roundController.nextWeekIsEvent = true
-      roundController.preFightNewsStage.newsItems.push({
+    const {nextWeekIsEvent, thisWeekIsEvent, weekNumber} = weekController
+    if(!nextWeekIsEvent && !thisWeekIsEvent && weekNumber > 15 && percentageChance({percentage: 20})){
+      weekController
+      weekController.nextWeekIsEvent = true
+      weekController.preFightNewsStage.newsItems.push({
         newsType: 'fight event next week',
         message: 'The top 10 fighters will compete in a battle royal, all winnings are tripled',
         headline: 'Main Event!',
@@ -45,25 +45,26 @@ export function setupNewRound(game: Game){
   }
 
   function addFightersToManagersKnownFightersList(manager: Manager){
-    const roundFightersAndJobSeekerFighters: FighterInfo[] = []
-    const roundFightersInfo: FighterInfo[] = 
-    roundController.activeFight.fighters.map(fighter => fighter.getInfo())
+    const weekFightersAndJobSeekerFighters: FighterInfo[] = []
+    const weekFightersInfo: FighterInfo[] = 
+    weekController.activeFight.fighters.map(fighter => fighter.getInfo())
 
-    const jobSeekerFighterInfo: FighterInfo[] = roundController.jobSeekers
+    const jobSeekerFighterInfo: FighterInfo[] = weekController.jobSeekers
     .filter(jobSeeker => jobSeeker.type == 'Fighter')
     .map(jobSeekerFighter => fighters.find(fighter => fighter.name == jobSeekerFighter.name).getInfo())
 
-    roundFightersAndJobSeekerFighters.push(...roundFightersInfo, ...jobSeekerFighterInfo)
+    weekFightersAndJobSeekerFighters.push(...weekFightersInfo, ...jobSeekerFighterInfo)
 
 
-    roundFightersAndJobSeekerFighters.forEach(roundFighter => {
+    weekFightersAndJobSeekerFighters.forEach(weekFighter => {
       if(
-        managerDoesNotOwnRoundFighter() &&
-        managerDoesNotKnowRoundFighter()
+        managerDoesNotOwnWeekFighter() &&
+        managerDoesNotKnowWeekFighter()
       )
         manager.has.knownFighters.push({
-          name: roundFighter.name,
-          goalContract: roundFighter.goalContract,
+          name: weekFighter.name,
+          characterType: 'Fighter',
+          goalContract: weekFighter.goalContract,
           strength: undefined,
           fitness: undefined,
           intelligence: undefined,
@@ -75,34 +76,34 @@ export function setupNewRound(game: Game){
         })
       else{
         manager.has.knownFighters = manager.has.knownFighters.map(knownFighter => {
-          const fighterJobSeeker =  roundController.jobSeekers.find(fighterJobSeeker => fighterJobSeeker.name == knownFighter.name)
+          const fighterJobSeeker =  weekController.jobSeekers.find(fighterJobSeeker => fighterJobSeeker.name == knownFighter.name)
           return {...knownFighter, goalContract: fighterJobSeeker ? fighterJobSeeker.goalContract : null}
         })
       }
 
-      function managerDoesNotOwnRoundFighter(): boolean{
-        return !manager.has.fighters.some(fighter => fighter.name == roundFighter.name)
+      function managerDoesNotOwnWeekFighter(): boolean{
+        return !manager.has.fighters.some(fighter => fighter.name == weekFighter.name)
       }
-      function managerDoesNotKnowRoundFighter(): boolean{
-        return !manager.has.knownFighters.some(knownFighter => knownFighter.name == roundFighter.name)
+      function managerDoesNotKnowWeekFighter(): boolean{
+        return !manager.has.knownFighters.some(knownFighter => knownFighter.name == weekFighter.name)
       }
     })
   }
 
-  function addNewRoundToManagerLog(manager: Manager){
+  function addNewWeekToManagerLog(manager: Manager){
     manager.functions.addToLog({
-      roundNumber,
-      type: 'new round', message: `Round ${roundController.roundNumber}`});
+      weekNumber,
+      type: 'new week', message: `Week ${weekController.weekNumber}`});
   }
 
-  function setRoundJobSeekers(){
-    let { numberOfProfessionalJobSeekersPerRound, numberOfFighterJobSeekersPerRound } = gameConfiguration
-    numberOfProfessionalJobSeekersPerRound += game.has.players.length - 2
-    numberOfFighterJobSeekersPerRound += game.has.players.length - 2
+  function setWeekJobSeekers(){
+    let { numberOfProfessionalJobSeekersPerWeek, numberOfFighterJobSeekersPerWeek } = gameConfiguration
+    numberOfProfessionalJobSeekersPerWeek += game.has.players.length - 2
+    numberOfFighterJobSeekersPerWeek += game.has.players.length - 2
 
-    roundController.jobSeekers = 
+    weekController.jobSeekers = 
     shuffle(professionals)
-    .splice(0, numberOfProfessionalJobSeekersPerRound)
+    .splice(0, numberOfProfessionalJobSeekersPerWeek)
     .map((professional): JobSeeker => {
       let goalContract: GoalContract
       switch(professional.profession){
@@ -148,7 +149,8 @@ export function setupNewRound(game: Game){
         }; break
       }
       const {name, profession, skillLevel, abilities} = professional
-      return {type: 'Professional', name, profession, goalContract, skillLevel, abilities}
+      return {
+        characterType: 'Job Seeker', type: 'Professional', name, profession, goalContract, skillLevel, abilities}
     })
 
     const fighterJobSeekers: JobSeeker[] = 
@@ -158,32 +160,33 @@ export function setupNewRound(game: Game){
         !fighter.state.activeContract
       )
     )
-    .slice(0, numberOfFighterJobSeekersPerRound)
+    .slice(0, numberOfFighterJobSeekersPerWeek)
     .map((fighter): JobSeeker => {
       fighter.determineGoalContract()
       return {
+        characterType: 'Job Seeker',
         type: 'Fighter',
         name: fighter.name,
         goalContract: fighter.state.goalContract
       }
     })
 
-    roundController.jobSeekers.push(...fighterJobSeekers)
+    weekController.jobSeekers.push(...fighterJobSeekers)
 
 
   }
 
 
-  function setupRoundFight() {
-    if (roundController.activeFight != null)
-      roundController.activeFight.doTeardown()
+  function setupWeekFight() {
+    if (weekController.activeFight != null)
+      weekController.activeFight.doTeardown()
 
 
-    let numOfFighters: number = roundController.thisWeekIsEvent && 10 || gameConfiguration.fightersAfterRounds.reduce((num: number, roundFighters) => {
-      if(roundFighters.round < roundController.roundNumber &&
-        roundFighters.fighters > num
+    let numOfFighters: number = weekController.thisWeekIsEvent && 10 || gameConfiguration.fightersAfterWeeks.reduce((num: number, weekFighters) => {
+      if(weekFighters.week < weekController.weekNumber &&
+        weekFighters.fighters > num
       ){
-        return roundFighters.fighters
+        return weekFighters.fighters
       } else return num
     }, null)
 
@@ -196,7 +199,7 @@ export function setupNewRound(game: Game){
       const fightersRandomChance: {fighter: Fighter, chance: number}[] = fighters
       .filter(fighter => 
         !fighter.state.dead &&
-        !roundController.lastFightFighters.includes(fighter.name) &&
+        !weekController.lastFightFighters.includes(fighter.name) &&
         !randomFighters.some(randomFighter => randomFighter.name == fighter.name)
       )
       .map(fighter => (
@@ -226,14 +229,14 @@ export function setupNewRound(game: Game){
     }
 
     
-    roundController.activeFight = new Fight(randomFighters, managers)
-    randomFighters.forEach(f => f.state.fight = roundController.activeFight)
+    weekController.activeFight = new Fight(randomFighters, managers)
+    randomFighters.forEach(f => f.state.fight = weekController.activeFight)
 
-    roundController.lastFightFighters = randomFighters.map(fighter => fighter.name)
+    weekController.lastFightFighters = randomFighters.map(fighter => fighter.name)
 
 
-    roundController.activeFight.fightUiDataSubject.subscribe(() => {
-      roundController.triggerUIUpdate()
+    weekController.activeFight.fightUiDataSubject.subscribe(() => {
+      weekController.triggerUIUpdate()
     })
   }
   

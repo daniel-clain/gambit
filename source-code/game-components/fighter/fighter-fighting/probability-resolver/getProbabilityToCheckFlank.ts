@@ -6,25 +6,35 @@ import { getEnemiesInfront } from "../proximity"
 export const getProbabilityToCheckFlank = (fighting: FighterFighting): number => {
 
   const { intelligence } = fighting.stats
+
   const { proximity, logistics, rememberedEnemyBehind, fighter, otherFightersInFight} = fighting
+
+  const {hallucinating} = fighter.state
+
   const closestEnemy = proximity.getClosestRememberedEnemy()
 
   const enemiesInfront: number = getEnemiesInfront(otherFightersInFight, fighter).length
   const enemiesStillFighting: number = logistics.otherFightersStillFighting().length
 
 
-  const invalid: boolean =
-    logistics.hasJustTurnedAround() || (logistics.otherFightersStillFighting().length == 1 && !!proximity.getClosestEnemyInfront())
+  const invalid: boolean = !hallucinating && (
+    logistics.hasJustTurnedAround() || 
+    (logistics.otherFightersStillFighting().length == 1 && !!proximity.getClosestEnemyInfront())
+  )
 
   if (invalid)
     return 0
 
   let probability = 1
 
-  if (enemiesInfront == enemiesStillFighting)
+  if(hallucinating){
+    probability += 20
+  }
+
+  if (enemiesInfront == enemiesStillFighting && !hallucinating)
     probability -= intelligence * 3
-  else if (rememberedEnemyBehind === undefined)
-    probability += intelligence * 5
+  else if (rememberedEnemyBehind == undefined)
+    probability += 10 + intelligence * 5
 
 
   if (closestEnemy) {

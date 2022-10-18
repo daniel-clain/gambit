@@ -5,19 +5,17 @@ import { GameType } from "../types/game/game-type"
 import ConnectionManager from "./connection-manager"
 import {AbilityProcessor} from './abilities-general/ability-processor'
 import { Game_Implementation } from "./game-setup"
-import { RoundController } from './round-controller/round-controller'
+import { WeekController } from './week-controller/week-controller'
 import { GameInfo } from '../interfaces/game/game-info'
 import { Manager } from './manager'
 import { ConnectedClient } from '../game-host/game-host.types'
 import { postStartTestState, setupTestState, testSetupBeginning } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
-import { FinalTournamentBoard, Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
+import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
 import { randomNumber } from "../helper-functions/helper-functions"
 import gameConfiguration from "../game-settings/game-configuration"
-import { Lawsuit } from "../types/game/lawsuit.type"
 import { VictoryType } from "../types/game/victory-type"
-import Fight from "./abilities-general/fight/fight"
-import { FinalTournament } from "./round-controller/final-tournament/final-tournament"
+import { FinalTournament } from "./week-controller/final-tournament/final-tournament"
 import { VideoName } from "../client/videos/videos"
 
 
@@ -72,12 +70,12 @@ export class GameState{
 
 class GameHas{
   protected state: GameState
-  id = randomNumber({digits: 6})
+  id = randomNumber({digits: 6}).toString()
   fighters: Fighter[]
   professionals: Professional[]
   players: Player[] = []
   managers: Manager[] = []
-  roundController: RoundController
+  weekController: WeekController
   connectionManager: ConnectionManager
   abilityProcessor: AbilityProcessor
 
@@ -85,7 +83,6 @@ class GameHas{
     public gameDisplays: ConnectedClient[],
     private game: Game,
   ){
-    this.abilityProcessor = new AbilityProcessor(this.game)
     if(this.game.state.gameType == 'Websockets'){
       this.connectionManager = new ConnectionManager(this.game)
     }
@@ -100,12 +97,12 @@ class GameFunctions{
   constructor(private game: Game, private i: Game_Implementation, private gameHost: GameHost){}
   pause(){
     this.game.state.paused = true
-    this.game.has.roundController.activeStage.pause()
+    this.game.has.weekController.activeStage.pause()
     this.triggerUIUpdate()
   }
   unPause(){
     this.game.state.paused = false
-    this.game.has.roundController.activeStage.unpause()
+    this.game.has.weekController.activeStage.unpause()
     this.triggerUIUpdate()
   }
 
@@ -115,7 +112,7 @@ class GameFunctions{
       if(process.env.NODE_ENV == 'development'){
         setupTestState(game)
       }
-      game.has.roundController.startRound(gameConfiguration.startingRoundNumber)
+      game.has.weekController.startWeek(gameConfiguration.startingWeekNumber)
       if(process.env.NODE_ENV == 'development'){
         postStartTestState(game)
       }
@@ -183,22 +180,22 @@ class GameFunctions{
       players: has.players.map(p => ({name: p.name, id: p.id})),
       gameDisplays: has.gameDisplays.map(d => ({name: d.name, id: d.id})),
       paused: state.paused,
-      round: has.roundController.roundNumber,
+      week: has.weekController.weekNumber,
       disconnectedPlayerVotes: has.connectionManager.disconnectedPlayerVotes
     }
   }
   
   
   getGameUiState(manager?: Manager): ServerGameUIState{
-    let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, roundNumber} = this.game.has.roundController
+    let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, weekNumber} = this.game.has.weekController
     const {has:{fighters, managers}, state:{finalTournament}} = this.game
     let {delayedExecutionAbilities} = this.game.has.abilityProcessor
 
     const serverGameUIState: ServerGameUIState = {
       disconnectedPlayerVotes: this.game.state.gameType == 'Websockets' ? this.game.has.connectionManager.disconnectedPlayerVotes : null,
-      roundStage: activeStage?.name,
+      weekStage: activeStage?.name,
       displayManagerUIState: {
-        roundStage: activeStage.name,
+        weekStage: activeStage.name,
         timeLeft,
         jobSeekers,
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
@@ -207,13 +204,18 @@ class GameFunctions{
         }))
       },
       playerManagerUIState: {
-        round: roundNumber,
+        week: weekNumber,
         managerInfo: manager?.functions.getInfo(),
         managerOptionsTimeLeft: timeLeft,
         jobSeekers,
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
         delayedExecutionAbilities,
-        otherPlayersReady: managers.filter(m => m.has.name !== manager.has.name).map(m => !!m.state.readyForNextFight),
+        otherPlayersReady: managers.filter(m => m.has.name !== manager.has.name).map(m => {
+          return {
+            name: m.has.name,
+            ready: !!m.state.readyForNextFight
+          }
+        }),
         thisManagerReady: manager.state.readyForNextFight
       },
       selectedVideo: this.game.state.isShowingVideo, 
@@ -223,7 +225,7 @@ class GameFunctions{
         newsItem: preFightNewsStage.activeNewsItem
       },
       fightUIState: this.i.getFightUiState(manager),
-      gameFinishedData: this.i.getGamFinishedData()
+      gameFinishedData: this.game.state.gameIsFinished && this.i.getGameFinishedData()
     }
     return serverGameUIState
   }
@@ -246,7 +248,8 @@ export class Game {
     this.state = new GameState(gameType)
     this.functions= new GameFunctions(this, this.i, gameHost)
     this.has = new GameHas(gameDisplays, this) 
-    this.has.roundController = new RoundController(this)
+    this.has.abilityProcessor = new AbilityProcessor(this)
+    this.has.weekController = new WeekController(this)
     
     this.setupPlayersAndManagers(players)
     this.i.setupFightersAndProfessionals()
@@ -260,7 +263,6 @@ export class Game {
     players.forEach(player => {
       const manager = new Manager(player.name, this)
       this.has.managers.push(manager)
-      console.log('manager.has.image :>> ', manager.has.image);
       this.has.players.push(
         new Player(
           player.name,
@@ -275,7 +277,7 @@ export class Game {
     this.has.managers.forEach(manager => {
       manager.has.otherManagers = this.has.managers
       .filter(m => m.has.name != manager.has.name)
-      .map(m => ({name: m.has.name, image: m.has.image, money: null, loan: null, fighters: null, employees: null, evidence: null}))
+      .map((m) => ({name: m.has.name, characterType: 'Known Manager',image: m.has.image, money: null, loan: null, fighters: null, employees: null, evidence: null}))
     })
   }
 

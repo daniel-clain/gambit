@@ -2,11 +2,13 @@ import { Subject } from "rxjs";
 import io from 'socket.io-client'
 import { FrontToBackInterface } from "../../interfaces/front-to-back-interface.interface";
 import { ServerGameUIState, ServerPreGameUIState } from "../../interfaces/front-end-state-interface";
+import { runInAction } from "mobx";
+import { frontEndState } from "../front-end-state/front-end-state";
 
 
 let socket: SocketIOClient.Socket
   
-const clientToHostFuntions = {
+const clientToHostFunctions = {
   connectToHost: ({name, id}) => {
     socket.emit('connectToHost', {name, id})
   },
@@ -22,7 +24,7 @@ const clientToHostFuntions = {
   submitGlobalChat: message => socket.emit('submitGlobalChat', message),
 }
 
-const clientToGameFuntions = {
+const clientToGameFunctions = {
   toggleReady: () => socket.emit('toggleReady'),
   betOnFighter: bet => socket.emit('betOnFighter', bet),
   borrowMoney: amount => socket.emit('borrowMoney', amount),
@@ -35,14 +37,12 @@ const clientToGameFuntions = {
 
 
 export const websocketService: FrontToBackInterface = {
-  onServerPreGameUIStateUpdate: new Subject<ServerPreGameUIState>(),  
-  onServerGameUIStateUpdate: new Subject<ServerGameUIState>(),
   init(){
     const env = process.env.NODE_ENV
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
     
     if(env == 'development'){
-      socket = io('localhost:6969', { transports: ["websocket"]})
+      socket = io('http://localhost:6969', { transports: ["websocket"], secure: true,reconnection: true, rejectUnauthorized: false})
 
       
       socket.on('error', x => {
@@ -76,14 +76,19 @@ export const websocketService: FrontToBackInterface = {
   
     socket.on('To Client From Server - Lobby Ui', 
       (serverPreGameUIState: ServerPreGameUIState) => {
-        this.onServerPreGameUIStateUpdate.next(serverPreGameUIState)
+        runInAction(() => {
+          frontEndState.serverUIState.serverPreGameUIState = serverPreGameUIState
+        })
       }
     )    
     socket.on('To Client From Server - Game Ui', 
       (serverGameUIState: ServerGameUIState) => {
-        this.onServerGameUIStateUpdate.next(serverGameUIState)
+        runInAction(() => {
+          frontEndState.serverUIState.serverGameUIState = serverGameUIState
+          frontEndState.clientUIState.clientPreGameUIState.hasGameData = true
+        })
       }
     )
   },
-  sendUpdate: {...clientToHostFuntions, ...clientToGameFuntions}
+  sendUpdate: {...clientToHostFunctions, ...clientToGameFunctions}
 }

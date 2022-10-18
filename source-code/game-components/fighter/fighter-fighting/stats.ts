@@ -16,22 +16,19 @@ export default class FighterStats {
 
 
   get fitness(){
-    const {sick, injured, hallucinating, doping} = this.fighter.state
+    const {sick, injured, doping} = this.fighter.state
     let x = this._baseFitness
     if(sick) x *= .6
     if(injured) x *= .6
-    if(hallucinating) x *= .7
     if(doping) x = x * 1.25 + 1   
-    if(doping && hallucinating) x *= .1
     return Math.round(x)
   }
 
   get intelligence(){
-    const {sick, injured, hallucinating, doping} = this.fighter.state
+    const {sick, injured, doping} = this.fighter.state
     let x = this._baseIntelligence
     if(sick) x *= .6
     if(injured) x *= .6
-    if(hallucinating) x *= random(5) < 2 ? 1.5 : 0.4
     if(doping) x *= .8  
     return Math.round(x)
   }
@@ -71,18 +68,31 @@ export default class FighterStats {
   }
 
   get maxStamina(){
+    const {sick, injured} = this.fighter.state
     const maxStamina = Math.round(
       2 + 
-      this.strength*.7 + 
+      this.strength*.8 + 
       this.fitness*.5 + 
-      this.aggression*.5
+      this.aggression*.2
+      - (sick || injured ? 2 : 0)
     )
+
 
     return maxStamina
   }
 
   get maxSpirit(){
-    const {sick, injured, hallucinating, takingADive} = this.fighter.state
+    const {sick, injured, takingADive} = this.fighter.state
+    let x = 5
+    if(sick) x *= .8
+    if(injured) x *= .8 
+    if(takingADive) x *= .5
+
+    return Math.round(x)
+  }
+
+  get maxEnergy(){
+    const {sick, injured, takingADive} = this.fighter.state
     let x = 5
     if(sick) x *= .8
     if(injured) x *= .8 

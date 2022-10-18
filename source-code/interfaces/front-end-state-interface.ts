@@ -7,7 +7,7 @@ import { Angle } from "../types/game/angle"
 import { ManagerImage } from "../types/game/manager-image"
 import { NewsItem } from "../types/game/news-item"
 import { Profession } from "../types/game/profession"
-import { RoundStage } from "../types/game/round-stage.type"
+import { WeekStage } from "../types/game/week-stage.type"
 import SkillLevel from "../types/game/skill-level.type"
 import ChatMessage from "./chat-message.interface"
 import { Bet } from "./game/bet"
@@ -21,8 +21,7 @@ import FighterModelState from "../types/fighter/fighter-model-states"
 import { Skin } from "../types/fighter/skin"
 import { VictoryType } from "../types/game/victory-type"
 import { VideoName } from "../client/videos/videos"
-import { MatchupInfo } from "../game-components/round-controller/final-tournament/final-tournament"
-import Fight from "../game-components/abilities-general/fight/fight"
+import { MatchupInfo } from "../game-components/week-controller/final-tournament/final-tournament"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
@@ -30,8 +29,8 @@ export interface FrontEndState {
 }
 
 export class ServerUIState{
-  serverGameUIState: ServerGameUIState
-  serverPreGameUIState: ServerPreGameUIState
+  serverGameUIState?: ServerGameUIState
+  serverPreGameUIState?: ServerPreGameUIState
 }
 
 export interface ServerPreGameUIState{
@@ -47,8 +46,9 @@ export interface ClientGameUIState{
 }
 
 export interface ClientPreGameUIState {
-  clientName: string
-  clientId: string
+  clientName?: string
+  clientId?: string
+  hasGameData?: boolean
 }
 
 
@@ -60,24 +60,30 @@ export interface ClientUIState{
 export type AllManagerUIState = ClientManagerUIState & ManagerUIState
 
 
-export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Manager Report' | 'Win Options'
+export type CardName = 'Loan Shark' | 'Known Fighters' | 'Known Managers' | 'Ability' | 'Fighter' | 'Employee' | 'Job Seeker' | 'Manager' | 'Manager Report' | 'Win Options' | 'Game Explanation'
 
 
 
-export class ActiveModal{
+
+export type Modal = {
   name: CardName
-  data?: any
+  data?: unknown
 }
+
+
+
+
+
 export class ClientManagerUIState{
-  activeModal: ActiveModal
-  selectListActive: boolean
+  activeModal?: Modal
+  selectListActive?: boolean
 }
 
 export type VictoryData = {name: string, victoryType: VictoryType}
 
 export class ServerGameUIState{
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
-  roundStage: RoundStage = null
+  weekStage: WeekStage = null
   displayManagerUIState?: DisplayManagerUiData
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
@@ -85,8 +91,9 @@ export class ServerGameUIState{
   selectedVideo: SelectedVideo
   finalTournamentBoard: FinalTournamentBoard
   enoughFightersForFinalTournament: boolean
-  gameFinishedData: GameFinishedData
+  gameFinishedData?: GameFinishedData
 }
+
 
 export type SelectedVideo = {
   name: VideoName
@@ -94,8 +101,8 @@ export type SelectedVideo = {
 }
 
 export type GameFinishedData = {
-  winner: {name: string, victoryType: VictoryType, image}
-  players: {name: string, money: number}[]
+  winner: {name: string, victoryType: VictoryType}
+  players: {name: string, money: number, managerImage: ManagerImage, fighters: FighterInfo[]}[]
 }
 
 export class FinalTournamentBoard{
@@ -154,6 +161,7 @@ export default interface FighterFightState{
   retreatingFromFlanked: boolean
   strikingCenters: {front: Coords, back: Coords}
   spirit: number
+  energy: number
   repositioning: boolean,
   direction: Angle
   trapped: boolean
@@ -184,7 +192,7 @@ export interface ManagerDisplayInfo{
 }
 
 export interface DisplayManagerUiData{  
-  roundStage: RoundStage,
+  weekStage: WeekStage,
   timeLeft: number
   managersDisplayInfo: ManagerDisplayInfo[]
   nextFightFighters: string[]
@@ -214,16 +222,18 @@ export class Professional{
 
 export interface JobSeeker{
   name: string
+  characterType: 'Job Seeker'
   type: 'Fighter' | 'Professional'
   profession?: Profession
   skillLevel?: SkillLevel
   abilities?: AbilityName[]
-  goalContract?: GoalContract 
+  goalContract: GoalContract 
 }
 
 
 export class Employee extends Professional{
   actionPoints: number = 1
+  characterType: 'Employee'
   constructor(
     public profession: Profession,
     public skillLevel: SkillLevel = 3,
@@ -238,12 +248,18 @@ export class Employee extends Professional{
 
 export interface KnownFighterStat{
   lastKnownValue: any,
-  roundsSinceUpdated: number
+  weeksSinceUpdated: number
+}
+
+
+export type StatsObj = {
+  [Property in keyof FighterInfo]?: KnownFighterStat
 }
 
 
 export interface FighterInfo{
   name: string
+  characterType: 'Fighter'
   strength: KnownFighterStat
   fitness: KnownFighterStat
   intelligence: KnownFighterStat
@@ -261,8 +277,11 @@ export interface ManagerUIState{
   jobSeekers: JobSeeker[]
   nextFightFighters: string[]
   delayedExecutionAbilities: AbilityData[]
-  round: number
-  otherPlayersReady: boolean[]
+  week: number
+  otherPlayersReady: {
+    name: string
+    ready: boolean
+  }[]
   thisManagerReady: boolean
 }
 

@@ -1,19 +1,14 @@
 import * as React from 'react'
 import './pre-fight-news.view.scss'
-import {connect} from 'react-redux'
 import { NewsType } from '../../../../types/game/news-type'
-import { NewsItem } from '../../../../types/game/news-item'
-import { FrontEndState } from '../../../../interfaces/front-end-state-interface'
 import { useEffect, useState } from 'react'
-import { time } from 'node:console'
+import { frontEndState } from '../../../front-end-state/front-end-state'
+import { observer } from 'mobx-react'
 
-export interface PreFightNewsProps{
-  newsItem: NewsItem
-}
 
-const PreFightNews_View = ({
-  newsItem
-}: PreFightNewsProps) => {
+export const PreFightNews_View = observer(() => {
+
+  const {newsItem} = frontEndState.serverUIState.serverGameUIState.preFightNewsUIState
 
   const [showNewsItem, setShowNewsItem] = useState(false)
 
@@ -55,11 +50,4 @@ const PreFightNews_View = ({
     'guarded'
     )
   }
-}
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {preFightNewsUIState: {newsItem}}}
-}: FrontEndState): PreFightNewsProps => ({newsItem})
-
-export default connect(mapStateToProps)(PreFightNews_View)
-  
+})

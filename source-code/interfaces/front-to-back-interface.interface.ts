@@ -6,8 +6,6 @@ import { ServerPreGameUIState, ServerGameUIState } from "./front-end-state-inter
 
 export interface FrontToBackInterface{
   init
-  onServerPreGameUIStateUpdate: Subject<ServerPreGameUIState>
-  onServerGameUIStateUpdate: Subject<ServerGameUIState>
   sendUpdate: FromClientToHost & FromClientToGame
   
 }

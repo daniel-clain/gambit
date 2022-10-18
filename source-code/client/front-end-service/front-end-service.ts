@@ -1,169 +1,142 @@
 
-import { SetStatePreGameUI } from '../front-end-state/reducers/pre-game-ui.reducer'
-import { SetStateFunctionName } from './front-end-service-types'
-
-import { LocalService } from './local-service'
 import { websocketService } from './websocket-service'
-import {abilityService} from './ability-service-client';
-import { frontEndStore } from '../front-end-state/front-end-state'
-import { AllManagerUIState, FrontEndState, ServerGameUIState, ServerPreGameUIState } from '../../interfaces/front-end-state-interface'
-import { ReportTypes } from '../../types/game/log-item-type';
+import { CardName, Employee, JobSeeker, Modal } from '../../interfaces/front-end-state-interface'
 import { ActivityLogItem } from '../../types/game/activity-log-item';
+import { runInAction } from 'mobx';
+import { frontEndState } from '../front-end-state/front-end-state';
+import { KnownManager } from '../../game-components/manager';
+import { AbilityData } from '../../game-components/abilities-general/ability';
 
 type ConnectionType = 'Local' | 'Websockets'
 
-const frontEndService = (() => {
 
+export const connectionType: ConnectionType = 'Websockets'
 
-  const dispatch = (functionName: SetStateFunctionName, data?) => {
-    frontEndStore.dispatch({
-      type: functionName, payload: data
-    })
+export function initialSetup(){
+
+  websocketService.init()
+
+  let clientId = localStorage.getItem('clientId')
+  if(!clientId){    
+    clientId = new Date().getTime().toString()
+    localStorage.setItem('clientId', clientId)
   }
 
-  const setStatePreGameUIFunctions: SetStatePreGameUI = {
-    setName: clientName => dispatch('setName', clientName)
-  }
+  runInAction(() => {
+    frontEndState.clientUIState.clientPreGameUIState.clientId = clientId
+  })
 
-  let testTheServerTimeout = setInterval(() => {
-    testTheServer()
-  }, 1000)
-
-  let lastTestVal, pollInterval, refreshTimeout, testing
-
-  const resetTestTheServer = () => {
-    clearTimeout(refreshTimeout)
-    clearTimeout(testTheServerTimeout)
-    testTheServerTimeout = setInterval(() => {
-      testTheServer()
-    }, 1000)
+  let clientName = localStorage.getItem('clientName')
+  if(clientName){    
+    setNameAndTryToConnect(clientName)
   }
 
 
-  function testTheServer(){    
-    const {clientName, clientId} = frontEndStore.getState().clientUIState.clientPreGameUIState 
-    if(!clientName || !clientId) return 
-    websocketService.sendUpdate.testConnection()
-    refreshTimeout = setTimeout(() => {
+}
 
-      clearInterval(pollInterval)
-      clearTimeout(refreshTimeout)
-      doRefresh()
-    }, 2000);
+function setName(name: string){
+  runInAction(() => {
+    frontEndState.clientUIState.clientPreGameUIState.clientName = name
+  })
+}
 
+export const setNameAndTryToConnect = name => {
+  if(name){
+    localStorage.setItem('clientName', name)
+    setName(name)
+    connectToGameHost()
   }
+}
+export function updateGameUi(){}
 
-  const doRefresh = () => {
-    location.reload()
+function setActiveModal(name: CardName | null, data?: unknown){
+  let modalObj: Modal
+  if(!name){
+    modalObj = null
+  }else{
+    modalObj = {
+      name,
+      data
+    }
   }
+  runInAction(() => {
+    frontEndState.clientUIState.clientGameUIState.clientManagerUIState.activeModal = modalObj
+  })
+}
 
+export function convertThisManagerToKnownManager(): KnownManager{
+  const {name, image, money, loan, employees, fighters, evidence} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+  return {
+    name, image,
+    characterType: 'Known Manager',
+    money: {weeksSinceUpdated: null, lastKnownValue: money},
+    loan: {weeksSinceUpdated: null, lastKnownValue: loan},
+    employees: {weeksSinceUpdated: null, lastKnownValue: employees},
+    fighters: {weeksSinceUpdated: null, lastKnownValue: fighters},
+    evidence: {weeksSinceUpdated: null, lastKnownValue: evidence},
+  }
+}
+
+export function showLoanShark(){
+  setActiveModal('Loan Shark', )
+}
+export function showKnownFighters(){
+  setActiveModal('Known Fighters')
+}
+export function showManager(managerName: string){
+  setActiveModal('Manager', managerName)
+}
+export function showEmployee(employee: Employee){
+  setActiveModal('Employee', employee)
+}
+
+export function showOtherManagers(){
+  setActiveModal('Known Managers')
+}
+export function showReport(){
+  setActiveModal('Manager Report')
+}
+export function showWinOptions(){
+  setActiveModal('Win Options')
+}
+export function showGameExplanation(){
+  setActiveModal('Game Explanation')
+}
+export function closeModal(){
+  setActiveModal(null)
+}
+export function closeSelectList(){
+  setActiveModal(null)
+}
+export function showFighter(fighterName: string){
+  setActiveModal('Fighter', fighterName)
+}
+export function showJobSeeker(jobSeeker: JobSeeker){
+  setActiveModal('Job Seeker', jobSeeker)
+}
+export function showAbility(abilityData: AbilityData){
+  setActiveModal('Ability', abilityData)
+}
+
+
+
+
+export function connectToGameHost() {
+  const {clientName, clientId} = frontEndState.clientUIState.clientPreGameUIState
+  clientName ? websocketService.sendUpdate.connectToHost({name: clientName, id: clientId}) : alert('You must submit a name')
+}
+
+export function getSortedActivityLogs(): ActivityLogItem[]{
+  const {activityLogs} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
   
 
-  let connectionType: ConnectionType
+  const sortedLogs = activityLogs.sort((a, b) => b.weekNumber - a.weekNumber)
+  return sortedLogs
+}
 
-
-  function getSortedActivityLogs(): ActivityLogItem[]{
-    const {activityLogs} = frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
-    
-    function mainAtTop(a, b){
-      const sameRound = a.roundNumber == b.roundNumber
-      if(
-        a.roundNumber > b.roundNumber || 
-       (sameRound && a.type == 'critical') ||
-       (sameRound && a.type == 'new round')
-
-      ) return  -1 
-      else return 1
-
-    }
-
-    const sortedLogs = activityLogs.sort((a, b) => b.roundNumber - a.roundNumber)
-    return sortedLogs
-  }
-
-
-  return {
-    sendUpdate: null,
-    abilityService,
-    frontEndStore,
-    connectionType,
-    getSortedActivityLogs,
-
-    toManagerState(mapping){
-      return () => ({
-        clientUIState:{clientGameUIState:{clientManagerUIState}},
-        serverUIState:{serverGameUIState:{playerManagerUIState}}
-      }: FrontEndState): AllManagerUIState => mapping(
-        {...clientManagerUIState, ...playerManagerUIState}
-      )
-    },
-
-    toAllManagerState({
-      clientUIState:{clientGameUIState:{clientManagerUIState}},
-      serverUIState:{serverGameUIState:{playerManagerUIState}}
-    }: FrontEndState): AllManagerUIState{
-      return {...clientManagerUIState, ...playerManagerUIState}
-    },
-
-
-    setConnectionType: function (type: ConnectionType){
-      this.connectionType = type
-      
-      if(type == 'Local'){
-        const localService = new LocalService()
-        this.sendUpdate = localService.sendUpdate
-
-        dispatch('setName','Single Player')
-        localService.onServerPreGameUIStateUpdate.subscribe(
-          serverPreGameUIState => frontEndStore.dispatch(
-            {type:'Update Lobby UI', payload: serverPreGameUIState}
-          )
-        )
-        localService.onServerGameUIStateUpdate.subscribe(
-          serverGameUIState => frontEndStore.dispatch(
-            {type:'Update Game UI', payload: serverGameUIState}
-          )
-        )
-        localService.onServerPreGameUIStateUpdate.next({} as ServerPreGameUIState)
-        localService.game.functions.triggerUIUpdate()
-      }
-    
-      if(type == 'Websockets'){
-        websocketService.init()
-        this.sendUpdate = websocketService.sendUpdate
-        
-        websocketService.onServerPreGameUIStateUpdate.subscribe(
-          serverPreGameUIState => {
-            resetTestTheServer()
-            frontEndStore.dispatch(
-              {type:'Update Lobby UI', payload: serverPreGameUIState}
-            )
-          }
-        )
-        websocketService.onServerGameUIStateUpdate.subscribe(
-          serverGameUIState => {
-            resetTestTheServer()
-            frontEndStore.dispatch(
-              {type:'Update Game UI', payload: serverGameUIState}
-            )
-          }
-        )
-      }
-    },
-    setClientState: {
-      ...setStatePreGameUIFunctions
-      
-    },
-
-    connectToGameHost() {
-      const {clientName, clientId} = frontEndStore.getState().clientUIState.clientPreGameUIState
-      clientName ? this.sendUpdate.connectToHost({name: clientName, id: clientId}) : alert('You must submit a name')
-    }
-  }
-})()
-
-export {frontEndService}
-
-
-
+export function returnToLobby(){
+  runInAction(() => 
+    frontEndState.clientUIState.clientPreGameUIState.hasGameData = false
+  )
+}
 

@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { hot } from 'react-hot-loader/root';
 import { FightReport } from '../../../../../../interfaces/front-end-state-interface';
 import { fightSound } from '../../../../../sound-effects/sound-effects';
 import { FightStartAnimation } from '../../fight-start-animation/fight-start-animation';
 
 interface Props { report: FightReport, timeRemaining: number, startCountdown: number, doStartAnimation: boolean }
 
-export const OverlayMessaging = hot(({ report, timeRemaining, startCountdown, doStartAnimation }: Props) => {
+export const OverlayMessaging = ({ report, timeRemaining, startCountdown, doStartAnimation }: Props) => {
 
 
   useEffect(() => {
@@ -40,4 +39,4 @@ export const OverlayMessaging = hot(({ report, timeRemaining, startCountdown, do
       <div className="turn-phone__image"></div>
     </div>
   </>
-});
+}

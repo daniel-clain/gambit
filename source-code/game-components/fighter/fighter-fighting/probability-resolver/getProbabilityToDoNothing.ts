@@ -3,7 +3,7 @@ import FighterFighting from "../fighter-fighting";
 export const getProbabilityToDoNothing = (fighting: FighterFighting): number => {
   const { logistics, movement, fighter } = fighting
   const { aggression, intelligence } = fighting.stats
-  const { onARampage, takingADive} = fighter.state
+  const { onARampage, takingADive, hallucinating} = fighter.state
 
   if(
     logistics.onARampage ||
@@ -13,13 +13,15 @@ export const getProbabilityToDoNothing = (fighting: FighterFighting): number => 
 
   let probability = 30
   
-  probability -= aggression
+  probability -= aggression * 3
+  probability -= intelligence * 3
 
-  if(!onARampage && takingADive){
-    probability += 30
-  } else {
-    probability -= intelligence * 2
+  if(!onARampage && (takingADive)){
+    probability += 20
   }
+  if(hallucinating){
+    probability += 10
+  } 
   
 
   if (probability < 0)

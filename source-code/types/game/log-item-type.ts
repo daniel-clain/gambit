@@ -5,4 +5,4 @@ export type ReportTypes =
 'betting'
 
 export type LogItemTypes  = 
-'new round' | ReportTypes
+'new week' | ReportTypes

@@ -1,29 +1,29 @@
 import IStage from "../../../interfaces/game/stage";
-import { RoundController } from "../round-controller";
+import { WeekController } from "../week-controller";
 import { Bet } from "../../../interfaces/game/bet";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import Fighter from "../../fighter/fighter";
 import { Manager } from "../../manager";
-import { RoundStage } from "../../../types/game/round-stage.type";
+import { WeekStage } from "../../../types/game/week-stage.type";
 import { FightReport, ManagerWinnings } from "../../../interfaces/front-end-state-interface";
 import { Game } from "../../game";
 
 export default class FightDayStage implements IStage {
-  name: RoundStage = 'Fight Day'
+  name: WeekStage = 'Fight Day'
   endStage
   
   constructor(private game: Game){}
 
   start(): Promise<void> {
-    const {roundController} = this.game.has
+    const {weekController} = this.game.has
     return new Promise(resolve => {
       this.endStage = resolve
       
 
-      const {fightFinishedSubject} = this.game.has.roundController.activeFight
+      const {fightFinishedSubject} = this.game.has.weekController.activeFight
 
 
-      roundController.activeFight.start()
+      weekController.activeFight.start()
 
       fightFinishedSubject.subscribe(
         fightReport => {
@@ -34,23 +34,23 @@ export default class FightDayStage implements IStage {
         }
       )
 
-      roundController.triggerUIUpdate()
+      weekController.triggerUIUpdate()
     })   
 
   }
 
   makeItRain(fightReport: FightReport){
     this.processManagerBets(fightReport)
-    this.game.has.roundController.triggerUIUpdate()
+    this.game.has.weekController.triggerUIUpdate()
 
   }
 
 
   pause(){
-    this.game.has.roundController.activeFight.pause()
+    this.game.has.weekController.activeFight.pause()
   }
   unpause(){
-    this.game.has.roundController.activeFight.unpause()
+    this.game.has.weekController.activeFight.unpause()
   }
 
   stageFinished = () => {
@@ -63,13 +63,13 @@ export default class FightDayStage implements IStage {
   }
 
   resetFighters() {
-    this.game.has.roundController.activeFight.fighters.forEach(fighter => fighter.reset())
+    this.game.has.weekController.activeFight.fighters.forEach(fighter => fighter.reset())
   }
   
   private processManagerBets(fightReport: FightReport) {
     const { winner, draw } = fightReport
 
-    const {roundNumber} = this.game.has.roundController
+    const {weekNumber} = this.game.has.weekController
 
     const managerWinnings: ManagerWinnings[] = this.game.has.managers.map((manager: Manager) => {
 
@@ -87,19 +87,19 @@ export default class FightDayStage implements IStage {
         managersBetAmount = Math.round(manager.has.money * betSizePercentage / 100)
         manager.has.money -= managersBetAmount
         manager.functions.addToLog({
-          roundNumber,
+          weekNumber,
           message: `You spent ${managersBetAmount} on a ${managersBet.size} bet on ${managersBet.fighterName}`, type: 'betting'})
       }
       
       if(draw){
         if (managersBet) {
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `The fight was a draw, all managers will get back half of their bet money. You get back ${Math.round(managersBetAmount / 2)} of the ${managersBetAmount} you bet on ${managersBet.fighterName}`, type: 'betting'})
           manager.has.money -= Math.round(managersBetAmount / 2)
         } else {
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `The fight was a draw, all managers will get back half of their bet money.`, type: 'betting'})
 
         }
@@ -109,7 +109,7 @@ export default class FightDayStage implements IStage {
         const {playersFighterMultiplier, playersFighterWinBase, betWinningsBase, betAmountMultiplier, totalPublicityMultiplier} = gameConfiguration.fightWinnings
 
         const managerWonBet = winner.name == managersBet?.fighterName
-        const bonusFromPublicityRating = this.game.has.roundController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * totalPublicityMultiplier
+        const bonusFromPublicityRating = this.game.has.weekController.activeFight.fighters.reduce((totalPublicityRating, fighter) => totalPublicityRating += fighter.state.publicityRating, 0) * totalPublicityMultiplier
 
         if (managersBet) {
         
@@ -130,14 +130,14 @@ export default class FightDayStage implements IStage {
         }
 
 
-        if(this.game.has.roundController.thisWeekIsEvent){
+        if(this.game.has.weekController.thisWeekIsEvent){
           winnings *= 3
         }
 
         // manager logs
         if(managerWonBet){
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `
           ${managersBet.fighterName} has won the fight! Your ${managersBet.size} bet on ${managersBet.fighterName} has won you $${winnings}. 
           ${playersFighterWinnings || bonusFromPublicityRating ? 'Including: ': ''}
@@ -147,14 +147,14 @@ export default class FightDayStage implements IStage {
         }
         if(managersBet && !managerWonBet && managersFighter){
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `
           Unfortunately ${managersBet.fighterName} did not win the fight. However your sponsored fighter ${winner.name} did win earning you ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
         `, type: 'betting'})
         }
         if(!managersBet && managersFighter){
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `
           Although you did not bet on the fight, Your sponsored fighter ${winner.name} did win earning you ${playersFighterWinnings ? `$${playersFighterWinnings} sponsored fighter bonus.`:''}
         `, type: 'betting'})

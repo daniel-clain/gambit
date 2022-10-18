@@ -1,12 +1,10 @@
 
 import * as React from 'react';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { hot } from 'react-hot-loader/root';
+import { getSortedActivityLogs } from '../../../../../../front-end-service/front-end-service';
 import './log-list.scss';
 
-const {getSortedActivityLogs} = frontEndService
 
-export const LogList = hot(() => 
+export const LogList = () => 
   <div className='list'>
     {getSortedActivityLogs().map((logItem) => 
       <div
@@ -15,8 +13,8 @@ export const LogList = hot(() =>
           ${logItem.type == 'critical' ? 
             'list__row--critical' : ''
           }
-          ${logItem.type == 'new round' ? 
-            'list__row--new-round' : ''
+          ${logItem.type == 'new week' ? 
+            'list__row--new-week' : ''
           }
         `} 
         key={logItem.id}
@@ -26,4 +24,3 @@ export const LogList = hot(() =>
       </div>
     )}
   </div>
-)

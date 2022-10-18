@@ -19,13 +19,13 @@ export default class FighterCombat {
 
   async startDefending(enemy: Fighter) {   
     const {fighter, animation, movement} = this.fighting
-      if(isFacingAwayFromEnemy(enemy, fighter))
+      if(isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating)
         await movement.turnAround()
   
       return animation.start({      
         name: 'defending',
         model: 'Defending',
-        duration: 1000
+        duration: animation.speedModifier(1000)
       })
     }
   
@@ -36,7 +36,7 @@ export default class FighterCombat {
       
       this.fighting.enemyTargetedForAttack = enemy
       
-      if(isFacingAwayFromEnemy(enemy, fighter))
+      if(isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating)
         await movement.turnAround()
   
       await animation.start(
@@ -76,6 +76,7 @@ export default class FighterCombat {
           this.fighting.spirit ++  
   
         if(attackType == 'critical strike'){
+          if(this.fighting.energy == 5){}
           const chanceToGoOnARampage = random(50)
           if(chanceToGoOnARampage < this.fighting.stats.aggression * this.fighting.spirit){
             proximity.trapped = false
@@ -100,8 +101,8 @@ export default class FighterCombat {
           }
         )
         .then(() => animation.cooldown(
-          attackType == 'punch' && 700 ||
-          attackType == 'critical strike' && 1000
+          attackType == 'punch' && animation.speedModifier(700) ||
+          attackType == 'critical strike' && animation.speedModifier(1000)
         ))
       }
       else if(!landedAttack || !stillInRange){
@@ -122,8 +123,8 @@ export default class FighterCombat {
             duration: animation.speedModifier(600)
           }
         ).then(() => animation.cooldown(
-          attackType == 'punch' && 800 ||
-          attackType == 'critical strike' && 1100
+          attackType == 'punch' && animation.speedModifier(800) ||
+          attackType == 'critical strike' && animation.speedModifier(1100)
         ))
       }
       return
@@ -181,7 +182,7 @@ export default class FighterCombat {
         sound: 'Block',
         duration: animation.speedModifier(700)
       })
-      .then(() => animation.cooldown(300))
+      .then(() => animation.cooldown(animation.speedModifier(300)))
     }
     catch(reason){
       //console.log(`${fighter.name}'s block was interrupted because ${reason}`);
@@ -201,7 +202,7 @@ export default class FighterCombat {
         duration: animation.speedModifier(600),
         model: 'Dodging'
       })
-      .then(() => animation.cooldown(200))
+      .then(() => animation.cooldown(animation.speedModifier(200)))
     }
     catch(reason){
       //console.log(`${fighter.name}'s dodge was interrupted because ${reason}`);

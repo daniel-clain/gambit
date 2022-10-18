@@ -1,24 +1,22 @@
 
 import { Cost } from "../../interfaces/game/cost";
-import { AbilityTargetType } from "../../types/game/ability-target-type";
-import { AbilitySourceType } from "../../types/game/ability-source-type";
 import { ExecutesWhenOptions } from "../../types/game/executes-when-options";
 import { Game } from "../game";
+import { Employee, FighterInfo, JobSeeker } from "../../interfaces/front-end-state-interface";
+import { ManagerInfo, KnownManager } from "../manager";
 
 
-export class Ability {
+export type Ability = {
   name: AbilityName
   cost: Cost
-  possibleSources?: AbilitySourceType[]
-  notValidTargetIf?: AbilityTargetType[]
-  validTargetIf: AbilityTargetType[]
   executes: ExecutesWhenOptions | ExecutesWhenOptions[]
-  canOnlyTargetSameTargetOnce: boolean
+  canOnlyTargetSameTargetOnce?: boolean
+  canOnlyBeUsedOnce?: boolean
   disabled?: boolean
   priority?: number
-  notActiveUntilRound?: number
-  canOnlyBeUsedOnce?: boolean
+  notActiveUntilWeek?: number
 }
+
 
 
 
@@ -28,27 +26,21 @@ export interface ServerAbility extends Ability {
 }
 
 export interface ClientAbility extends Ability {
-  shortDescription
   longDescription
+  isValidTarget?(target: TargetTypes): boolean
 }
 
 
-export interface AbilitySourceInfo{
-  name: string
-  type: AbilitySourceType
-}
+export type TargetTypes = FighterInfo | KnownManager | JobSeeker
+export type SourceTypes = ManagerInfo | Employee
 
 
-export interface AbilityTargetInfo{
-  name: string
-  type: AbilityTargetType
-}
-
+export type ListOption = TargetTypes | SourceTypes
 
 export interface AbilityData{
   name: AbilityName
-  target: AbilityTargetInfo
-  source: AbilitySourceInfo
+  target: TargetTypes
+  source: SourceTypes
   additionalData?: any
 }
 

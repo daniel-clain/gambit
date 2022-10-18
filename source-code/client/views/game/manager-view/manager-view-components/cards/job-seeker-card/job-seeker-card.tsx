@@ -6,31 +6,20 @@ import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import { AbilityData } from '../../../../../../../game-components/abilities-general/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { Modal } from '../../partials/modal/modal';
-import { FrontEndState, JobSeeker } from '../../../../../../../interfaces/front-end-state-interface';
+import { JobSeeker } from '../../../../../../../interfaces/front-end-state-interface';
 import { InfoBox } from '../../partials/info-box/info-box';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { connect, ConnectedProps } from 'react-redux';
-import { hot } from 'react-hot-loader/root';
+import { observer } from 'mobx-react';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
 
+export const JobSeekerCard = observer(() =>   {
 
+  const {
+    clientUIState: {clientGameUIState: {
+      clientManagerUIState: {activeModal}
+    }}
+  } = frontEndState
 
-export interface JobSeekerCardProps{
-  jobSeeker: JobSeeker
-}
-
-const mapStateToProps = ({
-  clientUIState: {clientGameUIState: {
-    clientManagerUIState: {activeModal}
-  }}
-}: FrontEndState): JobSeekerCardProps => ({
-  jobSeeker: activeModal.data
-})
-const connector = connect(mapStateToProps)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-export const JobSeekerCard = connector(hot(
-  ({jobSeeker}: PropsFromRedux) =>   {
-
+  const jobSeeker = activeModal.data as JobSeeker
 
   const abilityData: AbilityData = {      
     name: 'Offer Contract',
@@ -84,4 +73,4 @@ export const JobSeekerCard = connector(hot(
       </div>
     </Modal>
   )
-}))
+})

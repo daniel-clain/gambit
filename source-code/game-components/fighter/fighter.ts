@@ -63,10 +63,11 @@ export default class Fighter{
     const {numberOfFights, numberOfWins, activeContract, goalContract, manager} = this.state
     return {
       name: this.name, 
+      characterType: 'Fighter',
       ...getStats(this.fighting.stats),
-      numberOfFights: {roundsSinceUpdated: 0, lastKnownValue: numberOfFights},
-      numberOfWins: {roundsSinceUpdated: 0, lastKnownValue: numberOfWins},
-      manager: {roundsSinceUpdated: 0, lastKnownValue: manager?.has.name},
+      numberOfFights: {weeksSinceUpdated: 0, lastKnownValue: numberOfFights},
+      numberOfWins: {weeksSinceUpdated: 0, lastKnownValue: numberOfWins},
+      manager: {weeksSinceUpdated: 0, lastKnownValue: manager?.has.name},
       activeContract,
       goalContract
     }
@@ -74,10 +75,10 @@ export default class Fighter{
 
     function getStats({strength, fitness, intelligence, aggression}: FighterStats){
       return {
-        strength: {roundsSinceUpdated: 0, lastKnownValue: strength}, 
-        fitness: {roundsSinceUpdated: 0, lastKnownValue: fitness}, 
-        intelligence: {roundsSinceUpdated: 0, lastKnownValue: intelligence}, 
-        aggression: {roundsSinceUpdated: 0, lastKnownValue: aggression}, 
+        strength: {weeksSinceUpdated: 0, lastKnownValue: strength}, 
+        fitness: {weeksSinceUpdated: 0, lastKnownValue: fitness}, 
+        intelligence: {weeksSinceUpdated: 0, lastKnownValue: intelligence}, 
+        aggression: {weeksSinceUpdated: 0, lastKnownValue: aggression}, 
       }
     }
     

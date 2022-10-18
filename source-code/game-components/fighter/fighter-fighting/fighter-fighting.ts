@@ -19,6 +19,7 @@ export default class FighterFighting {
 
   modelState: FighterModelState = 'Idle'
   stamina: number
+  energy: number
   spirit: number
   knockedOut: boolean = false
   _facingDirection: FacingDirection
@@ -32,6 +33,8 @@ export default class FighterFighting {
 
   otherFightersInFight: Fighter[] = []
 
+  energyRegenInterval = 1000
+  energyRegenTimeout
 
   stats: FighterStats
   movement: Movement
@@ -58,6 +61,8 @@ export default class FighterFighting {
   start() {
     this.fightStarted = true
     this.stamina = this.stats.maxStamina
+    this.energy = this.stats.maxEnergy
+    this.energyRegenTimeout = setInterval(() => this.regenEnergy, this.energyRegenInterval);
     this.otherFightersInFight = this.fighter.state.fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
     if(gameConfiguration.freezeFight) return
@@ -84,6 +89,7 @@ export default class FighterFighting {
         back: getFighterStrikingCenter(this.fighter, true)
       },
       spirit: this.spirit,
+      energy: this.energy,
       repositioning: this.movement.moveActionInProgress == 'reposition',
       direction: this.movement.movingDirection
     }
@@ -118,6 +124,12 @@ export default class FighterFighting {
   }
   get facingDirection(): FacingDirection{
     return this._facingDirection
+  }
+
+  regenEnergy(){
+    if(this.energy){
+      this.energy = this.energy + 1 + this.stats.fitness/10
+    }
   }
 
 

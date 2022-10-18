@@ -3,6 +3,7 @@ import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
 import { MoveAction } from "../../../types/fighter/action-name"
 import { Closeness } from "../../../types/fighter/closeness"
+import { isEnemyFacingAway } from "./proximity"
 
 export default class Logistics {
 
@@ -117,15 +118,16 @@ export default class Logistics {
 
   hasRetreatOpportunity(enemy: Fighter): boolean{
     const enemyAction = enemy.fighting.animation.inProgress
-    if(this.fighting.proximity.getEnemyCombatCloseness(enemy) != Closeness['striking range']){
-      console.error('should used if enemy not in striking range');
-      debugger
-      return 
-    }
+    const enemyFacingAway = isEnemyFacingAway(enemy, this.fighting.fighter)
     return (
+      enemyFacingAway ||
       this.enemyJustAttacked(enemy) ||
-      enemyAction == 'recovering' || 
-      enemyAction == 'defending'
+      !this.isEnemyTargetingThisFighter(enemy) ||
+      enemyAction == 'taking a hit' || 
+      enemyAction == 'recovering' ||
+      enemyAction == 'defending' ||
+      enemyAction == 'doing nothing' || 
+      enemyAction == 'missed critical strike'
     )
   }
 
@@ -134,23 +136,15 @@ export default class Logistics {
   }
 
   hasAttackOpportunity(enemy: Fighter): boolean{
-    const {proximity} = this.fighting
     const enemyAction = enemy.fighting.animation.inProgress
-    if(this.fighting.proximity.getEnemyCombatCloseness(enemy) != Closeness['striking range']){
-      console.error('should used if enemy not in striking range');
-      debugger
-      return 
-    }
+    const enemyFacingAway = isEnemyFacingAway(enemy, this.fighting.fighter)
     return (
-      this.justDodged || 
-      this.justBlocked || 
-      this.justTookHit ||
-      enemyAction == 'recovering' || 
-      enemyAction == 'doing cooldown' || 
-      enemyAction == 'doing nothing' || 
-      enemyAction == 'missed critical strike' || 
-      enemyAction == 'defending'
-
+      enemyFacingAway ||
+      this.enemyJustAttacked(enemy) ||
+      !this.isEnemyTargetingThisFighter(enemy) ||
+      enemyAction == 'taking a hit' || 
+      enemyAction == 'recovering' ||
+      enemyAction == 'missed critical strike'
     )
   
   }

@@ -1,12 +1,18 @@
 
+import { observer } from 'mobx-react';
 import * as React from 'react';
-import { hot } from 'react-hot-loader/root';
-import { connect } from 'react-redux';
-import { DisplayManagerUiData, FrontEndState, ManagerDisplayInfo } from "../../../../../interfaces/front-end-state-interface"
+import { ManagerDisplayInfo } from "../../../../../interfaces/front-end-state-interface"
+import { frontEndState } from '../../../../front-end-state/front-end-state';
 import './display-manager-options-ui.scss'
 
-function DisplayManagerOptionsUi({timeLeft, managersDisplayInfo, nextFightFighters, jobSeekers}: DisplayManagerUiData){
+export const DisplayManagerOptionsUi = observer(() => {
 
+  const {
+    serverUIState: { serverGameUIState: { weekStage, displayManagerUIState: {
+        timeLeft, nextFightFighters, jobSeekers, managersDisplayInfo
+      }
+    }}
+  } = frontEndState
   return (
     <div className='game-display-manager-options'>
       <div className="game-display-manager-options__background"></div>
@@ -41,16 +47,4 @@ function DisplayManagerOptionsUi({timeLeft, managersDisplayInfo, nextFightFighte
       </div>
     </div>
   )
-}
-
-
-const mapStateToProps = ({
-  serverUIState: { serverGameUIState: { roundStage, displayManagerUIState: {
-      timeLeft, nextFightFighters, jobSeekers, managersDisplayInfo
-    }
-  }}
-}: FrontEndState) => ({
-  nextFightFighters, jobSeekers, managersDisplayInfo, timeLeft, roundStage
 })
-
-export default hot(connect(mapStateToProps)(DisplayManagerOptionsUi))

@@ -18,7 +18,7 @@ export const ConfigureTestFighters = ({onFightersUpdated}) => {
   useEffect(() => {
     onFightersUpdated(fighters)
     
-  }, fighters)
+  }, [fighters])
   
   const fighterItem = (existingFighter?) => {
     existingFighter && console.log(existingFighter);

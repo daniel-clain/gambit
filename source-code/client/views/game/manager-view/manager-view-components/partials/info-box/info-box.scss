@@ -22,9 +22,9 @@
       }
     }
     .list{
-      line-height: 1.6rem;
-      display: grid;
-      grid-template-columns: auto 1fr;
+      &__row{
+        display: flex;
+      }
       &__label{        
         text-align: right;
         margin-right: 8px;
@@ -32,6 +32,18 @@
       &__value{
         flex: 1;
       }
+    }
+
+    .grid{
+      line-height: 1.6rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+
+      &__label{        
+        text-align: right;
+        margin-right: 8px;
+      }
+
     }
 
     ul{

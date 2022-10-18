@@ -1,0 +1,33 @@
+* abilities have validation of the source and target
+  - if ability is invalid, its grey
+  - if its clicked on, ability card with error msg and grey buttons
+  - if grey buttons clicked on then error alert thrown
+
+* differentiate between 2 different ideas, invalid vs requirements not met
+  - eg if you click on an employee, only abilities that employee can do are valid and only those will show, eg private agent abilities does not include promote because its invalid
+  - however, private agent has poison ability, but if you dont have a drug dealer, then the requirements are not met
+
+* logic for valid source and target are similar but different
+
+
+* problem, client doesnt have all data
+  - resolve as much on server, send client minimal
+
+
+* as you click on any job seeker, employee, fighter, manager
+  - car will show 
+  - all ability blocks will show
+    ~ invalid ones are greyed out
+
+
+* what is the scope of abilities
+  - source can only be employees and managers
+  - target can only be job seeker, fighter, manager
+  - some abilities dont have target eg sell drugs
+  - abilities activate at different points
+  - some targets can be targeted by the same ability multiple times
+
+* existing hacks
+
+
+  

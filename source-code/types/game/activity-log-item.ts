@@ -6,5 +6,5 @@ export type ActivityLogItem = {
   type?: LogItemTypes
   color1?: string
   color2?: string
-  roundNumber: number
+  weekNumber: number
 }

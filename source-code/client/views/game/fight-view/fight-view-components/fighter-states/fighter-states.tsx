@@ -1,14 +1,13 @@
 import * as React from 'react'
 import { useState } from 'react'
 import './fighter-states.scss'
-import { hot } from 'react-hot-loader/root';
 import { FighterStateData } from '../../../../../../interfaces/front-end-state-interface';
 
 export interface FighterStatesProps {
   fighterStates: FighterStateData[]
 }
 
-export const FighterStates = hot(({ fighterStates }: FighterStatesProps) => {
+export const FighterStates = ({ fighterStates }: FighterStatesProps) => {
   let [isHidden, setIsHidden] = useState(true)
   return <>
     <div
@@ -29,7 +28,7 @@ export const FighterStates = hot(({ fighterStates }: FighterStatesProps) => {
                 <span className="fighter-state__stats__fighter-stat__label">Fitness:</span>
                 {fighter.fitness ? fighter.fitness.lastKnownValue : 'unknown'}
               </div>
-              <div className="fighter-state__stats__fighter-stat fighter-state__stats__agression">
+              <div className="fighter-state__stats__fighter-stat fighter-state__stats__aggression">
                 <span className="fighter-state__stats__fighter-stat__label">Aggression:</span>
                 {fighter.aggression ? fighter.aggression.lastKnownValue : 'unknown'}
               </div>
@@ -52,9 +51,10 @@ export const FighterStates = hot(({ fighterStates }: FighterStatesProps) => {
             {fighter.injured && <div className="fighter-state__state__injured-icon"></div>}
             {fighter.doping && <div className="fighter-state__state__doped-icon"></div>}
             {fighter.takingADive && <div className="fighter-state__state__dive-icon"></div>}
+            {fighter.hallucinating && <div className="fighter-state__state__hallucinating-icon"></div>}
           </div>
         </div>
       )}
     </div>
   </>
-})
+}

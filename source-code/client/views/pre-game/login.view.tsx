@@ -1,16 +1,14 @@
+import { runInAction } from 'mobx';
+import { observer } from 'mobx-react';
 import * as React from 'react';
 import { useState } from 'react';
-import { frontEndService } from '../../front-end-service/front-end-service';
+import { setNameAndTryToConnect } from '../../front-end-service/front-end-service';
+import { frontEndState } from '../../front-end-state/front-end-state';
 
-export const Login_View = () => { 
+export const Login_View = observer(() => { 
+  const {clientPreGameUIState} = frontEndState.clientUIState
+  let [inputName, setInputName] = useState(clientPreGameUIState.clientName)
 
-  const {setClientState} = frontEndService 
-  let [inputName, setInputName] = useState(localStorage.getItem('clientName'))
-
-  const setNameAndTryToConnect = name => {
-    setClientState.setName(name)
-    frontEndService.connectToGameHost()
-  }
 
   return (
     <div className='login-ui'>    
@@ -21,7 +19,7 @@ export const Login_View = () => {
           id="name-input" 
           placeholder="name" 
           onKeyUp={({code}) => code == 'Enter' && setNameAndTryToConnect(inputName)}
-          onInput={({currentTarget: {value}}) => setInputName(value)}
+          onChange={({target: {value}}) => setInputName(value)}
           value={inputName || ''}
         />
         <button id="submit-name-button" type='submit'
@@ -37,4 +35,4 @@ export const Login_View = () => {
       </div>
     </div>
   )
-}
+})

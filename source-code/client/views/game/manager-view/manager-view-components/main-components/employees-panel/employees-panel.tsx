@@ -2,29 +2,14 @@
 import * as React from 'react';
 import '../employee-list.scss'
 import './employees-panel.scss'
-import {connect, ConnectedProps} from 'react-redux'
-import { AllManagerUIState, Employee, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { hot } from 'react-hot-loader/root';
+import {showEmployee} from '../../../../../../front-end-service/front-end-service';
+import { observer } from 'mobx-react';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
 
-const mapState = (s: FrontEndState): {employees: Employee[]} => {
-  const {managerInfo:{employees}} = frontEndService.toAllManagerState(s)
-  return {employees}
-}
-  
+export const EmployeesPanel = observer(() => {
 
+  const {employees} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
 
-const mapDispatch = {
-  showEmployee: (e: Employee) => ({type: 'showEmployee', payload: e})
-}
-const connector = connect(mapState, mapDispatch)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-
-export const EmployeesPanel = connector(hot(
-  ({employees, showEmployee}: PropsFromRedux) => {
-
-  
   return (
   <div className='panel employees'>
     <div className='heading'>Employees</div>
@@ -47,4 +32,4 @@ export const EmployeesPanel = connector(hot(
     </div>
   </div>
   )
-}))
+})

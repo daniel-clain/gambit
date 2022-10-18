@@ -1,109 +1,77 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-general/ability';
-import { ManagerInfo } from '../../../../../../../game-components/manager';
+import { AbilityData, ClientAbility, ListOption, SourceTypes, TargetTypes } from '../../../../../../../game-components/abilities-general/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
-import { ListOption } from '../../../../../../../types/game/list-option';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../../../interfaces/front-end-state-interface';
+import { FighterInfo } from '../../../../../../../interfaces/front-end-state-interface';
 import '../modal-card.scss';
 import SelectList from '../select-list/select-list';
 import './ability-card.scss';
-import {connect, ConnectedProps} from 'react-redux'
 import { Modal } from '../../partials/modal/modal';
 import { InfoBox } from '../../partials/info-box/info-box';
 import { OfferContractPartial } from './offer-contract-partial';
-import { hot } from 'react-hot-loader/root';
 import { CheckboxItem } from '../../partials/checkbox-item/checkbox-item';
-import { Evidence, IllegalActivityName, IllegalActivityName_Set } from '../../../../../../../types/game/evidence.type';
+import { Evidence, IllegalActivityName_Set } from '../../../../../../../types/game/evidence.type';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
+import { websocketService } from '../../../../../../front-end-service/websocket-service';
+import { closeModal, showFighter, showManager } from '../../../../../../front-end-service/front-end-service';
+import { observer } from 'mobx-react';
+import { abilities } from '../../../../../../client-abilities/client-abilities';
+import { canOnlyBeTargetedOnceConflict, getAppropriateSource, getPossibleSources, getPossibleTargets, validateAbilityConfirm } from '../../../../../../front-end-service/ability-service-client';
+
+export const AbilityCard = observer(() => {
+
+  const {
+    clientUIState: {clientGameUIState: {
+      clientManagerUIState: {activeModal}
+    }},
+    serverUIState: {serverGameUIState: {
+      enoughFightersForFinalTournament,
+      playerManagerUIState
+    }}
+  } = frontEndState
+
+  const {
+    managerInfo,
+    delayedExecutionAbilities,
+    jobSeekers,
+    week
+  } = playerManagerUIState
+  const abilityData = activeModal.data as AbilityData
 
 
-
-export interface AbilityCardProps{
-  delayedExecutionAbilities: AbilityData[]
-  abilityData: AbilityData
-  nextFightFighters: string[]
-  managerInfo: ManagerInfo
-  jobSeekers: JobSeeker[]
-  round: number
-  enoughFightersForFinalTournament: boolean
-}
-
-
-
-const mapState = ({
-  clientUIState: {clientGameUIState: {
-    clientManagerUIState: {activeModal}
-  }},
-  serverUIState: {serverGameUIState: {
-    enoughFightersForFinalTournament,
-    playerManagerUIState: {
-      managerInfo,
-      delayedExecutionAbilities,
-      jobSeekers,
-      nextFightFighters,
-      round
-    }
-  }}
-}: FrontEndState): AbilityCardProps => ({
-  managerInfo,
-  delayedExecutionAbilities,
-  jobSeekers,
-  nextFightFighters,
-  abilityData: activeModal.data,
-  round,
-  enoughFightersForFinalTournament
-})
-
-const mapDispatch = {
-  showFighter: name => ({type: 'showFighter', payload: name}),
-  showManager: name => ({type: 'showManager', payload: name}),
-  closeModal: () => ({type: 'closeModal'})
-}
-
-const connector = connect(mapState, mapDispatch)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-export const AbilityCard = connector(hot(({
-  abilityData,
-  managerInfo,
-  jobSeekers,
-  delayedExecutionAbilities,
-  nextFightFighters,
-  showFighter,
-  closeModal,
-  round,
-  enoughFightersForFinalTournament
-}: PropsFromRedux) => {
-
-
-  let {sendUpdate, abilityService} = frontEndService 
 
   const [state, setState] = useState({
     listOptions: [] as ListOption[],
     selectListType: null as 'source' | 'target',
   })
 
-  let [activeAbility, setActiveAbility] = useState({...abilityData})
+  const [activeAbility, setActiveAbility] = useState({...abilityData})
 
 
-  const clientAbility: ClientAbility = abilityService.abilities.find(ability => ability.name == activeAbility.name)
-  if(!activeAbility.source)
-    activeAbility.source = abilityService.getAppropriateSource(clientAbility, managerInfo)
+  const clientAbility: ClientAbility = abilities.find(ability => ability.name == activeAbility.name)
+  const possibleTargets = getPossibleTargets(clientAbility, managerInfo, jobSeekers)
+  const possibleSources = getPossibleSources(clientAbility, managerInfo)
+
+
+  if(!activeAbility.source){
+    activeAbility.source = getAppropriateSource(clientAbility, managerInfo)
+  }
 
 
 
 
-  if(!clientAbility)
-    return <div>....loading</div>
-    const {longDescription, validTargetIf, name, cost, possibleSources} = clientAbility
-    const {target, source } = activeAbility
+
+  const {longDescription, name, cost} = clientAbility
+  const {target, source } = activeAbility
+  
 
     
   let warningMessage
-  if(abilityService.canOnlyBeTargetedOnceConflict(clientAbility, activeAbility, delayedExecutionAbilities, managerInfo))
+  
+  if(canOnlyBeTargetedOnceConflict(clientAbility, activeAbility, delayedExecutionAbilities, managerInfo)){
     warningMessage = `${name} can only target the same target once`
+  }
 
   const abilityRequirementsInfo: InfoBoxListItem[] = [
       {label: 'Money Cost', value: cost.money},
@@ -115,13 +83,7 @@ export const AbilityCard = connector(hot(({
     })
   }
 
-  const noNeedForSourceSelect: boolean = (
-    !(possibleSources?.length) ||
-    possibleSources.length == 1 && possibleSources[0] == 'Manager'
-  )
-
-  const noNeedForTargetSelect: boolean = !validTargetIf.length
-
+  const noNeedForTargetSelect: boolean = clientAbility.isValidTarget == undefined
 
   return (
     <Modal>
@@ -146,7 +108,7 @@ export const AbilityCard = connector(hot(({
           </div>
         </div>
 
-        {noNeedForSourceSelect && noNeedForTargetSelect ? '' : <>
+        <>
           <hr/>
               
           <div className='ability-card__variables'>
@@ -157,21 +119,25 @@ export const AbilityCard = connector(hot(({
                   <div className="target__value">{target.name}</div> :
                   <div className="target__value target__value--required">target required</div>
                 }
-                <button className='standard-button target__set-button' 
-                onClick={() => showSelectList('target')}>Set Target</button>
+                <button 
+                  disabled={!possibleTargets.length}
+                  className='standard-button target__set-button' 
+                  onClick={() => showSelectList('target')}
+                >Set Target</button>
               </div>
             }
-            {noNeedForSourceSelect ? '' :
-              <div className='source'>
-                <label className='source__label'>Source:</label>
-                {source ?
-                  <div className="source__value">{source.name}</div> :
-                  <div className="source__value source__value--required">source required</div>
-                }
-                <button className='standard-button source__set-button' 
-                onClick={() => showSelectList('source')}>Set Source</button>
-              </div>
-            }
+            <div className='source'>
+              <label className='source__label'>Source:</label>
+              {source ?
+                <div className="source__value">{source.name}</div> :
+                <div className="source__value source__value--required">source required</div>
+              }
+              <button 
+                disabled={!possibleSources.length}
+                className='standard-button source__set-button' 
+                onClick={() => showSelectList('source')}
+              >Set Source</button>
+            </div>
 
             {abilityData.name == 'Prosecute Manager' &&
             activeAbility.target ? 
@@ -196,7 +162,7 @@ export const AbilityCard = connector(hot(({
                 })}
               </div> : ''}
           </div>
-        </>}
+        </>
 
         {activeAbility.name == 'Offer Contract' ?
           <OfferContractPartial {...{activeAbility, setActiveAbility, jobSeekers, managerInfo}}/> : ''
@@ -209,8 +175,7 @@ export const AbilityCard = connector(hot(({
         {state.selectListType &&
           <Modal onClose={resetSelectList}>
             <SelectList 
-              managerInfo={managerInfo}
-              nextFightFighters={nextFightFighters}
+              playerManagerUIState={playerManagerUIState}
               list={state.listOptions} 
               type={state.selectListType}
               itemSelected={listItemSelected.bind(this)}
@@ -227,17 +192,16 @@ export const AbilityCard = connector(hot(({
 
   function showSelectList(type: 'source' | 'target'){
     if(type == 'source')
-      setState({...state, listOptions: abilityService.getPossibleSources(clientAbility, managerInfo), selectListType: type})
+      setState({...state, listOptions: possibleSources, selectListType: type})
     if(type == 'target')
-      setState({...state, listOptions: abilityService.getPossibleTargets(clientAbility, managerInfo, jobSeekers, nextFightFighters), selectListType: type})
+      setState({...state, listOptions: possibleTargets, selectListType: type})
   }
 
   
   function confirmButtonClicked(){
     try{
-      abilityService.validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities, round, enoughFightersForFinalTournament)
-
-      sendUpdate.abilityConfirmed(activeAbility)
+      validateAbilityConfirm(clientAbility, managerInfo, activeAbility, delayedExecutionAbilities, week, enoughFightersForFinalTournament)
+      websocketService.sendUpdate.abilityConfirmed(activeAbility)
     }
     catch(error){
       console.log(error)
@@ -249,11 +213,16 @@ export const AbilityCard = connector(hot(({
     closeModal()
 
     if(activeAbility.name == 'Research Fighter'){
-      let {knownFighters} = frontEndService.frontEndStore.getState().serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+      let {knownFighters} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
       const fighter: FighterInfo = knownFighters.find(f => f.name == target.name)
       
       showFighter(fighter.name)
     }   
+    if(activeAbility.name == 'Investigate Manager'){
+      let knownManager = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo.otherManagers.find(m => m.name == target.name)
+      
+      showManager(knownManager.name)
+    } 
   }
 
   function onEvidenceToggle(evidence: Evidence, index: number){
@@ -276,15 +245,18 @@ export const AbilityCard = connector(hot(({
     setState({...state, listOptions: undefined, selectListType: undefined})
   }
 
-  function listItemSelected(item: any, type: 'source' | 'target'){
+  function listItemSelected(item: TargetTypes | SourceTypes, type: 'source' | 'target'){
+    console.log('item :>> ', item);
     if(type == 'source'){
-      setActiveAbility({...activeAbility, source: item})
+      const source = item as SourceTypes
+      setActiveAbility({...activeAbility, source})
     }
     else if(type == 'target'){
-      setActiveAbility({...activeAbility, target: item})
+      const target = item as TargetTypes
+      setActiveAbility({...activeAbility, target})
     }
     resetSelectList()
   }
 
   
-}))
+})

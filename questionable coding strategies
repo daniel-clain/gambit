@@ -1,0 +1,26 @@
+/*  when i have a typescript union type, when im in a block and i want to cast the type as one of the unions, my strategy is as follows */
+  isValidTarget(target: FighterInfo | KnownManager) {
+    let isValid = false
+    ifTargetIsFighter(target, fighter => {
+      isValid = fighterInNextFight(fighter) && !fighterOwnedByManager(fighter)
+    })
+    ifTargetIsManager(target, manager => {
+      isValid = !isThisManager(manager)
+    })
+    return isValid
+  }
+
+  export function ifTargetIsFighter(target: TargetTypes, effect: (fighter: FighterInfo) => void){
+    if('numberOfFights' in target){
+      effect(target)
+    }
+  }
+  
+  export function ifTargetIsManager(target: TargetTypes, effect: (manager: KnownManager) => void){
+    if('money' in target){
+      effect(target)
+    }
+  }
+  /*  i came up with idea cos inside the if block, typescript treats it as that type, but i abstracted the function cos it was too verbose to have everywhere, */
+
+  /* it works but i wonder if there is a better way */

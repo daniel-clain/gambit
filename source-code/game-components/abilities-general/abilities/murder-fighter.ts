@@ -1,17 +1,14 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import { Employee, FighterInfo } from "../../../interfaces/front-end-state-interface"
+import { Employee } from "../../../interfaces/front-end-state-interface"
 import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
 import { handleUnderSurveillance } from "./do-surveillance"
 
 
-const murderFighter: Ability = {
+export const murderFighter: Ability = {
   name: 'Murder Fighter',
   cost: { money: 500, actionPoints: 1 },
-  possibleSources: ['Hitman'],
-  notValidTargetIf: ['fighter owned by manager'],
-  validTargetIf: ['fighter in next fight'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
   
@@ -20,7 +17,7 @@ const murderFighter: Ability = {
 export const murderFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
-    const {roundNumber} = game.has.roundController
+    const {weekNumber} = game.has.weekController
     
     const fightersManager = fighter.state.manager
     let hitman: Employee
@@ -31,18 +28,6 @@ export const murderFighterServer: ServerAbility = {
         hitmansManager = manager
         break
       }
-    }
-
-    if(hitmansManager.state.beingProsecuted){
-      return
-    }
-
-    
-    if(fighter.state.dead){
-      hitmansManager.functions.addToLog({
-        roundNumber,
-        message: `Attempt to murder ${abilityData.target.name} failed because he was already found dead`, type: 'employee outcome'})
-      return
     }
 
     
@@ -70,37 +55,37 @@ export const murderFighterServer: ServerAbility = {
     }
     if(success){
       game.functions.removeFighterFromTheGame(fighter.name, game)
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'fighter murdered',
         headline: `${fighter.name} Found Dead!`,
         message: `${fighter.name} was found in a pool of his own blood, he is dead.`
       })
       if(fightersManager)
         fightersManager.functions.addToLog({
-          roundNumber,
+          weekNumber,
           type: 'critical', message: `Your fighter, ${fighter.name}, has been murdered`})
         
       hitmansManager.functions.addToLog({
-        roundNumber,
+        weekNumber,
         type: 'employee outcome',
         message: `Hitman ${hitman.name} has murdered fighter ${abilityData.target.name}`
       })
     }
     else if(guardBlocked){
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'fighter',
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${fighter.name} from an attempted murder`
       })      
       hitmansManager.functions.addToLog({
-        roundNumber,        
+        weekNumber,        
         type: 'employee outcome',
         message: `Hitman ${hitman.name} failed to murder target fighter ${abilityData.target.name} because he was guarded by thugs`
       })
     }
     else
       hitmansManager.functions.addToLog({
-        roundNumber,        
+        weekNumber,        
         type: 'employee outcome', 
         message: `Hitman ${hitman.name} failed to murder target fighter ${abilityData.target.name}`
       })
@@ -108,11 +93,4 @@ export const murderFighterServer: ServerAbility = {
   },
   ...murderFighter
 }
-
-export const murderFighterClient: ClientAbility = {
-  shortDescription: 'Attempt to kill fighter',
-  longDescription: 'Chance to kill target fighter',
-  ...murderFighter
-}
-
 

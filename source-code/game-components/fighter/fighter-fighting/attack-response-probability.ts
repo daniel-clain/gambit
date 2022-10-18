@@ -32,6 +32,10 @@ export default class AttackResponseProbability {
 
     let probability: number = 1
 
+    if(enemy.state.hallucinating){
+      probability += 4
+    }
+
     if(animation.inProgress == 'defending')
       probability += 8
 
@@ -51,6 +55,9 @@ export default class AttackResponseProbability {
     if(this.hasLowStamina())
       probability ++
 
+      if(fighter.state.hallucinating){
+        probability -= 6
+      }
       
     if(animation.inProgress == 'recovering')
     probability = probability * 0.3  + spirit * .4
@@ -95,6 +102,10 @@ export default class AttackResponseProbability {
       
     if(this.hasFullStamina())
       probability += 1
+
+    if(enemy.state.takingADive){
+      probability -= 6
+    }
 
       
     if(animation.inProgress == 'recovering')

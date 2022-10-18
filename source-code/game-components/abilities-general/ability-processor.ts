@@ -16,13 +16,14 @@ import { dopeFighterServer } from './abilities/dope-fighter';
 import { random } from '../../helper-functions/helper-functions';
 import { ContractOffer, GoalContract } from '../../interfaces/game/contract.interface';
 import { Game } from '../game';
-import { Manager } from '../manager';
-import { Employee } from '../../interfaces/front-end-state-interface';
 import { investigateManagerServer } from './abilities/investigate-manager';
 import { dominationVictoryServer } from './abilities/domination-victory';
 import { sinisterVictoryServer } from './abilities/sinister-victory';
 import { wealthVictoryServer } from './abilities/wealth-victory';
 import { takeADiveServer } from './abilities/take-a-dive';
+
+import { getAbilitySourceManager } from './ability-service-server';
+import { ifSourceIsEmployee, ifSourceIsManager, ifTargetIsFighter } from '../../client/front-end-service/ability-service-client';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]
@@ -57,7 +58,7 @@ export class AbilityProcessor{
 
   executeAbilities(executes: ExecutesWhenOptions){
     
-    if(executes == 'End Of Round'){
+    if(executes == 'End Of Week'){
       const offerContractInstances = this.delayedExecutionAbilities.filter((delayedAbility => delayedAbility.name == 'Offer Contract'))
       const offerContractAbility = this.abilities.find(ability => ability.name == 'Offer Contract')
       this.handleOfferContractInstances(offerContractAbility, offerContractInstances)
@@ -80,9 +81,34 @@ export class AbilityProcessor{
     })
     .sort((a, b) => !a.ability.priority ? 1 : !b.ability.priority ? -1 : a.ability.priority-b.ability.priority)
 
-    sortedAbilitiesToExecute.forEach(({ability, abilityData}: {ability: ServerAbility, abilityData: AbilityData}) => 
-      ability.execute(abilityData, this.game, executes)
-    )
+    sortedAbilitiesToExecute.forEach(({ability, abilityData}: {ability: ServerAbility, abilityData: AbilityData}) => {
+      
+      const {source, target} = abilityData
+      if(target?.characterType == 'Fighter'){
+      
+        
+        const fighter = this.game.has.fighters.find(fighter => fighter.name == target.name)
+        
+        
+        if(fighter.state.dead){
+          const {weekNumber} = this.game.has.weekController
+          const sourceManager = getAbilitySourceManager(source, this.game)
+          sourceManager.functions.addToLog({
+            weekNumber,
+            message: `Attempt to ${ability.name} targeting ${target.name} failed because he was found dead`, type: 'employee outcome'
+          })
+          return
+        }
+        else {
+          ability.execute(abilityData, this.game, executes)
+        }
+
+      }
+      else{
+        ability.execute(abilityData, this.game, executes)
+      }
+
+    })
 
 
     this.game.functions.triggerUIUpdate()
@@ -101,14 +127,14 @@ export class AbilityProcessor{
             if(isFinalTimeExecuted) return true
 
             if(
-              executeTime == 'End Of Round' && 
+              executeTime == 'End Of Week' && 
               executeTime == executes
             ) return true
 
             if(
               executeTime == 'End Of Manager Options Stage' && 
               executeTime == executes && 
-              !abilityExecutes.includes('End Of Round')
+              !abilityExecutes.includes('End Of Week')
             ) {
               return true
             }
@@ -117,7 +143,7 @@ export class AbilityProcessor{
               executeTime == 'Instantly' && 
               executeTime == executes && 
               !abilityExecutes.includes('End Of Manager Options Stage') &&
-              !abilityExecutes.includes('End Of Round')
+              !abilityExecutes.includes('End Of Week')
             ) return true
 
           }, false)
@@ -129,26 +155,19 @@ export class AbilityProcessor{
     }
   }
 
-  getAbilitySourceManager(abilityData: AbilityData):Manager{
-    if(abilityData.source.type == 'Manager'){
-      return this.game.has.managers.find(manager => manager.has.name == abilityData.source.name)
-    }
-    else{
-      return this.game.has.managers.find(manager => manager.has.employees.some(employee => employee.name == abilityData.source.name))
-    }
-  }
+  
 
   processSelectedAbility = (abilityData: AbilityData) => {
+    const {target, source} = abilityData
     const ability: ServerAbility = this.abilities.find(ability => ability.name == abilityData.name)
     this.subtractCost(ability, abilityData)
-    console.log();
-    const {roundNumber} = this.game.has.roundController
+    const {weekNumber} = this.game.has.weekController
 
-    const manager = this.getAbilitySourceManager(abilityData)
+    const manager = getAbilitySourceManager(source, this.game)
 
     manager.functions.addToLog({
-      message: `Used ability ${abilityData.name}${abilityData.target ? `, targeting ${abilityData.target.name}` : ''}`,
-      roundNumber
+      message: `Used ability ${abilityData.name}${target ? `, targeting ${target.name}` : ''}`,
+      weekNumber
     })
     
     ability.onSelected?.(abilityData, this.game)
@@ -167,23 +186,26 @@ export class AbilityProcessor{
   }
 
   private subtractCost(ability: ServerAbility, abilityData: AbilityData){
-    const manager = this.getAbilitySourceManager(abilityData)
-    if(abilityData.source.type == 'Manager'){
-      manager.has.actionPoints -= ability.cost.actionPoints
-    }
-    else{
-      const employee: Employee = manager.has.employees.find(employee => employee.name == abilityData.source.name)
-      employee.actionPoints -= ability.cost.actionPoints
-    }
-    manager.has.money -= ability.cost.money
+    const {source} = abilityData
 
-    //manager.functions.addToLog({message: `${abilityData.source.name} has used ${ability.name} ${abilityData.target ? 'targeting ' + abilityData.target.name : ''}${ability.executes == 'End Of Round' ? ', it will resolve at the end of the round' : '' }`})
+    const manager = getAbilitySourceManager(source, this.game)
+
+    ifSourceIsManager(source, () => 
+      manager.has.actionPoints -= ability.cost.actionPoints
+    )
+    
+    ifSourceIsEmployee(source, () => {
+      const employee = manager.has.employees.find(e => e.name == source.name)
+      employee.actionPoints -= ability.cost.actionPoints
+    })
+    
+    manager.has.money -= ability.cost.money
 
   }
 
   private handleOfferContractInstances(offerContractAbility: ServerAbility, offerContractInstances: AbilityData[]){
-    const {roundController, fighters, managers} = this.game.has
-    const {jobSeekers, roundNumber} = roundController
+    const {weekController, fighters} = this.game.has
+    const {jobSeekers, weekNumber} = weekController
     const offerContractTargets = getOffersArray()
 
   
@@ -213,11 +235,11 @@ export class AbilityProcessor{
           offerContractAbility.execute(offerContractInstance, this.game)
         else{        
           const {target} = offerContractInstance
-          const manager = this.getAbilitySourceManager(offerContractInstance)
-          const {roundNumber} = this.game.has.roundController
+          const manager = getAbilitySourceManager(offerContractInstance.source, this.game)
+          const {weekNumber} = this.game.has.weekController
   
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `${target.name} (${jobSeeker?.profession ? jobSeeker.profession : jobSeeker.type}) rejected your contract offer because he has accepted the offer of another manager`, 
             type: 'report'})
         }
@@ -248,9 +270,11 @@ export class AbilityProcessor{
 
         const randomThreshold = (random(5) + 5) / 10
         if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold){
-          const manager = source.type == 'Manager' ? managers.find(manager => manager.has.name == source.name) : managers.find(manager => manager.has.employees.some(employee => employee.name == source.name))
+          
+          const manager = this.getAbilitySourceManager(offerContractInstance)
+
           manager.functions.addToLog({
-            roundNumber,
+            weekNumber,
             message: `Job seeker ${target.name} (${!jobSeeker ? 'Fighter' : jobSeeker.type == 'Fighter' ? 'Fighter' : jobSeeker.profession}) rejected your contract offer because you offered too little`, 
             type: 'report'})
           return

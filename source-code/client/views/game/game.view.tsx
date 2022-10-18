@@ -1,31 +1,26 @@
-import { hot } from 'react-hot-loader/root';
+
 import * as React from 'react';
-import {connect} from 'react-redux'
-import { DisconnectedPlayerVote, FinalTournamentBoard, FrontEndState, SelectedVideo } from '../../../interfaces/front-end-state-interface';
 import {Manager_View} from './manager-view/manager.view'
 import {Fight_View} from './fight-view/fight.view'
-import PreFightNews_View from './pre-fight-news-view/pre-fight-news.view'
-import DisconnectedPlayerModal from './disconnected-player-modal/disconnected-player-modal'
-import { RoundStage } from '../../../types/game/round-stage.type';
-import DisplayManagerOptionsUi from './manager-view/display-manager-options-ui/display-manager-options-ui';
+import {PreFightNews_View} from './pre-fight-news-view/pre-fight-news.view'
+import {DisconnectedPlayerModal} from './disconnected-player-modal/disconnected-player-modal'
+import {DisplayManagerOptionsUi} from './manager-view/display-manager-options-ui/display-manager-options-ui';
 import {ShowVideo_View} from './show-video-view/show-video.view';
-import { VideoName } from '../../videos/videos';
+import { frontEndState } from '../../front-end-state/front-end-state';
 import { FinalTournament_View } from './final-tournament/final-tournament.view';
+import { observer } from 'mobx-react';
+import { websocketService } from '../../front-end-service/websocket-service';
+import { PostGame_View } from './post-game/post-game.view';
 
 
 
-interface GameProps {
-  roundStage: RoundStage
-  disconnectedPlayerVotes: DisconnectedPlayerVote[]
-  clientName: string
-  selectedVideo: SelectedVideo
-  finalTournamentBoard: FinalTournamentBoard
-}
-
-
-const Game = ({
-  roundStage, disconnectedPlayerVotes, clientName, selectedVideo, finalTournamentBoard
-}: GameProps) => {
+export const Game_View = observer(() => {
+  const {
+    clientUIState: { clientPreGameUIState: {clientName}},
+    serverUIState: { serverGameUIState: {
+      disconnectedPlayerVotes, weekStage, finalTournamentBoard, selectedVideo, gameFinishedData
+    }}
+  } = frontEndState
 
   const getActiveView = () => {
     if(selectedVideo){
@@ -34,7 +29,11 @@ const Game = ({
     if(finalTournamentBoard){
       return <FinalTournament_View />
     }
-    switch (roundStage) {
+    if(gameFinishedData){
+      
+      return <PostGame_View/>
+    }
+    switch (weekStage) {
       case 'Manager Options': 
         return clientName == 'Game Display' ?
           <DisplayManagerOptionsUi/> :
@@ -42,7 +41,7 @@ const Game = ({
       case 'Pre Fight News': return <PreFightNews_View />
       case 'Fight Day': return <Fight_View />
       default: return <div>
-        no round stage, something went wrong</div>
+        no week stage, something went wrong</div>
     }
   }
 
@@ -55,18 +54,4 @@ const Game = ({
       {getActiveView()}
     </div>
   )
-}
-
-const mapStateToProps = ({
-  clientUIState: { clientPreGameUIState: {clientName}},
-  serverUIState: { serverGameUIState: {
-    disconnectedPlayerVotes, roundStage, finalTournamentBoard, selectedVideo
-  }}
-}: FrontEndState): GameProps => ({
-  disconnectedPlayerVotes,
-  roundStage,
-  clientName,
-  finalTournamentBoard, selectedVideo
 })
-
-export const Game_View = hot(connect(mapStateToProps)(Game))

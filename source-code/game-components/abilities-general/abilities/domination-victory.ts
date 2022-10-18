@@ -1,19 +1,15 @@
 
 import gameConfiguration from "../../../game-settings/game-configuration"
 import { Game } from "../../game"
-import { FinalTournament } from "../../round-controller/final-tournament/final-tournament"
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { FinalTournament } from "../../week-controller/final-tournament/final-tournament"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 
-const dominationVictory: Ability = {
+export const dominationVictory: Ability = {
   name: 'Domination Victory',
   cost: { money: 10000, actionPoints: 1 },
-  possibleSources: ['Manager'],
-  notValidTargetIf: ['fighter'],
-  validTargetIf: [],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
-  notActiveUntilRound: 20,
-  canOnlyBeUsedOnce: true
+  notActiveUntilWeek: 20,
 }
 
 export const dominationVictoryServer: ServerAbility = {
@@ -33,12 +29,6 @@ export const dominationVictoryServer: ServerAbility = {
     game.state.isShowingVideo = video
     
   },
-  ...dominationVictory
-}
-
-export const dominationVictoryClient: ClientAbility = {
-  shortDescription: 'Win the game by having the most dominant fighters',
-  longDescription: 'Win the game by having the most dominant fighters. Force a tournament between the best fighters in the game. Whichever fighter wins the tournament, that fighters manager wins the game',
   ...dominationVictory
 }
 

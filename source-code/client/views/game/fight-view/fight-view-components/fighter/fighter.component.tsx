@@ -29,7 +29,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		block: blockSound    
 	}
 
-	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, repositioning, direction, trapped} = fighterFightState
+	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, energy, repositioning, direction, trapped} = fighterFightState
 
 	const soundsToPlay = soundsMade.reduce((soundsToPlay, soundMade) => {
 		if(processedSounds.some(sound => sound.time == soundMade.time))
@@ -44,14 +44,18 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 	if(soundsToPlay.length > 0){
 		soundsToPlay.forEach((sound: SoundTime) => {
 			const {punch, criticalStrike, dodge, block} = soundEffects
-			//console.log(`**FighterComponent** - ${name} makes sound ${sound.soundName}`)
+			console.log(`**FighterComponent** - ${name} makes sound ${sound.soundName}`)
 			switch(sound.soundName){
-				case 'Punch' : return punch.play().catch(() => null)
-				case 'Critical Strike' : return criticalStrike.play().catch(() => null)
-				case 'Dodge' : return dodge.play().catch(() => null)
-				case 'Block' : return block.play().catch(() => null)
+				case 'Punch' : return punch.play().catch(soundDidntPlay)
+				case 'Critical Strike' : return criticalStrike.play().catch(soundDidntPlay)
+				case 'Dodge' : return dodge.play().catch(soundDidntPlay)
+				case 'Block' : return block.play().catch(soundDidntPlay)
 			}
 		})
+	}
+
+	function soundDidntPlay(e){
+		console.log('sound didnt play :>> ', e);
 	}
 
 	
@@ -125,6 +129,14 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 					spirit == 0 ? '😨' : '👽'
 
 				}</span>
+				<div className='fighter__energy-bar'>
+					<div 
+						className='fighter__energy-bar__inner' 
+						style={{width: `${Math.round(energy / 10)}%` }}
+					>
+						
+						</div>
+				</div>
 			</div>
 			{retreatingFromFlanked && <div className='fighter__flanked' style={flankedStyle}></div>}
 			{repositioning && <div className='fighter__repositioning' style={repositioningStyle}></div>}

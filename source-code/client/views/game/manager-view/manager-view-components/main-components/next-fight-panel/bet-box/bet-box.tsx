@@ -1,24 +1,17 @@
 import * as React from 'react';
 import './bet-box.scss'
-import {connect} from 'react-redux'
 import gameConfiguration from '../../../../../../../../game-settings/game-configuration';
 import { Bet } from '../../../../../../../../interfaces/game/bet';
-import {frontEndService} from '../../../../../../../front-end-service/front-end-service';
-import { FrontEndState } from '../../../../../../../../interfaces/front-end-state-interface';
+import { websocketService } from '../../../../../../../front-end-service/websocket-service';
+import { frontEndState } from '../../../../../../../front-end-state/front-end-state';
 
-export interface BetBoxProps{
-  fighterName: string
-  money: number
-  nextFightBet: Bet
-}
+export const BetBox = (({fighterName}: {fighterName: string}) => {
 
-const BetBox = ({
-  fighterName,
-  money, 
-  nextFightBet
-}: BetBoxProps) => {
+  const {sendUpdate} = websocketService
+  const {managerInfo
+  } = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {money, nextFightBet, } = managerInfo
 
-  const {sendUpdate} = frontEndService 
 
   const getBetAmount = percent => money <= 0 ? 0 : 
     Math.round(percent/100 * money)
@@ -31,26 +24,26 @@ const BetBox = ({
   return (
     <div className="bet-box">
       <div 
-        className={`bet-box__heading ${nextFightBet && nextFightBet.fighterName == fighterName ? 'bet-box__heading--selected' : ''}`}
+        className={`bet-box__heading ${nextFightBet?.fighterName == fighterName ? 'bet-box__heading--selected' : ''}`}
         onClick={() => sendUpdate.betOnFighter(null)}
       >Place Bet</div>
       <div className="bet-options">
         <div 
           onClick={() => placeBet({size: 'small', fighterName})}
-          className={`bet-option ${nextFightBet && nextFightBet.fighterName == fighterName && nextFightBet.size == 'small' ? 'bet-option--selected' : ''}`}>
+          className={`bet-option ${nextFightBet?.fighterName == fighterName && nextFightBet.size == 'small' ? 'bet-option--selected' : ''}`}>
           <span className='bet-option__size'>Small</span>
           <span className="bet-option__amount">{smallAmount}</span>
         </div>
         <div 
           onClick={() => placeBet({size: 'medium', fighterName})}
-          className={`bet-option ${nextFightBet && nextFightBet.fighterName == fighterName && nextFightBet.size == 'medium' ? 'bet-option--selected' : ''}`}>
+          className={`bet-option ${nextFightBet?.fighterName == fighterName && nextFightBet.size == 'medium' ? 'bet-option--selected' : ''}`}>
           <span className='bet-option__size'>Medium</span>
           <span className="bet-option__amount">{mediumAmount}</span>
         </div>
         <div
           onClick={() => placeBet({size: 'large', fighterName})}
           className={`bet-option 
-            ${nextFightBet && nextFightBet.fighterName == fighterName && nextFightBet.size == 'large' ? 'bet-option--selected' : ''
+            ${nextFightBet?.fighterName == fighterName && nextFightBet.size == 'large' ? 'bet-option--selected' : ''
           }`}
         >
           <span className='bet-option__size'>Large</span>
@@ -70,19 +63,4 @@ const BetBox = ({
       sendUpdate.betOnFighter(bet)
     }
   }  
-};
-
-
-function mapStateToProps({
-  serverUIState: { serverGameUIState: {playerManagerUIState: {
-    managerInfo: {money, nextFightBet}
-  }}}
-}: FrontEndState) {
-  return {
-    money,
-    nextFightBet
-  }
-}
-
-export default connect(mapStateToProps)(BetBox)
-
+})

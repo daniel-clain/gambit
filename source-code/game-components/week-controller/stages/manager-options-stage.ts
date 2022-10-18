@@ -3,13 +3,13 @@ import { Subject } from "rxjs";
 import gameConfiguration from "../../../game-settings/game-configuration";
 import IStage from "../../../interfaces/game/stage";
 import { Manager } from "../../manager";
-import { RoundStage } from "../../../types/game/round-stage.type";
+import { WeekStage } from "../../../types/game/week-stage.type";
 import { check } from "../../../helper-functions/helper-functions";
 import { Game } from "../../game";
 
 export default class ManagerOptionsStage implements IStage {
 
-  name: RoundStage = 'Manager Options'
+  name: WeekStage = 'Manager Options'
   uIUpdateSubject: Subject<void> = new Subject()
   private endStage
   timeLeft
@@ -17,6 +17,7 @@ export default class ManagerOptionsStage implements IStage {
   private timesUpTimer
   private baseDuration: number
   paused: boolean
+  private updateCount = 0
 
   constructor(private game: Game){
 
@@ -39,7 +40,7 @@ export default class ManagerOptionsStage implements IStage {
       if(this.paused)
         this.pause()
 
-      this.game.has.roundController.triggerUIUpdate()
+      this.game.has.weekController.triggerUIUpdate()
     })
 
 
@@ -50,7 +51,7 @@ export default class ManagerOptionsStage implements IStage {
 
   private stageFinished(){
     this.timeLeft = null
-    this.game.has.roundController.triggerUIUpdate()
+    this.game.has.weekController.triggerUIUpdate()
     clearInterval(this.timesUpTimer)
     clearInterval(this.timeLeftInterval)
     
@@ -63,7 +64,8 @@ export default class ManagerOptionsStage implements IStage {
   setCountdownInterval(){
     return setInterval(() => {
       this.timeLeft --
-      this.game.has.roundController.triggerUIUpdate();
+      this.game.has.weekController.triggerUIUpdate();
+      this.updateCount ++
       if(
         this.timeLeft == 0 || 
         this.game.has.managers.every(this.isReady)
@@ -92,14 +94,14 @@ export default class ManagerOptionsStage implements IStage {
   }
 
   private extendDuration(){
-    const {roundController, players} = this.game.has
+    const {weekController, players} = this.game.has
     const extendedDuration = 
-      check(roundController.roundNumber, x => [
+      check(weekController.weekNumber, x => [
         [x > 10, 10],
         [x > 15, 20],
         [x > 20, 40]
       ]) +
-      check(roundController.activeFight.fighters, x => [
+      check(weekController.activeFight.fighters, x => [
         [x == 3, 10],
         [x == 4, 30],
         [x > 4, 60]
@@ -110,7 +112,6 @@ export default class ManagerOptionsStage implements IStage {
         [x > 4, 50]
       ])
     
-    console.log('extendedDuration :>> ', extendedDuration);
     return this.baseDuration + extendedDuration
     
   }

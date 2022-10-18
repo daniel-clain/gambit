@@ -1,21 +1,21 @@
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
-import { render } from 'react-dom'
+
+
 import * as React from 'react';
-import { Provider } from 'react-redux'
-import { frontEndService } from '../../front-end-service/front-end-service';
-import { MainGame } from './main-game';
+import { MainGame_C } from './main-game';
+import { render } from "react-dom";
 
-console.log('Start');
-frontEndService.setConnectionType('Websockets')
+console.log('Start Main Game Client');
+
 const reactRenderingTag = document.createElement('react')
-console.log('Adding game to DOM');
 document.body.appendChild(reactRenderingTag)
-render(
-  <Provider store={frontEndService.frontEndStore}>
-    <MainGame />
-  </Provider>
-  , reactRenderingTag
+
+
+render(<MainGame_C />, 
+  document.body.appendChild(
+    document.createElement('react-container')
+  )
 )
-
-
+declare const module: any;
+if (module.hot) {
+  console.log('Hot module replacement active');
+}

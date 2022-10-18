@@ -1,51 +1,21 @@
-import { combineReducers, createStore, Store } from 'redux'
-import { ServerGameUIState, ServerPreGameUIState, ServerUIState } from '../../interfaces/front-end-state-interface'
-import { clientManagerUIReducer, SetStateManagerUIAction } from "./reducers/manager-ui.reducer"
-import { clientPreGameUIReducer } from "./reducers/pre-game-ui.reducer"
+import { autorun, observable, reaction } from 'mobx'
+import { FrontEndState } from '../../interfaces/front-end-state-interface'
 
 
-type ServerActionName = 'Update Lobby UI' | 'Update Game UI'
+export const frontEndState: FrontEndState = observable(getInitialState())
 
 
-interface ServerAction{
-  type: ServerActionName
-  payload?: any
-}
-
-
-
-const serverUIReducer = (serverUIState: ServerUIState = new ServerUIState(), {type, payload}: ServerAction) => {
-
-  switch(type){
-    case 'Update Lobby UI': return {
-      ...serverUIState,
-      serverPreGameUIState: payload as ServerPreGameUIState
+function getInitialState(): FrontEndState{
+  return {
+    serverUIState: {
+      serverPreGameUIState: undefined,
+      serverGameUIState: undefined
+    },
+    clientUIState: {
+      clientPreGameUIState: {},
+      clientGameUIState: {
+        clientManagerUIState: {}
+      }
     }
-    case 'Update Game UI': return {
-      ...serverUIState,
-      serverGameUIState: payload as ServerGameUIState
-    }
-    default: return serverUIState
   }
 }
-
-const clientUIReducer = combineReducers({
-  clientPreGameUIState: clientPreGameUIReducer,
-  clientGameUIState: combineReducers({
-    clientManagerUIState: clientManagerUIReducer
-  })
-})
-
-const frontEndStoreReducer = combineReducers({
-  serverUIState: serverUIReducer,
-  clientUIState: clientUIReducer
-
-})
-
-
-export const frontEndStore = createStore(frontEndStoreReducer, 
-  window['__REDUX_DEVTOOLS_EXTENSION__'] && 
-  window['__REDUX_DEVTOOLS_EXTENSION__']()
-)
-
-;(window as any).frontEndStore = frontEndStore

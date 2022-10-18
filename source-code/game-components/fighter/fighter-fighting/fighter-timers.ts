@@ -79,6 +79,7 @@ export default class FighterTimers {
         afterEffect = () => logistics.justTookHit = false
       }; break
       case 'on a rampage': {
+        fighter.fighting.energy = 0
         logistics.onARampage = true
 
         duration = 5000 

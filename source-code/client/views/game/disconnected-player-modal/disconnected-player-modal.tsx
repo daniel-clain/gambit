@@ -1,11 +1,8 @@
 import * as React from 'react';
 import './disconnected-player-modal.scss'
-import {connect} from 'react-redux'
-import { DisconnectedPlayerVote, FrontEndState } from '../../../../interfaces/front-end-state-interface';
-import {frontEndService} from '../../../front-end-service/front-end-service';
 import { ClientNameAndID } from '../../../../game-host/game-host.types';
-import { hot } from 'react-hot-loader/root';
-
+import { frontEndState } from '../../../front-end-state/front-end-state';
+import { websocketService } from '../../../front-end-service/websocket-service';
 interface VotesByPlayer{
   votingPlayer: ClientNameAndID
   disconnectedPlayersVotes: {
@@ -14,17 +11,14 @@ interface VotesByPlayer{
   }[]
 }
 
+export const DisconnectedPlayerModal = () => {
 
-interface DisconnectedPlayerModalProps{
-  player: ClientNameAndID
-  disconnectedPlayerVotes: DisconnectedPlayerVote[]
-}
+  const {
+    serverUIState: {serverGameUIState: {disconnectedPlayerVotes}},
+    clientUIState: {clientPreGameUIState: {clientId, clientName}}
+  } = frontEndState
 
-const DisconnectedPlayerModal = ({
-  disconnectedPlayerVotes, player
-}: DisconnectedPlayerModalProps) => {
-
-  let {toggleDropPlayer} = frontEndService.sendUpdate
+  let {toggleDropPlayer} = websocketService.sendUpdate
 
   console.log('disconnectedPlayerVotes :', disconnectedPlayerVotes);
 
@@ -36,6 +30,11 @@ const DisconnectedPlayerModal = ({
       }))
     })
   )
+
+  const player: ClientNameAndID = {
+    id: clientId,
+    name: clientName
+  }
 
 
   console.log('votesByPlayer :>> ', votesByPlayer);
@@ -73,7 +72,7 @@ const DisconnectedPlayerModal = ({
               `}
             >
               <td className={`player-vote`}
-            >{votingPlayer.name}</td>
+            >{votingPlayer.name}'s vote:</td>
                 
               {disconnectedPlayersVotes.map(({disconnectedPlayer, voteToDrop}) => 
 
@@ -103,14 +102,3 @@ const DisconnectedPlayerModal = ({
     </div>
   )
 }
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {disconnectedPlayerVotes}},
-  clientUIState: {clientPreGameUIState: {clientId, clientName}}
-}: FrontEndState): DisconnectedPlayerModalProps => ({
-  player: {id: clientId, name: clientName},
-  disconnectedPlayerVotes,
-
-})
-
-export default connect(mapStateToProps)(hot(DisconnectedPlayerModal))

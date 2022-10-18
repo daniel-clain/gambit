@@ -1,26 +1,13 @@
 
 import * as React from 'react';
 import '../employee-list.scss'
-import {connect, ConnectedProps} from 'react-redux'
-import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../..//../interfaces/front-end-state-interface';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { hot } from 'react-hot-loader/root';
+import {showFighter, showJobSeeker} from '../../../../../../front-end-service/front-end-service';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
+import { observer } from 'mobx-react';
 
+export const JobSeekersPanel = observer(() => {
 
-const mapStateToProps = ({
-  serverUIState:{ serverGameUIState: {playerManagerUIState: {jobSeekers}}}
-}: FrontEndState) => ({jobSeekers})
-const mapDispatch = {
-  showFighter: (name: string) => ({type: 'showFighter', payload: name}),
-  showJobSeeker: (j: JobSeeker) => ({type: 'showJobSeeker', payload: j})
-}
-const connector = connect(mapStateToProps, mapDispatch)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-
-export const JobSeekersPanel = connector(hot(
-  ({jobSeekers, showFighter, showJobSeeker}: PropsFromRedux) => {
-
+  const {jobSeekers} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
     
   return (
     <div className='panel job-seekers'>
@@ -49,4 +36,4 @@ export const JobSeekersPanel = connector(hot(
   )
 
   
-}))
+})

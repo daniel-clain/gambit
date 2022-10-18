@@ -40,6 +40,11 @@ export const getProbabilityToCriticalStrike = (fighting: FighterFighting): numbe
     probability += aggression
     probability += intelligence
   }
+  
+  if(fighter.state.hallucinating && 
+    !proximity.enemyWithinStrikingRange(closestEnemy)){
+    probability *= .1
+  }
 
   if (probability < 0)
     probability = 0

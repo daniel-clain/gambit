@@ -1,23 +1,15 @@
 
 import * as React from 'react';
 import '../modal-card.scss';
-import { connect, ConnectedProps } from 'react-redux';
-import { hot } from 'react-hot-loader/root';
-import { FrontEndState, GameFinishedData } from '../../../../interfaces/front-end-state-interface';
+import { observer } from 'mobx-react';
+import { frontEndState } from '../../../front-end-state/front-end-state';
 
+export const GameFinished_View = observer(() => {
 
-const mapState = ({serverUIState: {serverGameUIState: {
-  gameFinishedData
-}}
-}: FrontEndState): {gameFinishedData: GameFinishedData} => ({gameFinishedData})
+  const {
+    serverUIState: {serverGameUIState: {gameFinishedData: {winner, players}}}
+  } = frontEndState
 
-
-const connector = connect(mapState)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-export const GameFinished_View = connector(hot((
-{gameFinishedData: {players, winner}}: PropsFromRedux
-) => {
   return <div className="game-finished-view">
     <div className="celebration-animation"></div>
     <div className="winner-text">
@@ -40,4 +32,4 @@ export const GameFinished_View = connector(hot((
     return image.split(' ').join('-').toLowerCase()
     
   }
-}))
+})

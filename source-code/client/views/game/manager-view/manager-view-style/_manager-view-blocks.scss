@@ -7,6 +7,10 @@
   border: 4px outset $blue-border;
   border-radius: 2px;
   font-size: 1.1rem;
+
+  &[disabled] {
+    filter: grayscale(1);
+  }
 }
 
 .heading {
@@ -62,6 +66,7 @@ hr {
         display: flex;
         justify-content: space-between;
         padding: 3px 0px;
+        align-items: center;
 
         .small{
           font-size: 0.8em;

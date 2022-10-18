@@ -1,35 +1,42 @@
 
 import * as React from 'react';
 
-import {connect} from 'react-redux'
 import './fighter-card.scss';
 import '../modal-card.scss';
 import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import Fights from '../../partials/fights-and-wins/fights';
 import Wins from '../../partials/fights-and-wins/wins';
-import { AbilityData, ClientAbility } from '../../../../../../../game-components/abilities-general/ability';
+import { ClientAbility } from '../../../../../../../game-components/abilities-general/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
-import { FighterInfo, FrontEndState, JobSeeker } from '../../../../../..//../interfaces/front-end-state-interface';
 import { Modal } from '../../partials/modal/modal';
 import { InfoBox } from '../../partials/info-box/info-box';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
+import { observer } from 'mobx-react';
+import { getAbilitiesThatCanTargetThis } from '../../../../../../front-end-service/ability-service-client';
+import { toJS } from 'mobx';
 
 
-export interface FighterCardProps {
-  jobSeekers: JobSeeker[]
-  fighterName: string
-  allFighters: FighterInfo[]
-  thisPlayersName: string
-  nextFightFighters: string[]
 
-}
-
-const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighters}: FighterCardProps) => {
+export const FighterCard = observer(() => {
+  const {
+    serverUIState: {serverGameUIState: {
+      playerManagerUIState: {
+        managerInfo: {knownFighters, fighters}, nextFightFighters
+      },
+      
+    }},
+    clientUIState: {
+      clientPreGameUIState: {clientName},
+      clientGameUIState: {
+        clientManagerUIState: {activeModal}
+      }
+    }
+  } = frontEndState
+  const fighterName = activeModal.data as string
+  const thisPlayersName = clientName
+  const allFighters = [...knownFighters, ...fighters]
   const fighter = allFighters.find(f => f.name == fighterName)
-  const {abilityService} = frontEndService
   const isYourFighter = fighter.manager?.lastKnownValue == thisPlayersName
-  const fighterIsInNextFight = nextFightFighters.includes(fighter.name)
-
 
   let goalContractInfo: InfoBoxListItem[]
 
@@ -40,16 +47,7 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
     ]
   }
 
-
-
-  const abilitiesFighterCanBeTheTargetOf: ClientAbility[] = abilityService.getAbilitiesFighterCanBeTheTargetOf(isYourFighter, fighterIsInNextFight)
-
-
-
-  const offerContractAbility = abilityService.abilities.find(ability => ability.name == 'Offer Contract')
-
-  if(fighter.goalContract)
-    abilitiesFighterCanBeTheTargetOf.push(offerContractAbility)
+  const abilitiesThatTargetFighter = getAbilitiesThatCanTargetThis(fighter)
   
 
   let infoBoxList: InfoBoxListItem[]
@@ -67,11 +65,11 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
   else {
     const { strength, fitness, intelligence, aggression, manager } = fighter
     infoBoxList = [
-      { label: 'Strength', value: strength ? `${strength.lastKnownValue} (${strength.roundsSinceUpdated})` : 'unknown' },
-      { label: 'Fitness', value: fitness ? `${fitness.lastKnownValue} (${fitness.roundsSinceUpdated})` : 'unknown' },
-      { label: 'Intelligence', value: intelligence ? `${intelligence.lastKnownValue} (${intelligence.roundsSinceUpdated})` : 'unknown' },
-      { label: 'Aggression', value: aggression ? `${aggression.lastKnownValue} (${aggression.roundsSinceUpdated})` : 'unknown' },
-      { label: 'Manager', value: manager ? `${manager.lastKnownValue ? manager.lastKnownValue : 'none'} (${manager.roundsSinceUpdated})` : 'unknown' }
+      { label: 'Strength', value: strength ? `${strength.lastKnownValue} (${strength.weeksSinceUpdated})` : 'unknown' },
+      { label: 'Fitness', value: fitness ? `${fitness.lastKnownValue} (${fitness.weeksSinceUpdated})` : 'unknown' },
+      { label: 'Intelligence', value: intelligence ? `${intelligence.lastKnownValue} (${intelligence.weeksSinceUpdated})` : 'unknown' },
+      { label: 'Aggression', value: aggression ? `${aggression.lastKnownValue} (${aggression.weeksSinceUpdated})` : 'unknown' },
+      { label: 'Manager', value: manager ? `${manager.lastKnownValue ? manager.lastKnownValue : 'none'} (${manager.weeksSinceUpdated})` : 'unknown' }
     ]
   }
 
@@ -99,12 +97,12 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
                 <Wins numberOfWins={fighter.numberOfWins.lastKnownValue}/>
               </div>
               :
-              <div className='fighter-card__fight-experience'>                
+              <div className='fighter-card__fight-experience'>
                 <Fights 
                   numberOfFights={
                     fighter.numberOfFights ?
                     `${fighter.numberOfFights.lastKnownValue} 
-                    (${fighter.numberOfFights.roundsSinceUpdated})`
+                    (${fighter.numberOfFights.weeksSinceUpdated})`
                     : '?'
                   }
                 />
@@ -112,7 +110,7 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
                   numberOfWins={
                     fighter.numberOfWins ?
                     `${fighter.numberOfWins.lastKnownValue} 
-                    (${fighter.numberOfWins.roundsSinceUpdated})`
+                    (${fighter.numberOfWins.weeksSinceUpdated})`
                     : '?'
                   }
                 />
@@ -141,18 +139,13 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
 
         <div className='heading'>Options</div>
         <div className='card__options'>
-          {abilitiesFighterCanBeTheTargetOf.map(
+          {abilitiesThatTargetFighter.map(
             (clientAbility: ClientAbility) => (
               <AbilityBlock
                 key={clientAbility.name}
                 abilityData={{
                   name: clientAbility.name,
-                  target: {
-                    name: fighter.name,
-                    type: isYourFighter ?
-                      'fighter owned by manager' :
-                      'fighter not owned by manager'
-                  },
+                  target: fighter,
                   source: undefined
                 }}
               />
@@ -163,30 +156,4 @@ const FighterCard = ({fighterName, thisPlayersName, allFighters, nextFightFighte
       </div >
     </Modal>
   )
-}
-
-
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {
-    playerManagerUIState: {
-      jobSeekers, managerInfo: {knownFighters, fighters}, nextFightFighters
-    },
-    
-  }},
-  clientUIState: {
-    clientPreGameUIState: {clientName},
-    clientGameUIState: {
-      clientManagerUIState: {activeModal: {data}}
-    }
-  }
-}: FrontEndState): FighterCardProps => ({
-  jobSeekers, thisPlayersName: clientName, fighterName: data, allFighters: [...knownFighters, ...fighters], nextFightFighters
 })
-
-
-const x = connect(mapStateToProps)
-(FighterCard)
-
-export default x
-

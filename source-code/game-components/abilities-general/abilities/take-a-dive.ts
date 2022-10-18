@@ -1,17 +1,10 @@
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import { random } from "../../../helper-functions/helper-functions"
-import { Employee } from "../../../interfaces/front-end-state-interface"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 import { Game } from "../../game"
-import { Manager } from "../../manager"
-import { handleUnderSurveillance } from "./do-surveillance"
 
 
-const takeADive: Ability = {
+export const takeADive: Ability = {
   name: 'Take A Dive',
-  cost: { money: 0, actionPoints: 0 },
-  possibleSources: ['Manager'],
-  notValidTargetIf: ['fighter not owned by manager'],
-  validTargetIf: ['fighter in next fight', 'fighter owned by manager'],
+  cost: { money: 200, actionPoints: 1 },
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true
 }
@@ -26,10 +19,3 @@ export const takeADiveServer: ServerAbility = {
 
   ...takeADive
 }
-
-export const takeADiveClient: ClientAbility = {
-  shortDescription: 'Fighter tries not to win',
-  longDescription: `This fighter will try to not win, he will move slower and be unaggressive. However, if a rampage is triggered, he will forget he is taking a dive`,
-  ...takeADive
-}
-

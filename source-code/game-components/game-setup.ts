@@ -151,14 +151,12 @@ export class Game_Implementation{
           totalProbability += gameConfiguration.professionalTypeProbability[profession].probability
         }
         const randomNumber = random(totalProbability, true)
-        console.log('randomNumber :>> ', randomNumber);
         let probabilityRange = 0
         for ( let profession in gameConfiguration.professionalTypeProbability) {
           if (
             randomNumber > probabilityRange &&
             randomNumber <= probabilityRange + gameConfiguration.professionalTypeProbability[profession].probability
           ){
-            console.log('professionxx :>> ', profession);
             return profession as Profession
           }
           else
@@ -194,7 +192,7 @@ export class Game_Implementation{
       )
     })
   
-    const {fighters} = game.has.roundController.activeFight
+    const {fighters} = game.has.weekController.activeFight
     fighters.splice(
       fighters.findIndex(f => f.name == fighterName), 1
     )
@@ -235,7 +233,7 @@ export class Game_Implementation{
   }
 
   getFightUiState(manager?: Manager): FightUIState{
-    const {has:{roundController}, state:{finalTournament}} = this.game
+    const {has:{weekController}, state:{finalTournament}} = this.game
     
     if(finalTournament){
       const {activeFight} = finalTournament
@@ -246,32 +244,30 @@ export class Game_Implementation{
       }
       return finalTournamentFight
     }
-    const roundFight = {
-      ...roundController.activeFight?.fightUiData, 
+    const weekFight = {
+      ...weekController.activeFight?.fightUiData, 
       knownFighterStates: 
-        !roundController.activeFight ? [] : manager?.functions.getKnownFighterStats(roundController.activeFight?.fighters)
+        !weekController.activeFight ? [] : manager?.functions.getKnownFighterStats(weekController.activeFight?.fighters)
     }
-    return roundFight
+    return weekFight
   }
 
-  getGamFinishedData(): GameFinishedData | null{
+  getGameFinishedData(): GameFinishedData{
     const {state, has} = this.game
-    if(state.gameIsFinished){
-      const winner = {
-        name: state.playerHasVictory.name,
-        victoryType: state.playerHasVictory.victoryType,
-        image: has.managers.find(m => m.has.name == state.playerHasVictory.name).has.image
-      }
-      const players = has.managers.map(m => {
-        return {
-          name: m.has.name,
-          money: m.has.money
-        }
-      })
-      return {winner, players}
-    } else {
-      return null
+    const winner = {
+      name: state.playerHasVictory.name,
+      victoryType: state.playerHasVictory.victoryType,
+      image: has.managers.find(m => m.has.name == state.playerHasVictory.name).has.image
     }
+    const players = has.managers.map(m => {
+      return {
+        name: m.has.name,
+        money: m.has.money,
+        managerImage: m.has.image,
+        fighters: m.has.fighters.map(f => f.getInfo())
+      }
+    })
+    return {winner, players}
   }
 
 }

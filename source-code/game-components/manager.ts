@@ -3,7 +3,7 @@
 import {Bet} from '../interfaces/game/bet';
 import Fighter from "./fighter/fighter";
 import gameConfiguration from '../game-settings/game-configuration';
-import { AbilityData, AbilityName, AbilitySourceInfo } from './abilities-general/ability';
+import { AbilityName } from './abilities-general/ability';
 import { ActivityLogItem } from '../types/game/activity-log-item';
 import { ManagerImage } from '../types/game/manager-image';
 import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
@@ -15,44 +15,14 @@ import { randomFloor } from '../helper-functions/helper-functions';
 
 
 
-/* 
-  What can a 'Manager' do
-  he can: 
-    - bet on a fighter in the upcoming fight
-    - get a fighter to fight for him
-    - contract employees to help out
-    - borrow money from the loan shark
-    - pay off money owed to the loan shark
-    - train one of his fighters
-    - dope one of his fighters
-    - give up
-
-  What does a 'Manager' have
-  he has:
-    - knowlege of existing fighters
-    - knowlege of other managers
-    - fighters fighting for him
-    - employed professionals
-    - money
-    - action points
-    - loan
-    - bet
-    - activity log
-    - an image of himself
-
-  What state can the manager be in
-  he can be:
-    - retired
-    - ready for the next round
-
-*/
 export interface KnownManagerStat{  
   lastKnownValue: any,
-  roundsSinceUpdated: number
+  weeksSinceUpdated: number
 }
 
 export interface KnownManager{
   name: string
+  characterType: 'Known Manager'
   image: ManagerImage
   money: KnownManagerStat
   employees: KnownManagerStat
@@ -63,6 +33,7 @@ export interface KnownManager{
 
 export interface ManagerInfo{
   name: string
+  characterType: 'Manager'
   money: number
   abilities: AbilityName[]
   actionPoints: number
@@ -134,13 +105,14 @@ class ManagerFunctions{
   betOnFighter = (bet: Bet) => {
     
     bet && this.addToLog({
-      roundNumber: this.game.has.roundController.roundNumber,
+      weekNumber: this.game.has.weekController.weekNumber,
       message: `Made a ${bet.size} bet on ${bet.fighterName}`})
     this.manager.has.nextFightBet = bet
   }
 
   getInfo(): ManagerInfo{
     return {
+      characterType: 'Manager',
       ...this.manager.state,
       ...this.manager.has,
       fighters: this.manager.has.fighters.map(f => f.getInfo())
@@ -148,7 +120,7 @@ class ManagerFunctions{
   }
   paybackMoney = (amount: number) =>  {
     this.addToLog({
-      roundNumber: this.game.has.roundController.roundNumber,
+      weekNumber: this.game.has.weekController.weekNumber,
       message: `Paid back ${amount} to the Loan Shark`})
     const {has} = this.manager
     has.money -= amount
@@ -161,7 +133,7 @@ class ManagerFunctions{
 
   borrowMoney = (amount: number) => {
     this.addToLog({
-      roundNumber: this.game.has.roundController.roundNumber,
+      weekNumber: this.game.has.weekController.weekNumber,
       message: `Borrowed ${amount} from the Loan Shark`})
     const {has} = this.manager
     has.money += amount
@@ -193,7 +165,17 @@ class ManagerFunctions{
 
         return {name, sick, hallucinating, injured, doping, takingADive, ...knownFighterStats}
       }
-      return {name: fighter.name, sick, injured, hallucinating, doping, fitness: undefined, strength: undefined, aggression: undefined, intelligence: undefined, numberOfFights: undefined, manager: undefined, numberOfWins: undefined, takingADive: undefined}
+      return {
+        name: fighter.name, 
+        sick, injured, hallucinating, doping, 
+        fitness: undefined, 
+        strength: undefined, 
+        aggression: undefined, 
+        intelligence: undefined, 
+        numberOfFights: undefined, 
+        manager: undefined, 
+        numberOfWins: undefined, 
+        takingADive: undefined}
 
     })
   }

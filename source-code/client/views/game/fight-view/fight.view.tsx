@@ -1,29 +1,28 @@
 import * as React from 'react';
-import {connect} from 'react-redux'
 import './fight.view.scss'
-import FighterFightState, { FighterStateData, FightReport, FrontEndState, ManagersBet } from '../../../../interfaces/front-end-state-interface';
 import { OverlayMessaging } from './fight-view-components/overlay-messaging/overlay-messaging';
 import { ArenaUi } from './fight-view-components/arena-ui/arena-ui';
 import ManagersBets from './fight-view-components/managers-bets/managers-bets';
-import { hot } from 'react-hot-loader/root';
 import { FighterStates } from './fight-view-components/fighter-states/fighter-states';
+import { frontEndState } from '../../../front-end-state/front-end-state';
+import { observer } from 'mobx-react';
 
 
-interface FightUiProps{
-  startCountdown: number
-  timeRemaining: number 
-  fighterFightStates: FighterFightState[]
-  knownFighterStates?: FighterStateData[]
-  report: FightReport
-  managersBets?: ManagersBet[]
-  isDisplay?: boolean
-}
+export const Fight_View = observer(() => {
+  const {
+    serverUIState:{serverGameUIState:{
+      fightUIState,
+      displayManagerUIState
+    }} 
+  } = frontEndState
 
+  const isDisplay = !!displayManagerUIState
 
-const Fight = ({
-  startCountdown, timeRemaining, fighterFightStates, 
-  report, managersBets, knownFighterStates, isDisplay
-}:FightUiProps) => {
+  const {
+    startCountdown, timeRemaining, fighterFightStates, 
+    report, managersBets, knownFighterStates
+  } = fightUIState
+
   const doStartAnimation = startCountdown == 0
     
   return (
@@ -41,12 +40,5 @@ const Fight = ({
     </div>
   )
   
-}
+})
 
-
-const mapStateToProps = ({
-  serverUIState:{serverGameUIState:{
-    fightUIState
-  }} 
-}: FrontEndState)  => ({...fightUIState})
-export const Fight_View = connect(mapStateToProps)(hot(Fight))

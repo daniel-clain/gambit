@@ -10,7 +10,7 @@ function cons
 
 class pros
 ==============
-* you can send round the this instance and it will have the type definition of the class, you dont have to fully resolve the properties of this before is able to be given
+* you can send week the this instance and it will have the type definition of the class, you dont have to fully resolve the properties of this before is able to be given
 * class is typed
 * good for if has state
 * class can extend, implement

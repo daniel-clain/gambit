@@ -3,15 +3,12 @@ import { Game } from "../../game"
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 
 
-const sinisterVictory: Ability = {
+export const sinisterVictory: Ability = {
   name: 'Sinister Victory',
   cost: { money: 10000, actionPoints: 1 },
-  possibleSources: ['Manager'],
-  notValidTargetIf: ['fighter'],
-  validTargetIf: [],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
-  notActiveUntilRound: 20,
+  notActiveUntilWeek: 20,
   canOnlyBeUsedOnce: true
 }
 
@@ -71,10 +68,3 @@ export const sinisterVictoryServer: ServerAbility = {
   },
   ...sinisterVictory
 }
-
-export const sinisterVictoryClient: ClientAbility = {
-  shortDescription: 'Win the game by killing your opponent managers',
-  longDescription: 'Win the game by killing your opponent managers. Your opponents can counter your attempt to win if the average of their combined thugs and hitmen are more than half of yours. If you fail you will lose the game',
-  ...sinisterVictory
-}
-

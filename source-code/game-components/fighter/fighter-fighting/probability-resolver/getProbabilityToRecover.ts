@@ -4,7 +4,8 @@ import FighterFighting from "../fighter-fighting";
 
 export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   const { intelligence } = fighting.stats
-  const { proximity, logistics, rememberedEnemyBehind, spirit} = fighting
+  const { proximity, logistics, rememberedEnemyBehind, spirit, fighter} = fighting
+  const {sick} = fighter.state
   const enemyInfront = proximity.getClosestEnemyInfront()
 
   let enemyInfrontCloseness: Closeness
@@ -26,6 +27,9 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   let probability = 10
 
+  if(sick){
+    probability += 20
+  }
   
   if(proximity.trapped)
     probability -= intelligence * 3
@@ -34,10 +38,10 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     probability -= intelligence * 2
 
   if (rememberedEnemyBehind !== null && enemyBehindCloseness >= Closeness['nearby']){
-    if(rememberedEnemyBehind.fighting.animation.inProgress == 'recovering')
-      probability += intelligence
+    if(logistics.hasRetreatOpportunity(rememberedEnemyBehind))
+      probability += intelligence * 6
     else
-      probability -= intelligence * 2
+      probability -= intelligence * 6
   }
 
   if (enemyInfront && enemyInfrontCloseness <= Closeness['nearby'])

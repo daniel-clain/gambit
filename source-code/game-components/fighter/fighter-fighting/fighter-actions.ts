@@ -41,7 +41,7 @@ export default class FighterActions {
     const responseProbabilities: [ActionName, number][] = []
     
 
-    if(enemyWithinStrikingRange)
+    if(enemyWithinStrikingRange || fighter.state.hallucinating)
       responseProbabilities.push(
         ...combatActions.map(action => 
           this.decideActionProbability.getProbabilityTo(action)

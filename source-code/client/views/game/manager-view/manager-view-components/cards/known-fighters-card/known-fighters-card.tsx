@@ -1,25 +1,16 @@
 import * as React from 'react'
-import { FrontEndState } from '../../../../../../../interfaces/front-end-state-interface'
 import { Modal } from '../../partials/modal/modal'
-import { connect, ConnectedProps } from 'react-redux'
-import { hot } from 'react-hot-loader/root'
+import { observer } from 'mobx-react'
+import { frontEndState } from '../../../../../../front-end-state/front-end-state'
+import { showFighter } from '../../../../../../front-end-service/front-end-service'
 
 
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {
-    playerManagerUIState: {managerInfo: {knownFighters}}
-  }}
-}: FrontEndState) => ({knownFighters})
-
-const mapDispatchToProps = {
-  showFighter: name => ({type: 'showFighter', payload: name})
-}
-const connector = connect(mapStateToProps, mapDispatchToProps)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-export const KnownFightersCard = connector(hot(
-  ({knownFighters, showFighter}: PropsFromRedux) => {
+export const KnownFightersCard = observer(() => {
+  const {
+    serverUIState: {serverGameUIState: {
+      playerManagerUIState: {managerInfo: {knownFighters}}
+    }}
+  } = frontEndState
   return (
     <Modal>    
       <div className='panel known-fighters'>
@@ -39,4 +30,4 @@ export const KnownFightersCard = connector(hot(
       </div>
     </Modal>
   )
-}))
+})

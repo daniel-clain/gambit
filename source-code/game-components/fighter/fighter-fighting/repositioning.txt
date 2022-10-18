@@ -1,6 +1,6 @@
 * if flanked by 2 on either side
 - move away from the 2 directions until at a neraby range or until hit a wall
-- when at a nearby range look at which side has the least amount of fighters and move round to that side until all the fighters are on one side and there are none on the other
+- when at a nearby range look at which side has the least amount of fighters and move week to that side until all the fighters are on one side and there are none on the other
 - if the fighter hits an edge, move along the edge is the closest to the best direction. if fighter at top or btm and flanked, dont defend or retret, only attack. if fighter on diagonal or sides and flanked, defend and counter attack
 - the more intelligent the fighter the weighting towards fulfilling the reposition until all fighters on one side and none on the other. only time higher priotiry is when against the edge and flanked
 

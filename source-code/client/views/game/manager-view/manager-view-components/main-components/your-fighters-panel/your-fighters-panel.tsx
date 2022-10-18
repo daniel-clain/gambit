@@ -1,24 +1,15 @@
 
 import * as React from 'react';
-import {connect, ConnectedProps} from 'react-redux'
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { FighterInfo, FrontEndState } from '../../../../../..//../interfaces/front-end-state-interface';
 import '../fighters-list.scss'
-import { hot } from 'react-hot-loader/root';
+import { observer } from 'mobx-react';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
+import { showFighter } from '../../../../../../front-end-service/front-end-service';
 
 
 
-const mapState = (s: FrontEndState): {fighters: FighterInfo[]} => {
-  const {managerInfo:{fighters}} = frontEndService.toAllManagerState(s)
-  return {fighters}
-}
-const mapDispatch = {
-  showFighter: name => ({type: 'showFighter', payload: name})
-}
-const connector = connect(mapState, mapDispatch)
-type PropsFromRedux = ConnectedProps<typeof connector>
+export const YourFightersPanel = observer(() => {
 
-export const YourFightersPanel = connector(hot(({fighters, showFighter}: PropsFromRedux) => {
+  const {fighters} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
 
   return (
     <div className='panel your-fighters'>
@@ -39,6 +30,5 @@ export const YourFightersPanel = connector(hot(({fighters, showFighter}: PropsFr
       </div>
     </div>
   )
-
-}))
+})
 

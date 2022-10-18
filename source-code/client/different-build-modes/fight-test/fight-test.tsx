@@ -3,21 +3,24 @@ import * as React from 'react';
 import '../../styles/global.scss'
 import Fight from '../../../game-components/abilities-general/fight/fight';
 import { fightUiService } from './fight-ui-service';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ConfigureTestFighters } from './configure-test-fighters';
 import { Fight_View } from '../../views/game/fight-view/fight.view';
+import { frontEndState } from '../../front-end-state/front-end-state';
 
 
 
 
-const FighterTest = () => {
+export const FighterTest_C = () => {
 
   const [paused, setPaused] = useState(false)
   const [fight, setFight] = useState<Fight>(undefined)
   const [fightersList, setFightersList] = useState([])
 
+
   paused ? fight?.pause() : fight?.unpause()
 
+  const fightState = frontEndState.serverUIState.serverGameUIState?.fightUIState
 
   const startNewFight = () => {
     fightUiService.newFight(fightersList)
@@ -39,9 +42,8 @@ const FighterTest = () => {
     >
       Start New Fight
     </button>
-    {fight &&
+    {fightState &&
       <Fight_View/>
     }
   </>
 }
-export {FighterTest}

@@ -4,34 +4,20 @@ import {useEffect, useState} from 'react'
 import './headbar.scss'
 import Money from '../../partials/money/money';
 import ActionPoints from '../../partials/action-points/action-points';
-import {connect} from 'react-redux'
 import gameConfiguration from '../../../../../../../game-settings/game-configuration';
-import { Bet } from '../../../../../../../interfaces/game/bet';
-import { DisconnectedPlayerVote, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
-import { Socket } from 'socket.io-client';
+import { websocketService } from '../../../../../../front-end-service/websocket-service';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
+import { observer } from 'mobx-react';
 
-export interface HeadbarProps{
-  actionPoints: number
-  money: number
-  managerOptionsTimeLeft: number
-  nextFightBet: Bet
-  disconnectedPlayerVotes: DisconnectedPlayerVote[] 
-  otherPlayersReady
-  thisManagerReady
-}
+export const Headbar = observer(() => {
 
-const Headbar = ({
-  actionPoints,
-  money,
-  managerOptionsTimeLeft,
-  nextFightBet,
-  disconnectedPlayerVotes,
-  otherPlayersReady,
-  thisManagerReady
-}: HeadbarProps) => {
-
-  let {sendUpdate} = frontEndService 
+  let {sendUpdate} = websocketService 
+  const {
+    serverUIState: {serverGameUIState: {disconnectedPlayerVotes, playerManagerUIState: {
+      managerOptionsTimeLeft,
+      managerInfo: {actionPoints, money, nextFightBet}, otherPlayersReady, thisManagerReady
+    }}}
+  } = frontEndState
 
   let [timeLeft, setTimeLeft] = useState(managerOptionsTimeLeft)
   let timeLeftTimeout
@@ -63,11 +49,14 @@ const Headbar = ({
       <div className='headbar__left'>
         <div>Time left: {timeLeft}</div>
       </div>
-      {otherPlayersReady?.map(ready => 
-        <div className={`
-          player-ready
-          player-ready${ready ? '--true' : '--false'}
-        `}></div>
+      {otherPlayersReady?.map(({name, ready}) => 
+        <div 
+          key={name}
+          className={`
+            player-ready
+            player-ready${ready ? '--true' : '--false'}
+          `}
+        ></div>
       )}
       <div className='headbar__right'>
 
@@ -86,26 +75,4 @@ const Headbar = ({
       </div>
     </div>
   )
-}
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {disconnectedPlayerVotes, playerManagerUIState: {
-    managerOptionsTimeLeft,
-    managerInfo: {actionPoints, money, nextFightBet}, otherPlayersReady, thisManagerReady
-  }}}
-}: FrontEndState) : HeadbarProps => {
-  return {
-    disconnectedPlayerVotes,
-    managerOptionsTimeLeft,
-    money,
-    nextFightBet,
-    actionPoints, 
-    otherPlayersReady,
-    thisManagerReady
-  } 
-}
-
-
-
-export default connect(mapStateToProps)(Headbar);
-
+})

@@ -116,7 +116,7 @@ export class GameHost{
       },
       reJoin: gameId => {
         const reconnectingGameFound = this.state.activeGames.find(g => {
-            if(g.has.id == Number(gameId)){
+            if(g.has.id == gameId){
               if(client.name == 'Game Display'){
                 g.has.connectionManager.gameDisplayReconnected(client)
               }
@@ -128,7 +128,7 @@ export class GameHost{
           })
         
         if(!reconnectingGameFound)  
-          throw `${client.name} tried to reconnect to game ${gameId} but couldnt find it`
+          throw `${client.name} tried to reconnect to game ${gameId} but couldn't find it`
       
       },
       submitGlobalChat: message => {

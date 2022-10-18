@@ -1,14 +1,13 @@
 import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { getAbilitySourceManager, getSourceType } from "../ability-service-server"
 import { handleUnderSurveillance } from "./do-surveillance"
 
 
-const dopeFighter: Ability = {
+export const dopeFighter: Ability = {
   name: 'Dope Fighter',
   cost: { money: 40, actionPoints: 1 },
-  possibleSources:  ['Manager', 'Drug Dealer'],
-  validTargetIf: ['fighter owned by manager', 'fighter not owned by manager'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true
 }
@@ -17,12 +16,17 @@ export const dopeFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const {source} = abilityData
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const sourceManager = getAbilitySourceManager(source, game)
 
-    const manager = source.type == 'Manager' ? game.has.managers.find(m => m.has.name == source.name) : game.has.managers.find(m => m.has.employees.find(e => e.name == source.name))
 
-    if(manager.state.beingProsecuted){
-      return
+    if(sourceManager.state.underSurveillance){
+      handleUnderSurveillance({surveilledManager: sourceManager, abilityData, game})
     }
+
+    if(fighter.state.underSurveillance){
+      handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
+    }
+
     
     if(fighter.state.doping){
       if(random(100) < 10) fighterDead()
@@ -31,12 +35,6 @@ export const dopeFighterServer: ServerAbility = {
     }
 
     if(!fighter.state.dead){
-      if(manager.state.underSurveillance){
-        handleUnderSurveillance({surveilledManager: manager, abilityData, game})
-      }
-      if(fighter.state.underSurveillance){
-        handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
-      }
       fighterTakesSteroids()
       
     }
@@ -45,7 +43,7 @@ export const dopeFighterServer: ServerAbility = {
       fighter.state.doping = true
       fighter.fighting.stats.baseAggression ++
       
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'fighter is doped up',
         headline: `${fighter.name} Suspected of Doping!`,
         message: `${fighter.name} appears to be gained massive size is such a short time period`
@@ -54,7 +52,7 @@ export const dopeFighterServer: ServerAbility = {
 
     function  fighterDead() {
       game.functions.removeFighterFromTheGame(fighter.name, game)
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'fighter died of overdose',
         headline: `${fighter.name} Died of drug overdose!`,
         message: `${fighter.name} was found dead, the coroner's report says the cause was steroid abuse`
@@ -64,9 +62,4 @@ export const dopeFighterServer: ServerAbility = {
   ...dopeFighter
 }
 
-export const dopeFighterClient: ClientAbility = {
-  shortDescription: 'Temporary performance enhancer',
-  longDescription: 'Gives the fighter more strength, speed and recovery for 1 week only. Also increases aggression permanently.',
-  ...dopeFighter
-}
 

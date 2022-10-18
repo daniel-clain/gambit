@@ -1,0 +1,18 @@
+* unusual use of javascript switch statement in ability-service-client.ts getAbilitiesThatCanTargetThis()
+* SOHCAHTOA maths
+* websocket quick transfer of data
+* architecture philosophy
+  - different types of module
+    ~ Primary module
+      * description: if you looked at the system from the perspective of: simplify the system as much as possible, at the same time as, anyone trying to intuitively understand the system should get it at least 90% right
+      * expresses relationships between siblings, and the parent
+      * examples: GameHost, Game, RoundController, Fighter, ManagerView, LoginView
+      * anti-examples: SelectList(too minor), App(too general)
+      * type of code: only function names, no procedural, functions are imported from its helper module
+    ~ Helper modules
+      * has the implementation of functions from its parent Primary module
+      * helper is designed to take the complexity away from the primary
+      * helpers should never be used by anything other than its parent
+
+* mobx
+  - 

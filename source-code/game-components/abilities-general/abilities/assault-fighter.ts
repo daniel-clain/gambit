@@ -6,12 +6,9 @@ import { Manager } from "../../manager"
 import { handleUnderSurveillance } from "./do-surveillance"
 
 
-const assaultFighter: Ability = {
+export const assaultFighter: Ability = {
   name: 'Assault Fighter',
   cost: { money: 10, actionPoints: 1 },
-  possibleSources: ['Thug'],
-  notValidTargetIf: ['fighter owned by manager'],
-  validTargetIf: ['fighter in next fight'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: false
 }
@@ -21,7 +18,7 @@ export const assaultFighterServer: ServerAbility = {
     const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
 
     
-    const {roundNumber} = game.has.roundController
+    const {weekNumber} = game.has.weekController
     
 
     let assaulter: Employee
@@ -32,18 +29,6 @@ export const assaultFighterServer: ServerAbility = {
         assaultersManager = manager
         break
       }
-    }
-
-    if(assaultersManager.state.beingProsecuted){
-      return
-    }
-
-    
-    if(fighter.state.dead){
-      assaultersManager.functions.addToLog({
-        roundNumber,
-        message: `Attempt to assault ${abilityData.target.name} failed because he was already found dead`, type: 'report'})
-      return
     }
     
     if(assaultersManager.state.underSurveillance){
@@ -71,30 +56,30 @@ export const assaultFighterServer: ServerAbility = {
     }
     if(success){
       fighter.state.injured = true
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'fighter was assaulted',
         headline: `${fighter.name} Assaulted!`,
         message: `${fighter.name} has been assaulted, his injuries will affect his fight performance`
       })
       assaultersManager.functions.addToLog({        
-        roundNumber,
+        weekNumber,
         message: `${assaulter.name} has successfully assaulted ${fighter.name} and he is now injured`, type: 'report'
       })
     }
     else if(guardBlocked){
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect fighter from being assaulted',
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${fighter.name} from an attempted assault`
       })   
       assaultersManager.functions.addToLog({        
-        roundNumber,
+        weekNumber,
         message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name} because he was guarded by thugs`, type: 'employee outcome'
       })  
     }
     else
       assaultersManager.functions.addToLog({
-        roundNumber,
+        weekNumber,
         type: 'employee outcome',         
         message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name}`
       })
@@ -104,10 +89,3 @@ export const assaultFighterServer: ServerAbility = {
   },
   ...assaultFighter
 }
-
-export const assaultFighterClient: ClientAbility = {
-  shortDescription: 'Chance to injure a fighter',
-  longDescription: 'An injured fighter will be slower in a fight and have less stamina and recovery',
-  ...assaultFighter
-}
-

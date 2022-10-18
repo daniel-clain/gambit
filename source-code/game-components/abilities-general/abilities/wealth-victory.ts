@@ -1,17 +1,14 @@
 import { Game } from "../../game"
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 
 
-const wealthVictory: Ability = {
-  disabled: true,
+export const wealthVictory: Ability = {
+  disabled: false,
   name: 'Wealth Victory',
   cost: { money: 10000, actionPoints: 1 },
-  possibleSources: ['Manager'],
-  notValidTargetIf: ['fighter'],
-  validTargetIf: [],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: true,
-  notActiveUntilRound: 20,
+  notActiveUntilWeek: 20,
   canOnlyBeUsedOnce: true
 
 }
@@ -72,10 +69,3 @@ export const wealthVictoryServer: ServerAbility = {
   },
   ...wealthVictory
 }
-
-export const wealthVictoryClient: ClientAbility = {
-  shortDescription: 'Win the game by financially crushing your opponents',
-  longDescription: 'Win the game by financially crushing your opponents. Your opponents can counter your attempt to win if the average of their combined wealth or lawyers is more than half of yours. If you fail you will lose money equal to the average of their combined wealth',
-  ...wealthVictory
-}
-

@@ -1,0 +1,57 @@
+retreat logic considering intelligence
+
+* factors
+	- proximity
+	- stamina
+	- spirit
+	- rampage
+	- targeted
+	- enemy behind
+	- aggression
+	- speed
+	- intelligence
+	
+
+* how to make intelligence work
+	- do stupid stuff unless intelligent
+	- base probability for obvious things that dont require intelligence
+	- the more intelligent the mechanic, the higher the intelligence factor
+	
+* key considerations
+	- the numbers not only have to be in balance within retreat, but also in balance to all the other probabilities
+	- what is the difference between not intelligent and aggressive
+		~ what does agressive and intelligent look like, what does unagressive and unintelligent look like
+			* unagressive would rather retreat than attack
+		~ unintelligent
+			* attack while enemy defending
+			* not retreat while low stamina
+			* not refresh who is behind him
+			* Attack when they're in a vulnerable position. 
+			* Defend when the enemy is in a vulnerable position
+			
+* factors details
+	- speed
+		~ intelligent fighters know that running away fighters that are faster than you is not worth it
+			* unless there are other fighters nearby that the other fighter could be distracted by
+	- proximity
+		~ if you turn to retreat in striking distance, then there is a high chance to get attacked in the back
+		~ if enemy fighters are far away, then maybe its an opportunity to recover instead of still retreating
+	- stamina
+		~ intelligent fighters know that if there are other fighters, they have a chance to create some distance and recover stamina
+	- spirit
+		~ when in high spirits, a fighter will want to keep fighting, if a fighter is in low spirits they will want to run away
+	- rampage
+		~ a fighter does not retreat when rampaging
+		~ an intelligent fighter will take advantage of a rampaging fighter 
+			- attack when their back is turned
+			- defend, if has faster speed, try to counter attack, if not, keep defending till rampage is over
+			- high chance to retreat if they are near, low chance to retreat if they are close
+	- targeted
+		~ an intelligent fighter does not retreat from nearby fighters if they arent targeting him, he would rather take the chance to reposition, recover or look for a cheapshot
+		~ an intelligent fighter will not start to recover if there is a nearby enemy targeting him, or he has no memory of whats behind
+		
+	- enemy behind
+		~ an intelligent fighter will not from an enemy infront into an enemy behind, he instead will retreat from flanked
+		~ 
+* scenarios
+	- 

@@ -4,6 +4,7 @@ import { ManagerInfo } from "../../../../../../../game-components/manager"
 import { ContractOffer, GoalContract } from "../../../../../../../interfaces/game/contract.interface"
 import { JobSeeker } from "../../../../../../../interfaces/front-end-state-interface"
 import { InfoBox } from "../../partials/info-box/info-box"
+import { ifTargetIsFighter } from "../../../../../../front-end-service/ability-service-client"
 
 type OfferContractPartialProps = {
   activeAbility: AbilityData,
@@ -13,20 +14,19 @@ type OfferContractPartialProps = {
 }
 
 export const OfferContractPartial = ({activeAbility, setActiveAbility, jobSeekers, managerInfo}: OfferContractPartialProps) => {
+    const {target, source} = activeAbility
 
-    if(!activeAbility.target) return <></>
+    if(!target) return <></>
     
 
     let goalContract: GoalContract
-    if(activeAbility.target.type == 'fighter owned by manager'){
-      goalContract = [
-        ...managerInfo.knownFighters,
-        ...managerInfo.fighters
-      ].find(fighter => fighter.name == activeAbility.target.name).goalContract
-    }
-    else{
-      goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == activeAbility.target.name).goalContract
-    }
+    ifTargetIsFighter(target, fighterInfo => {
+      goalContract = fighterInfo.goalContract
+    }).else(() => {
+      goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == target.name).goalContract
+    })
+   
+
     useEffect(() => {
       if(!activeAbility.additionalData){
         setContractOffer(goalContract.weeklyCost)

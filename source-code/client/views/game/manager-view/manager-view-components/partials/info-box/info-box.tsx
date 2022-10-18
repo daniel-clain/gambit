@@ -18,16 +18,16 @@ export const InfoBox = ({heading, info, list, children}: InfoBoxProps) =>
         <div className='info'>{info}</div>
       }
       {list &&
-        <div className="list">
-          {list.map(listItem => ([
-              <div className="list__label" key={listItem.label}>
-                {listItem.label}:
-              </div>,
-              <div className="list__value" key={listItem.label+'value'}>
-                {listItem.value}
-              </div>
-            ])
-          )}          
+        <div className="grid">
+          {list.map(listItem => [
+            <div key={listItem.label+'-label'} className="grid__label">
+              {listItem.label}:
+            </div>,
+            <div key={listItem.label+'-value'}className="grid__value">
+              {listItem.value}
+            </div>
+            
+          ])}          
         </div>
       }
       {children}

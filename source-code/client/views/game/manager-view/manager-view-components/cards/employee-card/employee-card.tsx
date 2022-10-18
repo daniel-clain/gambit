@@ -6,32 +6,23 @@ import { ClientAbility } from '../../../../../../../game-components/abilities-ge
 import {AbilityBlock} from '../../partials/ability-block/ability-block';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { Modal } from '../../partials/modal/modal';
-import { Employee, FrontEndState } from '../../../../../../../interfaces/front-end-state-interface';
-import {frontEndService} from '../../../../../../front-end-service/front-end-service';
+import { Employee } from '../../../../../../../interfaces/front-end-state-interface';
 import { InfoBox } from '../../partials/info-box/info-box';
-import { abilityService } from '../../../../../../front-end-service/ability-service-client';
-import { connect, ConnectedProps } from 'react-redux';
-import { hot } from 'react-hot-loader/root';
-import { AbilityCardProps } from '../ability-card/ability-card';
+import { frontEndState } from '../../../../../../front-end-state/front-end-state';
+import { observer } from 'mobx-react';
+import { abilities } from '../../../../../../client-abilities/client-abilities';
 
+export const EmployeeCard = observer(() => {
 
-const mapState = ({
-  clientUIState: {clientGameUIState: {
-    clientManagerUIState: {activeModal}
-  }}
-}: FrontEndState): {employee: Employee} => ({
-  employee: activeModal.data
-})
-
-
-const connector = connect(mapState)
-type PropsFromRedux = ConnectedProps<typeof connector>
-
-export const EmployeeCard = connector(hot(({employee}: PropsFromRedux) => {
-
+  const {
+    clientUIState: {clientGameUIState: {
+      clientManagerUIState: {activeModal}
+    }}
+  } = frontEndState
+  const employee = activeModal.data as Employee
   const {weeksRemaining, weeklyCost} = employee.activeContract
 
-  const employeeAbilities: ClientAbility[] = abilityService.abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))
+  const employeeAbilities: ClientAbility[] = abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))
   
   const infoBoxList: InfoBoxListItem[] = [
     {label: 'Weeks remaining', value: weeksRemaining},
@@ -45,6 +36,9 @@ export const EmployeeCard = connector(hot(({employee}: PropsFromRedux) => {
         <div className="card__two-columns">
           <div className='card__two-columns__left employee-card__image'></div>
           <div className='card__two-columns__right'>    
+            <div className='employee-card__profession'>
+              Action Points: {employee.actionPoints}
+            </div>  
             <div className='employee-card__profession'>
               Profession: {employee.profession}
             </div>     
@@ -62,10 +56,7 @@ export const EmployeeCard = connector(hot(({employee}: PropsFromRedux) => {
               key={employeeAbility.name}
               abilityData={{
                 name: employeeAbility.name,
-                source: {
-                  name: employee.name,
-                  type: employee.profession
-                },
+                source: employee.actionPoints ? employee : undefined,
                 target: undefined
               }}
             />
@@ -75,5 +66,5 @@ export const EmployeeCard = connector(hot(({employee}: PropsFromRedux) => {
       </div>
     </Modal>
   )
-}))
+})
 

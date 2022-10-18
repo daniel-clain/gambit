@@ -30,6 +30,24 @@ export const shuffle = <T>(array: T[]): T[] => {
   return array;
 }
 
+export function toCamelCase(string: string): string{
+  return string.toLowerCase().split(' ').join('-')
+}
+
+
+export function toWrittenList(array: string[]): string {
+  if(array.length == 1) return array[0]
+  return array.reduce((text, loopItem, i) => {
+    const isSecondLast = i == array.length - 2
+    const isLast = i == array.length - 1
+    const returnText = text + loopItem + (isSecondLast ? ' and ' : isLast ? '' : ', ')
+    return returnText
+
+  }, '')
+
+
+}
+
 export const percentageChance = ({percentage}: {percentage: number}): boolean => {
   return percentage > Math.floor((Math.random() * 100))
 }

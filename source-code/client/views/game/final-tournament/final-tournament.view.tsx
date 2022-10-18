@@ -1,12 +1,14 @@
-import { hot } from 'react-hot-loader/root';
 import * as React from 'react';
-import { FinalTournamentBoard, FrontEndState } from '../../../../interfaces/front-end-state-interface';
-import { connect } from 'react-redux';
 import { Fight_View } from '../fight-view/fight.view';
-import { MatchupInfo, MatchupName } from '../../../../game-components/round-controller/final-tournament/final-tournament';
+import { MatchupName } from '../../../../game-components/week-controller/final-tournament/final-tournament';
 import './final-tournament.scss'
+import { frontEndState } from '../../../front-end-state/front-end-state';
+import { observer } from 'mobx-react';
 
-const FinalTournament = ({finalTournamentBoard}: {finalTournamentBoard: FinalTournamentBoard}) => {
+export const FinalTournament_View = observer(() => {
+  const {
+    serverUIState: {serverGameUIState: {finalTournamentBoard}}
+  } = frontEndState
   const {finals, semiFinals, quarterFinals, showTournamentBoard} = finalTournamentBoard
   return showTournamentBoard ? 
     <div className="final-tournament-board-container">
@@ -61,10 +63,4 @@ const FinalTournament = ({finalTournamentBoard}: {finalTournamentBoard: FinalTou
         case 'Semi Finals 2': return 'semi-finals2'
       }
     }
-}
-
-const mapStateToProps = ({
-  serverUIState: {serverGameUIState: {finalTournamentBoard}}
-}: FrontEndState) => ({finalTournamentBoard})
-
-export const FinalTournament_View = hot(connect(mapStateToProps)(FinalTournament))
+})

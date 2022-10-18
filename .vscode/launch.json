@@ -8,53 +8,9 @@
       "type": "node",
       "request": "launch",
       "name": "launch Run Server",
-      "runtimeExecutable": "node",
-      "preLaunchTask": "npm: dev-startServer",
-      "console": "internalConsole",
-      "cwd": "${workspaceRoot}",
-      "restart": true
-    },
-    {
-      "type": "node",
-      "request": "attach",
-      "name": "attach Run Server",
-      "restart": true,
-      "protocol": "inspector",
-      "port": 9229
-    },    
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "test",
-      "args": [        
-        "-c=config/jest.config.js",
-        "--runInBand",
-        "proximity"
-      ],
-      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      "console": "internalConsole"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "GUI Tests",
       "args": [
-        "--runInBand",
-        "--config=jest.config.gui-tests.js"
-      ],
-      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Automated Scenarios",
-      "args": [
-        "--runInBand",
-        "--config=jest.config.automated-scenarios.js"
-      ],
-      "program": "${workspaceFolder}/node_modules/jest/bin/jest",
-      "console": "integratedTerminal",
+        "${workspaceFolder}/server.ts"
+      ]
     }
   ]
 }

@@ -1,17 +1,17 @@
-import 'core-js/stable'
+
 import 'regenerator-runtime/runtime'
-import { render } from 'react-dom'
 import * as React from 'react';
-import { Provider } from 'react-redux'
-import { FighterTest } from './fight-test';
-import { fightUiService } from './fight-ui-service';
+import { render } from "react-dom";
+import { FighterTest_C } from './fight-test';
 
 const reactRenderingTag = document.createElement('react')
 document.body.appendChild(reactRenderingTag)
-render(
-  <Provider store={fightUiService.frontEndStore}>
-    <FighterTest />
-  </Provider>
-  , reactRenderingTag
+
+console.log('Adding game to DOM');
+
+render(<FighterTest_C />, 
+  document.body.appendChild(
+    document.createElement('react-container')
+  )
 )
 

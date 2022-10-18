@@ -1,18 +1,14 @@
-import x from "../../../client/views/game/manager-view/manager-view-components/cards/fighter-card/fighter-card"
-import { Employee } from "../../../interfaces/front-end-state-interface"
-import { Evidence, IllegalActivityName } from "../../../types/game/evidence.type"
-import { Lawsuit, LawsuitAccount } from "../../../types/game/lawsuit.type"
-import { Profession } from "../../../types/game/profession"
-import { Game } from "../../game"
-import { Manager } from "../../manager"
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 
-const sueManager: Ability = {
+import { Employee } from "../../../interfaces/front-end-state-interface"
+import { Evidence } from "../../../types/game/evidence.type"
+import { Lawsuit, LawsuitAccount } from "../../../types/game/lawsuit.type"
+import { Game } from "../../game"
+import { Ability, ServerAbility, AbilityData } from "../ability"
+
+export const prosecuteManager: Ability = {
   name: 'Prosecute Manager',
   cost: { money: 500, actionPoints: 1 },
-  possibleSources: ['Lawyer'],
-  validTargetIf: ['opponent manager'],
-  executes: 'End Of Round',
+  executes: 'End Of Week',
   canOnlyTargetSameTargetOnce: true
 }
 
@@ -25,7 +21,7 @@ type Verdict = {
 export const prosecuteManagerServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const {managers} = game.has
-    const {roundNumber} = game.has.roundController
+    const {weekNumber} = game.has.weekController
     const {source, target} = abilityData
     const prosecutingManager = managers.find(m => m.has.employees.find(e => e.name == source.name))
     const prosecutedManager = managers.find(m => m.has.name == target.name)
@@ -68,19 +64,19 @@ export const prosecuteManagerServer: ServerAbility = {
           x += `\n -${a.name}(${a.evidence.length})`
         , '')}
 
-        . You have been sentenced to ${verdict.weeksInJail} weeks in jail with a fine of $${verdict.fine}. While in jail, you manager has 0 action points.
+        . You have been sentenced to ${verdict.weeksInJail} weeks in jail with a fine of $${verdict.fine}. While in jail, your manager has 0 action points.
 
-        ${lostEmployees?.length ? '' : 
+        ${lostEmployees?.length ? 
           `The following employees have left you: 
             ${lostEmployees.reduce((string, e) => string += `
               \n - ${e.name} (${e.profession})
             `, '')}
-          `
+          ` : ''
         }
       `
 
       prosecutedManager.functions.addToLog({
-        roundNumber,
+        weekNumber,
         type: 'critical', 
         message: logMessage
       })
@@ -91,7 +87,7 @@ export const prosecuteManagerServer: ServerAbility = {
       const amount = moneyTakenOffPlayer / 2
       prosecutingManager.has.money += amount
       prosecutingManager.functions.addToLog({
-        roundNumber,
+        weekNumber,
         type: 'employee outcome', 
         message: `You have been awarded $${amount} from a successful court case`
       })
@@ -178,19 +174,12 @@ export const prosecuteManagerServer: ServerAbility = {
     const {source, target} = abilityData
     const prosecutingManager = managers.find(m => m.has.employees.find(e => e.name == source.name))
     const prosecutedManager = managers.find(m => m.has.name == target.name)
-    game.has.roundController.preFightNewsStage.newsItems.push({
+    game.has.weekController.preFightNewsStage.newsItems.push({
       newsType: 'manager prosecuted',
       headline: 'Lawsuit filed',
       message: `${prosecutingManager.has.name} has filed a lawsuit against ${prosecutedManager.has.name}`
     })
     prosecutedManager.state.beingProsecuted = true
   },
-  ...sueManager
+  ...prosecuteManager
 }
-
-export const prosecuteManagerClient: ClientAbility = {
-  shortDescription: 'Prosecute a manager for lots of money',
-  longDescription: 'Prosecute an opponent manager for illegal activity, amount sued for is relative to the severity of each account manager is found guilty of. +100 cost for each accusation, 20% chance of success without evidence',
-  ...sueManager
-}
-

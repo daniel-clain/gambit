@@ -86,19 +86,24 @@ export const setupTestState = (game: Game) => {
 export const postStartTestState = (game: Game) => {
   //testMainEvent()
   //testContractEnding()
-  //quickSinisterVictory()
-  //lotsOfMoney()
+  quickSinisterVictory()
+  lotsOfMoney()
   //testFighterJobSeeker()
   managerHasFighters()
 
+  //showPostGameStats()
+
   //finalTournamentTest()
 
-  //addPrivateAgent()
+  //addPrivateAgentAndLawyer()
 
 
-  function addPrivateAgent(){
+  function addPrivateAgentAndLawyer(){
 
     game.has.managers[0].has.employees.push(new Employee('Private Agent', 3))
+    game.has.managers[0].has.employees.push(new Employee('Lawyer', 3))
+    game.has.managers[1].has.employees.push(new Employee('Thug', 3))
+    game.has.managers[1].has.employees.push(new Employee('Drug Dealer', 3))
     
 
   }
@@ -117,7 +122,7 @@ export const postStartTestState = (game: Game) => {
       goalContract: testFighter.state.goalContract
     } as JobSeeker
 
-    game.has.roundController.jobSeekers.push(testJobSeeker)
+    game.has.weekController.jobSeekers.push(testJobSeeker)
 
     game.has.managers.forEach(manager =>
       manager.has.knownFighters.push(testFighter.getInfo())
@@ -129,7 +134,7 @@ export const postStartTestState = (game: Game) => {
     lotsOfMoney()
     gameConfiguration.stageDurations.maxFightDuration = 1
     gameConfiguration.stageDurations.extraTimePerFighter = 0 
-    game.has.roundController.roundNumber = 20
+    game.has.weekController.weekNumber = 20
     const manager = game.has.managers[0]
     for(let i = 0; i < 8; i++){
       const fighter = game.has.fighters[i]      
@@ -145,9 +150,12 @@ export const postStartTestState = (game: Game) => {
     const manager1 = game.has.managers[0]
 
     const testFighters = game.has.fighters.slice(0, 3)
+    
+    testFighters[0].fighting.stats.baseStrength = 6
+    testFighters[1].fighting.stats.baseFitness = 6
 
     manager1.has.fighters.push(...testFighters)
-    game.has.roundController.activeFight.fighters.push(...testFighters)
+    game.has.weekController.activeFight.fighters.push(...testFighters)
 
     testFighters.forEach(f => {
       f.state.manager = manager1
@@ -155,8 +163,9 @@ export const postStartTestState = (game: Game) => {
         weeklyCost: 0,
         weeksRemaining: 10
       }
+      f.state.hallucinating = true
       f.state.publicityRating = 10
-      f.state.fight = game.has.roundController.activeFight
+      f.state.fight = game.has.weekController.activeFight
     })
 
 
@@ -171,7 +180,7 @@ export const postStartTestState = (game: Game) => {
   function quickSinisterVictory(){
     
     const manager1 = game.has.managers[0]
-    game.has.roundController.roundNumber = 20
+    game.has.weekController.weekNumber = 20
     const hitman = new Employee('Hitman')
     const thug = new Employee('Thug')
     manager1?.has.employees.push(hitman, thug)
@@ -179,7 +188,7 @@ export const postStartTestState = (game: Game) => {
   
 
   function testMainEvent(){
-    game.has.roundController.roundNumber = 20
+    game.has.weekController.weekNumber = 20
 
   }
   
@@ -199,21 +208,35 @@ export const postStartTestState = (game: Game) => {
       weeklyCost: 10,
       weeksRemaining: 1
     }
+
     const fighter2: Fighter = new Fighter('Test Fighter2')
     fighter1.state.goalContract = {
       weeklyCost: 10,
       numberOfWeeks: 1
     }
+
     fighter1.state.manager = manager1
     manager1.has.fighters.push(fighter1)
 
 
-    game.has.fighters.push(fighter2)
+    game.has.fighters.push(fighter1, fighter2)
 
-    game.has.roundController.jobSeekers.push({
-      type: 'Fighter', name: fighter2.name, goalContract: fighter2.state.goalContract
+    game.has.weekController.jobSeekers.push({
+      type: 'Fighter', 
+      characterType: 'Job Seeker',
+      name: fighter2.name, goalContract: fighter2.state.goalContract
     })
 
   }
 
+  function showPostGameStats() {
+    game.state.gameIsFinished = true
+    game.state.playerHasVictory = {
+      name: game.has.managers[0].has.name,
+      victoryType: 'Sinister Victory'
+    }
+  }
+  
 }
+
+

@@ -4,47 +4,28 @@ import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
 import { handleUnderSurveillance } from "./do-surveillance"
+import { getAbilitySourceManager } from "../ability-service-server"
 
 
-const poisonFighter: Ability = {
+export const poisonFighter: Ability = {
   name: 'Poison Fighter',
   cost: { money: 150, actionPoints: 1 },
-  possibleSources: ['Private Agent', 'Hitman'],
-  notValidTargetIf: ['fighter owned by manager'],
-  validTargetIf: ['fighter in next fight'],
   executes: 'End Of Manager Options Stage',
   canOnlyTargetSameTargetOnce: false
 }
 
 export const poisonFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
-    const {roundNumber} = game.has.roundController
+    const {source, target} = abilityData
+    const fighter = game.has.fighters.find(fighter => fighter.name == target.name)
+    const {weekNumber} = game.has.weekController
     
     let poisoner: Employee
-    let poisonersManager: Manager
-    for(let manager of game.has.managers){
-      poisoner = manager.has.employees.find(employee => employee.name == abilityData.source.name)
-      if(poisoner){
-        poisonersManager = manager
-        break
-      }
-    }    
-
-    if(poisonersManager.state.beingProsecuted){
-      return
-    }
+    const sourceManager = getAbilitySourceManager(source, game)
     
-    if(fighter.state.dead){
-      poisonersManager.functions.addToLog({
-        roundNumber,
-        message: `Attempt to poison ${abilityData.target.name} failed because he was already found dead`, 
-        type: 'employee outcome'})
-      return
-    }
 
-    if(poisonersManager.state.underSurveillance){
-      handleUnderSurveillance({surveilledManager: poisonersManager, abilityData, game})
+    if(sourceManager.state.underSurveillance){
+      handleUnderSurveillance({surveilledManager: sourceManager, abilityData, game})
     }
     if(fighter.state.underSurveillance){
       handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
@@ -79,68 +60,61 @@ export const poisonFighterServer: ServerAbility = {
       if(severityLevel == 'death'){
 
         game.functions.removeFighterFromTheGame(fighter.name, game)
-        game.has.roundController.preFightNewsStage.newsItems.push({
+        game.has.weekController.preFightNewsStage.newsItems.push({
           newsType: 'fighter died from poison',
           headline: `${fighter.name} had Died from Poisoning!`,
           message: `${fighter.name} has been found dead, frothing at the mouth, eyes a strange yellow color`
         })
-        poisonersManager.functions.addToLog({
-          roundNumber,          
+        sourceManager.functions.addToLog({
+          weekNumber,          
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, 
           type: 'employee outcome'
         })
       }
       if(severityLevel == 'sick'){
         fighter.state.sick = true
-        game.has.roundController.preFightNewsStage.newsItems.push({
+        game.has.weekController.preFightNewsStage.newsItems.push({
           newsType: 'fighter is sick',
           headline: `${fighter.name} Poisoned!`,
           message: `${fighter.name} has been nauseous and is pale in complexion, there is reason to believe he has been poisoned`
         })
-        poisonersManager.functions.addToLog({
-          roundNumber,
+        sourceManager.functions.addToLog({
+          weekNumber,
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'
         })
       }
 
       if(severityLevel == 'hallucinate'){
         fighter.state.hallucinating = true
-        game.has.roundController.preFightNewsStage.newsItems.push({
+        game.has.weekController.preFightNewsStage.newsItems.push({
           newsType: 'fighter is hallucinating',
           headline: `${fighter.name} Poisoned!`,
           message: `${fighter.name} has been acting delirious and highly erratic, he says he cant remember`
         })
-        poisonersManager.functions.addToLog({
-          roundNumber,          
+        sourceManager.functions.addToLog({
+          weekNumber,          
           message: `${poisoner.name} has successfully poisoned ${fighter.name}`, type: 'employee outcome'
         })
       }
     }
     else if(guardBlocked){
-      game.has.roundController.preFightNewsStage.newsItems.push({
+      game.has.weekController.preFightNewsStage.newsItems.push({
         newsType: 'guards protect fighter from being poisoned',
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have stopped a suspicious man trying to poison ${fighter.name}`
       })      
-      poisonersManager.functions.addToLog({
+      sourceManager.functions.addToLog({
         type: 'employee outcome',
-        roundNumber,        
-        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name} because he was guarded by thugs`
+        weekNumber,        
+        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${target.name} because he was guarded by thugs`
       })
     }
     else
-      poisonersManager.functions.addToLog({
+      sourceManager.functions.addToLog({
         type: 'employee outcome',
-        roundNumber,        
-        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${abilityData.target.name}`
+        weekNumber,        
+        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${target.name}`
       })
   },
   ...poisonFighter
 }
-
-export const poisonFighterClient: ClientAbility = {
-  shortDescription: 'Poison a fighter',
-  longDescription: 'Has a varying chance to inflict a range of affect on a fighter, from lowering hit chance, reduction in speed and strength, or even death. Requires a Drug Dealer employee',
-  ...poisonFighter
-}
-

@@ -1,8 +1,6 @@
 import { AbilityData } from "../../game-components/abilities-general/ability"
 import { Bet } from "../../interfaces/game/bet"
 import { ClientNameAndID } from "../../game-host/game-host.types"
-import {  SetStateManagerUI } from "../front-end-state/reducers/manager-ui.reducer"
-import { SetStatePreGameUI } from "../front-end-state/reducers/pre-game-ui.reducer"
 
 export type FromClientToGame = {
   toggleReady()
@@ -23,5 +21,3 @@ export type SetStatePreGameUIFunctionName = 'setName'
 
 export type SetStateManagerUIFunctionName = 
 'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport' | 'showWinOptions'
-
-export type SetState = SetStatePreGameUI & SetStateManagerUI
