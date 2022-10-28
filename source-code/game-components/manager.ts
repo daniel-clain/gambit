@@ -47,12 +47,14 @@ export interface ManagerInfo{
   activityLogs: ActivityLogItem[]
   image: ManagerImage
   evidence: Evidence[]
+  retired: boolean
 }
 
 export class ManagerState{
   readyForNextFight: boolean = false
   underSurveillance: {professional: string} = undefined
   beingProsecuted: boolean = false
+  retired: boolean
   inJail: {
     weeksTotal: number,
     weeksRemaining: number,
@@ -75,7 +77,7 @@ class ManagerHas{
   otherManagers: KnownManager[] = []
   knownFighters: FighterInfo[] = []
   activityLogs: ActivityLogItem[] = []
-  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract', 'Domination Victory', 'Sinister Victory', 'Wealth Victory', 'Take A Dive']
+  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract', 'Domination Victory', 'Sinister Victory', 'Wealth Victory', 'Take A Dive', 'Give Up']
   postFightReportItems: PostFightReportItem[] = []
   evidence: Evidence[] = []
 
@@ -115,6 +117,7 @@ class ManagerFunctions{
       characterType: 'Manager',
       ...this.manager.state,
       ...this.manager.has,
+      otherManagers: this.manager.has.otherManagers?.filter(om => !this.game.has.managers.find(m => m.has.name == om.name).state.retired),
       fighters: this.manager.has.fighters.map(f => f.getInfo())
     }
   }

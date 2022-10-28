@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Octagon from '../../../../../../game-components/abilities-general/fight/octagon';
+import { octagon } from '../../../../../../game-components/abilities-general/fight/new-octagon';
 import Coords from '../../../../../../interfaces/game/fighter/coords';
 import { FighterComponent } from '../fighter/fighter.component';
 
@@ -21,8 +21,8 @@ export const ArenaUi = ({fighterFightStates}) => {
 
 	
 
-	for (let key in Octagon.points) {
-		cornerPoints.push(Octagon.points[key])
+	for (let key in octagon.points) {
+		cornerPoints.push(octagon.points[key])
 	}
 
 		

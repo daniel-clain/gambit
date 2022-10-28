@@ -68,7 +68,7 @@ export default class ManagerOptionsStage implements IStage {
       this.updateCount ++
       if(
         this.timeLeft == 0 || 
-        this.game.has.managers.every(this.isReady)
+        this.game.has.managers.filter(m => !m.state.retired).every(this.isReady)
       ){
         this.stageFinished()
       }

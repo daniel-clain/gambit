@@ -3,7 +3,7 @@ import { websocketService } from './websocket-service'
 import { CardName, Employee, JobSeeker, Modal } from '../../interfaces/front-end-state-interface'
 import { ActivityLogItem } from '../../types/game/activity-log-item';
 import { runInAction } from 'mobx';
-import { frontEndState } from '../front-end-state/front-end-state';
+import { frontEndState, getInitialState } from '../front-end-state/front-end-state';
 import { KnownManager } from '../../game-components/manager';
 import { AbilityData } from '../../game-components/abilities-general/ability';
 
@@ -27,8 +27,8 @@ export function initialSetup(){
   })
 
   let clientName = localStorage.getItem('clientName')
-  if(clientName){    
-    setNameAndTryToConnect(clientName)
+  if(clientName){
+    setName(clientName)
   }
 
 
@@ -47,7 +47,6 @@ export const setNameAndTryToConnect = name => {
     connectToGameHost()
   }
 }
-export function updateGameUi(){}
 
 function setActiveModal(name: CardName | null, data?: unknown){
   let modalObj: Modal
@@ -139,4 +138,26 @@ export function returnToLobby(){
     frontEndState.clientUIState.clientPreGameUIState.hasGameData = false
   )
 }
+export function resetClient(){
 
+  runInAction(() => {
+    frontEndState.clientUIState.clientPreGameUIState.hasGameData = false
+    frontEndState.serverUIState = {
+      serverPreGameUIState: undefined,
+      serverGameUIState: undefined
+    }
+  })
+}
+
+export function backButtonClicked(){
+  localStorage.removeItem('clientName')
+  localStorage.removeItem('clientId')
+  const {clientId,clientName} = frontEndState.clientUIState.clientPreGameUIState
+  websocketService.sendUpdate.reset({name: clientName, id: clientId})
+  
+
+  runInAction(() => {
+    frontEndState.clientUIState.isConnectedToGameHost = false
+    frontEndState.clientUIState.clientPreGameUIState.clientName = undefined
+  })
+}

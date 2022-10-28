@@ -17,6 +17,7 @@ export default class Logistics {
   memoryOfEnemyBehind: Fighter
   moveActionInProgress: MoveAction
   directionAlongEdge: number
+  retreatFromFlankedDirection: number
 
 
   constructor(public fighting: FighterFighting){}
@@ -80,7 +81,7 @@ export default class Logistics {
 
   hasFullStamina(): boolean{
     const {stamina, stats} = this.fighting
-    return stamina == stats.maxStamina
+    return stamina >= stats.maxStamina
   }
   hasFullSpirit(): boolean{
     const {spirit, stats} = this.fighting
@@ -89,22 +90,26 @@ export default class Logistics {
 
 
   enemyIsOnARampage(enemy: Fighter): boolean{
+    if(!enemy) return
     return enemy.fighting.timers.activeTimers.some(timer => timer.name == 'on a rampage')
   }
 
   enemyHasLowSpirit(enemy: Fighter): boolean{
+    if(!enemy) return
     const {spirit} = enemy.fighting
     const {maxSpirit} = enemy.fighting.stats
     return spirit < (maxSpirit / 2)
   }
 
   enemyHasLowStamina(enemy: Fighter): boolean{
+    if(!enemy) return
     const {stamina} = enemy.fighting
     const {maxStamina} = enemy.fighting.stats
     return stamina < (maxStamina / 2)
   }
 
   isEnemyTargetingThisFighter(enemy: Fighter): boolean{
+    if(!enemy) return
     const enemyTargeting = enemy.fighting.enemyTargetedForAttack
     const thisFighterName = this.fighting.fighter.name
     return enemyTargeting && enemyTargeting.name == thisFighterName
@@ -117,12 +122,13 @@ export default class Logistics {
   
 
   hasRetreatOpportunity(enemy: Fighter): boolean{
+    if(!enemy) return
     const enemyAction = enemy.fighting.animation.inProgress
     const enemyFacingAway = isEnemyFacingAway(enemy, this.fighting.fighter)
     return (
+      !this.isEnemyTargetingThisFighter(enemy) ||
       enemyFacingAway ||
       this.enemyJustAttacked(enemy) ||
-      !this.isEnemyTargetingThisFighter(enemy) ||
       enemyAction == 'taking a hit' || 
       enemyAction == 'recovering' ||
       enemyAction == 'defending' ||
@@ -132,16 +138,18 @@ export default class Logistics {
   }
 
   enemyJustAttacked(enemy: Fighter){
+    if(!enemy) return
     return enemy.fighting.logistics.justDidAttack
   }
 
   hasAttackOpportunity(enemy: Fighter): boolean{
+    if(!enemy) return
     const enemyAction = enemy.fighting.animation.inProgress
     const enemyFacingAway = isEnemyFacingAway(enemy, this.fighting.fighter)
     return (
+      !this.isEnemyTargetingThisFighter(enemy) ||
       enemyFacingAway ||
       this.enemyJustAttacked(enemy) ||
-      !this.isEnemyTargetingThisFighter(enemy) ||
       enemyAction == 'taking a hit' || 
       enemyAction == 'recovering' ||
       enemyAction == 'missed critical strike'

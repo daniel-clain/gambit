@@ -19,6 +19,7 @@ export const Headbar = observer(() => {
     }}}
   } = frontEndState
 
+
   let [timeLeft, setTimeLeft] = useState(managerOptionsTimeLeft)
   let timeLeftTimeout
 
@@ -41,13 +42,11 @@ export const Headbar = observer(() => {
   }, [managerOptionsTimeLeft, disconnectedPlayerVotes])
 
 
-  
-  
 
   return (
     <div className='headbar' >
       <div className='headbar__left'>
-        <div>Time left: {timeLeft}</div>
+        <div>Time left: {isNaN(timeLeft) ? '...' : timeLeft }</div>
       </div>
       {otherPlayersReady?.map(({name, ready}) => 
         <div 

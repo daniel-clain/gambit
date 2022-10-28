@@ -134,6 +134,15 @@ export class GameHost{
       submitGlobalChat: message => {
         this.state.globalChat.push({player: client.name,  message})
       },
+      reset: client => {        
+        let {connectedClients} = this.state   
+
+        console.log(`${client.name} has reset, removing ${client.name} from the connected clients list`);
+
+        connectedClients.splice(
+          connectedClients.findIndex(c => c.id == client.id), 1
+        )
+      },
       disconnect: reason => {
         let {connectedClients, gamesBeingCreated, activeGames} = this.state
         

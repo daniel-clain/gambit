@@ -1,0 +1,45 @@
+To be present worthy:
+  ☐ game ends if manager can
+    ☐ have a fighter in the final round tournament
+    ☐ have everyone else go bankrupt
+    ☐ hire 3 hitmen and 4 thugs and go for kingpin victory
+  ☐ Fighters only recover at appropriate times
+  ☐ all ability cards and employee cards have good info
+  ☐ balanced for any number of player
+  ☐ get friends feedback on what part they didnt understand
+  ☐ get friends to test with and without lawyer
+
+
+Secondary requrements:
+  ☐ account for all things affecting delay in load speed
+  ☐ how to make game insta-load after assets are store on clin
+
+
+
+Included features:
+☐ sponsor
+☐ abilities: 
+- assault
+- guard
+- train
+- offer contract
+- research fighter
+- murder
+- dope
+- poison
+- promote
+- sell drugs
+☐ loan shark
+☐ main event
+☐ hold evidence on manager
+
+
+Additional ideas:
+  ☐ you dont pay off court issued fines in 1 hit, you pay them off in repayments overtime
+  ☐ hidden agenda character motivations
+  - thugs and hitmen have +50% influence to chose you and cost 50% less
+  - your promoters and talent scouts are more effective
+  - you fighters get more intelligence and you manager has +1 training skill
+  - all expenses cos 20% less, loanshark allows double, manager can hustle to make money
+  ☐ thugs can be used to control the drugdealing scene
+  ☐ more sound affects to link sounds to game mechanics

@@ -32,10 +32,10 @@ export default class AttackResponseProbability {
 
     let probability: number = 1
 
-    if(enemy.state.hallucinating){
-      probability += 4
-    }
 
+    if(enemy.state.hallucinating){
+      probability -= 6
+    }
     if(animation.inProgress == 'defending')
       probability += 8
 

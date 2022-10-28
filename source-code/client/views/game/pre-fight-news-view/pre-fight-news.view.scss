@@ -22,15 +22,16 @@ $preFightImagesFolder: '../../../images/pre-fight';
     position: relative;
     background-size: contain;
     background-repeat: no-repeat;
-    height: 333px;
+    aspect-ratio: 500/333;
     margin: auto;
-    width: 500px;
     justify-self: center;
     align-self: center;
     right: -70%;
     top: -70%;
     transform: scale(2);
-
+    width: 100%;
+    max-width: 600px;
+    
     &.is-showing{
       right: 0;
       top: 0;
@@ -40,12 +41,11 @@ $preFightImagesFolder: '../../../images/pre-fight';
 
     &__news-paper-heading{
       position: absolute;
-      top: 20%;
-      height: 40px;
+      top: 22%;
       width: 59%;
       left: 14%;
       transform: rotate(-7deg);
-      font-size: 3rem;
+      font-size: clamp(16px, 5vw, 30px);
       text-transform: capitalize;
       font-weight: bold;
       font-family: Tinos;
@@ -70,19 +70,21 @@ $preFightImagesFolder: '../../../images/pre-fight';
       width: 17%;
       left: 57%;
       transform: rotate(-7deg);
+      font-size: clamp(8px, 2.6vw, 14px);
     }
     &__image{
       position: absolute;
       top: 56%;
       background-size: contain;
       background-repeat: no-repeat;
-      height: 100px;
       width: 37%;
       background-position-x: center;
       border: 1px solid #ceccc4;
       background-color: #fffef7;
       left: 17%;
       transform: rotate(-7deg);
+      height: 32%;
+      background-size: contain;
       
       &--manager-prosecuted{
         background-image: url('#{$preFightImagesFolder}/prosecute-manager.jpg');
@@ -113,6 +115,9 @@ $preFightImagesFolder: '../../../images/pre-fight';
       }
       &--main-event{
         background-image: url('#{$preFightImagesFolder}/main-event-small.jpg');
+      }
+      &--manager-retired{
+        background-image: url('#{$preFightImagesFolder}/broke.jpg');
       }
     }
   }

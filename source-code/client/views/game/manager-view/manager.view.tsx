@@ -31,13 +31,13 @@ export const Manager_View = observer(() => {
   const {
     serverUIState: { serverGameUIState: {
       playerManagerUIState: {
-        week, managerOptionsTimeLeft, managerInfo, nextFightFighters, jobSeekers, 
+        week, managerOptionsTimeLeft, managerInfo
       }
     }},
-    clientUIState: { clientGameUIState: {
-        clientManagerUIState: {activeModal}
-    }}
+    clientUIState: { clientGameUIState }
   } = frontEndState
+
+  const activeModal = clientGameUIState?.clientManagerUIState?.activeModal
 
   useEffect(() => {
     week != 1 && showReport()

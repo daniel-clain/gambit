@@ -36,7 +36,7 @@ export default class PreFightNewsStage implements IStage {
     this.weekController.triggerUIUpdate()
 
     return new Promise(newsItemFinished => 
-      setTimeout(newsItemFinished, newsItem.duration ? newsItem.duration*1000 : this.newsItemDuration)
+      setTimeout(newsItemFinished, (newsItem.duration ? newsItem.duration*1000 : this.newsItemDuration))
     )
   }
 

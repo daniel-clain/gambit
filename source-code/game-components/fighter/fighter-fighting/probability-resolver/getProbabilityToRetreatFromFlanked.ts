@@ -21,11 +21,10 @@ import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetre
     probability += getProbabilityForGeneralRetreat(fighting)
 
     if (movement.moveActionInProgress == 'retreat from flanked')
-      probability += 500
+      probability += 300
 
-    probability += proximity.flanked.criticality * intelligence * 4
-
-    probability += Math.round(proximity.flanked.criticality * (speed * .5))
+    probability += proximity.flanked.severityRating * intelligence * 4
+    
 
     if (probability < 0)
       probability = 0

@@ -45,6 +45,8 @@ export class WeekController {
       .then(() => this.showVideo())
       .then(() => this.checkFinalTournament())
       .then(() => this.doStage(this.preFightNewsStage))
+      .then(() => this.checkDefaultWinner())
+      
       .then(() => this.doStage(this.fightDayStage))
       .then(() => abilityProcessor.executeAbilities('End Of Week'))
       .then(() => doEndOfWeekUpdates(this.game))
@@ -73,6 +75,23 @@ export class WeekController {
 
     this.weekNumber = number
     setupNewWeek(this.game)
+    return Promise.resolve()
+  }
+
+  checkDefaultWinner(): Promise<any>{
+    const {managers} = this.game.has
+    const nonRetiredPlayers = managers.filter(m => !m.state.retired)
+    console.log('checking default winner');
+    if(nonRetiredPlayers.length == 1 && managers.length >1){
+      const defaultWinner = nonRetiredPlayers[0]
+      this.game.state.playerHasVictory = {
+        name: defaultWinner.has.name,
+        victoryType: 'Default Victory'
+      }
+      this.game.state.isShowingVideo = this.game.i.getSelectedVideo()
+      this.triggerUIUpdate()
+      return this.showVideo()
+    }
     return Promise.resolve()
   }
 

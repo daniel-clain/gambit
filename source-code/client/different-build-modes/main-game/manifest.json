@@ -1,0 +1,8 @@
+{
+  "display": "fullscreen",  
+  "icons": [{
+    "src": "../../images/icons/fights.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }]
+}

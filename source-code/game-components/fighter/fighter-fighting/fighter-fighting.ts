@@ -25,6 +25,7 @@ export default class FighterFighting {
   _facingDirection: FacingDirection
   enemyTargetedForAttack: Fighter  
   rememberedEnemyBehind: Fighter
+  actionLog: string[]
 
   soundsMade: SoundTime[] = []
 
@@ -59,11 +60,15 @@ export default class FighterFighting {
   }
 
   start() {
+    const {fight, injured, sick} = this.fighter.state
     this.fightStarted = true
-    this.stamina = this.stats.maxStamina
+    this.stamina = injured || sick ? this.stats.maxStamina * 0.5 : this.stats.maxStamina
+    
+    this.spirit = injured || sick ? 1 : 3
     this.energy = this.stats.maxEnergy
     this.energyRegenTimeout = setInterval(() => this.regenEnergy, this.energyRegenInterval);
-    this.otherFightersInFight = this.fighter.state.fight.fighters
+    this.actionLog = []
+    this.otherFightersInFight = fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
     if(gameConfiguration.freezeFight) return
     this.actions.decideAction()
@@ -91,7 +96,8 @@ export default class FighterFighting {
       spirit: this.spirit,
       energy: this.energy,
       repositioning: this.movement.moveActionInProgress == 'reposition',
-      direction: this.movement.movingDirection
+      direction: this.movement.movingDirection,
+      againstEdge: this.movement.againstEdge
     }
   }
 
@@ -111,7 +117,7 @@ export default class FighterFighting {
   set facingDirection(direction: FacingDirection){  
 
     if(this.fightStarted){
-      const enemy: Fighter = this.proximity.getClosestEnemyInfront()
+      const enemy: Fighter = this.proximity.getClosestEnemyInFront()
       this._facingDirection = direction  
       if(enemy)
         this.proximity.rememberEnemyBehind(enemy)    

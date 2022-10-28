@@ -217,6 +217,7 @@ export class Game_Implementation{
           case 'Sinister Victory': return 'Sinister Victory'
           case 'Wealth Victory': return 'Wealth Victory'
           case 'Domination Victory': return 'Domination Victory'
+          case 'Default Victory': return 'Default Victory'
         }
       }
       if(playerHasFailedVictory){

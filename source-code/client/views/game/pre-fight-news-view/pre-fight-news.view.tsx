@@ -46,6 +46,7 @@ export const PreFightNews_View = observer(() => {
       newsType == 'fighter is doped up' ? 'doped' :
       newsType == 'fighter has gone up in strength or fitness' ? 'after-training' :
       newsType == 'manager prosecuted' ? 'manager-prosecuted' :
+      newsType == 'manager retired' ? 'manager-retired' :
       newsType == 'fight event next week' ? 'main-event' :
     'guarded'
     )

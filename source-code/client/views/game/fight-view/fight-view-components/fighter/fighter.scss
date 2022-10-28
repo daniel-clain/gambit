@@ -46,6 +46,7 @@ $image-folder: '../../../../../images';
     margin-left: 5px;
   }
   &__flanked{
+    //display: none;
     position: absolute;
     width: 15px;
     height: 17px;
@@ -54,6 +55,7 @@ $image-folder: '../../../../../images';
   }
   
   &__repositioning{
+    //display: none;
     position: absolute;
     width: 15px;
     height: 17px;
@@ -63,6 +65,7 @@ $image-folder: '../../../../../images';
   }
 
   &__trapped{
+    display: none;
     position: absolute;
     width: 15px;
     height: 17px;
@@ -72,7 +75,7 @@ $image-folder: '../../../../../images';
   }
   
   &__direction{
-    display: none;
+    //display: none;
     position: absolute;
     width: 11px;
     height: 55px;

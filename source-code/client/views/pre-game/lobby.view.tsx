@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { GameBeingCreated, JoinedClient } from "../../../game-host/game-host.types"
 import ChatMessage from "../../../interfaces/chat-message.interface"
 import { GameInfo } from "../../../interfaces/game/game-info"
-import {  } from "../../front-end-service/front-end-service"
+import { backButtonClicked } from "../../front-end-service/front-end-service"
 import { websocketService } from "../../front-end-service/websocket-service"
 import { frontEndState } from "../../front-end-state/front-end-state"
 import './lobby.view.scss'
@@ -35,40 +35,46 @@ export const Lobby_View = observer(() => {
       <div className="main-container">
         <div className='create-game-button' onClick={create}>Create Game</div>
         <div className="lists">
-            <div className='connected-players box list'>
-              <div className='box__heading'>Connected Players</div>
-              <div className="list__items">
-                {connectedClients.map(player =>
-                  <div className='connected-player' key={player.id}>{player.name}</div>
-                )}
-              </div>
-            </div>
-            <div className='available-games box list'>
-              <div className='box__heading'>Available Games</div>
-              <div className="list__items">
-                {gamesBeingCreated.map((gameBeingCreated) =>
-                  <div className='available-game' key={gameBeingCreated.id}>
-                    creator: {gameBeingCreated.creator.name}<br />
-                    players: {gameBeingCreated.clients.length}<br />
-                    <button onClick={() => join(gameBeingCreated.id)}>Join Game</button>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className='active-games box list' >
-              <div className='box__heading'>Active Games</div>
-              <div className="list__items">
-                {activeGames.map((game: GameInfo) =>
-                  <div className='available-game' key={game.id}>
-                    <div>game id: {game.id}</div>
-                    <div>players: {game.players.map(player => <div key={player.id}>{player.name}</div>)}</div>
-                    {game.disconnectedPlayerVotes.some(d => d.disconnectedPlayer.id == clientId) ?
-                      <button onClick={() => reJoin(game.id.toString())}>Re-Join Game</button> : ''}
-                  </div>
-                )}
-              </div>
+          <div className='connected-players box list'>
+            <div className='box__heading'>Connected Players</div>
+            <div className="list__items">
+              {connectedClients.map(player =>
+                <div className='connected-player' key={player.id}>{player.name}</div>
+              )}
             </div>
           </div>
+          <div className='available-games box list'>
+            <div className='box__heading'>Available Games</div>
+            <div className="list__items">
+              {gamesBeingCreated.map((gameBeingCreated) =>
+                <div className='available-game' key={gameBeingCreated.id}>
+                  creator: {gameBeingCreated.creator.name}<br />
+                  players: {gameBeingCreated.clients.length}<br />
+                  <button onClick={() => join(gameBeingCreated.id)}>Join Game</button>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className='active-games box list' >
+            <div className='box__heading'>Active Games</div>
+            <div className="list__items">
+              {activeGames.map((game: GameInfo) =>
+                <div className='available-game' key={game.id}>
+                  <div>game id: {game.id}</div>
+                  <div>players: {game.players.map(player => <div key={player.id}>{player.name}</div>)}</div>
+                  {game.disconnectedPlayerVotes.some(d => d.disconnectedPlayer.id == clientId) ?
+                    <button onClick={() => reJoin(game.id.toString())}>Re-Join Game</button> : ''}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        <button 
+          className='back-panel'
+          onClick={backButtonClicked}
+        >
+          {'< Back'}
+        </button>
         <div className='global-chat box'>
           <div className='box__heading'>Global Chat</div>
             

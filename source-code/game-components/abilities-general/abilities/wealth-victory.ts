@@ -59,7 +59,7 @@ export const wealthVictoryServer: ServerAbility = {
     function thisManagerFailsWealthVictory(){
       game.state.playerHasFailedVictory = {
         name: manager.has.name,
-        victoryType: 'Sinister Victory'
+        victoryType: 'Wealth Victory'
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()
 

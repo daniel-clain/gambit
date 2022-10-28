@@ -75,7 +75,7 @@ export default class FighterTimers {
       }; break
       case 'just took a hit': {
         logistics.justTookHit = true
-        duration = 2000 
+        duration = 1000 
         afterEffect = () => logistics.justTookHit = false
       }; break
       case 'on a rampage': {
@@ -97,14 +97,19 @@ export default class FighterTimers {
         duration = 2000 
         afterEffect = () => movement.moveActionInProgress = undefined
       }; break
+      case 'retreat from flanked': {        
+        duration = 1000 
+        afterEffect = () => logistics.retreatFromFlankedDirection = undefined
+      }; break
       case 'retreat along edge': {        
         duration = 1000 
-        afterEffect = () => logistics.directionAlongEdge = undefined
+        afterEffect = () => logistics.retreatFromFlankedDirection = undefined
       }; break
       
       case 'memory of enemy behind': {
         duration = 3000
         afterEffect = () => {
+          console.log(`${fighter.name} forgetting whose behind`);
           this.fighting.rememberedEnemyBehind = undefined          
           proximity.flanked = undefined
         }

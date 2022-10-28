@@ -11,7 +11,6 @@ export const OverlayMessaging = ({ report, timeRemaining, startCountdown, doStar
 
   useEffect(() => {
     if(doStartAnimation){
-      console.log('fightSound');
       fightSound.play().catch(() => null)
     }
   },[doStartAnimation])

@@ -3,7 +3,7 @@
 
 * how does a fighter know that he is flanked
 = the fighter doesnt know he is flanked until he is aware of what is behind him
-= when he knows whats infront and behind, he considers how close each are, if they are both within nearby he will be considered flanked
+= when he knows whats inFront and behind, he considers how close each are, if they are both within nearby he will be considered flanked
 
 * when does a fighter retreat from being flanked
 = fighter has a probability of being flanked, the probability increases based on whether the fighters are targeting that fighter for attack, and also how close the fighters/arena edge is

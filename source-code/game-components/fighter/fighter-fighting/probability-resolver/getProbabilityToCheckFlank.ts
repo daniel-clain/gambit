@@ -1,7 +1,7 @@
 
 import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
-import { getEnemiesInfront } from "../proximity"
+import { getEnemiesInFront } from "../proximity"
 
 export const getProbabilityToCheckFlank = (fighting: FighterFighting): number => {
 
@@ -13,25 +13,25 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
 
   const closestEnemy = proximity.getClosestRememberedEnemy()
 
-  const enemiesInfront: number = getEnemiesInfront(otherFightersInFight, fighter).length
+  const enemiesInFront: number = getEnemiesInFront(fighter).length
   const enemiesStillFighting: number = logistics.otherFightersStillFighting().length
 
-
-  const invalid: boolean = !hallucinating && (
+  const invalid: boolean = (
     logistics.hasJustTurnedAround() || 
-    (logistics.otherFightersStillFighting().length == 1 && !!proximity.getClosestEnemyInfront())
+    (
+      logistics.otherFightersStillFighting().length == 1 && 
+      !!proximity.getClosestEnemyInFront()
+    ) 
   )
+  
 
   if (invalid)
     return 0
 
   let probability = 1
 
-  if(hallucinating){
-    probability += 20
-  }
 
-  if (enemiesInfront == enemiesStillFighting && !hallucinating)
+  if (enemiesInFront == enemiesStillFighting && !hallucinating)
     probability -= intelligence * 3
   else if (rememberedEnemyBehind == undefined)
     probability += 10 + intelligence * 5

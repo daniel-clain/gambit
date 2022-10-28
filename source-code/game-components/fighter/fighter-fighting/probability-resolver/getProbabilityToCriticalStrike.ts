@@ -11,7 +11,7 @@ export const getProbabilityToCriticalStrike = (fighting: FighterFighting): numbe
 
   probability += getProbabilityForGeneralAttack(fighting)
 
-
+  
   if (closestEnemy.fighting.animation.inProgress == 'recovering'){
     probability += aggression
     probability += intelligence

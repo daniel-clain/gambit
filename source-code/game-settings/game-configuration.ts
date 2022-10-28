@@ -104,7 +104,13 @@ const gameConfiguration = {
     {
       name: 'Wealth Victory',
       videos:[{
-        duration: 32
+        duration: 50
+      }]
+    },
+    {
+      name: 'Wealth Victory Fail',
+      videos:[{
+        duration: 50
       }]
     },
     {
@@ -119,6 +125,12 @@ const gameConfiguration = {
       name: 'Domination Victory',
       videos:[{
         duration: 37
+      }]
+    },
+    {
+      name: 'Default Victory',
+      videos:[{
+        duration: 35
       }]
     }
   ]

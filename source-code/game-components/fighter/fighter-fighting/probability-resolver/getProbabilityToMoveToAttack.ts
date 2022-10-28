@@ -5,12 +5,12 @@ import { isEnemyFacingAway } from "../proximity"
 export const getProbabilityToMoveToAttack = (fighting: FighterFighting): number => {
   const { aggression, intelligence } = fighting.stats
   const { proximity, logistics, rememberedEnemyBehind, movement, fighter, spirit} = fighting
-  const enemyInfront = proximity.getClosestEnemyInfront()
+  const enemyInFront = proximity.getClosestEnemyInFront()
   const closestEnemy = proximity.getClosestRememberedEnemy()
 
-  let enemyInfrontCloseness: Closeness
-  if (enemyInfront)
-    enemyInfrontCloseness = proximity.getEnemyCombatCloseness(enemyInfront)
+  let enemyInFrontCloseness: Closeness
+  if (enemyInFront)
+    enemyInFrontCloseness = proximity.getEnemyCombatCloseness(enemyInFront)
 
 
   let enemyBehindCloseness: Closeness

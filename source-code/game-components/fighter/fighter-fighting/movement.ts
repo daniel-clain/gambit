@@ -6,8 +6,9 @@ import { wait, getDirectionOfPosition2FromPosition1 } from "../../../helper-func
 import { MoveAction } from "../../../types/fighter/action-name";
 import { octagon } from "../../abilities-general/fight/new-octagon";
 import { getFighterModelDimensions, getDirectionOfEnemyStrikingCenter, isFacingAwayFromEnemy } from "./proximity";
-import { getRepositionMoveDirection } from "./repositioning";
+import { getRepositionMoveDirection } from "./reposition";
 import { Angle } from "../../../types/game/angle";
+import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 
 export default class Movement {
 
@@ -20,6 +21,8 @@ export default class Movement {
   moveActionInProgress: MoveAction
 
   stuckCounter = 0
+
+  againstEdge: Edge
   
 
   constructor(public fighting: FighterFighting){
@@ -27,7 +30,7 @@ export default class Movement {
 
 
   async doMoveAction(enemy: Fighter, moveAction: MoveAction): Promise<void>{    
-    const {flanking, timers, proximity} = this.fighting
+    const {flanking, timers, proximity, facingDirection, fighter} = this.fighting
 
     
     this.moveActionInProgress = moveAction
@@ -38,43 +41,57 @@ export default class Movement {
     this.fighting.enemyTargetedForAttack = 
     moveAction == 'move to attack' ? enemy : null
 
-    
-    if(proximity.againstEdge && moveAction != 'move to attack' || moveAction == 'retreat around edge')
+    this.againstEdge = proximity.getNearestEdge()?.edgeName
+
+    const shouldRetreatAroundEdge = (
+      this.againstEdge && 
+      moveAction != 'move to attack' &&
+      moveAction != 'retreat from flanked' || 
+      moveAction == 'retreat around edge'
+    )
+
+    if(shouldRetreatAroundEdge){
+      this.moveActionInProgress = 'retreat around edge'
       this.movingDirection = proximity.getRetreatAroundEdgeDirection(enemy)
+    }
     else{
       if(moveAction == 'retreat from flanked')
         this.movingDirection = flanking.getRetreatFromFlankedDirection()
-      else if(moveAction == 'reposition')
-        this.movingDirection = getRepositionMoveDirection(enemy, this.fighting.fighter)
+      else if(moveAction == 'reposition'){
+        const repositionDirection = getRepositionMoveDirection(this.fighting.fighter)
+        if(repositionDirection){
+          this.movingDirection = repositionDirection
+        }
+      }
+
       else
         this.movingDirection = getDirectionOfEnemyStrikingCenter(enemy, this.fighting.fighter, moveAction != 'move to attack')
     }
-    
-    const faceAwayMoveActions: MoveAction[] = ['fast retreat', 'retreat', 'retreat from flanked']
-    const moveActionFacesAway = faceAwayMoveActions.some(a => a == moveAction)   
 
-    const moveActionFacesToward = ['move to attack', 'cautious retreat'].some(a => a == moveAction)
+    let willTurnAround
+    const movingLeftOrRight: LeftOrRight = this.movingDirection < 180 ? 'right' : 'left'
+
+    if(moveAction == 'cautious retreat'){
+      if(movingLeftOrRight == facingDirection){
+        willTurnAround = true
+      }
+    }
+    else if(moveAction == 'move to attack'){
+      if(isFacingAwayFromEnemy(enemy, this.fighting.fighter)){
+        willTurnAround = true
+      }
+    } 
+    else {
+      if(movingLeftOrRight != facingDirection){
+        willTurnAround = true
+      }
+
+    }
 
     let interrupted: boolean
-    if(
-      (moveActionFacesAway && !isFacingAwayFromEnemy(enemy, this.fighting.fighter))
-      ||
-      (moveActionFacesToward && isFacingAwayFromEnemy(enemy, this.fighting.fighter)) 
-      ||
-      (
-        (
-          moveAction == 'retreat around edge' ||
-          moveAction == 'reposition'
-        ) 
-        && 
-        (
-          (this.fighting.facingDirection == 'left' && this.movingDirection < 180) 
-          ||
-          (this.fighting.facingDirection == 'right' && this.movingDirection >= 180)
-        )
-      )
-    )
+    if(willTurnAround){
       await this.turnAround().catch(() => interrupted = true)
+    }
 
     if(!interrupted)
       await this.moveABit()
@@ -83,7 +100,7 @@ export default class Movement {
   }
 
   async turnAround(){
-    const {timers, animation, flanking} = this.fighting
+    const {timers, animation} = this.fighting
     return animation.start({
       name: 'turning around',
       duration: animation.speedModifier(150)
@@ -98,14 +115,13 @@ export default class Movement {
 
   
   async moveABit(): Promise<void> {    
-    const {logistics} = this.fighting
     this.fighting.modelState = this.moveActionInProgress == 'cautious retreat' ? 'Defending' : 'Walking'
     const newMoveCoords: Coords = this.getNewMoveCoords(this.movingDirection, this.coords)
 
     if(this.isMoveOutsideOfBounds(newMoveCoords)){
       this.stuckCounter ++
       if(this.stuckCounter >= 3){
-        this.moveAawayFromEdge()
+        this.moveAwayFromEdge()
       }
       return
     }
@@ -113,6 +129,7 @@ export default class Movement {
       this.stuckCounter = 0
       this.coords = newMoveCoords
       this.checkIfInCorner()
+      const moveSpeed = this.moveSpeed()
       await wait(this.moveSpeed())
       return
     }
@@ -142,7 +159,7 @@ export default class Movement {
     if(this.moveActionInProgress == 'cautious retreat') 
       timeToMove2Pixels *=  1.15
     if(speedBoostActive)
-      timeToMove2Pixels *= 0.25
+      timeToMove2Pixels *= 0.2
     return timeToMove2Pixels
   }
   
@@ -166,12 +183,11 @@ export default class Movement {
 
       const pointOutsideOfEdge: boolean = octagon.isPointOutsideOfEdge(edgeKey, point)
       if (pointOutsideOfEdge) {
-        proximity.againstEdge = edgeKey
+        console.log(fighter.name + ' hit edge ' + edgeKey);
         return true
       }
 
     }
-    proximity.againstEdge = undefined
     return false
   }
 
@@ -182,32 +198,32 @@ export default class Movement {
       debugger
 
     const moveAmount = 2
-    let addXAmmount
-    let addYAmmount
+    let addXAmount
+    let addYAmount
 
     if (direction >= 0 && direction < 90) {
-      addXAmmount = Math.sin(direction * Math.PI / 180) * moveAmount
-      addYAmmount = Math.cos(direction * Math.PI / 180) * moveAmount
+      addXAmount = Math.sin(direction * Math.PI / 180) * moveAmount
+      addYAmount = Math.cos(direction * Math.PI / 180) * moveAmount
     }
     else if (direction >= 90 && direction < 180) {
-      addXAmmount = Math.cos((direction - 90) * Math.PI / 180) * moveAmount
-      addYAmmount = Math.sin((direction - 90) * Math.PI / 180) * moveAmount
-      addYAmmount *= -1
+      addXAmount = Math.cos((direction - 90) * Math.PI / 180) * moveAmount
+      addYAmount = Math.sin((direction - 90) * Math.PI / 180) * moveAmount
+      addYAmount *= -1
     }
     else if (direction >= 180 && direction < 270) {
-      addXAmmount = Math.sin((direction - 180) * Math.PI / 180) * moveAmount
-      addYAmmount = Math.cos((direction - 180) * Math.PI / 180) * moveAmount
-      addYAmmount *= -1
-      addXAmmount *= -1
+      addXAmount = Math.sin((direction - 180) * Math.PI / 180) * moveAmount
+      addYAmount = Math.cos((direction - 180) * Math.PI / 180) * moveAmount
+      addYAmount *= -1
+      addXAmount *= -1
     }
     else if (direction >= 270 && direction < 360) {
-      addXAmmount = Math.cos((direction - 270) * Math.PI / 180) * moveAmount
-      addYAmmount = Math.sin((direction - 270) * Math.PI / 180) * moveAmount
-      addXAmmount *= -1
+      addXAmount = Math.cos((direction - 270) * Math.PI / 180) * moveAmount
+      addYAmount = Math.sin((direction - 270) * Math.PI / 180) * moveAmount
+      addXAmount *= -1
     }
 
-    const x = Math.round((coords.x + addXAmmount) * 100) / 100
-    const y = Math.round((coords.y + addYAmmount) * 100) / 100
+    const x = Math.round((coords.x + addXAmount) * 100) / 100
+    const y = Math.round((coords.y + addYAmount) * 100) / 100
 
     if(isNaN(x) || isNaN(y))
       debugger
@@ -216,7 +232,7 @@ export default class Movement {
     return {x, y}
   }
 
-  moveAawayFromEdge(){
+  moveAwayFromEdge(){
     const {proximity} = this.fighting
     const edge: Edge = proximity.getNearestEdge().edgeName
     const coordsOnEdge: Coords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, this.coords)

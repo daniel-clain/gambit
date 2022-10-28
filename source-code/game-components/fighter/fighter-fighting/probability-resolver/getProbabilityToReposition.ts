@@ -1,45 +1,64 @@
 import FighterFighting from "../fighter-fighting"
-import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetreat"
+import { getRepositionMoveDirection, getSideRepositionSpace } from "../reposition"
 
   export const getProbabilityToReposition = (fighting: FighterFighting): number => {
     const { intelligence } = fighting.stats
-    const { proximity, movement, logistics} = fighting
+    const { proximity, movement, logistics, fighter} = fighting
     const closestEnemy = proximity.getClosestRememberedEnemy()
-    
 
-    const invalid: boolean = logistics.onARampage
-    
-    if (invalid)
-      return 0
+    if(logistics.onARampage) return 0
 
-    let probability = 0
 
-    probability += intelligence * 6
+    const repositionDirection = getRepositionMoveDirection(fighter, true)
 
-    probability += proximity.getNumberOfEnemiesOnSideWithFewestNumberOfEnemies() * intelligence
 
-    probability += Math.round(getProbabilityForGeneralRetreat(fighting) * .5)
+    let probability = -20
 
-    if(proximity.flanked)
-      probability += proximity.flanked.criticality * intelligence
 
-    if (
-      movement.moveActionInProgress == 'reposition' ||
-      logistics.isARetreatInProgress()
-    ){
-      probability += 500
+    if(!repositionDirection){
+      if(movement.moveActionInProgress == 'reposition'){
+
+        if(proximity.directionIsBlockedByEdge(movement.movingDirection))
+          return 0
+
+        probability += 100
+
+        const enoughSpaceOnSide = getSideRepositionSpace(fighting)
+        if(!enoughSpaceOnSide.leftSpace && !enoughSpaceOnSide.rightSpace){
+          probability -= intelligence * 5
+        } else {
+          probability += intelligence * 5
+        }
+
+        if(proximity.enemyWithinStrikingRange(closestEnemy)){
+          probability -= intelligence * 10
+        } else {
+          probability += intelligence * 10
+        }
+        
+        const surrounded = !!proximity.getEnemyOnTheFar('left') && !!proximity.getEnemyOnTheFar('right')
+        if(surrounded){
+          probability += intelligence * 10
+        } else {
+          probability -= intelligence * 10
+        }
+      }
+      else return 0
     }
- 
-    if(proximity.flanked && proximity.flanked.criticality > 5){
-      probability -= (100 + intelligence * 10)
+    probability += intelligence * 20
+
+    
+    
+    if(movement.moveActionInProgress == 'reposition'){
+      probability += 400
     }
-
-    if(proximity.allEnemiesAreOnOneSide())      
-      probability -= (200 + intelligence * 5)
-
+    if(logistics.isARetreatInProgress()){
+      probability += 100
+    }
 
     if (probability < 0)
       probability = 0
 
     return probability
   }
+

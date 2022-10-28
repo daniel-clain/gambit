@@ -1,4 +1,5 @@
 
+import { runInAction } from 'mobx';
 import Fight from '../../../game-components/abilities-general/fight/fight';
 import Fighter from '../../../game-components/fighter/fighter';
 import gameConfiguration from '../../../game-settings/game-configuration';
@@ -9,30 +10,35 @@ gameConfiguration.stageDurations.maxFightDuration = 10000000
 
 
 const fighters = [
+	/*
+	
+	new Fighter('Superman'),
 	new Fighter('Daniel'),
+	new Fighter('Dave'),*/
 	new Fighter('Bob'),
 	new Fighter('Fred'),
 	new Fighter('Jeff'),
 	new Fighter('Kevin'),
 	new Fighter('Joe'),
-	new Fighter('Steve'),
-	new Fighter('Fast'),
-	new Fighter('Average'),
+	new Fighter('Steve'), 
 	new Fighter('Stupid'),
+	new Fighter('Intelligent'),
+	new Fighter('Intelligent2'),
+	
+	/*new Fighter('Average'),
 	new Fighter('Passive'),
 	new Fighter('Hyper'),
 	new Fighter('Tough'),
 
-	new Fighter('Intelligent'),
+	
 	new Fighter('Fit'),
 	new Fighter('Strong'),
-	new Fighter('Aggressive')
-	/* new Fighter('Dave'),
-	new Fighter('test1'),
-	new Fighter('test2')
-	new Fighter('Superman')
+	new Fighter('Aggressive'),
+	new Fighter('Crafty'),
 	*/
 ]
+
+
 
 
 export const fightUiService = {
@@ -55,11 +61,13 @@ export const fightUiService = {
 		this.fight = new Fight(fighters, null)
 		
 		this.fightSubscription = (this.fight as Fight).fightUiDataSubject.subscribe(fightUiData => {
-			frontEndState.serverUIState = {
-				serverGameUIState: {
-					fightUIState: fightUiData
-				} as ServerGameUIState
-			}
+			runInAction(() => {
+				frontEndState.serverUIState = {
+					serverGameUIState: {
+						fightUIState: fightUiData
+					} as ServerGameUIState
+				}
+			})
 		})
 		this.fight.start()
 	},
@@ -84,11 +92,18 @@ fighters.forEach(fighter => {
 	
 })
 
-s(f('Fast'), {baseSpeed: 10})
+/* f('Bob').state.hallucinating = true
+f('Fred').state.hallucinating = true
+f('Jeff').state.hallucinating = true
+f('Kevin').state.hallucinating = true
+f('Joe').state.hallucinating = true
+f('Steve').state.hallucinating = true */
+
 s(f('Tough'), {baseStamina: 15})
 s(f('Strong'), {baseStrength: 10})
 s(f('Fit'), {baseFitness: 10})
 s(f('Intelligent'), {baseIntelligence: 10})
+s(f('Intelligent2'), {baseIntelligence: 10})
 s(f('Aggressive'), {baseAggression: 10})
 
 s(f('Stupid'), {baseIntelligence: 0})
@@ -104,6 +119,10 @@ s(f('Average'), {
 
 s(f('Hyper'), {
 	baseAggression: 10,
+	baseFitness: 10
+})
+s(f('Crafty'), {
+	baseIntelligence: 10,
 	baseFitness: 10
 })
 

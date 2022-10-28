@@ -70,6 +70,12 @@
     &__wealth-victory{
       background-image: url('#{$abilities}/wealth-victory.jpg');
     }
+    &__wealth-victory{
+      background-image: url('#{$abilities}/wealth-victory.jpg');
+    }
+    &__give-up{
+      background-image: url('#{$abilities}/give-up.jpg');
+    }
   }
   &__description {
     padding: 10px;

@@ -2,6 +2,7 @@ import { assaultFighter } from "../../game-components/abilities-general/abilitie
 import { doSurveillance } from "../../game-components/abilities-general/abilities/do-surveillance"
 import { dominationVictory } from "../../game-components/abilities-general/abilities/domination-victory"
 import { dopeFighter } from "../../game-components/abilities-general/abilities/dope-fighter"
+import { giveUp } from "../../game-components/abilities-general/abilities/give-up"
 import { guardFighter } from "../../game-components/abilities-general/abilities/guard-fighter"
 import { investigateManager } from "../../game-components/abilities-general/abilities/investigate-manager"
 import { murderFighter } from "../../game-components/abilities-general/abilities/murder-fighter"
@@ -205,7 +206,7 @@ export const trainFighterClient: ClientAbility = {
   isValidTarget(target: TargetTypes){
     let isValid
     ifTargetIsFighter(target, fighter =>
-      isValid = fighterOwnedByManager(fighter)
+      isValid = !!fighter
     )
     return isValid
   }
@@ -216,6 +217,11 @@ export const trainFighterClient: ClientAbility = {
 export const wealthVictoryClient: ClientAbility = {
   ...wealthVictory,
   longDescription: 'Win the game by financially crushing your opponents. Your opponents can counter your attempt to win if the average of their combined wealth or lawyers is more than half of yours. If you fail you will lose money equal to the average of their combined wealth'
+}
+
+export const giveUpClient: ClientAbility = {
+  ...giveUp,
+  longDescription: 'When you have no money left, and theres nothing else you can do'
 }
 
 
@@ -238,7 +244,8 @@ export const abilities = [
   sinisterVictoryClient,
   takeADiveClient,
   trainFighterClient,
-  wealthVictoryClient
+  wealthVictoryClient,
+  giveUpClient
 ]
 
 

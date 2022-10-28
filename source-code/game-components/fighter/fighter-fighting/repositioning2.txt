@@ -1,0 +1,29 @@
+main goal
+=========== 
+* intelligent fighter does not want to have his back to enemies and get surrounded
+
+algorithm key points
+======================
+* move to based on
+  - side with most space
+    ~ trying to move to side with no space can get cornered
+  - move to side without coming in striking range of enemy
+
+
+reposition probability
+  * invalid if: 
+    - within close range
+    - if retreat direction is too close to edge
+    - no enough space to reposition into
+  * if fighters on either side
+
+retreat mechanics
+  * move to side that has the most free space
+    - even if there is 1 to the left and 5 to the right, if there is no space on the left and heaps on the right, reposition on the right side
+  * move directly to the side
+    - redirect up or down based on the proximity of the closest fighter
+  * once passed all fighters vertically, complete reposition moving more the the center of the edge
+  
+
+
+

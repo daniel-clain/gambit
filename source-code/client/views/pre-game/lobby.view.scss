@@ -28,7 +28,7 @@
     color: white;
     font-size: 1.5rem;
     font-weight: bold;
-    padding: 14px 0 0 49px;
+    padding: 12px 0 0 40px;
     background-size: contain;
     background-repeat: no-repeat;
     height: 53px;
@@ -69,6 +69,21 @@
       margin-bottom: 10px;
       color: #67e7ff;
     }
+  }
+
+  button.back-panel{
+    background-image: url('../../images/pre-game/back-panel.png');
+    width: 150px;
+    height: 72px;
+    background-repeat: no-repeat;
+    margin-bottom: 69px;
+    background-color: unset;
+    border: unset;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #51330a;
+    padding: 0 10px 5px 0;
   }
 
 

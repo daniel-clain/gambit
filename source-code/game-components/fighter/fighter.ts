@@ -73,12 +73,12 @@ export default class Fighter{
     }
 
 
-    function getStats({strength, fitness, intelligence, aggression}: FighterStats){
+    function getStats({baseStrength, baseFitness, baseIntelligence, baseAggression}: FighterStats){
       return {
-        strength: {weeksSinceUpdated: 0, lastKnownValue: strength}, 
-        fitness: {weeksSinceUpdated: 0, lastKnownValue: fitness}, 
-        intelligence: {weeksSinceUpdated: 0, lastKnownValue: intelligence}, 
-        aggression: {weeksSinceUpdated: 0, lastKnownValue: aggression}, 
+        strength: {weeksSinceUpdated: 0, lastKnownValue: baseStrength}, 
+        fitness: {weeksSinceUpdated: 0, lastKnownValue: baseFitness}, 
+        intelligence: {weeksSinceUpdated: 0, lastKnownValue: baseIntelligence}, 
+        aggression: {weeksSinceUpdated: 0, lastKnownValue: baseAggression}, 
       }
     }
     

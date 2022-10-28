@@ -199,7 +199,7 @@ class GameFunctions{
         timeLeft,
         jobSeekers,
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
-        managersDisplayInfo: this.game.has.managers.map(m => ({
+        managersDisplayInfo: this.game.has.managers.filter(m => !m.state.retired).map(m => ({
           name: m.has.name, ready: m.state.readyForNextFight, image: m.has.image, bet: m.has.nextFightBet
         }))
       },
@@ -210,7 +210,7 @@ class GameFunctions{
         jobSeekers,
         nextFightFighters: activeFight?.fighters.map(fighter => fighter.name),
         delayedExecutionAbilities,
-        otherPlayersReady: managers.filter(m => m.has.name !== manager.has.name).map(m => {
+        otherPlayersReady: managers.filter(m => m.has.name !== manager.has.name && !m.state.retired).map(m => {
           return {
             name: m.has.name,
             ready: !!m.state.readyForNextFight
@@ -276,7 +276,7 @@ export class Game {
     
     this.has.managers.forEach(manager => {
       manager.has.otherManagers = this.has.managers
-      .filter(m => m.has.name != manager.has.name)
+      .filter(m => m.has.name != manager.has.name && !manager.state.retired)
       .map((m) => ({name: m.has.name, characterType: 'Known Manager',image: m.has.image, money: null, loan: null, fighters: null, employees: null, evidence: null}))
     })
   }

@@ -1,76 +1,41 @@
 
-
-Test Play Notes:
-  ☐ make drug dealer return less for ech other active dealer, reportsays how many other dealers are active
-  ☐ fight view, manager bet, if no bet, no portrait of fighter
-  ☐ emoji after knocked out
-  ☐ text size stays says same size on zoom
-
-
-
 Deal Breakers:
-  ☐ defend + retreat never really has its value, because the backward movement makes all on range targeting miss, so the fighter never has a chance to block and get the bonuses that come with that.
-
-  ☐ redo test server code. if server resets, reset client 
-    - code was removed cos of bad implementation doing annoying stuff, think of better way
-    - make re check server code different so no need for client refresh
-  ☐ test mobile layout, fix sizes
-  ☐ easy way to change between player and game dispaly, 
-  ☐ easy to change name
+  ☐ but when fighter is in corner, 
+    - they should move along furthest edge, but instead they move back toward fighter
+    - i removed code to lock in their decision cos it was causing them to run through fighters. should be able to sold this without this hack
+    - they start going the right direction, why do they change back to the wrong direcction
+  ☐ money buggy
+    - some times it seems fine, test large quantity of players or money to see if that is the cause
+    - fix falling money, high numbers should be money bags instead
+  ☐ when fighter moves past another fighter horizontally, the values for fighers infront and memory of fighter behind is wrong
+  ☐ wealth victory video is fucked, change it
+  - new wealth victory video more about using money to crush all opponents rather than court cases
   ☐ if game display is on, 
     - cut the job seeker info
     - by default all players fight views are turned off, and it only shows amount bet and fighter research stats
     - the plyer can toggle to show regular fight view incase theyre remote
     - when toggle fight view on, sound will be off by default, and you can toggle sound on (want to avoid multiple device playing fight sound when in the same place as the game display)
   ☐ fix fighter selection, should be propper random
-  ☐ reposition should be lower priority if they are far away and not targeting this fighter
-  ☐ players can concede, if only 1 player left they win by default
-  ☐ reposiont doesnt dedicate tto going around, it can freeze left right twitching, back and forth
-  ☐ make sure top fighters are in main event
+  ☐ now that screen is set to 'fullscreen' in manifest, no need for screen height reduction
+    - was reduced cos height was taken up by browser bar
+  ☐ info boxes should have vertical gap
 
-QA:
-  ☐ failed victory scenarios play out correctly
-    - if opponensts have enought money/lawyers or thugs/hitmen
 
 Priority:
-  ☐ wealth victory video is fucked, change it
-  - new wealth victory video more about using money to crush all opponents rather than court cases
-  ☐ shorten the view to account for the browser space at the top (see if you can capture the actual browser bar height value)
-  ☐ loan shark removes broke players from the game
-  ☐ main event fight, you can vote for 3 people to win
-  ☐ explain spirit and stamina mechanic
-  ☐ winning main event should give big base amount
-  ☐ explain stats go down over time
-  ☐ explain injured
-  ☐ do surveilance should report positive things when no negative things
-  ☐ more info about abilities, like what chance they have of success, and when it is actioned, if it can be done multiple times, 
-  ☐ thug guarding fight, when successful guard, chance to catch evidence
+  ☐ do surveilance should report when no negative things found
   ☐ fighters recontract is more based on that fighters wins, so the fighter gets expensive over time also based on promotion rating
-  ☐ evidence can be sold for bribing, you give that player evidence for money, if sold back to person who was culprit, then evidence is destroyed for money
   ☐ video for fail weath victory
   ☐ set up display for fight, news
-  ☐ user manual to check mechanics (when being prosecuted bad employees dont act)
-  ☐ make an info object that is both the config for the game, and also the 'how to play manual'
   ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
   ☐ option to turn sound off if game display active
     - fight view mute button
   ☐ on player disconnect pause all stage (fight), pause in fight is buggy
-  ☐ ability description says what ability does
   ☐ Lawyers skill level doesnt matter too much, make it relevant
-  ☐ when people swipe their screen down, it refreshes the app and disconnects
   ☐ end game video, arrows point to vid characters with managers name
   
-
-Quick fixes: 
-  ☐ offer mute option
-  ☐ no more emoji after knowckout
-  ☐ fix falling money, high numbers should be money bags instead
-  ☐ remove flanking and maovering quotes
-  ☐ fight ui: fighter stats, when knockout, put red cross over pic
-  ☐ make evidence item copy better ('fighter not owned by manager')
-  ☐ poisoned icon not showing
-  ☐ emoji disapear when fighter down
-  ☐ fighter state box shows knocked out fighters
+QA:
+  ☐ failed victory scenarios play out correctly
+    - if opponensts have enought money/lawyers or thugs/hitmen
 
 
 Secondary priority:  
@@ -82,7 +47,6 @@ Secondary priority:
   ☐ more manager pics, random assignment, can choose in pregame
   ☐ drug dealers makes less money for each other active drug dealer selling that turn
   ☐ Have knowledgebase that gives players info about the game, where info reflects real values
-  ☐ When game ends, return all players to game lobby
   ☐ Allow private ingame messaging between players
   ☐ commentator declaring who has knocked out who
   ☐ loan shark warning on all turns before penalty, instead of just first (missing second)
@@ -90,9 +54,28 @@ Secondary priority:
   ☐ game display try to frame arena better
   ☐ anchor sounds, (not too many, only helpful)
   ☐ remove background audio from 'fight!'
+  ☐ make drug dealer return less for ech other active dealer, reportsays how many other dealers are active
+  ☐ there is video confim and video.ts
+    - refactor video code, its too much redundant code   
+  ☐ player drop out during fight
+    - should pause fight, put up disconnect modal, and manage smooth reconnect
+      ~ what about pre fight news
+  ☐ make sure top fighters are in main event
+  ☐ thug guarding fight, when successful guard, chance to catch evidence
+  ☐ offer mute option
+  ☐ remove flanking and maovering quotes
+  ☐ fight ui: fighter stats, when knockout, put red cross over pic
+  ☐ make evidence item copy better ('fighter not owned by manager')
+  ☐ fighter state box shows knocked out fighters
+  ☐ video for default win, all oponents retive
+    - tumbleweed, shrug, broke bums
+  ☐ loan shark removes broke players from the game
+  ☐ main event fight, you can vote for 3 people to win
+  ☐ evidence can be sold for bribing, you give that player evidence for money, if sold back to person who was culprit, then evidence is destroyed for money
 
 
 Game Info:
+  ☐ make an info object that is both the config for the game, and also the 'how to play manual'
   ☐ Its important that players can get ansers to key questions without an instructor
   ☐ talent scout is better for researching than manager
   ☐ make clear why options are unavailable and how to make them available
@@ -109,7 +92,12 @@ Game Info:
   ☐ explain assasin probability
   ☐ explain agent do survailance
   ☐ explain agent investigate manager, show stats straight away
-  
+  ☐ explain spirit and stamina mechanic
+  ☐ user manual to check mechanics (when being prosecuted bad employees dont act)
+  ☐ ability description says what ability does
+  ☐ explain stats go down over time
+  ☐ explain injured
+  ☐ more info about abilities, like what chance they have of success, and when it is actioned, if it can be done multiple times, 
 
 Not sure how to deal:
   ☐ must be a memory leak, starts at 780kb, goes to 23mb, after 55days
@@ -160,11 +148,14 @@ ideas:
   ☐ employee thief?
   ☐ number of fights affects intellignce, (less base int)
   ☐ audio for winner, knockout, draw, party music for winnings music and making money, jaws music intensity for loan shark weeks owed, include more loan shark info about paying back small amounts
-  ☐ your fighter has take a dive ability
 
 
-Big wins (to remember my achievements)
-
+Big wins (to remember my achievements):
+  
+✔ your fighter has take a dive ability @done(22-10-28 00:57)
+✔ flanked reatreat into wall untill cornered @done(22-10-28 00:56)
+    - instead, if fighters are farther than close, and edge is close, then take 2nd angle between fighters
+✔ redo test server code. if server resets, reset client D @done(22-10-23 15:07)
 ✔ ssl cert so that no browser headbar @done(22-10-18 13:03)
 ✔ End game stats @done(22-10-18 09:34)
 ✔ Refactored for passing state down to redux @done(21-03-30 21:53)
@@ -172,10 +163,7 @@ Big wins (to remember my achievements)
 ✔ Got game hosted on heroku @done(21-04-07 12:14)
 ✔ got money and report done @done(21-04-07 12:14)
 ✔ final tournament @done(21-11-20 21:54)
-☐ more time for late game, and more players
-☐ frontend pol server for disconnected, auto restart, and auto reconnect
-☐
+✔ more time for late game, and more players @done(22-10-28 00:56)
+✔ easy to change name @done(22-10-28 16:42)
+- easy way to change between player and game dispaly, 
 
-
-other players finished icons 
-loan shark weeks after payback

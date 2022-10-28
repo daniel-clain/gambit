@@ -1,21 +1,34 @@
 
 import { Closeness } from "../../../../types/fighter/closeness";
 import FighterFighting from "../fighter-fighting";
+import {getEnemiesInFront} from '../proximity';
 
 export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   const { intelligence } = fighting.stats
-  const { proximity, logistics, rememberedEnemyBehind, spirit, fighter} = fighting
+  const { proximity, logistics, rememberedEnemyBehind, spirit, fighter, movement} = fighting
   const {sick} = fighter.state
-  const enemyInfront = proximity.getClosestEnemyInfront()
+  const enemyInFront = proximity.getClosestEnemyInFront()
 
-  let enemyInfrontCloseness: Closeness
-  if (enemyInfront)
-    enemyInfrontCloseness = proximity.getEnemyCombatCloseness(enemyInfront)
+  const enemyBehind = rememberedEnemyBehind
+
+  const enemyInFrontCloseness = enemyInFront && proximity.getEnemyCombatCloseness(enemyInFront)
+
+  const hasRetreatOpportunityFromInFront = enemyInFront && logistics.hasRetreatOpportunity(enemyInFront)
+
+  const inFrontOnRampage = enemyInFront && logistics.enemyIsOnARampage(enemyInFront)
 
 
-  let enemyBehindCloseness: Closeness
-  if (rememberedEnemyBehind)
-    enemyBehindCloseness = proximity.getEnemyCombatCloseness(rememberedEnemyBehind)
+  const enemyBehindCloseness = enemyBehind && proximity.getEnemyCombatCloseness(enemyBehind)
+
+  const hasRetreatOpportunityFromBehind = enemyBehind && logistics.hasRetreatOpportunity(enemyBehind)
+  const behindOnRampage = enemyBehind && logistics.enemyIsOnARampage(enemyBehind)
+
+  const lowStamina = logistics.hasLowStamina()
+  const lowSpirit = logistics.hasLowSpirit()
+
+
+  const notFullStamina = !logistics.hasFullStamina()
+  const notFullSpirit = !logistics.hasFullSpirit()
 
 
   const invalid: boolean =
@@ -25,108 +38,610 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   if (invalid)
     return 0
 
+
   let probability = 10
 
   if(sick){
     probability += 20
   }
-  
-  if(proximity.trapped)
-    probability -= intelligence * 3
-
-  if (rememberedEnemyBehind === undefined)
-    probability -= intelligence * 2
-
-  if (rememberedEnemyBehind !== null && enemyBehindCloseness >= Closeness['nearby']){
-    if(logistics.hasRetreatOpportunity(rememberedEnemyBehind))
-      probability += intelligence * 6
-    else
-      probability -= intelligence * 6
-  }
-
-  if (enemyInfront && enemyInfrontCloseness <= Closeness['nearby'])
-    probability -= intelligence * 2
-
-
-  if (logistics.justTookHit){
-    probability += 4 + (5 - spirit)
-  }
-  if (logistics.hasLowStamina()){
-    probability += 4
-  }
-  if (logistics.hasLowSpirit()){
-    probability += 4
-  }
-  if (proximity.againstEdge){
+  if (movement.againstEdge){
     probability += 6
   }
 
-  if (
-    enemyInfront &&
-    enemyBehindCloseness <= Closeness['far'] &&
-    logistics.isEnemyTargetingThisFighter(enemyInfront)
-  )
-    probability -= intelligence * 2
 
-  if(
-    rememberedEnemyBehind &&
-    enemyBehindCloseness <= Closeness['far'] &&
-    logistics.isEnemyTargetingThisFighter(rememberedEnemyBehind)
-  )
-    probability -= intelligence * 2
-  else{      
-    if (logistics.hasLowStamina())
-      probability += intelligence * 2
+  
 
-    if (logistics.hasLowSpirit())
-      probability += intelligence * 2
+  
+  if(proximity.trapped)
+    probability -= intelligence * 6
+
+  if (logistics.justTookHit)
+    probability += 10 + (5 - spirit)
+  
+
+  if (enemyBehind){
+    if(enemyBehindCloseness >= Closeness['far']){     
+      if(!enemyInFront){
+        behindFar()
+      } 
+      else if(enemyInFrontCloseness >= Closeness['far']){
+        inFrontFarAndBehindFar()
+      }    
+      else if(enemyInFrontCloseness == Closeness['nearby']){
+        inFrontNearAndBehindFar()
+      }    
+      else if(enemyInFrontCloseness == Closeness['close']){
+        inFrontCloseAndBehindFar()
+      }
+      else if(enemyInFrontCloseness == Closeness['striking range']){
+        inFrontStrikingAndBehindFar()
+      }
+       
+    }
+
+    else if(enemyBehindCloseness == Closeness['nearby']){
+      if(!enemyInFront){
+        behindNear()
+      } 
+      else if(enemyInFrontCloseness >= Closeness['far']){
+        inFrontFarAndBehindNear()
+      }    
+      else if(enemyInFrontCloseness == Closeness['nearby']){
+        inFrontNearAndBehindNear()
+      }    
+      else if(enemyInFrontCloseness == Closeness['close']){
+        inFrontCloseAndBehindNear()
+      }
+      else if(enemyInFrontCloseness == Closeness['striking range']){
+        inFrontStrikingAndBehindNear()
+      }     
+    }
+
+    else if(enemyBehindCloseness == Closeness['close']){
+      if(!enemyInFront){
+        behindClose()
+      }
+      else if(enemyInFrontCloseness >= Closeness['far']){
+        inFrontFarAndBehindClose()
+      }    
+      else if(enemyInFrontCloseness == Closeness['nearby']){
+        inFrontNearAndBehindClose()
+      }    
+      else if(enemyInFrontCloseness == Closeness['close']){
+        inFrontCloseAndBehindClose()
+      }  
+      
+      else if(enemyInFrontCloseness == Closeness['striking range']){
+        inFrontStrikingAndBehindClose()
+      }  
+    }
+
+    else if(enemyBehindCloseness == Closeness['striking range']){
+      if(!enemyInFront){
+        behindStriking()
+      }
+      else if(enemyInFrontCloseness >= Closeness['far']){
+        inFrontFarAndBehindStriking()
+      }    
+      else if(enemyInFrontCloseness == Closeness['nearby']){
+        inFrontNearAndBehindStriking()
+      }    
+      else if(enemyInFrontCloseness == Closeness['close']){
+        inFrontCloseAndBehindStriking()
+      }  
+      
+      else if(enemyInFrontCloseness == Closeness['striking range']){
+        inFrontStrikingAndBehindStriking()
+      }  
+    }
+
+  } 
+  
+
+  else if(enemyBehind === null){
+    if(enemyInFrontCloseness >= Closeness['far']){
+      inFrontFar()
+    }    
+    else if(enemyInFrontCloseness == Closeness['nearby']){
+      inFrontNear()
+    }    
+    else if(enemyInFrontCloseness == Closeness['close']){
+      inFrontClose()
+    } 
+    else if(enemyInFrontCloseness == Closeness['striking range']){
+      inFrontStriking()
+    }
+  }
+  
+
+  else if(enemyBehind === undefined){
+    const otherFighters = logistics.otherFightersStillFighting()
+    const allFightersInFront = getEnemiesInFront(fighter).length == otherFighters.length
+
+    if(allFightersInFront){
+      if(enemyInFrontCloseness >= Closeness['far']){
+        inFrontFar()
+      }    
+      else if(enemyInFrontCloseness == Closeness['nearby']){
+        inFrontNear()
+      }    
+      else if(enemyInFrontCloseness == Closeness['close']){
+        inFrontClose()
+      }   
+      else if(enemyInFrontCloseness == Closeness['striking range']){
+        inFrontStriking()
+      }
+    }
+    else{
+      if(enemyInFrontCloseness >= Closeness['far']){
+        inFrontFarAndDontKnowBehind()
+      }    
+      else if(enemyInFrontCloseness == Closeness['nearby']){
+        inFrontNearAndDontKnowBehind()
+      }    
+      else if(enemyInFrontCloseness == Closeness['close']){
+        inFrontCloseAndDontKnowBehind()
+      }   
+      else if(enemyInFrontCloseness == Closeness['striking range']){
+        inFrontStrikingAndDontKnowBehind()
+      }
+
+    }
+
   }
 
-    
-  if (
-    enemyInfront &&
-    enemyBehindCloseness <= Closeness['nearby'] &&
-    logistics.isEnemyTargetingThisFighter(enemyInfront)
-  )
-    probability -= intelligence * 4
-  else{      
-    if (logistics.hasLowStamina())
-      probability += intelligence
-
-    if (logistics.hasLowSpirit())
-      probability += intelligence
-  }
-
-  if(
-    rememberedEnemyBehind &&
-    enemyBehindCloseness <= Closeness['nearby'] &&
-    logistics.isEnemyTargetingThisFighter(rememberedEnemyBehind)
-  )
-    probability -= intelligence * 4
-  else{      
-    if (logistics.hasLowStamina())
-      probability += intelligence
-
-    if (logistics.hasLowSpirit())
-      probability += intelligence
-  }
-
-
-  if (
-    (!enemyInfront || enemyInfrontCloseness == Closeness['very far']) &&
-    (rememberedEnemyBehind === null || enemyBehindCloseness == Closeness['very far'])
-  ) {
-    probability += intelligence * 3
-
-    if (logistics.hasLowStamina())
-      probability += intelligence * 2
-
-    if (logistics.hasLowSpirit())
-      probability += intelligence * 2
-  }
-
+  
   if (probability < 0)
     probability = 0
+  
+  console.log(fighter.name + ' recover ' + probability)
 
   return probability
+
+
+
+  /* functions */
+
+  function inFrontFarAndBehindFar(){
+    console.log('inFrontFarAndBehindFar');
+    if (lowStamina)
+      probability += 6 + intelligence * 2
+  
+    if (lowSpirit)
+      probability += 6 + intelligence * 2
+
+    if (notFullStamina)
+      probability += intelligence * 2
+  
+    if (notFullSpirit)
+      probability += intelligence * 2
+
+    if(hasRetreatOpportunityFromInFront)
+      probability += intelligence * 2
+    if(hasRetreatOpportunityFromBehind)
+      probability += intelligence * 2
+  }
+
+
+  function inFrontNearAndBehindFar(){
+    console.log('inFrontNearAndBehindFar');
+    if (lowStamina)
+      probability += 4 + intelligence
+  
+    if (lowSpirit)
+      probability += 4 + intelligence
+
+    if (notFullStamina)
+      probability += intelligence
+  
+    if (notFullSpirit)
+      probability += intelligence
+
+    if(hasRetreatOpportunityFromInFront)
+      probability += 2 + intelligence * 2
+    if(hasRetreatOpportunityFromBehind)
+      probability += intelligence * 2
+    if(inFrontOnRampage)
+      probability -= intelligence * 2
+    if(behindOnRampage)
+      probability -= intelligence
+  }
+
+
+  function inFrontCloseAndBehindFar(){
+    console.log('inFrontCloseAndBehindFar');
+    if (lowStamina)
+      probability += 2 - intelligence * 2
+  
+    if (lowSpirit)
+      probability += 2 - intelligence * 2
+      
+    if (notFullStamina)
+      probability += intelligence
+
+    if (notFullSpirit)
+      probability += intelligence
+
+    if(inFrontOnRampage)
+      probability -= intelligence * 2
+    if(behindOnRampage)
+      probability -= intelligence    
+  }  
+
+
+  function inFrontFarAndBehindNear(){
+    console.log('inFrontFarAndBehindNear');
+
+    if (lowStamina)
+      probability += 6
+  
+    if (lowSpirit)
+      probability += 6
+
+    
+    if(hasRetreatOpportunityFromBehind){   
+      const enemySpeed = enemyBehind.fighting.movement.moveSpeed()
+      const {fitness} = fighting.stats
+
+      if(enemySpeed > 60 && fitness > 5){
+        if(lowStamina)
+          probability += intelligence
+  
+        if (lowSpirit)
+          probability += intelligence
+      }
+      
+    } else {
+      probability -= intelligence * 4
+    }
+
+    if(inFrontOnRampage)
+      probability -= 2 + intelligence
+    if(behindOnRampage)
+      probability -= intelligence * 2
+    
+  }
+  function inFrontNearAndBehindNear(){
+    console.log('inFrontNearAndBehindNear');
+
+    if (lowStamina)
+      probability += 4
+    if (lowSpirit)
+      probability += 4
+
+    if(!hasRetreatOpportunityFromInFront){
+      probability -= intelligence * 2
+    }
+
+    if(!hasRetreatOpportunityFromBehind){   
+      probability -= intelligence * 2
+    }
+  
+
+    if(
+      !hasRetreatOpportunityFromInFront && 
+      !hasRetreatOpportunityFromBehind
+    ){
+      probability -= intelligence * 2
+    }
+
+    if(
+      hasRetreatOpportunityFromInFront && 
+      hasRetreatOpportunityFromBehind
+    ){
+      const enemySpeed = enemyBehind.fighting.movement.moveSpeed()
+      const {fitness} = fighting.stats
+
+      if(enemySpeed > 60 && fitness > 5){
+        if(lowStamina)
+          probability += intelligence
+  
+        if (lowSpirit)
+          probability += intelligence
+      }
+    }
+
+
+    if(inFrontOnRampage)
+      probability -= intelligence * 2
+    if(behindOnRampage)
+      probability -= intelligence * 2
+    
+  }
+  function inFrontCloseAndBehindNear(){
+    console.log('inFrontCloseAndBehindNear');
+    probability -= 4 + intelligence * 2
+
+    if(!hasRetreatOpportunityFromInFront){
+      probability -= intelligence * 2
+    }
+
+    if(!hasRetreatOpportunityFromBehind){   
+      probability -= intelligence * 2
+    }
+  
+
+    if(
+      !hasRetreatOpportunityFromInFront && 
+      !hasRetreatOpportunityFromBehind
+    ){
+      probability -= intelligence * 2
+    }
+
+
+    if(inFrontOnRampage)
+      probability -= intelligence * 2
+    if(behindOnRampage)
+      probability -= intelligence * 2
+  }
+
+
+  function inFrontFarAndBehindClose(){
+    console.log('inFrontFarAndBehindClose');
+    probability -= intelligence * 3
+
+    if (lowStamina)
+      probability += 2
+  
+    if (lowSpirit)
+      probability += 2
+
+
+    if(!hasRetreatOpportunityFromInFront)
+      probability -= intelligence
+
+    if(!hasRetreatOpportunityFromBehind)
+      probability -= intelligence * 2
+  
+
+    if(
+      !hasRetreatOpportunityFromInFront && 
+      !hasRetreatOpportunityFromBehind
+    ){
+      probability -= intelligence * 2
+    }
+    
+  }
+  function inFrontNearAndBehindClose(){
+    console.log('inFrontNearAndBehindClose');
+    
+    probability -= intelligence * 3
+
+
+    if(!hasRetreatOpportunityFromInFront)
+      probability -= intelligence *2
+
+    if(!hasRetreatOpportunityFromBehind)
+      probability -= intelligence * 2
+  
+
+    if(
+      !hasRetreatOpportunityFromInFront && 
+      !hasRetreatOpportunityFromBehind
+    ){
+      probability -= intelligence * 2
+    }
+    
+  }
+  function inFrontCloseAndBehindClose(){
+    console.log('inFrontCloseAndBehindClose');
+
+    probability -= 4 + intelligence * 4
+
+
+    if(!hasRetreatOpportunityFromInFront)
+      probability -= 2 + intelligence * 2
+
+    if(!hasRetreatOpportunityFromBehind)
+      probability -= intelligence * 2
+  
+
+    if(
+      !hasRetreatOpportunityFromInFront && 
+      !hasRetreatOpportunityFromBehind
+    ){
+      probability -= intelligence * 2
+    }
+    
+  }
+
+
+  function inFrontFar(){
+    console.log('inFrontFar');
+    probability += 6 + intelligence * 2
+    if (lowStamina)
+      probability += 6 + intelligence * 2
+
+    if (lowSpirit)
+      probability += 6 + intelligence * 2
+
+    if (notFullStamina)
+      probability += intelligence * 3
+
+    if (notFullSpirit)
+      probability += intelligence * 3
+
+    if(hasRetreatOpportunityFromInFront)
+      probability += intelligence * 2
+    
+  }
+  function inFrontNear(){
+    console.log('inFrontNear');
+    if (lowStamina)
+      probability += 6 + intelligence * 2
+
+    if (lowSpirit)
+      probability += 6 + intelligence * 2
+
+
+    if(hasRetreatOpportunityFromInFront){
+      if (notFullStamina)
+        probability += intelligence * 2
+  
+      if (notFullSpirit)
+        probability += intelligence * 2
+    }
+    
+  }
+  function inFrontClose(){
+    console.log('inFrontClose');
+    probability -= intelligence * 2
+    if (lowStamina)
+      probability += 2
+    if (lowSpirit)
+      probability += 2
+
+    if(!hasRetreatOpportunityFromInFront){
+      probability -= intelligence * 2
+    }
+    
+  }
+
+  function behindFar(){
+    console.log('behindFar');
+    probability += 4 + intelligence * 2
+    if (lowStamina)
+      probability += 4 + intelligence * 2
+    if (lowSpirit)
+      probability += 4 + intelligence * 2
+
+    if(hasRetreatOpportunityFromBehind){
+      if (notFullStamina)
+        probability += intelligence * 2
+  
+      if (notFullSpirit)
+        probability += intelligence * 2
+    }
+    
+  }
+  function behindNear(){
+    console.log('behindNear');
+    probability += 2 - intelligence
+    if (lowStamina)
+      probability += 2 - intelligence
+    if (lowSpirit)
+      probability += 2 - intelligence
+
+    if(hasRetreatOpportunityFromBehind){
+      if (lowStamina)
+        probability += 2
+  
+      if (lowSpirit)
+        probability += 2
+    }
+    else {
+      probability -= intelligence * 2
+      if (!lowStamina)
+        probability -= intelligence * 2
+  
+      if (!lowSpirit)
+        probability -= intelligence * 2
+    }
+    
+  }
+  function behindClose(){
+    console.log('behindClose');
+    probability -= 4 + intelligence * 4
+    
+    if(!hasRetreatOpportunityFromBehind){
+      probability -= 2 + intelligence * 4
+    }
+  }
+
+  
+  function inFrontFarAndDontKnowBehind(){
+    console.log('inFrontFarAndDontKnowBehind');
+    probability += 6 - intelligence * 2
+    if (lowStamina)
+      probability += 6 - intelligence * 2
+
+    if (lowSpirit)
+      probability += 6 - intelligence * 2
+
+    if (notFullStamina)
+      probability += 2 - intelligence * 3
+
+    if (notFullSpirit)
+      probability += 2 - intelligence * 3
+
+    if(hasRetreatOpportunityFromInFront)
+      probability += 2 - intelligence * 2
+    else
+      probability -= intelligence * 2
+
+      
+    if(inFrontOnRampage)
+      probability -= intelligence
+    
+  }
+  function inFrontNearAndDontKnowBehind(){
+    console.log('inFrontNearAndDontKnowBehind');
+    probability += 4 - intelligence * 3
+    if (lowStamina)
+      probability += 4 - intelligence * 3
+
+    if (lowSpirit)
+      probability += 4 - intelligence * 3
+
+
+    if(hasRetreatOpportunityFromInFront)
+      probability += 2 - intelligence * 3
+    else
+      probability -= intelligence * 4
+
+    if(inFrontOnRampage)
+      probability -= intelligence * 2
+    
+  }
+  function inFrontCloseAndDontKnowBehind(){
+    console.log('inFrontCloseAndDontKnowBehind');
+    probability -= 4 + intelligence * 4
+    if(inFrontOnRampage)
+      probability -= intelligence * 3
+    
+  }
+  function inFrontStrikingAndDontKnowBehind(){
+    console.log('inFrontStrikingAndDontKnowBehind')
+    probability -= 4 + intelligence * 6
+  }
+
+  function inFrontStriking(){
+    console.log('inFrontStriking')
+    probability -= 6
+  }
+  function inFrontStrikingAndBehindFar(){
+    console.log('inFrontStrikingAndBehindFar')
+    probability -= 7 + intelligence
+  }
+  function inFrontStrikingAndBehindNear(){
+    console.log('inFrontStrikingAndBehindNear')
+    probability -= 8 + intelligence * 2
+  }
+  function inFrontStrikingAndBehindClose(){
+    console.log('inFrontStrikingAndBehindClose')
+    probability -= 9 + intelligence * 3
+  }
+
+  function behindStriking(){
+    console.log('behindStriking')
+    probability -= 5 + intelligence
+  }
+  function inFrontFarAndBehindStriking(){
+    console.log('inFrontFarAndBehindStriking')
+    probability -= 6 + intelligence * 2
+  }
+  function inFrontNearAndBehindStriking(){
+    console.log('inFrontNearAndBehindStriking')
+    probability -= 7 + intelligence * 3
+  }
+  function inFrontCloseAndBehindStriking(){
+    console.log('inFrontCloseAndBehindStriking')
+    probability -= 8 + intelligence * 4
+  }
+
+  function inFrontStrikingAndBehindStriking(){
+    console.log('inFrontStrikingAndBehindStriking')
+    probability -= 10 + intelligence * 6
+  }
+  
 }

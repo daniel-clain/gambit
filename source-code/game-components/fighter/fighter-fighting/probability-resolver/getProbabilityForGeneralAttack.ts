@@ -10,9 +10,18 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
   let probability = 0
   
   if (movement.moveActionInProgress == 'move to attack')
-    probability += 5
+    probability += 10
+  else 
+    probability -= 10
+
+  
+  if (movement.moveActionInProgress == 'reposition'){
+    probability -= 10 + 4 * intelligence
+  }
 
   probability += aggression
+
+  
   
   if(
     closestEnemy.fighting.animation.inProgress == 'recovering' ||
@@ -28,7 +37,7 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
   if (proximity.trapped)
     probability += 10 + aggression + spirit*2
   else if(proximity.flanked)
-    probability -= intelligence * 4
+    probability -= intelligence * 6
 
   if(logistics.hasAttackOpportunity(closestEnemy)){
     probability += 3 * intelligence
@@ -70,7 +79,7 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
   }
 
   if (isEnemyFacingAway(closestEnemy, fighter))
-    probability += intelligence * 5
+    probability += intelligence * 3
 
 
   return probability

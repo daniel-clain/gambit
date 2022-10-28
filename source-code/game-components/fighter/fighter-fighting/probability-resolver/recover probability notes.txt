@@ -1,0 +1,29 @@
+* this has proven to be one of the more difficult parts to code
+  - not necessarily because of the complexity or logic
+  - mostly because of the number of permeations
+
+* list of factors
+  - low stam, low spirit, not full stam, not full spirit, fitness recovers faster, memory of whose behind, logical everyone is infract so must be nobody behind, front and/or back far/near/close, enemy attacking or occupied, aggression, intelligence
+
+
+* if i code out all the scenarios in nested loops, there will be a fuck load of code, and a lot of it will look like repetition
+  - theres gotta be coding techniques that will achieve the outcome i want with drastically less code
+  - i feel like if i spoke to a professional coder or mathematician, i could see what to do
+
+* one of the approaches was to flatten it and do *= instead of +=
+  - the big problem is that if the current probability is negative, and the next block of code want to increase the probability, then multiplying the negative number by a positive number will make the negative number more negative ( and multiplying by a negative number will make the probability positive)
+  - the other issue is that im not sure it address the problem
+
+
+* what is examples of behavior of an intelligent fighter, a stupid fighter, and an average fighter
+  - an intelligent fighter should 
+    ~ be more aware of who is behind him
+    ~ be more aware of opportunities to recover when there is no threat
+    ~ should recover to full health and stamina if given the opportunity
+
+  - a stupid fighter should
+    ~ be less aware of whose behind
+    ~ recover when he thinks its safe but its not
+
+* probabilites in other options should outweigh the recover probability based on the situation and intelligence
+  - average fighters have less of a chance to do something smart, but they still have a chance

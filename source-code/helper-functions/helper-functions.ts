@@ -172,13 +172,18 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
   return directionOfPosition2FromPosition1
 }
 
+
+export function getOppositeDirection(direction: Angle): Angle{
+  return (direction >= 180 ? direction - 180 : 180 + direction) as Angle
+}
+
 export function getSmallestAngleBetween2Directions(direction1: Angle, direction2: Angle){
   const {biggest, smallest} = direction1 > direction2 ? {biggest: direction1, smallest: direction2} : { biggest: direction2, smallest: direction1}
   
   if(biggest - smallest > 180)
-    return 360 - biggest + smallest
+    return {smallestAngle: 360 - biggest + smallest, crosses0: true}
   else
-    return biggest - smallest
+    return {smallestAngle: biggest - smallest, crosses0: false}
 }
 
 export function subtractAngle2FromAngle1(angle1: Angle, angle2: Angle): Angle {

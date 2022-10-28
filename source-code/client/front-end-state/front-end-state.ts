@@ -5,16 +5,24 @@ import { FrontEndState } from '../../interfaces/front-end-state-interface'
 export const frontEndState: FrontEndState = observable(getInitialState())
 
 
-function getInitialState(): FrontEndState{
+export function getInitialState(): FrontEndState{
   return {
     serverUIState: {
       serverPreGameUIState: undefined,
       serverGameUIState: undefined
     },
     clientUIState: {
-      clientPreGameUIState: {},
+      isConnectedToWebsocketServer: false,
+      isConnectedToGameHost: false,
+      clientPreGameUIState: {
+        clientId: undefined,
+        clientName: undefined
+      },
       clientGameUIState: {
-        clientManagerUIState: {}
+        clientManagerUIState: {
+          activeModal: undefined,
+          selectListActive: undefined
+        }
       }
     }
   }

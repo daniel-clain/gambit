@@ -36,7 +36,7 @@ function getClosestCoordsOnASlopeFromAPoint(slopePoints: {point1: Coords, point2
   const {point1, point2} = slopePoints
 
   const slope = getSlopeBetween2Points(point1, point2)
-  const yInterceptOnSlope = getYinterceptOnSlope(slope, point1)
+  const yInterceptOnSlope = getYInterceptOnSlope(slope, point1)
 
   const m = slope
   const b = yInterceptOnSlope
@@ -77,7 +77,7 @@ function getSlopeBetween2Points(point1, point2){
   return rise/run
 }
 
-function getYinterceptOnSlope(slope, pointOnSlope){
+function getYInterceptOnSlope(slope, pointOnSlope){
   const {x, y} = pointOnSlope
   const m = slope
   return y - m * x
@@ -96,7 +96,7 @@ function getDirectionToClosestEdge(point: Coords): Angle{
 }
 
 
-function getClosestEdge(point): Edge{
+function getClosestEdge(point: Coords): Edge{
   let closestEdge: {edgeName: Edge, distance: number}
   for(let edgeKey in edges){
     const edgeName = edgeKey as Edge
@@ -107,7 +107,7 @@ function getClosestEdge(point): Edge{
   return closestEdge.edgeName
 }
 
-function getDistanceOfClosestEdge(point): number{
+function getDistanceOfClosestEdge(point: Coords): number{
   const closestEdge = getClosestEdge(point)
   const closestPointOnEdge: Coords = getClosestCoordsOnAnEdgeFromAPoint(closestEdge, point)
   return getDistanceBetweenTwoPoints(point, closestPointOnEdge)
@@ -118,6 +118,7 @@ function getDistanceOfClosestEdge(point): number{
 export const octagon = {
   edgeKeys,
   edges,
+  points,
   getDistanceOfClosestEdge,
   getClosestCoordsOnASlopeFromAPoint,
   isPointOutsideOfEdge, 

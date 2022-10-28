@@ -10,12 +10,11 @@ interface ManagersBetProps {
   isDisplay?: boolean
 }
 
-const ManagersBets = ({ managersBets, report, isDisplay }: ManagersBetProps) => {
+export const ManagersBets_C = ({ managersBets, report, isDisplay }: ManagersBetProps) => {
   let [isHidden, setIsHidden] = useState(isDisplay?false:true)
 
   const hasWinnings = report?.managerWinnings?.some(({ winnings }) => winnings > 0)
 
-  console.log('isHidden :>> ', isHidden);
 
   const managerWinnings = (manager): number => {
     return report?.managerWinnings?.find(m => m.managerName == manager.name)?.winnings
@@ -39,17 +38,19 @@ const ManagersBets = ({ managersBets, report, isDisplay }: ManagersBetProps) => 
             <div className={`managers-bet__manager__image managers-bet__manager__image--${manager.image.toLowerCase().replace(' ', '-')}`}></div>
             <div className="managers-bet__manager__name">{manager.name}</div>
           </div>
-          <div className="fighter-bet-on">
-            <div className="fighter-bet-on__name">{(manager.bet && manager.bet.fighterName) ? manager.bet.fighterName : 'No Bet'}</div>
-            <div className="fighter-bet-on__image"></div>
-            {manager.bet && manager.bet.size &&
+          {manager.bet ?
+            <div className="fighter-bet-on">
+              <div className="fighter-bet-on__name">{manager.bet.fighterName}</div>
+              <div className="fighter-bet-on__image"></div>
               <div className="fighter-bet-on__amount">{manager.bet.size}</div>
-            }
-          </div>
+            </div>
+            : 
+            <div className="fighter-bet-on">No Bet</div>
+          }
         </div>
       )}
     </div>
   )
 };
 
-export default ManagersBets
+

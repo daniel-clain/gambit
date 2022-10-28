@@ -1,3 +1,5 @@
+declare module "*.png";
+declare module "*.jpg";
 
 interface Elem extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>{
   name?: string

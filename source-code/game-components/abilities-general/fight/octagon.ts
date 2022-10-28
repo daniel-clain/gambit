@@ -1,4 +1,4 @@
-import Dimensions from "../../../interfaces/game/fighter/dimensions"
+/* import Dimensions from "../../../interfaces/game/fighter/dimensions"
 import Coords from '../../../interfaces/game/fighter/coords';
 import { Edges } from "../../../interfaces/game/fighter/edges";
 import { Edge } from "../../../interfaces/game/fighter/edge";
@@ -261,3 +261,4 @@ export default class Octagon {
   }
 
 };
+ */

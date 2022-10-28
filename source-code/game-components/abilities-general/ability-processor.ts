@@ -23,7 +23,8 @@ import { wealthVictoryServer } from './abilities/wealth-victory';
 import { takeADiveServer } from './abilities/take-a-dive';
 
 import { getAbilitySourceManager } from './ability-service-server';
-import { ifSourceIsEmployee, ifSourceIsManager, ifTargetIsFighter } from '../../client/front-end-service/ability-service-client';
+import { ifSourceIsEmployee, ifSourceIsManager } from '../../client/front-end-service/ability-service-client';
+import { giveUpServer } from './abilities/give-up';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]
@@ -52,7 +53,8 @@ export class AbilityProcessor{
     investigateManagerServer,
     dominationVictoryServer,
     sinisterVictoryServer,
-    wealthVictoryServer
+    wealthVictoryServer,
+    giveUpServer
   ]
   delayedExecutionAbilities: AbilityData[] = []
 
@@ -190,9 +192,10 @@ export class AbilityProcessor{
 
     const manager = getAbilitySourceManager(source, this.game)
 
-    ifSourceIsManager(source, () => 
+    ifSourceIsManager(source, () => {
+      console.log('ability :>> ', ability);
       manager.has.actionPoints -= ability.cost.actionPoints
-    )
+    })
     
     ifSourceIsEmployee(source, () => {
       const employee = manager.has.employees.find(e => e.name == source.name)

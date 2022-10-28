@@ -11,4 +11,5 @@ export type NewsType =
 'fighter is sick' |
 'fighter is hallucinating' |
 'fight event next week' |
-'manager prosecuted'
+'manager prosecuted' |
+'manager retired'

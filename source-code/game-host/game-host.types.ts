@@ -38,8 +38,9 @@ export type FromClientToHost = {
   readyToStart({gameId, ready}: {gameId: string, ready: boolean})
   leave(gameId: string)
   reJoin(gameId: string)
-  disconnect(reason: string)
   submitGlobalChat(message: string)
+  disconnect?(reason: string)
+  reset({name,id}: {name: string, id: string})
 }
 
 

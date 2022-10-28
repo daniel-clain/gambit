@@ -2,7 +2,7 @@ import * as React from 'react';
 import './fight.view.scss'
 import { OverlayMessaging } from './fight-view-components/overlay-messaging/overlay-messaging';
 import { ArenaUi } from './fight-view-components/arena-ui/arena-ui';
-import ManagersBets from './fight-view-components/managers-bets/managers-bets';
+import {ManagersBets_C} from './fight-view-components/managers-bets/managers-bets';
 import { FighterStates } from './fight-view-components/fighter-states/fighter-states';
 import { frontEndState } from '../../../front-end-state/front-end-state';
 import { observer } from 'mobx-react';
@@ -13,10 +13,13 @@ export const Fight_View = observer(() => {
     serverUIState:{serverGameUIState:{
       fightUIState,
       displayManagerUIState
-    }} 
+    }},
+    clientUIState: {clientPreGameUIState: {clientName}}
+    
   } = frontEndState
 
-  const isDisplay = !!displayManagerUIState
+  const isDisplay = clientName == 'Game Display'
+
 
   const {
     startCountdown, timeRemaining, fighterFightStates, 
@@ -35,7 +38,7 @@ export const Fight_View = observer(() => {
       <FighterStates fighterStates={knownFighterStates} />
 
       <ArenaUi {...{fighterFightStates}}/>
-      <ManagersBets {...{report, managersBets, isDisplay}}/>
+      <ManagersBets_C {...{report, managersBets, isDisplay}}/>
 
     </div>
   )

@@ -7,29 +7,25 @@ import { Login_View } from '../../views/pre-game/login.view';
 import { Lobby_View } from '../../views/pre-game/lobby.view';
 import { observer } from 'mobx-react';
 import { frontEndState } from '../../front-end-state/front-end-state';
-import { useEffect } from 'react';
 
 initialSetup()
 
 export const MainGame_C = observer(() => {
 
   const {
-    serverUIState: { serverPreGameUIState },
-    clientUIState: { clientPreGameUIState: {hasGameData} }
+    clientUIState: { 
+      isConnectedToGameHost,
+      isConnectedToWebsocketServer,
+      clientPreGameUIState: {hasGameData}
+    }
   } = frontEndState
 
-  useEffect(() => {
-    window.onbeforeunload = function() {
-      return true
-    };
-  })
 
-  const connectedToGameHost = !!serverPreGameUIState
 
 
   return hasGameData ? 
   <Game_View />
-  : connectedToGameHost ? 
+  : isConnectedToWebsocketServer && isConnectedToGameHost ? 
     <Lobby_View />
     : <Login_View /> 
        

@@ -3,11 +3,11 @@ import { Subject, Subscription } from "rxjs"
 import Fighter from "../../fighter/fighter"
 import gameConfiguration from "../../../game-settings/game-configuration"
 import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../../helper-functions/helper-functions"
-import Octagon from "./octagon"
 import Coords from '../../../interfaces/game/fighter/coords';
 import { Angle } from "../../../types/game/angle"
 import { Manager } from "../../manager"
 import { FighterInfo, FightReport, FightUIState, ManagersBet } from "../../../interfaces/front-end-state-interface"
+import { octagon } from "./new-octagon";
 
 
 
@@ -193,7 +193,7 @@ export default class Fight {
       timeRemaining: this.timeRemaining,
       report: this._report,
       fighterFightStates: this.fighters.map(fighter => fighter.fighting.getState()),
-      managersBets: this.managers?.map((manager: Manager): ManagersBet => {
+      managersBets: this.managers?.filter(m => !m.state.retired).map((manager: Manager): ManagersBet => {
         return {
           name: manager.has.name,
           image: manager.has.image,
@@ -217,8 +217,8 @@ export default class Fight {
     const angleBetweenEachFighter = 360 / this.fighters.length
     const distanceFromCenter = 150
     const centerPoint: Coords = {
-      x: (Octagon.edges.right.point1.x - Octagon.edges.left.point1.x) / 2,
-      y: (Octagon.edges.top.point1.y - Octagon.edges.bottom.point1.y) / 2
+      x: (octagon.edges.right.point1.x - octagon.edges.left.point1.x) / 2,
+      y: (octagon.edges.top.point1.y - octagon.edges.bottom.point1.y) / 2
     }
 
     this.fighters.forEach((fighter: Fighter, index) => {

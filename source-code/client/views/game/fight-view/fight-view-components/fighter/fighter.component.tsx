@@ -29,7 +29,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		block: blockSound    
 	}
 
-	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, energy, repositioning, direction, trapped} = fighterFightState
+	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, energy, repositioning, direction, trapped, againstEdge} = fighterFightState
 
 	const soundsToPlay = soundsMade.reduce((soundsToPlay, soundMade) => {
 		if(processedSounds.some(sound => sound.time == soundMade.time))
@@ -44,7 +44,6 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 	if(soundsToPlay.length > 0){
 		soundsToPlay.forEach((sound: SoundTime) => {
 			const {punch, criticalStrike, dodge, block} = soundEffects
-			console.log(`**FighterComponent** - ${name} makes sound ${sound.soundName}`)
 			switch(sound.soundName){
 				case 'Punch' : return punch.play().catch(soundDidntPlay)
 				case 'Critical Strike' : return criticalStrike.play().catch(soundDidntPlay)
@@ -74,7 +73,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 	
 	const fighterImageStyle = {
 		transform: (facingDirection === 'left' ? `scalex(-1) translateX(50%)` : `scalex(1) translateX(-50%)`),
-		filter: `hue-rotate(${onRampage ? 330 : 0}deg)`,
+		filter: `hue-rotate(${onRampage ? 340 : 0}deg)`,
 		width: fighterModelImage.dimensions.width * widthRatio,
 		paddingBottom: fighterModelImage.dimensions.height * heightRatio
 	}
@@ -120,15 +119,18 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		<div key='fighter' className='fighter' id={name} style={fighterStyle}>
 			<div className='fighter__name' style={fighterNameStyle}>
 				{name}
-				<span className="fighter__spirit">{
-					spirit == 5 ? '😈' :
-					spirit == 4 ? '😁' :
-					spirit == 3 ? '🙂' :
-					spirit == 2 ? '😐' :
-					spirit == 1 ? '😟' :
-					spirit == 0 ? '😨' : '👽'
+				{modelState != 'Knocked Out' ?
+					<span className="fighter__spirit">{
+						spirit == 5 ? '😈' :
+						spirit == 4 ? '😁' :
+						spirit == 3 ? '🙂' :
+						spirit == 2 ? '😐' :
+						spirit == 1 ? '😟' :
+						spirit == 0 ? '😨' : '👽'
 
-				}</span>
+					}</span>
+					: ''
+				}
 				<div className='fighter__energy-bar'>
 					<div 
 						className='fighter__energy-bar__inner' 

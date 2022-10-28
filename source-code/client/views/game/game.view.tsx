@@ -11,16 +11,30 @@ import { FinalTournament_View } from './final-tournament/final-tournament.view';
 import { observer } from 'mobx-react';
 import { websocketService } from '../../front-end-service/websocket-service';
 import { PostGame_View } from './post-game/post-game.view';
+import { useEffect } from 'react';
 
 
 
 export const Game_View = observer(() => {
   const {
     clientUIState: { clientPreGameUIState: {clientName}},
-    serverUIState: { serverGameUIState: {
-      disconnectedPlayerVotes, weekStage, finalTournamentBoard, selectedVideo, gameFinishedData
-    }}
+    serverUIState: { serverGameUIState}
   } = frontEndState
+
+
+  const {
+    disconnectedPlayerVotes, weekStage, finalTournamentBoard, selectedVideo, gameFinishedData, playerManagerUIState
+  } = serverGameUIState
+
+  
+  useEffect(() => {
+    window.onbeforeunload = function() {
+      return true
+    };
+  })
+
+
+  const {retired} = playerManagerUIState.managerInfo
 
   const getActiveView = () => {
     if(selectedVideo){
@@ -35,7 +49,7 @@ export const Game_View = observer(() => {
     }
     switch (weekStage) {
       case 'Manager Options': 
-        return clientName == 'Game Display' ?
+        return (clientName == 'Game Display' || retired) ?
           <DisplayManagerOptionsUi/> :
           <Manager_View />
       case 'Pre Fight News': return <PreFightNews_View />

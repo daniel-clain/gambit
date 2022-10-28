@@ -6,6 +6,7 @@ export const getProbabilityToPunch = (fighting: FighterFighting): number  =>{
   const { logistics, proximity, fighter } = fighting
   const closestEnemy = proximity.getClosestRememberedEnemy()
 
+  if(fighter.state.hallucinating) return 1
 
   let probability = 20
 

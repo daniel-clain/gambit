@@ -5,8 +5,6 @@ import { CombatAction, MoveAction, ActionName, AttackResponseAction } from "../.
 import { wait } from "../../../helper-functions/helper-functions";
 import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability";
 
-/* const globalWindow: any = window
-globalWindow.debugFighterName = 'doink' */
 
 export default class FighterActions {
 
@@ -19,7 +17,7 @@ export default class FighterActions {
   async decideAction(){  
     
     const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
-    const {fight} = fighter.state    
+    const {fight, hallucinating} = fighter.state    
 
     if(!fight || knockedOut || stopFighting) return
     if(fight.paused) await fight.waitForUnpause()
@@ -41,7 +39,7 @@ export default class FighterActions {
     const responseProbabilities: [ActionName, number][] = []
     
 
-    if(enemyWithinStrikingRange || fighter.state.hallucinating)
+    if(enemyWithinStrikingRange || (hallucinating && closestEnemy))
       responseProbabilities.push(
         ...combatActions.map(action => 
           this.decideActionProbability.getProbabilityTo(action)
@@ -69,18 +67,22 @@ export default class FighterActions {
 
     decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
 
-    
-    /* if(this.fighting.proximity.flanked)
-      console.log(fighter.name + ' flanked'); */
       
     if(!decidedAction){
-      //console.log(`${fighter.name} had no decided action, wait half a sec then decide again`);
+      /* console.log(`${fighter.name} had no decided action, wait half a sec then decide again`); */
       wait(500).then(() => this.decideAction())
     }
     else {
-    
-      //console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`);
 
+      this.fighting.actionLog.unshift(decidedAction)
+    
+      /* console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`); */
+
+      /* if(decidedAction == 'retreat from flanked'){
+        console.log(`${fighter.name} retreat from flanked`, responseProbabilities);
+      }*/
+
+      
       try{
         switch (decidedAction) {
           case 'punch':
@@ -103,28 +105,24 @@ export default class FighterActions {
           case 'do nothing':
             await this.doNothing(); break
         }
+        await wait(5)
+        if(logistics.allOtherFightersAreKnockedOut())
+          this.fighting.modelState = 'Victory'
+
+        if(!this.fighting.animation.inProgress){
+          this.fighting.actions.decideAction()
+        }
+        else{        
+          //console.log(`${this.fighting.fighter.name} did not start a new action after ${decidedAction} because ${this.fighting.animation.inProgress} is in progress`);
+
+        }
       }
+      
       catch(reason){
-        if(reason == "TypeError: Cannot read property 'fighting' of undefined")
-          debugger
         //console.log(`${fighter.name}' ${decidedAction} was interrupted because ${reason}`);      
       }
 
-      await wait(5)
-      if(logistics.allOtherFightersAreKnockedOut())
-        this.fighting.modelState = 'Victory'
-
-      if(!this.fighting.animation.inProgress){
-        this.fighting.actions.decideAction()
-      }
-      else{        
-        if(this.fighting.animation.inProgress == null)
-          debugger
-        if(!this.fighting.fighter.name)
-          debugger
-        //console.log(`${this.fighting.fighter.name} did not start a new action after ${decidedAction} because ${this.fighting.animation.inProgress} is in progress`);
-
-      }
+      
     }           
   }
 
@@ -134,13 +132,18 @@ export default class FighterActions {
 
   startRecovering(): Promise<void>{
     const {animation, fighter, stats} = this.fighting
+    const {sick, injured} = fighter.state
+    if(this.fighting.stamina >= stats.maxStamina){
+      debugger
+    }
     return animation.start({
       name: 'recovering',
-      duration: 2500 - stats.fitness * 150,
+      duration: 2500 - stats.fitness * 150 + (sick || injured ? 1000 : 0),
       model: 'Recovering',
     })
     .then(() => {      
       //console.log(`${fighter.name} just recovered 1 stamina & spirit`);
+      this.fighting.timers.cancelTimers(['memory of enemy behind'], 'finished recovering')
       if(this.fighting.stamina < stats.maxStamina)
         this.fighting.stamina++
       else
@@ -152,9 +155,10 @@ export default class FighterActions {
 
   doNothing(): Promise<void>{
     const {animation, fighter} = this.fighting
+    const {hallucinating} = fighter.state
     return animation.start({
       name: 'doing nothing',
-      duration: 1000
+      duration: 1000 + (hallucinating ? 1000 : 0)
     })
   }
 

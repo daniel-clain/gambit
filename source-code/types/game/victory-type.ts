@@ -1,1 +1,1 @@
-export type VictoryType = 'Sinister Victory' | 'Wealth Victory' | 'Domination Victory'
+export type VictoryType = 'Sinister Victory' | 'Wealth Victory' | 'Domination Victory' | 'Default Victory'

@@ -22,6 +22,7 @@ import { Skin } from "../types/fighter/skin"
 import { VictoryType } from "../types/game/victory-type"
 import { VideoName } from "../client/videos/videos"
 import { MatchupInfo } from "../game-components/week-controller/final-tournament/final-tournament"
+import { Edge } from "./game/fighter/edge"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
@@ -53,6 +54,8 @@ export interface ClientPreGameUIState {
 
 
 export interface ClientUIState{
+  isConnectedToGameHost: boolean
+  isConnectedToWebsocketServer: boolean
   clientGameUIState: ClientGameUIState
   clientPreGameUIState: ClientPreGameUIState
 }
@@ -165,7 +168,9 @@ export default interface FighterFightState{
   repositioning: boolean,
   direction: Angle
   trapped: boolean
+  againstEdge: Edge
 }
+
 export interface DisconnectedPlayerVote{
   disconnectedPlayer: ClientNameAndID
   playerVotesToDrop: PlayerVoteToDrop[]
@@ -273,7 +278,7 @@ export interface FighterInfo{
 
 export interface ManagerUIState{
   managerInfo: ManagerInfo  
-  managerOptionsTimeLeft: number
+  managerOptionsTimeLeft?: number
   jobSeekers: JobSeeker[]
   nextFightFighters: string[]
   delayedExecutionAbilities: AbilityData[]

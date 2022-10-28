@@ -14,15 +14,17 @@ export const getProbabilityToDoNothing = (fighting: FighterFighting): number => 
   let probability = 30
   
   probability -= aggression * 3
-  probability -= intelligence * 3
 
   if(!onARampage && (takingADive)){
     probability += 20
+  }else{
+    probability -= intelligence * 3
+
   }
-  if(hallucinating){
-    probability += 10
-  } 
   
+  if(hallucinating){
+    probability += 20
+  } 
 
   if (probability < 0)
     probability = 0

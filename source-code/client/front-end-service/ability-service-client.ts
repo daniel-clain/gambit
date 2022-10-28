@@ -138,6 +138,10 @@ export function validateAbilityConfirm(
     throw (`You need at least 1 Hitman for a Sinister Victory`)
   }
 
+  if(clientAbility.name == 'Give Up' && managerInfo.money > 0){
+    throw (`You still have money, dont give up`)
+  }
+
 
   if (clientAbility?.notActiveUntilWeek > currentWeek){
     throw (`${clientAbility.name} is not available until Week ${clientAbility.notActiveUntilWeek}`)
@@ -147,7 +151,7 @@ export function validateAbilityConfirm(
     throw (`${clientAbility.name} requires a target`)
   }
 
-  if (managerInfo.money < clientAbility.cost.money){
+  if (managerInfo.money < clientAbility.cost.money && clientAbility.name != 'Give Up'){
     throw (`manager does not have enough money to pay for ${clientAbility.name}`)
   }
 
@@ -210,7 +214,7 @@ export function isPossibleToPerformAbility(abilityData: AbilityData, managerInfo
     return false
 
   // can afford money
-  if (clientAbility.cost.money >= managerInfo.money)
+  if (clientAbility.cost.money > managerInfo.money && clientAbility.name != 'Give Up')
     return false
 
 
@@ -232,6 +236,13 @@ export function isPossibleToPerformAbility(abilityData: AbilityData, managerInfo
   if(clientAbility.name == 'Sinister Victory' && !managerInfo.employees.find(e => e.profession == 'Hitman')){
     return false
   }
+
+  
+  // need fighters for domination victory
+  if(clientAbility.name == 'Give Up' && managerInfo.money > 0){
+    return false
+  }
+
 
   // has a source
   const possibleSources: SourceTypes[] = getPossibleSources(clientAbility, managerInfo)

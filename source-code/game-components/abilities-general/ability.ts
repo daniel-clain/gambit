@@ -62,4 +62,5 @@ export type AbilityName =
 'Domination Victory' |
 'Wealth Victory' |
 'Sinister Victory' |
-'Take A Dive'
+'Take A Dive' |
+'Give Up'

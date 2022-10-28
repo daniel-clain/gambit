@@ -24,8 +24,6 @@ export const trainFighterServer: ServerAbility = {
     const {weekNumber} = game.has.weekController
     const sourceManager: Manager = getAbilitySourceManager(source, game)
     
-    let manager: Manager
-    let trainer: Employee
     let sourceSkillLevel: SkillLevel
 
     ifSourceIsManager(source, () => sourceSkillLevel = 1)
@@ -53,13 +51,13 @@ export const trainFighterServer: ServerAbility = {
       const randomNum = random(1)
       if(randomNum === 0){
         fighter.fighting.stats.baseStrength ++
-        manager.functions.addToLog({
+        sourceManager.functions.addToLog({
           weekNumber,
           message: `${fighter.name}'s strength has gone up by 1 as a result of being trained`, type:'employee outcome'})
       }
       else if(randomNum === 1){
         fighter.fighting.stats.baseFitness ++
-        manager.functions.addToLog({
+        sourceManager.functions.addToLog({
           weekNumber,
           message: `${fighter.name}'s fitness has gone up by 1 as a result of being trained`, type:'employee outcome'})
       }

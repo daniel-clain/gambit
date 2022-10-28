@@ -1,7 +1,7 @@
 
 
 import arenaBehind from './fight-view/arena/fight-arena-behind.png'
-import arenaInfront from './fight-view/arena/fight-arena-infront.png'
+import arenaInFront from './fight-view/arena/fight-arena-in-front.png'
 import fightBanner from './fight-view/fight.png'
 
 import loginBg from './login-bg.jpg'
@@ -132,7 +132,7 @@ export const fightUiImages = [
   ...muscleFighterImages.map(imageObj => imageObj.image),
   fightBanner,
   arenaBehind, 
-  arenaInfront
+  arenaInFront
 ]
 
 export const images = {

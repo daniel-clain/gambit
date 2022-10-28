@@ -4,12 +4,14 @@ import { FrontToBackInterface } from "../../interfaces/front-to-back-interface.i
 import { ServerGameUIState, ServerPreGameUIState } from "../../interfaces/front-end-state-interface";
 import { runInAction } from "mobx";
 import { frontEndState } from "../front-end-state/front-end-state";
+import { connectToGameHost, resetClient } from "./front-end-service";
 
 
 let socket: SocketIOClient.Socket
   
 const clientToHostFunctions = {
   connectToHost: ({name, id}) => {
+    console.log('connect fired');
     socket.emit('connectToHost', {name, id})
   },
   create: () => socket.emit('create'),
@@ -20,8 +22,10 @@ const clientToHostFunctions = {
   readyToStart: gameId => socket.emit('readyToStart', gameId),
   leave: gameId => socket.emit('leave', gameId),
   reJoin: gameId => socket.emit('reJoin', gameId),
-  disconnect: reason => socket.emit('disconnect', reason),
   submitGlobalChat: message => socket.emit('submitGlobalChat', message),
+  reset: ({name, id}) => {
+    socket.emit('reset', {name, id})
+  }
 }
 
 const clientToGameFunctions = {
@@ -40,16 +44,15 @@ export const websocketService: FrontToBackInterface = {
   init(){
     const env = process.env.NODE_ENV
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
+
     
     if(env == 'development'){
-      socket = io('http://localhost:6969', { transports: ["websocket"], secure: true,reconnection: true, rejectUnauthorized: false})
+      socket = io('http://localhost:6969', { transports: ["websocket"], secure: true, reconnection: true, rejectUnauthorized: false})
 
+      
       
       socket.on('error', x => {
         console.log('error :>> ', x);
-      })
-      socket.on('disconnect', x => {
-        console.log('disconnect :>> ', x);
       })
       socket.on('reconnect', x => {
         console.log('reconnect :>> ', x);
@@ -62,7 +65,7 @@ export const websocketService: FrontToBackInterface = {
       })
     } else {
       try{
-      socket = io()
+      socket = io({secure: true, reconnection: true, rejectUnauthorized: false})
       }catch(e){
         console.log(e);
       }
@@ -70,6 +73,26 @@ export const websocketService: FrontToBackInterface = {
     
     try{
       socket.connect()
+      
+      socket.on('connect', x => {
+        console.log('connect event :>> ', x);
+        
+        runInAction(() => {
+          frontEndState.clientUIState.isConnectedToWebsocketServer = true
+        })
+        const {clientName} = frontEndState.clientUIState.clientPreGameUIState
+        if(clientName){
+          connectToGameHost()
+        }
+      })
+      
+      socket.on('disconnect', x => {
+        console.log('disconnect :>> ', x);
+        runInAction(() => {
+          frontEndState.clientUIState.isConnectedToWebsocketServer = false
+        })
+      })
+      
     } catch(e){
       console.log('e :>> ', e);
     }
@@ -78,6 +101,9 @@ export const websocketService: FrontToBackInterface = {
       (serverPreGameUIState: ServerPreGameUIState) => {
         runInAction(() => {
           frontEndState.serverUIState.serverPreGameUIState = serverPreGameUIState
+          if(!frontEndState.clientUIState.isConnectedToGameHost){
+            frontEndState.clientUIState.isConnectedToGameHost = true
+          }
         })
       }
     )    

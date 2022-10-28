@@ -86,10 +86,10 @@ export const setupTestState = (game: Game) => {
 export const postStartTestState = (game: Game) => {
   //testMainEvent()
   //testContractEnding()
-  quickSinisterVictory()
-  lotsOfMoney()
+  //quickSinisterVictory()
+  //lotsOfMoney()
   //testFighterJobSeeker()
-  managerHasFighters()
+  //managerHasFighters()
 
   //showPostGameStats()
 
@@ -163,7 +163,7 @@ export const postStartTestState = (game: Game) => {
         weeklyCost: 0,
         weeksRemaining: 10
       }
-      f.state.hallucinating = true
+      f.state.sick = true
       f.state.publicityRating = 10
       f.state.fight = game.has.weekController.activeFight
     })

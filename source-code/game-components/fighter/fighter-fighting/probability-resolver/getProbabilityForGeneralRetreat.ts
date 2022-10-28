@@ -13,10 +13,7 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
 
   if (invalid)
     return 0
-
-  
   const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
-  const closestEnemySpeed = closestEnemy.fighting.stats.speed
 
 
   let probability = 0

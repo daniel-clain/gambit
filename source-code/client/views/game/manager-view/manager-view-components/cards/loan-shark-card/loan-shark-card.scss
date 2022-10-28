@@ -1,5 +1,6 @@
 @import '../../../manager-view-style/manager-view-variables';
 .loan-shark-card {
+  font-size: 16px;
   
   &__loan-tool {
     display: flex;
@@ -18,6 +19,10 @@
         border: 2px inset $blue-light;
         margin: 0.6rem 0;
         border-radius: 2px;
+
+        &[disabled]{
+          filter: grayscale(100);
+        }
       }
     }
   }
@@ -25,7 +30,9 @@
   &__image {
     background: url("../../../../../../images/icons/loan-shark.png") no-repeat;
     background-size: 100%;
-    min-height: 120px;
+    min-height: 160px;
+    aspect-ratio: 4/3;
+    background-size: contain;
   }
   &__debt {
     margin: 20px auto;

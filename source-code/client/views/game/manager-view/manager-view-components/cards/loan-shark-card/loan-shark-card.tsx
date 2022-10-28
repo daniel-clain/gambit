@@ -20,7 +20,6 @@ export const LoanSharkCard = observer(() => {
     borrowAmount: undefined
   })
 
-  console.log(loan)
  
 
   const {borrowAmount, paybackAmount} = state
@@ -75,11 +74,13 @@ export const LoanSharkCard = observer(() => {
             
           </div>
           
+          
           <div className='loan-shark-card__loan-tool__right'><div className='loan-shark-card__loan-tool__heading'>Pay Off Debt</div>
             <div className='pay-back-input'>
               Pay back amount: 
               <input 
                 value={paybackAmount > 0 ? paybackAmount : ''} 
+                disabled={!loan || !loan.debt}
                 onChange={e => updatePaybackAmount(e.target.value)} 
                 onKeyPress={handleEnterEvent}
                 type='number' step='10' min='0' max='500' 

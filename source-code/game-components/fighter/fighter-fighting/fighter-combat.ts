@@ -18,124 +18,133 @@ export default class FighterCombat {
 
 
   async startDefending(enemy: Fighter) {   
-    const {fighter, animation, movement} = this.fighting
-      if(isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating)
-        await movement.turnAround()
+  const {fighter, animation, movement} = this.fighting
+    if(isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating)
+      await movement.turnAround()
+
+    return animation.start({      
+      name: 'defending',
+      model: 'Defending',
+      duration: animation.speedModifier(1000)
+    })
+  }
+
   
-      return animation.start({      
-        name: 'defending',
-        model: 'Defending',
-        duration: animation.speedModifier(1000)
-      })
-    }
-  
+  async attackEnemy(enemy: Fighter, attackType: AttackType): Promise<void> { 
     
-    async attackEnemy(enemy: Fighter, attackType: AttackType): Promise<void> { 
+    if(enemy.fighting.knockedOut){
+      debugger
+    }
+    const {animation, proximity, fighter, movement, timers, stats, spirit} = this.fighting
+    
+    this.fighting.enemyTargetedForAttack = enemy
+    
+    if(isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating)
+      await movement.turnAround()
+
+    await animation.start(
+      attackType == 'punch' && {
+        name: 'trying to punch',
+        model: 'Punching',
+        duration: animation.speedModifier(200)
+      }
+      ||
+      attackType == 'critical strike' && {
+        name: 'trying to critical strike',
+        model: 'Kicking',
+        duration: animation.speedModifier(300)
+      }      
+    )
+    
+    if(this.fighting.enemyTargetedForAttack.fighting.knockedOut)
+    throw(`${this.fighting.enemyTargetedForAttack.name} is already knocked out`)
+
+    timers.start('had action recently')
+    timers.start('just did attack')
+
+    let landedAttack: boolean
+
+    const stillInRange = proximity.enemyWithinStrikingRange(enemy)
+    
+    if(stillInRange){
+      landedAttack = enemy.fighting.combat.getAttacked(this.fighting.fighter, attackType)
+    }
+    /* else
+      console.log(`*** ${fighter.name} no longer in rage to attack ${enemy.name}`); */
+
+    if(landedAttack && stillInRange){
       
-      const {animation, proximity, fighter, movement, timers, stats, spirit} = this.fighting
       
-      this.fighting.enemyTargetedForAttack = enemy
-      
-      if(isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating)
-        await movement.turnAround()
-  
+      if(spirit < stats.maxSpirit)
+        this.fighting.spirit ++  
+
+      if(attackType == 'critical strike'){
+        //if(this.fighting.energy == 5){}
+        const chanceToGoOnARampage = random(60)
+        if(chanceToGoOnARampage < (this.fighting.stats.aggression * this.fighting.spirit + (enemy.fighting.knockedOut ? 10 : 0))){
+          this.goOnRampage()
+        }
+      }
+      this.fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)
+    
+
       await animation.start(
         attackType == 'punch' && {
-          name: 'trying to punch',
+          name: 'punching',
+          sound: 'Punch',
           model: 'Punching',
-          duration: animation.speedModifier(200)
-        }
-        ||
+          duration: animation.speedModifier(700)
+        } ||
         attackType == 'critical strike' && {
-          name: 'trying to critical strike',
+          name: 'critical striking',
+          sound: 'Critical Strike',
           model: 'Kicking',
-          duration: animation.speedModifier(300)
-        }      
-      )
-      
-      if(this.fighting.enemyTargetedForAttack.fighting.knockedOut)
-      throw(`${this.fighting.enemyTargetedForAttack.name} is already knocked out`)
-  
-      timers.start('had action recently')
-      timers.start('just did attack')
-  
-      let landedAttack: boolean
-  
-      const stillInRange = proximity.enemyWithinStrikingRange(enemy)
-      
-      if(stillInRange){
-        landedAttack = enemy.fighting.combat.getAttacked(this.fighting.fighter, attackType)
-      }
-      /* else
-        console.log(`*** ${fighter.name} no longer in rage to attack ${enemy.name}`); */
-  
-      if(landedAttack && stillInRange){
-        
-        
-        if(spirit < stats.maxSpirit)
-          this.fighting.spirit ++  
-  
-        if(attackType == 'critical strike'){
-          if(this.fighting.energy == 5){}
-          const chanceToGoOnARampage = random(50)
-          if(chanceToGoOnARampage < this.fighting.stats.aggression * this.fighting.spirit){
-            proximity.trapped = false
-            timers.start('on a rampage')
-          }
+          duration: animation.speedModifier(900)
         }
-        this.fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)
-      
-  
-        await animation.start(
-          attackType == 'punch' && {
-            name: 'punching',
-            sound: 'Punch',
-            model: 'Punching',
-            duration: animation.speedModifier(700)
-          } ||
-          attackType == 'critical strike' && {
-            name: 'critical striking',
-            sound: 'Critical Strike',
-            model: 'Kicking',
-            duration: animation.speedModifier(900)
-          }
-        )
-        .then(() => animation.cooldown(
-          attackType == 'punch' && animation.speedModifier(700) ||
-          attackType == 'critical strike' && animation.speedModifier(1000)
-        ))
-      }
-      else if(!landedAttack || !stillInRange){
-        if(!landedAttack && stillInRange && this.fighting.spirit != 0)
-          this.fighting.spirit --
-  
-        await animation.start(
-          attackType == 'punch' && {
-            name: 'missed punch',
-            sound: 'Dodge',
-            model: 'Punching',
-            duration: animation.speedModifier(500)   
-          } ||
-          attackType == 'critical strike' && {
-            name: 'missed critical strike',
-            sound: 'Dodge',
-            model: 'Kicking',
-            duration: animation.speedModifier(600)
-          }
-        ).then(() => animation.cooldown(
-          attackType == 'punch' && animation.speedModifier(800) ||
-          attackType == 'critical strike' && animation.speedModifier(1100)
-        ))
-      }
-      return
+      )
+      .then(() => animation.cooldown(
+        attackType == 'punch' && animation.speedModifier(700) ||
+        attackType == 'critical strike' && animation.speedModifier(1000)
+      ))
+      .catch(x => {
+        console.log('dank', x);
+      })
     }
+    else if(!landedAttack || !stillInRange){
+      if(!landedAttack && stillInRange && this.fighting.spirit != 0)
+        this.fighting.spirit --
+
+      await animation.start(
+        attackType == 'punch' && {
+          name: 'missed punch',
+          sound: 'Dodge',
+          model: 'Punching',
+          duration: animation.speedModifier(500)   
+        } ||
+        attackType == 'critical strike' && {
+          name: 'missed critical strike',
+          sound: 'Dodge',
+          model: 'Kicking',
+          duration: animation.speedModifier(600)
+        }
+      ).then(() => animation.cooldown(
+        attackType == 'punch' && animation.speedModifier(800) ||
+        attackType == 'critical strike' && animation.speedModifier(1100)
+      ))
+      .catch(x => {
+        console.log('doink', x);
+      })
+    }
+    return
+
+  }
     
   getAttacked(enemy: Fighter, attackType: AttackType): boolean {  
 
     const {proximity, fighter, timers} = this.fighting
 
     if(proximity.isEnemyBehind(enemy)){
-      console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
+      //console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
       proximity.rememberEnemyBehind(enemy)
     }
 
@@ -150,6 +159,7 @@ export default class FighterCombat {
     if(result == 'take hit'){
       if(this.fighting.spirit != 0)
         this.fighting.spirit --
+        
     }
     else{
       if(this.fighting.spirit < this.fighting.stats.maxSpirit)
@@ -169,6 +179,13 @@ export default class FighterCombat {
         return true
     }
   }  
+
+  
+  goOnRampage() {
+    const {proximity, timers} = this.fighting
+    proximity.trapped = false
+    timers.start('on a rampage')
+  }
 
 
   async blockEnemyAttack(enemy: Fighter, attackType: AttackType): Promise<void>{
@@ -214,7 +231,7 @@ export default class FighterCombat {
 
   async takeAHit(attackType: AttackType, attackingFighter: Fighter){    
 
-    let {stamina, fighter, animation} = this.fighting
+    let {stamina, timers, animation} = this.fighting
     const {strength} = attackingFighter.fighting.stats
     
     let hitDamage = Math.round(
@@ -225,17 +242,15 @@ export default class FighterCombat {
       ) * 10
     ) / 10
 
-      this.fighting.stamina = stamina - hitDamage
+    this.fighting.stamina = stamina - hitDamage
     //console.log(`${fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
     
-    if(this.fighting.knockedOut){
-      console.error('should not be attacked when knocked out');
-      debugger
-    }
+
     if (this.fighting.stamina <= 0){
       this.fighting.knockedOut = true
       console.warn(`${this.fighting.fighter.name} has been knocked out`);
     }
+
 
     try{
       await animation.start({
@@ -249,8 +264,18 @@ export default class FighterCombat {
         return animation.cooldown(300)
       })
       .finally(() => {
-        if(this.fighting.knockedOut)
+        if(this.fighting.knockedOut){
           this.fighting.modelState = 'Knocked Out'
+        } 
+        else {
+          timers.start('had action recently')
+          timers.start('just took a hit')
+          const chanceToGoOnARampage = random(60)
+          if(chanceToGoOnARampage < (this.fighting.stats.aggression *.5 * this.fighting.spirit)){
+            this.goOnRampage()
+          }
+        }
+        
       })  
     }
     catch(reason){

@@ -7,7 +7,9 @@ import failSinisterVictoryVideo2 from 'url:./fail-sinister-victory2.mp4'
 import finalTournament from 'url:./final-tournament.mp4'
 import dominationVictory from 'url:./domination-victory.mp4'
 
-export type VideoName = 'Sinister Victory' | 'Sinister Victory Fail' | 'Wealth Victory' | 'Domination Victory' | 'Wealth Victory Fail' | 'Final Tournament'
+import defaultVictoryVideo from 'url:./default-victory.mp4'
+
+export type VideoName = 'Sinister Victory' | 'Sinister Victory Fail' | 'Wealth Victory' | 'Domination Victory' | 'Wealth Victory Fail' | 'Final Tournament' | 'Default Victory'
 
 type VideoInfo = {
   source: string,
@@ -37,7 +39,21 @@ export const getVideos = (): VideoData[] => [
     name: 'Wealth Victory',
     videos:[{
       source: wealthVictoryVideo,
-      duration: 32
+      duration: 50
+    }]
+  },
+  {
+    name: 'Wealth Victory Fail',
+    videos:[{
+      source: wealthVictoryVideo,
+      duration: 50
+    }]
+  },
+  {
+    name: 'Default Victory',
+    videos:[{
+      source: defaultVictoryVideo,
+      duration: 35
     }]
   },
   {

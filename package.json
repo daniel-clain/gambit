@@ -7,18 +7,7 @@
     "prod": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod --no-content-hash",
     "run-server": "cross-env NODE_ENV=development nodemon -q server.ts",
     "run-server-prod": "cross-env NODE_ENV=production nodemon -q server.ts",
-    "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test",
-    "dev-fightTest-serve": "webpack serve --config-name fightTest",
-    "dev-localTest-serve": "webpack serve --config-name localTest",
-    "dev-mainGame-serve": "webpack serve --config-name mainGame --hot",
-    "prod-fightTest-build": "webpack --mode=production --config-name fightTest",
-    "prod-localTest-build": "webpack --mode=production --config-name localTest",
-    "prod-mainGame-build": "webpack --mode=production --config-name mainGame",
-    "start": "npm run prod-mainGame-build & npm run prod-startServer",
-    "build-all": "run-s prod-fightTest-build prod-localTest-build prod-mainGame-build",
-    "dev-startServer-mon": "cross-env NODE_ENV=development nodemon server.ts",
-    "dev-startServer": "cross-env NODE_ENV=development nodemon server.ts",
-    "prod-startServer": "cross-env NODE_ENV=production node --max-old-space-size=30000 -r ts-node/register server.ts"
+    "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -37,8 +26,10 @@
   },
   "devDependencies": {
     "@parcel/config-default": "^2.7.0",
+    "@parcel/packager-raw-url": "2.7.0",
     "@parcel/transformer-raw": "^2.7.0",
     "@parcel/transformer-sass": "2.7.0",
+    "@parcel/transformer-webmanifest": "2.7.0",
     "@types/express": "^4.17.14",
     "@types/node": "^18.8.2",
     "@types/react": "^17.0.2",

@@ -12,7 +12,8 @@ const credentials = {key: privateKey, cert: certificate};
 
 const PORT = process.env.PORT || 9999;
 const app = express();
-const httpServer = https.createServer(credentials, app)
+//const httpServer = https.createServer(credentials, app)
+const httpServer = http.createServer(app)
 
 
 
