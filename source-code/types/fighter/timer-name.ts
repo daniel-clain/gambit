@@ -8,5 +8,4 @@ export type TimerName =
 'had action recently' |
 'memory of enemy behind' |
 'move action in progress' |
-'retreat along edge' |
-'retreat from flanked'
+'retreat between flankers'

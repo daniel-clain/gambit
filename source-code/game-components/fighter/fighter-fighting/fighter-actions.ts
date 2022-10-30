@@ -9,6 +9,7 @@ import { selectRandomResponseBasedOnProbability } from "./random-based-on-probab
 export default class FighterActions {
 
   decideActionProbability: DecideActionProbability
+  rejectCurrentAction
   
   constructor(public fighting: FighterFighting){
     this.decideActionProbability = new DecideActionProbability(fighting)
@@ -19,7 +20,9 @@ export default class FighterActions {
     const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
     const {fight, hallucinating} = fighter.state    
 
-    if(!fight || knockedOut || stopFighting) return
+    if(!fight || knockedOut || stopFighting){
+      throw('should not be trying to decide action')
+    }
     if(fight.paused) await fight.waitForUnpause()
     
     
@@ -69,61 +72,75 @@ export default class FighterActions {
 
       
     if(!decidedAction){
-      /* console.log(`${fighter.name} had no decided action, wait half a sec then decide again`); */
+      console.log(`${fighter.name} had no decided action, wait half a sec then decide again`); 
       wait(500).then(() => this.decideAction())
     }
     else {
 
       this.fighting.actionLog.unshift(decidedAction)
     
-      /* console.log(`${fighter.name}'s decided action was to ${decidedAction}, closestEnemy: ${closestEnemy ? closestEnemy.name : 'none'}`); */
+      /* console.log(`${fighter.name} decided action  ${decidedAction}`, responseProbabilities); */
 
-      /* if(decidedAction == 'retreat from flanked'){
-        console.log(`${fighter.name} retreat from flanked`, responseProbabilities);
-      }*/
-
-      
-      try{
-        switch (decidedAction) {
-          case 'punch':
-          case 'critical strike':
-            await  combat.attackEnemy(closestEnemy, decidedAction); break
-          case 'defend':
-            await combat.startDefending(closestEnemy); break
-          case 'move to attack':
-          case 'cautious retreat':
-          case 'fast retreat':
-          case 'retreat':        
-          case 'retreat from flanked':
-          case 'retreat around edge':
-          case 'reposition': 
-            await  movement.doMoveAction(closestEnemy, decidedAction); break
-          case 'recover':
-            await this.startRecovering(); break
-          case 'turn around':
-            await movement.turnAround(); break
-          case 'do nothing':
-            await this.doNothing(); break
+      if(decidedAction == 'reposition'){
+        console.log(`${fighter.name} reposition`, responseProbabilities);
+      }
+      new Promise<void>(async (resolve, reject) => {
+        this.rejectCurrentAction = reject
+        try{
+          switch (decidedAction) {
+            case 'punch':
+            case 'critical strike':
+              await combat.attackEnemy(closestEnemy, decidedAction); break
+            case 'defend':
+              await combat.startDefending(closestEnemy); break
+            case 'move to attack':
+            case 'cautious retreat':
+            case 'fast retreat':
+            case 'retreat':        
+            case 'retreat from flanked':
+            case 'retreat around edge':
+            case 'reposition': 
+              await movement.doMoveAction(closestEnemy, decidedAction); break
+            case 'recover':
+              await this.startRecovering(); break
+            case 'turn around':
+              await movement.turnAround(); break
+            case 'do nothing':
+              await this.doNothing(); break
+          }
+          resolve()
+        } catch (e){ 
+          //console.log(`${fighter.name} inner catch ${decidedAction}`, e);
         }
-        await wait(5)
-        if(logistics.allOtherFightersAreKnockedOut())
+      })
+      .then(() => {
+        if(this.fighting.animation.inProgress){            
+          console.error(`${fighter.name} completed ${decidedAction} while animation is in progress`, this.fighting.animation.inProgress);  
+        }
+      })
+      .catch((interruptPromise: Promise<void>) => {
+        console.log(`${fighter.name} interrupted during ${decidedAction}`, interruptPromise);
+        return interruptPromise
+        /* const isNormalReason = ['taking a hit', 'dodging', 'blocking'].find(expected => reason.includes(expected))
+
+        if(!isNormalReason){
+          console.log(`${fighter.name} unexpected catch during ${decidedAction}`, reason);
+        } */
+
+
+      })     
+      .finally(() => {
+        if(logistics.allOtherFightersAreKnockedOut()){
           this.fighting.modelState = 'Victory'
-
-        if(!this.fighting.animation.inProgress){
-          this.fighting.actions.decideAction()
         }
-        else{        
-          //console.log(`${this.fighting.fighter.name} did not start a new action after ${decidedAction} because ${this.fighting.animation.inProgress} is in progress`);
-
+        else if(fighter.fighting.knockedOut){          
+          this.fighting.modelState = 'Knocked Out'          
         }
-      }
-      
-      catch(reason){
-        //console.log(`${fighter.name}' ${decidedAction} was interrupted because ${reason}`);      
-      }
-
-      
-    }           
+        else {
+          this.decideAction()
+        }
+      })
+    }
   }
 
   

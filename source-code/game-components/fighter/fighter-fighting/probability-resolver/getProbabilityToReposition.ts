@@ -11,7 +11,6 @@ import { getRepositionMoveDirection, getSideRepositionSpace } from "../repositio
 
     const repositionDirection = getRepositionMoveDirection(fighter, true)
 
-
     let probability = -20
 
 

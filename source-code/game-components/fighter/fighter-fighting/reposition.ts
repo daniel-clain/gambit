@@ -29,9 +29,9 @@ export function getRepositionMoveDirection(thisFighter: Fighter, checking?: bool
 
   const {chosenSideDirection, nearbyEnemy} = choice
 
-  if(!nearbyEnemy) return
+  if(!nearbyEnemy) return chosenSideDirection
   
-  const enemyDistanceAway: number = proximity.getDistanceFromEnemyCenterPoint(nearbyEnemy)
+  const enemyDistanceAway: number = nearbyEnemy && proximity.getDistanceFromEnemyCenterPoint(nearbyEnemy)
   const directionAwayFromEnemy: Angle = proximity.getDirectionOfEnemyCenterPoint(nearbyEnemy, true)  
 
   let adjustedAngle

@@ -23,7 +23,7 @@ const fighters = [
 	new Fighter('Steve'), 
 	new Fighter('Stupid'),
 	new Fighter('Intelligent'),
-	new Fighter('Intelligent2'),
+	new Fighter('Smarty'),
 	
 	/*new Fighter('Average'),
 	new Fighter('Passive'),
@@ -103,7 +103,6 @@ s(f('Tough'), {baseStamina: 15})
 s(f('Strong'), {baseStrength: 10})
 s(f('Fit'), {baseFitness: 10})
 s(f('Intelligent'), {baseIntelligence: 10})
-s(f('Intelligent2'), {baseIntelligence: 10})
 s(f('Aggressive'), {baseAggression: 10})
 
 s(f('Stupid'), {baseIntelligence: 0})
@@ -114,6 +113,13 @@ s(f('Average'), {
 	baseFitness: 5,
 	baseIntelligence: 5,
 	baseAggression: 5
+})
+
+s(f('Smarty'), {
+	baseIntelligence: 8, 
+	baseAggression: 4, 
+	baseStrength: 4, 
+	baseFitness: 4
 })
 
 
@@ -152,32 +158,6 @@ s(f('Superman'),{
 	baseIntelligence: 10,
 	baseAggression: 10
 })
-/* 
-f('Hyper').state.hallucinating = true
-f('Hyper').state.sick = true
-f('Hyper').state.injured = true
-
- */
-
-
-s(f('test1'),{
-	baseStrength: 0,
-	baseFitness: 10,
-	baseIntelligence: 10,
-	baseAggression: 0
-})
-s(f('test2'),{
-	baseStrength: 0,
-	baseFitness: 10,
-	baseIntelligence: 10,
-	baseAggression: 0
-})
-
-
-
-
-
-
 
 
 

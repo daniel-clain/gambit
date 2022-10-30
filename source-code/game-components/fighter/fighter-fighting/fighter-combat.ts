@@ -55,6 +55,10 @@ export default class FighterCombat {
         duration: animation.speedModifier(300)
       }      
     )
+    .catch(e => {
+      console.log(`${this.fighting.fighter.name} preAttack promise catch`, e);
+      throw(e)
+    })
     
     if(this.fighting.enemyTargetedForAttack.fighting.knockedOut)
     throw(`${this.fighting.enemyTargetedForAttack.name} is already knocked out`)
@@ -106,8 +110,9 @@ export default class FighterCombat {
         attackType == 'punch' && animation.speedModifier(700) ||
         attackType == 'critical strike' && animation.speedModifier(1000)
       ))
-      .catch(x => {
-        console.log('dank', x);
+      .catch(e => {
+        console.log(`${this.fighting.fighter.name} postAttack hit promise catch`, e);
+        throw(e)
       })
     }
     else if(!landedAttack || !stillInRange){
@@ -131,8 +136,9 @@ export default class FighterCombat {
         attackType == 'punch' && animation.speedModifier(800) ||
         attackType == 'critical strike' && animation.speedModifier(1100)
       ))
-      .catch(x => {
-        console.log('doink', x);
+      .catch(e => {
+        console.log(`${this.fighting.fighter.name} postAttack miss promise catch`, e);
+        throw(e)
       })
     }
     return
@@ -188,48 +194,44 @@ export default class FighterCombat {
   }
 
 
-  async blockEnemyAttack(enemy: Fighter, attackType: AttackType): Promise<void>{
+  blockEnemyAttack(enemy: Fighter, attackType: AttackType){
     const {animation, fighter, timers} = this.fighting
     timers.start('just blocked')
     //console.log(`${fighter.name} blocked ${enemy.name}'s ${attackType}`);
-    try{
-      await animation.start({
-        name: 'blocking',
-        model: 'Blocking',
-        sound: 'Block',
-        duration: animation.speedModifier(700)
-      })
-      .then(() => animation.cooldown(animation.speedModifier(300)))
-    }
-    catch(reason){
-      //console.log(`${fighter.name}'s block was interrupted because ${reason}`);
-      return
-    }
-    this.fighting.actions.decideAction()
+    const interruptPromise = animation.start({
+      name: 'blocking',
+      model: 'Blocking',
+      sound: 'Block',
+      duration: animation.speedModifier(700)
+    })
+    .then(() => animation.cooldown(animation.speedModifier(300)))
+    .catch(e => {
+      console.log(`${this.fighting.fighter.name} blockEnemyAttack promise catch`, e);
+      throw(e)
+    })
+    this.fighting.actions.rejectCurrentAction(interruptPromise)
   }
 
 
-  async dodgeEnemyAttack(enemy: Fighter, attackType: AttackType): Promise<void>{
+  dodgeEnemyAttack(enemy: Fighter, attackType: AttackType){
     const {animation, fighter, timers} = this.fighting
     timers.start('just dodged')
     //console.log(`${fighter.name} dodged ${enemy.name}'s ${attackType}`); 
-    try{
-      await animation.start({
-        name: 'dodging',
-        duration: animation.speedModifier(600),
-        model: 'Dodging'
-      })
-      .then(() => animation.cooldown(animation.speedModifier(200)))
-    }
-    catch(reason){
-      //console.log(`${fighter.name}'s dodge was interrupted because ${reason}`);
-      return
-    }
-    this.fighting.actions.decideAction()
+    const interruptPromise = animation.start({
+      name: 'dodging',
+      duration: animation.speedModifier(600),
+      model: 'Dodging'
+    })
+    .then(() => animation.cooldown(animation.speedModifier(200)))
+    .catch(e => {
+      console.log(`${this.fighting.fighter.name} dodgeEnemyAttack promise catch`, e);
+      throw(e)
+    })
+    this.fighting.actions.rejectCurrentAction(interruptPromise)
   }
 
 
-  async takeAHit(attackType: AttackType, attackingFighter: Fighter){    
+  takeAHit(attackType: AttackType, attackingFighter: Fighter){
 
     let {stamina, timers, animation} = this.fighting
     const {strength} = attackingFighter.fighting.stats
@@ -243,47 +245,38 @@ export default class FighterCombat {
     ) / 10
 
     this.fighting.stamina = stamina - hitDamage
-    //console.log(`${fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
+    console.log(`${this.fighting.fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
     
 
     if (this.fighting.stamina <= 0){
       this.fighting.knockedOut = true
       console.warn(`${this.fighting.fighter.name} has been knocked out`);
+    }  
+    if(!this.fighting.knockedOut){
+      timers.start('had action recently')
+      timers.start('just took a hit')
+      const chanceToGoOnARampage = random(60)
+      if(chanceToGoOnARampage < (this.fighting.stats.aggression *.5 * this.fighting.spirit)){
+        this.goOnRampage()
+      }
     }
 
 
-    try{
-      await animation.start({
-        name: 'taking a hit',
-        duration: animation.speedModifier(800),
-        model: 'Taking Hit'
-      })
-      .then(() => {
-        if(this.fighting.knockedOut)
-          return
-        return animation.cooldown(300)
-      })
-      .finally(() => {
-        if(this.fighting.knockedOut){
-          this.fighting.modelState = 'Knocked Out'
-        } 
-        else {
-          timers.start('had action recently')
-          timers.start('just took a hit')
-          const chanceToGoOnARampage = random(60)
-          if(chanceToGoOnARampage < (this.fighting.stats.aggression *.5 * this.fighting.spirit)){
-            this.goOnRampage()
-          }
-        }
-        
-      })  
-    }
-    catch(reason){
-      //console.log(`${fighter.name}'s take hit was interrupted because ${reason}`);
-      return
-    }
-
-    this.fighting.actions.decideAction()
+    const interruptPromise = animation.start({
+      name: 'taking a hit',
+      duration: animation.speedModifier(800),
+      model: 'Taking Hit'
+    })
+    .then(() => {
+      if(this.fighting.knockedOut)
+        return
+      return animation.cooldown(300)
+    })
+    .catch(e => {
+      console.log(`${this.fighting.fighter.name} takeAHit promise catch`, e);
+      throw(e)
+    })
+    this.fighting.actions.rejectCurrentAction(interruptPromise)
   }
 
 };

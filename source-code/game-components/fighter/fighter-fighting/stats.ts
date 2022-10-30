@@ -61,9 +61,9 @@ export default class FighterStats {
     const speed = Math.round(
       2 + 
       (sick ? -5 : 0) +
-      this.aggression*.5 + 
+      this.aggression*.3 + 
       -this.strength*.3 + 
-      this.fitness*.9
+      this.fitness*.7
     )
     if(!onARampage && takingADive) return speed * .5
     if(speed < 0) return 0

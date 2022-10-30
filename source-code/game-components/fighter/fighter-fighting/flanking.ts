@@ -1,7 +1,6 @@
 import FighterFighting from "./fighter-fighting";
 import { random, getDirectionOfPosition2FromPosition1, getSmallestAngleBetween2Directions, getOppositeDirection } from "../../../helper-functions/helper-functions";
 import Fighter from "../fighter";
-import { getDistanceOfEnemyStrikingCenter, closeRange, nearbyRange, getDirectionOfEnemyStrikingCenter } from "./proximity";
 import { octagon } from "../../abilities-general/fight/new-octagon";
 import { Angle } from "../../../types/game/angle";
 import { Closeness } from "../../../types/fighter/closeness";
@@ -47,7 +46,7 @@ export default class Flanking {
     }
 
     if(
-      inFrontCloseness <= Closeness['close'] && 
+      inFrontCloseness == Closeness['close'] && 
       behindCloseness == Closeness['nearby']
     ){
       proximity.flanked.severityRating = 4
@@ -59,7 +58,7 @@ export default class Flanking {
 
     if(
       inFrontCloseness == Closeness['nearby'] && 
-      behindCloseness <= Closeness['close']
+      behindCloseness == Closeness['close']
     ){
       proximity.flanked.severityRating += 4
       if(inFrontAttacking)
@@ -69,8 +68,8 @@ export default class Flanking {
     }
 
     if(
-      inFrontCloseness <= Closeness['close'] || 
-      behindCloseness <= Closeness['close']
+      inFrontCloseness == Closeness['close'] || 
+      behindCloseness == Closeness['close']
     ){
       proximity.flanked.severityRating += 6 + stats.intelligence
       if(inFrontAttacking)
@@ -85,8 +84,8 @@ export default class Flanking {
   getRetreatFromFlankedDirection(): number{
   
     const {proximity, fighter, movement, logistics} = this.fighting
-    if(logistics.retreatFromFlankedDirection){
-      return logistics.retreatFromFlankedDirection
+    if(logistics.retreatBetweenFlankersDirection){
+      return logistics.retreatBetweenFlankersDirection
     }
     const {flankingFighters} = proximity.flanked
 
@@ -100,8 +99,8 @@ export default class Flanking {
 
     if(directionTowardNearEdge){
       
-      const closeness1 = proximity.getEnemyCombatCloseness(fighter1)
-      const closeness2 = proximity.getEnemyCombatCloseness(fighter2)
+      const closeness1 = proximity.getClosenessBasedOnDistance(fighter1)
+      const closeness2 = proximity.getClosenessBasedOnDistance(fighter2)
       const fighter1Attacking = logistics.enemyAttackingThisFighter(fighter1)
       const fighter2Attacking = logistics.enemyAttackingThisFighter(fighter2)
       if(
@@ -110,14 +109,15 @@ export default class Flanking {
         fighter1Attacking && fighter2Attacking
       ){
         proximity.trapped = true
+        console.log(`${fighter.name} flanked trapped`);
         this.fighting.timers.start('on a rampage')
       }
       else {
         directionAwayFrom2Enemies = getOppositeDirection(directionAwayFrom2Enemies)
+        this.fighting.logistics.retreatBetweenFlankersDirection = directionAwayFrom2Enemies
+        this.fighting.timers.start('retreat between flankers')
       }
     }
-    this.fighting.logistics.retreatFromFlankedDirection = directionAwayFrom2Enemies
-    this.fighting.timers.start('retreat from flanked')
     return directionAwayFrom2Enemies
 
 
@@ -126,10 +126,11 @@ export default class Flanking {
 
     
   function getDirectionAwayFrom2Enemies(enemy1: Fighter, enemy2: Fighter){
-    const awayFromEnemy1 = getDirectionOfEnemyStrikingCenter(enemy1, fighter, true)
-    const awayFromEnemy2 = getDirectionOfEnemyStrikingCenter(enemy2, fighter, true)
+    const awayFromEnemy1 = proximity.getDirectionOfEnemyCenterPoint(enemy1, true)
+    const awayFromEnemy2 = proximity.getDirectionOfEnemyCenterPoint(enemy2, true)
     const {smallestAngle, crosses0} = getSmallestAngleBetween2Directions(awayFromEnemy1, awayFromEnemy2)
 
+    
     const {biggest, smallest} = awayFromEnemy1 > awayFromEnemy2 ? {biggest: awayFromEnemy1, smallest: awayFromEnemy2} : { biggest: awayFromEnemy2, smallest: awayFromEnemy1}
 
 
@@ -147,6 +148,7 @@ export default class Flanking {
       directionAway = biggest - (smallestAngle * .5)
     }
     return directionAway
+
   }
 
   function isDirectionTowardNearEdge(directionAwayFrom2Enemies: number): boolean{
@@ -154,7 +156,7 @@ export default class Flanking {
     return edges.some(e => {
       const closestPointOnEdge = octagon.getClosestCoordsOnAnEdgeFromAPoint(e.edgeName, movement.coords)
       const directionOfEdge = getDirectionOfPosition2FromPosition1(movement.coords, closestPointOnEdge)
-      const directionTowardEdge = proximity.isDirectionWithinDegreesOfDirection(directionOfEdge, 45, directionAwayFrom2Enemies) 
+      const directionTowardEdge = proximity.isDirectionWithinDegreesOfDirection(directionAwayFrom2Enemies, 180, directionOfEdge) 
       return directionTowardEdge
     })
   }

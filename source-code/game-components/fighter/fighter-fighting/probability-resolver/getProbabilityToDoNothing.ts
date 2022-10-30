@@ -11,7 +11,7 @@ export const getProbabilityToDoNothing = (fighting: FighterFighting): number => 
   )
     return 0
 
-  let probability = 30
+  let probability = 20
   
   probability -= aggression * 3
 

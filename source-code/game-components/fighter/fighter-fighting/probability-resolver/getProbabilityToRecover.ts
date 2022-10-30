@@ -193,8 +193,6 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   
   if (probability < 0)
     probability = 0
-  
-  console.log(fighter.name + ' recover ' + probability)
 
   return probability
 
@@ -203,7 +201,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   /* functions */
 
   function inFrontFarAndBehindFar(){
-    console.log('inFrontFarAndBehindFar');
+    //console.log('inFrontFarAndBehindFar');
     if (lowStamina)
       probability += 6 + intelligence * 2
   
@@ -224,7 +222,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
 
   function inFrontNearAndBehindFar(){
-    console.log('inFrontNearAndBehindFar');
+    //console.log('inFrontNearAndBehindFar');
     if (lowStamina)
       probability += 4 + intelligence
   
@@ -249,7 +247,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
 
   function inFrontCloseAndBehindFar(){
-    console.log('inFrontCloseAndBehindFar');
+    //console.log('inFrontCloseAndBehindFar');
     if (lowStamina)
       probability += 2 - intelligence * 2
   
@@ -270,13 +268,13 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
 
   function inFrontFarAndBehindNear(){
-    console.log('inFrontFarAndBehindNear');
+    //console.log('inFrontFarAndBehindNear');
 
     if (lowStamina)
-      probability += 6
+      probability += 2
   
     if (lowSpirit)
-      probability += 6
+      probability += 2
 
     
     if(hasRetreatOpportunityFromBehind){   
@@ -302,12 +300,12 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontNearAndBehindNear(){
-    console.log('inFrontNearAndBehindNear');
-
+    //console.log('inFrontNearAndBehindNear');
+    probability -= intelligence * 2
     if (lowStamina)
-      probability += 4
+      probability += 2
     if (lowSpirit)
-      probability += 4
+      probability += 2
 
     if(!hasRetreatOpportunityFromInFront){
       probability -= intelligence * 2
@@ -349,7 +347,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontCloseAndBehindNear(){
-    console.log('inFrontCloseAndBehindNear');
+    //console.log('inFrontCloseAndBehindNear');
     probability -= 4 + intelligence * 2
 
     if(!hasRetreatOpportunityFromInFront){
@@ -377,8 +375,8 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
 
   function inFrontFarAndBehindClose(){
-    console.log('inFrontFarAndBehindClose');
-    probability -= intelligence * 3
+    //console.log('inFrontFarAndBehindClose');
+    probability -= 4 + intelligence * 3
 
     if (lowStamina)
       probability += 2
@@ -403,13 +401,13 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontNearAndBehindClose(){
-    console.log('inFrontNearAndBehindClose');
+    //console.log('inFrontNearAndBehindClose');
     
-    probability -= intelligence * 3
+    probability -= 4 + intelligence * 3
 
 
     if(!hasRetreatOpportunityFromInFront)
-      probability -= intelligence *2
+      probability -= intelligence * 2
 
     if(!hasRetreatOpportunityFromBehind)
       probability -= intelligence * 2
@@ -424,9 +422,9 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontCloseAndBehindClose(){
-    console.log('inFrontCloseAndBehindClose');
+    //console.log('inFrontCloseAndBehindClose');
 
-    probability -= 4 + intelligence * 4
+    probability -= 6 + intelligence * 4
 
 
     if(!hasRetreatOpportunityFromInFront)
@@ -447,7 +445,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
 
   function inFrontFar(){
-    console.log('inFrontFar');
+    //console.log('inFrontFar');
     probability += 6 + intelligence * 2
     if (lowStamina)
       probability += 6 + intelligence * 2
@@ -466,7 +464,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontNear(){
-    console.log('inFrontNear');
+    //console.log('inFrontNear');
     if (lowStamina)
       probability += 6 + intelligence * 2
 
@@ -484,7 +482,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontClose(){
-    console.log('inFrontClose');
+    //console.log('inFrontClose');
     probability -= intelligence * 2
     if (lowStamina)
       probability += 2
@@ -498,12 +496,12 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   }
 
   function behindFar(){
-    console.log('behindFar');
-    probability += 4 + intelligence * 2
+    //console.log('behindFar');
+    probability += 2 + intelligence * 2
     if (lowStamina)
-      probability += 4 + intelligence * 2
+      probability += 2 + intelligence * 2
     if (lowSpirit)
-      probability += 4 + intelligence * 2
+      probability += 2 + intelligence * 2
 
     if(hasRetreatOpportunityFromBehind){
       if (notFullStamina)
@@ -515,12 +513,12 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function behindNear(){
-    console.log('behindNear');
-    probability += 2 - intelligence
+    //console.log('behindNear');
+    probability -= 2 + intelligence
     if (lowStamina)
-      probability += 2 - intelligence
+      probability -= 2 + intelligence
     if (lowSpirit)
-      probability += 2 - intelligence
+      probability -= 2 + intelligence
 
     if(hasRetreatOpportunityFromBehind){
       if (lowStamina)
@@ -540,8 +538,8 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function behindClose(){
-    console.log('behindClose');
-    probability -= 4 + intelligence * 4
+    //console.log('behindClose');
+    probability -= 6 + intelligence * 4
     
     if(!hasRetreatOpportunityFromBehind){
       probability -= 2 + intelligence * 4
@@ -550,24 +548,24 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   
   function inFrontFarAndDontKnowBehind(){
-    console.log('inFrontFarAndDontKnowBehind');
-    probability += 6 - intelligence * 2
+    //console.log('inFrontFarAndDontKnowBehind');
+    probability += 6 - intelligence * 4
     if (lowStamina)
-      probability += 6 - intelligence * 2
+      probability += 6 - intelligence * 4
 
     if (lowSpirit)
-      probability += 6 - intelligence * 2
+      probability += 6 - intelligence * 4
 
     if (notFullStamina)
-      probability += 2 - intelligence * 3
+      probability += 2 - intelligence * 4
 
     if (notFullSpirit)
-      probability += 2 - intelligence * 3
+      probability += 2 - intelligence * 4
 
     if(hasRetreatOpportunityFromInFront)
-      probability += 2 - intelligence * 2
+      probability += 2 - intelligence * 4
     else
-      probability -= intelligence * 2
+      probability -= intelligence * 4
 
       
     if(inFrontOnRampage)
@@ -575,73 +573,73 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     
   }
   function inFrontNearAndDontKnowBehind(){
-    console.log('inFrontNearAndDontKnowBehind');
-    probability += 4 - intelligence * 3
+    //console.log('inFrontNearAndDontKnowBehind');
+    probability += 4 - intelligence * 5
     if (lowStamina)
-      probability += 4 - intelligence * 3
+      probability += 4 - intelligence * 5
 
     if (lowSpirit)
-      probability += 4 - intelligence * 3
+      probability += 4 - intelligence * 5
 
 
     if(hasRetreatOpportunityFromInFront)
-      probability += 2 - intelligence * 3
+      probability += 2 - intelligence * 5
     else
-      probability -= intelligence * 4
+      probability -= intelligence * 5
 
     if(inFrontOnRampage)
-      probability -= intelligence * 2
+      probability -= intelligence * 5
     
   }
   function inFrontCloseAndDontKnowBehind(){
-    console.log('inFrontCloseAndDontKnowBehind');
-    probability -= 4 + intelligence * 4
+    //console.log('inFrontCloseAndDontKnowBehind');
+    probability -= 4 + intelligence * 8
     if(inFrontOnRampage)
-      probability -= intelligence * 3
+      probability -= intelligence * 6
     
   }
   function inFrontStrikingAndDontKnowBehind(){
-    console.log('inFrontStrikingAndDontKnowBehind')
-    probability -= 4 + intelligence * 6
+    //console.log('inFrontStrikingAndDontKnowBehind')
+    probability -= 4 + intelligence * 10
   }
 
   function inFrontStriking(){
-    console.log('inFrontStriking')
+    //console.log('inFrontStriking')
     probability -= 6
   }
   function inFrontStrikingAndBehindFar(){
-    console.log('inFrontStrikingAndBehindFar')
-    probability -= 7 + intelligence
+    //console.log('inFrontStrikingAndBehindFar')
+    probability -= 7 + intelligence * 2
   }
   function inFrontStrikingAndBehindNear(){
-    console.log('inFrontStrikingAndBehindNear')
-    probability -= 8 + intelligence * 2
+    //console.log('inFrontStrikingAndBehindNear')
+    probability -= 8 + intelligence * 4
   }
   function inFrontStrikingAndBehindClose(){
-    console.log('inFrontStrikingAndBehindClose')
-    probability -= 9 + intelligence * 3
+    //console.log('inFrontStrikingAndBehindClose')
+    probability -= 9 + intelligence * 6
   }
 
   function behindStriking(){
-    console.log('behindStriking')
+    //console.log('behindStriking')
     probability -= 5 + intelligence
   }
   function inFrontFarAndBehindStriking(){
-    console.log('inFrontFarAndBehindStriking')
-    probability -= 6 + intelligence * 2
+    //console.log('inFrontFarAndBehindStriking')
+    probability -= 6 + intelligence * 6
   }
   function inFrontNearAndBehindStriking(){
-    console.log('inFrontNearAndBehindStriking')
-    probability -= 7 + intelligence * 3
+    //console.log('inFrontNearAndBehindStriking')
+    probability -= 7 + intelligence * 6
   }
   function inFrontCloseAndBehindStriking(){
-    console.log('inFrontCloseAndBehindStriking')
-    probability -= 8 + intelligence * 4
+    //console.log('inFrontCloseAndBehindStriking')
+    probability -= 8 + intelligence * 6
   }
 
   function inFrontStrikingAndBehindStriking(){
-    console.log('inFrontStrikingAndBehindStriking')
-    probability -= 10 + intelligence * 6
+    //console.log('inFrontStrikingAndBehindStriking')
+    probability -= 10 + intelligence * 10
   }
   
 }

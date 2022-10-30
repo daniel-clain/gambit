@@ -11,15 +11,14 @@ import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetre
     const enemy = proximity.getClosestRememberedEnemy()
     const enemyCloseness = proximity.getEnemyCombatCloseness(enemy)
 
-    const nearestEdge = proximity.getNearestEdge()
 
 
     const invalid: boolean =      
       logistics.onARampage || 
-      !nearestEdge ||
+      !movement.againstEdge ||
       proximity.trapped
       
-
+    
     if (invalid)
       return 0
 

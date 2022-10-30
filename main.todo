@@ -1,13 +1,14 @@
 
 Deal Breakers:
-  ☐ but when fighter is in corner, 
-    - they should move along furthest edge, but instead they move back toward fighter
-    - i removed code to lock in their decision cos it was causing them to run through fighters. should be able to sold this without this hack
-    - they start going the right direction, why do they change back to the wrong direcction
+  ☐ promises not handled when if they take a hit while taking a hit
+  ☐ retreat from flanked direction weighted based of how close each flanking fighter is
+    - if if flanker 1 is rly close, and flanker 2 is rly far, then direction should be much more based on flanker1 than 2
+  ☐ fighter that has memory of behind, and then that fighter gets knocked out, fighter will still act like firgher is still fighting, this is ok, but it could cause bugs for deciding action 
+  ☐ when attacking at retreating fighter, instead of missing 100% shots, chance to land shot based on speed of each fighter
+ 
   ☐ money buggy
     - some times it seems fine, test large quantity of players or money to see if that is the cause
     - fix falling money, high numbers should be money bags instead
-  ☐ when fighter moves past another fighter horizontally, the values for fighers infront and memory of fighter behind is wrong
   ☐ wealth victory video is fucked, change it
   - new wealth victory video more about using money to crush all opponents rather than court cases
   ☐ if game display is on, 
@@ -16,9 +17,6 @@ Deal Breakers:
     - the plyer can toggle to show regular fight view incase theyre remote
     - when toggle fight view on, sound will be off by default, and you can toggle sound on (want to avoid multiple device playing fight sound when in the same place as the game display)
   ☐ fix fighter selection, should be propper random
-  ☐ now that screen is set to 'fullscreen' in manifest, no need for screen height reduction
-    - was reduced cos height was taken up by browser bar
-  ☐ info boxes should have vertical gap
 
 
 Priority:
@@ -152,9 +150,16 @@ ideas:
 
 Big wins (to remember my achievements):
   
+✔ when fighters trying to get direction of fight center, if too close, the number are reversed and it bugs @done(22-10-30 20:15)
+  - detect if too close and handle differently
+✔ bug when fighter is in corner, @done(22-10-30 20:14)
+  - they should move along furthest edge, but instead they move back toward fighter
+  - i removed code to lock in their decision cos it was causing them to run through fighters. should be able to sold this without this hack
+  - they start going the right direction, why do they change back to the wrong direcction
+✔ when fighter moves past another fighter horizontally, the values for fighers infront and memory of fighter behind is wrong @done(22-10-30 20:14)
 ✔ your fighter has take a dive ability @done(22-10-28 00:57)
 ✔ flanked reatreat into wall untill cornered @done(22-10-28 00:56)
-    - instead, if fighters are farther than close, and edge is close, then take 2nd angle between fighters
+  - instead, if fighters are farther than close, and edge is close, then take 2nd angle between fighters
 ✔ redo test server code. if server resets, reset client D @done(22-10-23 15:07)
 ✔ ssl cert so that no browser headbar @done(22-10-18 13:03)
 ✔ End game stats @done(22-10-18 09:34)
@@ -165,5 +170,5 @@ Big wins (to remember my achievements):
 ✔ final tournament @done(21-11-20 21:54)
 ✔ more time for late game, and more players @done(22-10-28 00:56)
 ✔ easy to change name @done(22-10-28 16:42)
-- easy way to change between player and game dispaly, 
+  - easy way to change between player and game dispaly, 
 

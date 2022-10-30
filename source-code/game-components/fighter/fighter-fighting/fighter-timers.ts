@@ -97,19 +97,16 @@ export default class FighterTimers {
         duration = 2000 
         afterEffect = () => movement.moveActionInProgress = undefined
       }; break
-      case 'retreat from flanked': {        
+      case 'retreat between flankers': {        
         duration = 1000 
-        afterEffect = () => logistics.retreatFromFlankedDirection = undefined
-      }; break
-      case 'retreat along edge': {        
-        duration = 1000 
-        afterEffect = () => logistics.retreatFromFlankedDirection = undefined
+        afterEffect = () => {
+          logistics.retreatBetweenFlankersDirection = undefined
+        }
       }; break
       
       case 'memory of enemy behind': {
         duration = 3000
         afterEffect = () => {
-          console.log(`${fighter.name} forgetting whose behind`);
           this.fighting.rememberedEnemyBehind = undefined          
           proximity.flanked = undefined
         }

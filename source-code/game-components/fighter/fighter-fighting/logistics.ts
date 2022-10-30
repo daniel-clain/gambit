@@ -13,11 +13,9 @@ export default class Logistics {
   justBlocked: boolean
   justDodged: boolean
   justTookHit: boolean
-  private _onARampage: boolean
   memoryOfEnemyBehind: Fighter
   moveActionInProgress: MoveAction
-  directionAlongEdge: number
-  retreatFromFlankedDirection: number
+  retreatBetweenFlankersDirection: number
 
 
   constructor(public fighting: FighterFighting){}

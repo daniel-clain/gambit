@@ -14,6 +14,8 @@ import Logistics from "./logistics";
 import FighterCombat from "./fighter-combat";
 import FighterFightState from "../../../interfaces/front-end-state-interface";
 import gameConfiguration from "../../../game-settings/game-configuration";
+import Coords from "../../../interfaces/game/fighter/coords";
+
 
 export default class FighterFighting {
 

@@ -16,7 +16,8 @@ export const getProbabilityToCautiousRetreat = (fighting: FighterFighting): numb
     !!proximity.getNearestEdge() ||       
     logistics.onARampage ||
     logistics.hasFullStamina() ||
-    movement.moveActionInProgress == 'reposition'
+    movement.moveActionInProgress == 'reposition' ||
+    !!proximity.inCornerOfEdges
 
   if (invalid)
     return 0

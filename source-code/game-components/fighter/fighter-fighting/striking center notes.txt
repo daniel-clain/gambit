@@ -1,0 +1,15 @@
+problem
+=========
+* if too close, striking center is buggy
+
+details
+=============
+
+* if attacking, fighter wants to move to closest coords that make his front striking area enter the enemies closest front or back striking area
+
+* if retreating, striking center may not be appropriate basis, if switched to coords, what would be the side effect?
+
+
+* what happens if enemy is against a wall, and attacker is trying to move to coords out of bounds
+  - if not possible to get to get within closest striking area, move to attack other striking area
+
