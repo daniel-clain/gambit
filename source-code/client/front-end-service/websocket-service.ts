@@ -1,10 +1,8 @@
-import { Subject } from "rxjs";
 import io from 'socket.io-client'
-import { FrontToBackInterface } from "../../interfaces/front-to-back-interface.interface";
 import { ServerGameUIState, ServerPreGameUIState } from "../../interfaces/front-end-state-interface";
 import { runInAction } from "mobx";
 import { frontEndState } from "../front-end-state/front-end-state";
-import { connectToGameHost, resetClient } from "./front-end-service";
+import { connectToGameHost } from "./front-end-service";
 
 
 let socket: SocketIOClient.Socket
@@ -40,7 +38,7 @@ const clientToGameFunctions = {
 }  
 
 
-export const websocketService: FrontToBackInterface = {
+export const websocketService = {
   init(){
     const env = process.env.NODE_ENV
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)

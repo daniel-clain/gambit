@@ -1,0 +1,7 @@
+* Game has list of job seekers
+* Every week, week controller picks random job seekers to be available
+* a manager can offer a job seeker a contract
+* if the job seeker accepts the contract, he becomes the managers employee
+* a manager has knowledge of existing fighters and some of their info
+* there is an ability 'research fighter' that can be used by manager, talent scout employee, or private investigation employee
+* research fighter works by targeting a known fighter and having chance of learing data on that fighter

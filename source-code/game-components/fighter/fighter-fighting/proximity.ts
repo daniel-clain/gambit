@@ -9,7 +9,7 @@ import { defaultSkinModelImages } from "../../../client/images/fight-view/fighte
 import { muscleSkinModelImages } from "../../../client/images/fight-view/fighter/muscle-skin/muscle-skin-model-images"
 import { fastSkinModelImages } from "../../../client/images/fight-view/fighter/fast-skin/fast-skin-model-images"
 import { Edge } from "../../../interfaces/game/fighter/edge"
-import { octagon } from "../../abilities-general/fight/new-octagon"
+import { octagon } from "../../fight/octagon"
 import { Angle } from "../../../types/game/angle"
 import { Closeness } from "../../../types/fighter/closeness"
 import FighterModelState from "../../../types/fighter/fighter-model-states"
@@ -153,7 +153,7 @@ export default class Proximity {
     const behindEnemyDistance = this.getDistanceFromEnemyCenterPoint(enemyBehind)
     
     const closestEnemy =  inFrontEnemyDistance < behindEnemyDistance ? closestEnemyInFront : enemyBehind
-    if(closestEnemy.fighting.knockedOut){
+    if(!closestEnemy){
       debugger
     }
     return closestEnemy

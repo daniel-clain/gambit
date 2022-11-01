@@ -2,7 +2,7 @@ import { getSmallestAngleBetween2Directions, validateAngle, getDirectionOfPositi
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 import { Closeness } from "../../../types/fighter/closeness";
 import { Angle } from "../../../types/game/angle";
-import { octagon } from "../../abilities-general/fight/new-octagon";
+import { octagon } from "../../fight/octagon";
 import Fighter from "../fighter";
 import FighterFighting from "./fighter-fighting";
 import { closeRange, farRange, getDirectionOfEnemyStrikingCenter, getDistanceOfEnemyStrikingCenter, nearbyRange, strikingRange } from "./proximity";

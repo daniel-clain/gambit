@@ -3,7 +3,7 @@ import gameConfiguration from "../../game-settings/game-configuration";
 import { shuffle, random, percentageChance } from "../../helper-functions/helper-functions";
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
-import Fight from "../abilities-general/fight/fight";
+import Fight from "../fight/fight";
 import { Manager } from "../manager";
 import { JobSeeker, FighterInfo } from "../../interfaces/front-end-state-interface";
 import { Game } from "../game";

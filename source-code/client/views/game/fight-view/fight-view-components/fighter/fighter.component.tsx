@@ -29,7 +29,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		block: blockSound    
 	}
 
-	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, energy, repositioning, direction, trapped, againstEdge} = fighterFightState
+	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, energy, repositioning, direction} = fighterFightState
 
 	const soundsToPlay = soundsMade.reduce((soundsToPlay, soundMade) => {
 		if(processedSounds.some(sound => sound.time == soundMade.time))
@@ -142,7 +142,6 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 			</div>
 			{retreatingFromFlanked && <div className='fighter__flanked' style={flankedStyle}></div>}
 			{repositioning && <div className='fighter__repositioning' style={repositioningStyle}></div>}
-			{trapped && <div className='fighter__trapped' style={trappedStyle}></div>}
 			
 			<div className='fighter__direction' style={directionStyle}></div>
 			<div 

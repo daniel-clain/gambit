@@ -16,7 +16,8 @@ import { getProbabilityToRetreatFromFlanked } from "./probability-resolver/getPr
 import { getProbabilityToDoNothing } from "./probability-resolver/getProbabilityToDoNothing"
 
 export default class DecideActionProbability {
-
+  includeLogs = true
+  logs = []
   constructor(public fighting: FighterFighting) { }
 
   getProbabilityTo(action: ActionName): [ActionName, number] {
@@ -47,6 +48,18 @@ export default class DecideActionProbability {
         return [action, getProbabilityToRecover(this.fighting)]
       case 'turn around':
         return [action, getProbabilityToCheckFlank(this.fighting)]
+    }
+  }
+
+  logInstance(name: ActionName){
+    let instance = {
+      name,
+      entries:[]
+    }
+    this.includeLogs && this.logs.unshift(instance)
+    return (...entryItems) => {
+      this.includeLogs &&
+      instance.entries.unshift(entryItems)
     }
   }
 }

@@ -44,7 +44,8 @@ import { getRepositionMoveDirection, getSideRepositionSpace } from "../repositio
       }
       else return 0
     }
-    probability += intelligence * 20
+    probability += intelligence * 6
+    probability -= intelligence * 2
 
     
     

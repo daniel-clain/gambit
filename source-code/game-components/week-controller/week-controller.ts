@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import Fight from '../abilities-general/fight/fight';
+import Fight from '../fight/fight';
 import ManagerOptionsStage from './stages/manager-options-stage';
 import PreFightNewsStage from './stages/pre-fight-news-stage';
 import IStage from '../../interfaces/game/stage';

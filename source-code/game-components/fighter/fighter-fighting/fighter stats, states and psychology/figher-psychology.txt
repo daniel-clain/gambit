@@ -1,3 +1,0 @@
-* fighter will respond to the closest enemy, unless he doesnt see the enemy behind him
-* after 3 seconds, a fighter will forget who is behind him
-* if a fighter doesnt know whose behind him, he will have a chance to check behind him (scales off int), unless all remaining fighters in the fight are inFront of him

@@ -1,6 +1,6 @@
 
 import { runInAction } from 'mobx';
-import Fight from '../../../game-components/abilities-general/fight/fight';
+import Fight from '../../../game-components/fight/fight';
 import Fighter from '../../../game-components/fighter/fighter';
 import gameConfiguration from '../../../game-settings/game-configuration';
 import { shuffle } from '../../../helper-functions/helper-functions';
@@ -23,9 +23,8 @@ const fighters = [
 	new Fighter('Steve'), 
 	new Fighter('Stupid'),
 	new Fighter('Intelligent'),
-	new Fighter('Smarty'),
 	
-	/*new Fighter('Average'),
+	new Fighter('Average'),
 	new Fighter('Passive'),
 	new Fighter('Hyper'),
 	new Fighter('Tough'),
@@ -35,7 +34,7 @@ const fighters = [
 	new Fighter('Strong'),
 	new Fighter('Aggressive'),
 	new Fighter('Crafty'),
-	*/
+	/**/
 ]
 
 
@@ -113,13 +112,6 @@ s(f('Average'), {
 	baseFitness: 5,
 	baseIntelligence: 5,
 	baseAggression: 5
-})
-
-s(f('Smarty'), {
-	baseIntelligence: 8, 
-	baseAggression: 4, 
-	baseStrength: 4, 
-	baseFitness: 4
 })
 
 

@@ -1,6 +1,6 @@
 import { wait } from "../../../helper-functions/helper-functions";
 import { FighterInfo, FinalTournamentBoard } from "../../../interfaces/front-end-state-interface";
-import Fight from "../../abilities-general/fight/fight";
+import Fight from "../../fight/fight";
 import Fighter from "../../fighter/fighter";
 import { Game } from "../../game";
 

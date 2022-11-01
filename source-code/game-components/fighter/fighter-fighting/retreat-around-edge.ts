@@ -2,7 +2,7 @@ import { getDirectionOfPosition2FromPosition1, getDistanceBetweenTwoPoints, getS
 import Coords from "../../../interfaces/game/fighter/coords";
 import { Edge } from "../../../interfaces/game/fighter/edge";
 import { Angle } from "../../../types/game/angle";
-import { octagon } from "../../abilities-general/fight/new-octagon";
+import { octagon } from "../../fight/octagon";
 import Fighter from "../fighter";
 import FighterFighting from "./fighter-fighting";
 import { getFighterStrikingCenter, isFacingAwayFromEnemy } from "./proximity";

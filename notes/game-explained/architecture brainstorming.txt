@@ -1,0 +1,4 @@
+* the same pattern repeats in macro and micro sense, it is a fractal, the same pattern repeats its self on a small or large scale
+* a system is an abstract encapulation of an idea with a boundary, inputs and output, and functions for anything referening this system to call
+* a system is made out of subsystems, or components. a component is an separation of concern from the parent system
+* a component should have its own properties, and state

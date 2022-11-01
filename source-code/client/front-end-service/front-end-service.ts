@@ -3,7 +3,7 @@ import { websocketService } from './websocket-service'
 import { CardName, Employee, JobSeeker, Modal } from '../../interfaces/front-end-state-interface'
 import { ActivityLogItem } from '../../types/game/activity-log-item';
 import { runInAction } from 'mobx';
-import { frontEndState, getInitialState } from '../front-end-state/front-end-state';
+import { frontEndState } from '../front-end-state/front-end-state';
 import { KnownManager } from '../../game-components/manager';
 import { AbilityData } from '../../game-components/abilities-general/ability';
 

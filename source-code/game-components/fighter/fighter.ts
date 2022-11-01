@@ -1,6 +1,6 @@
 
 import FighterState from "./fighter-state";
-import Fight from '../abilities-general/fight/fight';
+import Fight from '../fight/fight';
 import FighterFighting from './fighter-fighting/fighter-fighting';
 import { random } from "../../helper-functions/helper-functions";
 import FighterStats from "./fighter-fighting/stats";

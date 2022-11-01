@@ -1,4 +1,0 @@
-* need nvm 14.16.0
-* global yarn and ts-node
-* set export NODE_ENV=production
-* enable port 80

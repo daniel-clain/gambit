@@ -13,17 +13,19 @@ import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetre
 
 
 
-    const invalid: boolean =      
+    const invalid: boolean = (     
       logistics.onARampage || 
-      !movement.againstEdge ||
+      !proximity.againstEdge ||
       proximity.trapped
-      
+    )
     
     if (invalid)
       return 0
 
 
     let probability = 0
+
+    probability += -10 + intelligence * 4
 
     if(enemyCloseness > Closeness['close']){
       probability -= 20

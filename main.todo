@@ -1,9 +1,24 @@
 
 Deal Breakers:
-  ☐ promises not handled when if they take a hit while taking a hit
+  ☐ move along edge bug, reverses direction toward fighter instead of away
+    - direction chosen is based on 
+  ☐ reposition should not allow moving toward opponent
+    - invalid if toward enemy
+  ☐ retreat from flanked has timer to allow to escape between 2 flankers
+    - sometimes walks directly at 3rd fighter
+    - should be invalid if toward any fighter (especially non flankers)
+  ☐ sometimes they attack a still fighter in range and miss
+    - i think this is theyre too close to hit the hit box, but they try, and counds as a miss
+    - they should only try to attack if the hit will be inside the hit box
+    x infrequent to replicate
+  ☐ sometiems they decide no acction because all probabilities are zero
+    - this should never happen
+    - sometiems happens when they have no closest enemy when should cos there is a closest enemy
+      x infrequent to repeat
+    - it may happen when all things are trueL
+      - no enemy infront, enemy behind is invalid cos KO, and  have recently turend around so shouldnt again, on full health so no recover, too intelligent/agressive to do nothing. leaves no other options
   ☐ retreat from flanked direction weighted based of how close each flanking fighter is
     - if if flanker 1 is rly close, and flanker 2 is rly far, then direction should be much more based on flanker1 than 2
-  ☐ fighter that has memory of behind, and then that fighter gets knocked out, fighter will still act like firgher is still fighting, this is ok, but it could cause bugs for deciding action 
   ☐ when attacking at retreating fighter, instead of missing 100% shots, chance to land shot based on speed of each fighter
  
   ☐ money buggy
@@ -20,6 +35,12 @@ Deal Breakers:
 
 
 Priority:
+  ☐ deploy test fight to server instance
+  ☐ fighter move to attack, if targeting fighter who is fighting, and moves bettween the 2 fighters, then as he tries to position for striking range, he switches target to the other, does back and forth switching between targets, and spasticates
+    - if move to attack and flanked, reposition to other side of fighter
+  ☐ after intelligetn fighter repositions, tried to reengage on closest fighter, but if closest is enemy is not furthest on that side, then on approach triggers reposition again, back and forth
+    - reposition should have criticallity like flanking, if low critical, then intelligent fighter has small chance to reposition
+  ☐ lawyers counters other lawyer actions
   ☐ do surveilance should report when no negative things found
   ☐ fighters recontract is more based on that fighters wins, so the fighter gets expensive over time also based on promotion rating
   ☐ video for fail weath victory

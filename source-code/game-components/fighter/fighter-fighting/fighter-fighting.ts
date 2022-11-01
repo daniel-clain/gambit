@@ -90,7 +90,6 @@ export default class FighterFighting {
       onRampage: this.timers.activeTimers.some(timer => timer.name == 'on a rampage'),
       skin: this.fighter.skin,
       retreatingFromFlanked: this.movement.moveActionInProgress == 'retreat from flanked',
-      trapped: this.proximity.trapped,
       strikingCenters: {
         front: getFighterStrikingCenter(this.fighter),
         back: getFighterStrikingCenter(this.fighter, true)
@@ -98,8 +97,7 @@ export default class FighterFighting {
       spirit: this.spirit,
       energy: this.energy,
       repositioning: this.movement.moveActionInProgress == 'reposition',
-      direction: this.movement.movingDirection,
-      againstEdge: this.movement.againstEdge
+      direction: this.movement.movingDirection
     }
   }
 

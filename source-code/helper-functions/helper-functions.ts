@@ -35,6 +35,10 @@ export function toCamelCase(string: string): string{
 }
 
 
+
+
+
+
 export function toWrittenList(array: string[]): string {
   if(array.length == 1) return array[0]
   return array.reduce((text, loopItem, i) => {
@@ -185,6 +189,7 @@ export function getSmallestAngleBetween2Directions(direction1: Angle, direction2
   else
     return {smallestAngle: biggest - smallest, crosses0: false}
 }
+
 
 export function subtractAngle2FromAngle1(angle1: Angle, angle2: Angle): Angle {
   validateAngle(angle1)

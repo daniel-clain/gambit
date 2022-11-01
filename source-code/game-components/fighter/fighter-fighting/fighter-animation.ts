@@ -6,21 +6,11 @@ import { AnimationName } from "../../../types/fighter/animation-name";
 export default class FighterAnimation{
   constructor(public fighting: FighterFighting){}
   
-  private cancel: (reason: string) => void
   inProgress: AnimationName
   
   async start(animation: Animation): Promise<void>{
 
     const {name, duration, model, sound} = animation
-    let timeoutRef
-
-    const randomNum = random(100)
-
-    if(this.inProgress){
-      this.cancel(`${name} started (${randomNum})`)      
-      await wait(5)
-    }
-
     this.inProgress = name  
 
     if(sound)
@@ -30,18 +20,11 @@ export default class FighterAnimation{
 
     
     return new Promise((resolve, reject) => {
-      timeoutRef = setTimeout(resolve, duration)
-      this.cancel = reject    
+      setTimeout(resolve, duration)
     })
     .then(() => {      
       this.inProgress = null
-      return
-        
-    })
-    .catch(reason => {
-      this.inProgress = null
-      clearTimeout(timeoutRef)
-      throw(reason)
+      return        
     })
   }
 

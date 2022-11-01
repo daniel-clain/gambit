@@ -2,9 +2,8 @@ import FighterFighting from "../fighter-fighting";
 import { isEnemyFacingAway } from "../proximity";
 
 export const getProbabilityForGeneralAttack = (fighting: FighterFighting): number => {
-  const { proximity, logistics, fighter, movement, spirit} = fighting
+  const { proximity, logistics, fighter, movement, spirit, actions} = fighting
   const { intelligence, speed, aggression, strength } = fighting.stats
-  
   const closestEnemy = proximity.getClosestRememberedEnemy()
   
   let probability = 0

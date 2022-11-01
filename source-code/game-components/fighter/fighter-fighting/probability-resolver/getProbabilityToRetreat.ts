@@ -5,7 +5,8 @@ import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetre
 
 export const getProbabilityToRetreat = (fighting: FighterFighting): number => {
   const { proximity, logistics, movement} = fighting
-  const { intelligence, speed, aggression } = fighting.stats
+  const { intelligence } = fighting.stats
+
   const closestEnemy = proximity.getClosestRememberedEnemy()
 
   const invalid: boolean =
@@ -18,6 +19,7 @@ export const getProbabilityToRetreat = (fighting: FighterFighting): number => {
     return 0
 
   let probability = 0
+
 
   probability += getProbabilityForGeneralRetreat(fighting)
 

@@ -4,26 +4,56 @@ import Fighter from "../fighter";
 import { CombatAction, MoveAction, ActionName, AttackResponseAction } from "../../../types/fighter/action-name";
 import { wait } from "../../../helper-functions/helper-functions";
 import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability";
+import { Interrupt } from "../../../types/game/interrupt";
 
 
 export default class FighterActions {
 
   decideActionProbability: DecideActionProbability
-  rejectCurrentAction
+  currentActionName: string
+  rejectCurrentAction: (interrupt: Interrupt) => void
   
   constructor(public fighting: FighterFighting){
     this.decideActionProbability = new DecideActionProbability(fighting)
   }
 
-  async decideAction(){  
+  
+  actionPromise({isMain, promise, name}: {
+    isMain?: boolean, 
+    promise: Promise<void>,
+    name?: string
+  }): Promise<void>{
+    const {fighter} = this.fighting
+    return new Promise<void>((res, rej) => {
+      this.rejectCurrentAction = rej
+      //name && console.log(`~~ ${name} started (${fighter.name})`);
+      promise.then(res).catch(rej)
+    })
+    .then(() => {
+      //name && console.log(`-- ${name} finished (${fighter.name})`)
+    })
+    .catch((interrupt: Interrupt) => {
+      //name && interrupt.name && console.log(`${name} interrupted by ${interrupt.name} (${fighter.name})`);
+      if(!interrupt.promiseFunc){
+        console.log(`${this.fighting.fighter.name} action catch no func`);
+      }
+      if(isMain) return interrupt.promiseFunc()
+      else throw interrupt
+    })
+  }
+
+  decideAction(){  
     
-    const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
-    const {fight, hallucinating} = fighter.state    
+    const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut, actions} = this.fighting
+    const {fight, hallucinating} = fighter.state  
+    
+    if(!proximity){
+      debugger
+    }
 
     if(!fight || knockedOut || stopFighting){
       throw('should not be trying to decide action')
     }
-    if(fight.paused) await fight.waitForUnpause()
     
     
     let closestEnemy: Fighter = proximity.getClosestRememberedEnemy()
@@ -70,9 +100,18 @@ export default class FighterActions {
 
     decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
 
+    if(!proximity){
+      debugger
+    }
+
+    const {rememberedEnemyBehind} = this.fighting
+    const enemyKO = rememberedEnemyBehind?.fighting.knockedOut
       
-    if(!decidedAction){
-      console.log(`${fighter.name} had no decided action, wait half a sec then decide again`); 
+    if(!decidedAction && (rememberedEnemyBehind && !enemyKO)){
+      console.log(proximity);
+      console.log(closestEnemy);
+      console.log(`${fighter.name} had no decided action, wait half a sec then decide again`, responseProbabilities); 
+      debugger
       wait(500).then(() => this.decideAction())
     }
     else {
@@ -82,54 +121,42 @@ export default class FighterActions {
       /* console.log(`${fighter.name} decided action  ${decidedAction}`, responseProbabilities); */
 
       if(decidedAction == 'reposition'){
-        console.log(`${fighter.name} reposition`, responseProbabilities);
+        //console.log(`${fighter.name} reposition`, responseProbabilities);
       }
-      new Promise<void>(async (resolve, reject) => {
-        this.rejectCurrentAction = reject
-        try{
-          switch (decidedAction) {
-            case 'punch':
-            case 'critical strike':
-              await combat.attackEnemy(closestEnemy, decidedAction); break
-            case 'defend':
-              await combat.startDefending(closestEnemy); break
-            case 'move to attack':
-            case 'cautious retreat':
-            case 'fast retreat':
-            case 'retreat':        
-            case 'retreat from flanked':
-            case 'retreat around edge':
-            case 'reposition': 
-              await movement.doMoveAction(closestEnemy, decidedAction); break
-            case 'recover':
-              await this.startRecovering(); break
-            case 'turn around':
-              await movement.turnAround(); break
-            case 'do nothing':
-              await this.doNothing(); break
-          }
-          resolve()
-        } catch (e){ 
-          //console.log(`${fighter.name} inner catch ${decidedAction}`, e);
+      
+      const currentAction = (() => {
+        switch (decidedAction) {
+          case 'punch': 
+          case 'critical strike':
+            return combat.attackEnemy(closestEnemy, decidedAction)
+          case 'defend':
+            return combat.startDefending(closestEnemy)
+          case 'move to attack': 
+          case 'cautious retreat': 
+          case 'fast retreat': 
+          case 'retreat': 
+          case 'retreat from flanked': 
+          case 'retreat around edge': 
+          case 'reposition': 
+            return movement.doMoveAction(closestEnemy, decidedAction)
+          case 'recover': 
+            return this.startRecovering()
+          case 'turn around': 
+            return this.actionPromise({
+              isMain: true,
+              promise: movement.turnAround()
+            })        
+          case 'do nothing': 
+            return this.doNothing()
         }
-      })
+      })()
+      
+      currentAction
       .then(() => {
         if(this.fighting.animation.inProgress){            
-          console.error(`${fighter.name} completed ${decidedAction} while animation is in progress`, this.fighting.animation.inProgress);  
+          console.error(`${fighter.name} completed ${this.currentActionName} while animation is in progress`, this.fighting.animation.inProgress);  
         }
-      })
-      .catch((interruptPromise: Promise<void>) => {
-        console.log(`${fighter.name} interrupted during ${decidedAction}`, interruptPromise);
-        return interruptPromise
-        /* const isNormalReason = ['taking a hit', 'dodging', 'blocking'].find(expected => reason.includes(expected))
 
-        if(!isNormalReason){
-          console.log(`${fighter.name} unexpected catch during ${decidedAction}`, reason);
-        } */
-
-
-      })     
-      .finally(() => {
         if(logistics.allOtherFightersAreKnockedOut()){
           this.fighting.modelState = 'Victory'
         }
@@ -139,7 +166,10 @@ export default class FighterActions {
         else {
           this.decideAction()
         }
-      })
+      })   
+      .catch((reason) => {
+        console.log('******* action catch should not be called ',reason);
+      }) 
     }
   }
 
@@ -147,16 +177,20 @@ export default class FighterActions {
   
   
 
-  startRecovering(): Promise<void>{
+  startRecovering(){
     const {animation, fighter, stats} = this.fighting
     const {sick, injured} = fighter.state
     if(this.fighting.stamina >= stats.maxStamina){
       debugger
     }
-    return animation.start({
+    return this.actionPromise({
+      isMain: true,
       name: 'recovering',
-      duration: 2500 - stats.fitness * 150 + (sick || injured ? 1000 : 0),
-      model: 'Recovering',
+      promise: animation.start({
+        name: 'recovering',
+        duration: 2500 - stats.fitness * 150 + (sick || injured ? 1000 : 0),
+        model: 'Recovering',
+      })
     })
     .then(() => {      
       //console.log(`${fighter.name} just recovered 1 stamina & spirit`);
@@ -168,14 +202,18 @@ export default class FighterActions {
       if(this.fighting.spirit < stats.maxSpirit)
         this.fighting.spirit++
     })
+    .catch((interrupt: Interrupt) => interrupt.promiseFunc())
   }
 
-  doNothing(): Promise<void>{
+  doNothing(){
     const {animation, fighter} = this.fighting
     const {hallucinating} = fighter.state
-    return animation.start({
-      name: 'doing nothing',
-      duration: 1000 + (hallucinating ? 1000 : 0)
+    return this.actionPromise({
+      isMain: true,
+      promise: animation.start({
+        name: 'doing nothing',
+        duration: 1000 + (hallucinating ? 1000 : 0)
+      })
     })
   }
 

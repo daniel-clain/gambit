@@ -64,16 +64,6 @@ $image-folder: '../../../../../images';
     filter: hue-rotate(160deg);
   }
 
-  &__trapped{
-    display: none;
-    position: absolute;
-    width: 15px;
-    height: 17px;
-    background-image: url('#{$image-folder}/icons/exclamations.png');
-    left: -25px;
-    filter: hue-rotate(270deg);
-  }
-  
   &__direction{
     display: none;
     position: absolute;

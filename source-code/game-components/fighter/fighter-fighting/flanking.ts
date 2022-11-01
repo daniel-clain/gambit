@@ -1,7 +1,7 @@
 import FighterFighting from "./fighter-fighting";
 import { random, getDirectionOfPosition2FromPosition1, getSmallestAngleBetween2Directions, getOppositeDirection } from "../../../helper-functions/helper-functions";
 import Fighter from "../fighter";
-import { octagon } from "../../abilities-general/fight/new-octagon";
+import { octagon } from "../../fight/octagon";
 import { Angle } from "../../../types/game/angle";
 import { Closeness } from "../../../types/fighter/closeness";
 export default class Flanking {

@@ -1,6 +1,6 @@
 
 import { ActiveContract, GoalContract } from '../../interfaces/game/contract.interface';
-import Fight from "../abilities-general/fight/fight";
+import Fight from "../fight/fight";
 import { Manager } from '../manager';
 import { Employee } from '../../interfaces/front-end-state-interface';
 

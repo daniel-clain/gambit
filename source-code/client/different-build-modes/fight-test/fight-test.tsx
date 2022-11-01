@@ -1,12 +1,13 @@
 
 import * as React from 'react';
 import '../../styles/global.scss'
-import Fight from '../../../game-components/abilities-general/fight/fight';
+import Fight from '../../../game-components/fight/fight';
 import { fightUiService } from './fight-ui-service';
 import { useState } from 'react';
 import { ConfigureTestFighters } from './configure-test-fighters';
 import { Fight_View } from '../../views/game/fight-view/fight.view';
 import { frontEndState } from '../../front-end-state/front-end-state';
+import { decideAction, promTest } from './prom-test';
 
 
 
@@ -23,6 +24,7 @@ export const FighterTest_C = () => {
   const fightState = frontEndState.serverUIState.serverGameUIState?.fightUIState
 
   const startNewFight = () => {
+    //promTest()
     fightUiService.newFight(fightersList)
     setFight(fightUiService.fight)
   }  

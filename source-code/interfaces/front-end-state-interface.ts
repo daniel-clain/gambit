@@ -167,8 +167,6 @@ export default interface FighterFightState{
   energy: number
   repositioning: boolean,
   direction: Angle
-  trapped: boolean
-  againstEdge: Edge
 }
 
 export interface DisconnectedPlayerVote{

@@ -1,0 +1,9 @@
+Why doesnt it work
+- because old code had a different appoach for client communicating with back end code and thats been removed
+
+How does it get fixed
+- The code should be modular, each module should work in isolation
+- It should be easy to integrate back into the rest of the code, if it isnt, its been badly archtected
+- The test uis level of abstraction from the rest of the game should only need to work with fight class
+- The setup should be configuring who is fighting
+- The should be a new class for handling the event output by the fight class, and should be responsible firing off redux state update actions
