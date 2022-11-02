@@ -1,12 +1,9 @@
 import { Ability, ServerAbility, AbilityData } from "../ability"
 import Fighter from "../../fighter/fighter"
-import { random } from "../../../helper-functions/helper-functions"
-import SkillLevel from "../../../types/game/skill-level.type"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
-import { Employee } from "../../../interfaces/front-end-state-interface"
-import { ifSourceIsEmployee, ifSourceIsManager } from "../../../client/front-end-service/ability-service-client"
 import { getAbilitySourceManager } from "../ability-service-server"
+import { randomNumber } from "../../../helper-functions/helper-functions"
 
 
 export const trainFighter: Ability = {
@@ -24,12 +21,10 @@ export const trainFighterServer: ServerAbility = {
     const {weekNumber} = game.has.weekController
     const sourceManager: Manager = getAbilitySourceManager(source, game)
     
-    let sourceSkillLevel: SkillLevel
-
-    ifSourceIsManager(source, () => sourceSkillLevel = 1)
-    ifSourceIsEmployee(source, employee => sourceSkillLevel = employee.skillLevel)
-
-
+    const sourceSkillLevel = (
+      source.characterType == 'Manager' && 1 ||
+      source.characterType == 'Employee' && source.skillLevel
+    )
 
     fighter.state.trainingProgress += sourceSkillLevel
 
@@ -48,7 +43,7 @@ export const trainFighterServer: ServerAbility = {
         newsItemAdded = true
       }
 
-      const randomNum = random(1)
+      const randomNum = randomNumber({to: 1})
       if(randomNum === 0){
         fighter.fighting.stats.baseStrength ++
         sourceManager.functions.addToLog({

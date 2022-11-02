@@ -8,7 +8,7 @@ import { observer } from 'mobx-react'
 
 export const PreFightNews_View = observer(() => {
 
-  const {newsItem} = frontEndState.serverUIState.serverGameUIState.preFightNewsUIState
+  const {newsItem} = frontEndState.serverUIState.serverGameUIState!.preFightNewsUIState
 
   const [showNewsItem, setShowNewsItem] = useState(false)
 

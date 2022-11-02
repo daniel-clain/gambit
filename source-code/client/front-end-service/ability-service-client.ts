@@ -19,24 +19,19 @@ export function getAbilitiesThisSourceCanDo(source: SourceTypes){
   )
 }
 
-export function getAppropriateSource(clientAbility: ClientAbility, managerInfo: ManagerInfo): SourceTypes {
+export function getAppropriateSource(clientAbility: ClientAbility, managerInfo: ManagerInfo): SourceTypes | undefined {
 
-  let managerSource: ManagerInfo
-  let employeeSource: Employee
-
-
-  const managerCanDoAbility = managerInfo.abilities.includes(clientAbility.name) &&
-  managerInfo.actionPoints >= clientAbility.cost.actionPoints
-  if (managerCanDoAbility)
-    managerSource = managerInfo
-    
-  const employeeThatCanDoAbility = managerInfo.employees.find(employee => 
-    employee.abilities.includes(clientAbility.name) && 
-    employee.actionPoints >= clientAbility.cost.actionPoints
+  const managerSource = (
+    managerInfo.abilities.includes(clientAbility.name) &&
+    managerInfo.actionPoints >= clientAbility.cost.actionPoints &&
+    managerInfo
   )
-  if (employeeThatCanDoAbility){
-    employeeSource = employeeThatCanDoAbility
-  }
+  const employeeSource = (
+    managerInfo.employees.find(employee => 
+      employee.abilities.includes(clientAbility.name) && 
+      employee.actionPoints >= clientAbility.cost.actionPoints
+    )
+  )
 
   if(clientAbility.name == 'Offer Contract' && managerSource)
     return managerSource
@@ -48,22 +43,16 @@ export function getAppropriateSource(clientAbility: ClientAbility, managerInfo: 
 }
 
 export function canOnlyBeTargetedOnceConflict(ability: ClientAbility, abilityData: AbilityData, delayedExecutionAbilities: AbilityData[], managerInfo: ManagerInfo): boolean{
-  if(
-    ability.canOnlyTargetSameTargetOnce && 
-    abilityData.target && 
-    delayedExecutionAbilities.some(delayedAbility => {
-      if(
-        (
-          delayedAbility.source.name == managerInfo.name || 
-          managerInfo.employees.some(employee => employee.name == delayedAbility.source.name)
-        ) &&
-        delayedAbility.name == ability.name && 
-        delayedAbility.target.name == abilityData.target.name
-      )
-        return true
-    })
+
+  return (
+    !!ability.canOnlyTargetSameTargetOnce && 
+    !!abilityData.target &&
+    delayedExecutionAbilities.some(({source, name, target}) => 
+      (source?.name == managerInfo.name || managerInfo.employees.some(e => e.name == source?.name)) &&
+      name == ability.name && 
+      target?.name == abilityData.target?.name
+    )
   )
-    return true
 }
 
 
@@ -143,7 +132,7 @@ export function validateAbilityConfirm(
   }
 
 
-  if (clientAbility?.notActiveUntilWeek > currentWeek){
+  if (clientAbility.notActiveUntilWeek && clientAbility.notActiveUntilWeek > currentWeek){
     throw (`${clientAbility.name} is not available until Week ${clientAbility.notActiveUntilWeek}`)
   }
 
@@ -157,11 +146,8 @@ export function validateAbilityConfirm(
 
   
   if(source){
-
-    const type = getSourceType(source)
-
     if (source.actionPoints < clientAbility.cost.actionPoints)
-      throw (`${type} ${source.name} does not have enough action points for ${clientAbility.name}`)
+      throw (`${source.characterType} ${source.name} does not have enough action points for ${clientAbility.name}`)
   }
 
   
@@ -183,7 +169,7 @@ export function validateAbilityConfirm(
   }
 
   if (canOnlyBeTargetedOnceConflict(clientAbility, abilityData, delayedExecutionAbilities, managerInfo))
-    throw (`${abilityData.target.name} has already been targeted for ${clientAbility.name} and can not be the target of this ability again`)
+    throw (`${abilityData.target!.name} has already been targeted for ${clientAbility.name} and can not be the target of this ability again`)
 
   function prosecuteManagerHasNoEvidence(){
     if(abilityData.name != 'Prosecute Manager') return false
@@ -197,10 +183,13 @@ export function validateAbilityConfirm(
 }
 
 
-export function isPossibleToPerformAbility(abilityData: AbilityData, managerInfo: ManagerInfo, delayedExecutionAbilities: AbilityData[], currentWeek: number, enoughFightersForFinalTournament: boolean, jobSeekers, nextFightFighters): boolean {
+export function isPossibleToPerformAbility(
+  abilityData: AbilityData, managerInfo: ManagerInfo, delayedExecutionAbilities: AbilityData[], 
+  currentWeek: number, enoughFightersForFinalTournament: boolean, jobSeekers: JobSeeker[]
+): boolean {
 
 
-  const clientAbility: ClientAbility = abilities.find(ability => ability.name == abilityData.name)
+  const clientAbility: ClientAbility = abilities.find(ability => ability.name == abilityData.name)!
 
 
   const possibleTargets = getPossibleTargets(clientAbility, managerInfo, jobSeekers)
@@ -219,7 +208,7 @@ export function isPossibleToPerformAbility(abilityData: AbilityData, managerInfo
 
 
   // active at Week number
-  if(clientAbility?.notActiveUntilWeek > currentWeek){
+  if(clientAbility.notActiveUntilWeek && clientAbility.notActiveUntilWeek > currentWeek){
     return false
   }
 
@@ -276,16 +265,16 @@ export function isPossibleToPerformAbility(abilityData: AbilityData, managerInfo
   
 export function fighterOwnedByManager(fighter: FighterInfo, manager?: ManagerInfo): boolean {
   // this manager if manager not specified
-  const {managerInfo} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {managerInfo } = frontEndState.serverUIState.serverGameUIState!.playerManagerUIState!
   return (manager || managerInfo).fighters.some(f => f.name == fighter.name)
 }
 
 export function fighterInNextFight(fighter: FighterInfo): boolean {
-  const {nextFightFighters} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {nextFightFighters} = frontEndState.serverUIState.serverGameUIState!.playerManagerUIState!
   return nextFightFighters.some(fighterName => fighterName == fighter.name)
 }
 export function isThisManager(manager: KnownManager): boolean {
-  const {managerInfo} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {managerInfo} = frontEndState.serverUIState.serverGameUIState!.playerManagerUIState!
   return managerInfo.name == manager.name
 }
 
@@ -303,40 +292,10 @@ export function ifTargetIsFighter(target: TargetTypes, effect: (fighter: Fighter
   }
 }
 
-export function ifTargetIsManager(target: TargetTypes, effect: (manager: KnownManager) => void){
-  if('money' in target){
-    effect(target)
-  }
-}
-
-export function ifTargetIsJobSeeker(target: TargetTypes, effect: (jobSeeker: JobSeeker | FighterInfo) => void){
-  if('goalContract' in target){
-    if(target.goalContract)
-      effect(target)
-  }
-}
-
-export function ifSourceIsEmployee(source: SourceTypes, effect: (employee: Employee) => void){
-  if('activeContract' in source){
-    effect(source)
-  }
-}
-export function ifSourceIsManager(source: SourceTypes, effect: (manager: ManagerInfo) => void){
-  if('money' in source){
-    effect(source)
-  }
-}
-
-export function getSourceType(source: SourceTypes){
-  let type: 'Manager' | 'Employee'
-  ifSourceIsEmployee(source, () => type = 'Employee')
-  ifSourceIsManager(source, () => type = 'Manager')
-  return type
-}
 
 export function tryToWinUnlocked(): boolean{
-  const {playerManagerUIState} = frontEndState.serverUIState.serverGameUIState
-  return playerManagerUIState.week >= tryToWinAvailableFromWeek
+  const {playerManagerUIState} = frontEndState.serverUIState.serverGameUIState!
+  return playerManagerUIState!.week >= tryToWinAvailableFromWeek
 }
 
 export function fighterIsAJobSeeker(fighter: FighterInfo): boolean{

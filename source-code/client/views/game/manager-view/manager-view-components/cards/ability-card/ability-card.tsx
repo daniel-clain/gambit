@@ -18,38 +18,44 @@ import { closeModal, showFighter, showManager } from '../../../../../../front-en
 import { observer } from 'mobx-react';
 import { abilities } from '../../../../../../client-abilities/client-abilities';
 import { canOnlyBeTargetedOnceConflict, getAppropriateSource, getPossibleSources, getPossibleTargets, validateAbilityConfirm } from '../../../../../../front-end-service/ability-service-client';
-
+type AbilityCardState = {
+  listOptions: ListOption[], 
+  selectListType: 'source' | 'target' | undefined
+}
 export const AbilityCard = observer(() => {
 
   const {
     clientUIState: {clientGameUIState: {
       clientManagerUIState: {activeModal}
     }},
-    serverUIState: {serverGameUIState: {
-      enoughFightersForFinalTournament,
-      playerManagerUIState
-    }}
+    serverUIState: {serverGameUIState}
   } = frontEndState
+
+  const {
+    enoughFightersForFinalTournament,
+    playerManagerUIState
+  } = serverGameUIState!
 
   const {
     managerInfo,
     delayedExecutionAbilities,
     jobSeekers,
     week
-  } = playerManagerUIState
-  const abilityData = activeModal.data as AbilityData
+  } = playerManagerUIState!
+  
+  const abilityData = activeModal!.data as AbilityData
 
 
 
-  const [state, setState] = useState({
-    listOptions: [] as ListOption[],
-    selectListType: null as 'source' | 'target',
+  const [state, setState] = useState<AbilityCardState>({
+    listOptions: [],
+    selectListType: undefined
   })
 
   const [activeAbility, setActiveAbility] = useState({...abilityData})
 
 
-  const clientAbility: ClientAbility = abilities.find(ability => ability.name == activeAbility.name)
+  const clientAbility: ClientAbility = abilities.find(ability => ability.name == activeAbility.name)!
   const possibleTargets = getPossibleTargets(clientAbility, managerInfo, jobSeekers)
   const possibleSources = getPossibleSources(clientAbility, managerInfo)
 
@@ -147,7 +153,7 @@ export const AbilityCard = observer(() => {
                     <div className="illegal-activity__name">{illegalActivity}</div>                  
                     <div className="illegal-activity__evidence-items">
                       {managerInfo.evidence
-                      .filter(e => e.managerName == activeAbility.target.name)
+                      .filter(e => e.managerName == activeAbility.target?.name)
                       .filter(e => e.illegalActivity == illegalActivity)
                       .map((evidence, index) => 
                         <CheckboxItem 
@@ -175,7 +181,7 @@ export const AbilityCard = observer(() => {
         {state.selectListType &&
           <Modal onClose={resetSelectList}>
             <SelectList 
-              playerManagerUIState={playerManagerUIState}
+              playerManagerUIState={playerManagerUIState!}
               list={state.listOptions} 
               type={state.selectListType}
               itemSelected={listItemSelected.bind(this)}
@@ -213,13 +219,13 @@ export const AbilityCard = observer(() => {
     closeModal()
 
     if(activeAbility.name == 'Research Fighter'){
-      let {knownFighters} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
-      const fighter: FighterInfo = knownFighters.find(f => f.name == target.name)
+      let {knownFighters} = managerInfo
+      const fighter: FighterInfo = knownFighters.find(f => f.name == target!.name)!
       
       showFighter(fighter.name)
     }   
     if(activeAbility.name == 'Investigate Manager'){
-      let knownManager = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo.otherManagers.find(m => m.name == target.name)
+      let knownManager = managerInfo.otherManagers.find(m => m.name == target!.name)!
       
       showManager(knownManager.name)
     } 
@@ -242,7 +248,7 @@ export const AbilityCard = observer(() => {
   }
 
   function resetSelectList(){
-    setState({...state, listOptions: undefined, selectListType: undefined})
+    setState({...state, listOptions: [], selectListType: undefined})
   }
 
   function listItemSelected(item: TargetTypes | SourceTypes, type: 'source' | 'target'){

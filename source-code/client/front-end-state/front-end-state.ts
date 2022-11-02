@@ -1,4 +1,4 @@
-import { autorun, observable, reaction } from 'mobx'
+import { observable } from 'mobx'
 import { FrontEndState } from '../../interfaces/front-end-state-interface'
 
 

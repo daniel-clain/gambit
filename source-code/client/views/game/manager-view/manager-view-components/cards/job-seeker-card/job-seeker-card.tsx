@@ -19,15 +19,12 @@ export const JobSeekerCard = observer(() =>   {
     }}
   } = frontEndState
 
-  const jobSeeker = activeModal.data as JobSeeker
+  const jobSeeker = activeModal!.data as JobSeeker
 
   const abilityData: AbilityData = {      
     name: 'Offer Contract',
     source: undefined,
-    target: {
-      name: jobSeeker.name,
-      type: 'job seeker'
-    }
+    target: jobSeeker
   }
    
   const {numberOfWeeks, weeklyCost} = jobSeeker.goalContract

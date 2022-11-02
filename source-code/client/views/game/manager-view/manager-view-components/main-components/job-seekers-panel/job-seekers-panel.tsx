@@ -7,7 +7,8 @@ import { observer } from 'mobx-react';
 
 export const JobSeekersPanel = observer(() => {
 
-  const {jobSeekers} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {jobSeekers} = serverGameUIState!.playerManagerUIState!
     
   return (
     <div className='panel job-seekers'>

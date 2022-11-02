@@ -1,7 +1,6 @@
 import { AbilityName, AbilityData } from "../game-components/abilities-general/ability"
 import { ManagerInfo } from "../game-components/manager"
 import { getProfessionalsAbilities } from "../game-components/professionals"
-import { random } from "../helper-functions/helper-functions"
 import { ClientNameAndID, GameBeingCreated } from "../game-host/game-host.types"
 import { Angle } from "../types/game/angle"
 import { ManagerImage } from "../types/game/manager-image"
@@ -23,6 +22,8 @@ import { VictoryType } from "../types/game/victory-type"
 import { VideoName } from "../client/videos/videos"
 import { MatchupInfo } from "../game-components/week-controller/final-tournament/final-tournament"
 import { Edge } from "./game/fighter/edge"
+import { ActionName } from "../types/fighter/action-name"
+import { randomNumberDigits } from "../helper-functions/helper-functions"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
@@ -86,7 +87,7 @@ export type VictoryData = {name: string, victoryType: VictoryType}
 
 export class ServerGameUIState{
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
-  weekStage: WeekStage = null
+  weekStage?: WeekStage
   displayManagerUIState?: DisplayManagerUiData
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
@@ -120,9 +121,9 @@ export interface FightUIState{
   startCountdown: number
   timeRemaining: number
   report: FightReport
-  managersBets?: ManagersBet[]
+  managersBets: ManagersBet[]
   fighterFightStates: FighterFightState[]
-  knownFighterStates?: FighterStateData[]
+  knownFighterStateData?: FighterStateData[]
 }
 export interface FightReport{
   draw?: boolean
@@ -145,12 +146,12 @@ export interface FighterStateData{
   injured: boolean
   doping: boolean
   takingADive: boolean
-  strength: KnownFighterStat
-  intelligence: KnownFighterStat
-  fitness: KnownFighterStat
-  aggression: KnownFighterStat
-  numberOfFights: KnownFighterStat
-  numberOfWins: KnownFighterStat
+  strength?: KnownFighterStat
+  intelligence?: KnownFighterStat
+  fitness?: KnownFighterStat
+  aggression?: KnownFighterStat
+  numberOfFights?: KnownFighterStat
+  numberOfWins?: KnownFighterStat
 }
 
 export default interface FighterFightState{
@@ -161,11 +162,10 @@ export default interface FighterFightState{
   soundsMade: SoundTime[]
   onRampage: boolean,
   skin: Skin,
-  retreatingFromFlanked: boolean
   strikingCenters: {front: Coords, back: Coords}
   spirit: number
   energy: number
-  repositioning: boolean,
+  currentAction: ActionName
   direction: Angle
 }
 
@@ -217,7 +217,7 @@ export class Professional{
   constructor(
     public profession: Profession,
     public skillLevel: SkillLevel = 1,
-    public name: string = `test${random(10000)}`
+    public name: string = `test${randomNumberDigits(9)}`
   ){
     this.abilities = getProfessionalsAbilities(profession)
   }
@@ -240,7 +240,7 @@ export class Employee extends Professional{
   constructor(
     public profession: Profession,
     public skillLevel: SkillLevel = 3,
-    public name: string = `test${random(10000)}`,
+    public name: string = `test${randomNumberDigits(9)}`,
     public activeContract: ActiveContract = {
       weeklyCost: 0, weeksRemaining: 100
     }

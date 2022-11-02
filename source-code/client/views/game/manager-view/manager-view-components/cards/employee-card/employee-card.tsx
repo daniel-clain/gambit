@@ -19,7 +19,7 @@ export const EmployeeCard = observer(() => {
       clientManagerUIState: {activeModal}
     }}
   } = frontEndState
-  const employee = activeModal.data as Employee
+  const employee = activeModal!.data as Employee
   const {weeksRemaining, weeklyCost} = employee.activeContract
 
   const employeeAbilities: ClientAbility[] = abilities.filter(ability => !ability.disabled && employee.abilities.includes(ability.name))

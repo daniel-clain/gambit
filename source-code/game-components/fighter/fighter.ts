@@ -2,10 +2,10 @@
 import FighterState from "./fighter-state";
 import Fight from '../fight/fight';
 import FighterFighting from './fighter-fighting/fighter-fighting';
-import { random } from "../../helper-functions/helper-functions";
 import FighterStats from "./fighter-fighting/stats";
 import { FighterInfo } from "../../interfaces/front-end-state-interface";
 import { Skin } from "../../types/fighter/skin";
+import { randomNumber } from "../../helper-functions/helper-functions";
 
 
 export default class Fighter{
@@ -46,12 +46,12 @@ export default class Fighter{
 
     const halfOfMainStats = Math.round(mainStatsCombined * .5)
 
-    const randomRange = random(halfOfMainStats) + halfOfMainStats
+    const randomRange = randomNumber({to: halfOfMainStats}) + halfOfMainStats
 
     const weeklyCost = randomRange
 
     this.state.goalContract = {
-      numberOfWeeks: random(1) ? 5 : 6,
+      numberOfWeeks: randomNumber({to: 1}) ? 5 : 6,
       weeklyCost
     }
   }

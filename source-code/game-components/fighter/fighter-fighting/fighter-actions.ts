@@ -3,15 +3,16 @@ import DecideActionProbability from "./decide-action-probability";
 import Fighter from "../fighter";
 import { CombatAction, MoveAction, ActionName, AttackResponseAction } from "../../../types/fighter/action-name";
 import { wait } from "../../../helper-functions/helper-functions";
-import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability";
+import { ActionProbability, selectRandomResponseBasedOnProbability } from "./random-based-on-probability";
 import { Interrupt } from "../../../types/game/interrupt";
 
 
 export default class FighterActions {
 
   decideActionProbability: DecideActionProbability
-  currentActionName: string
   rejectCurrentAction: (interrupt: Interrupt) => void
+  decidedActionLog = []
+  decidedAction: ActionName
   
   constructor(public fighting: FighterFighting){
     this.decideActionProbability = new DecideActionProbability(fighting)
@@ -35,7 +36,7 @@ export default class FighterActions {
     .catch((interrupt: Interrupt) => {
       //name && interrupt.name && console.log(`${name} interrupted by ${interrupt.name} (${fighter.name})`);
       if(!interrupt.promiseFunc){
-        console.log(`${this.fighting.fighter.name} action catch no func`);
+        console.log(`${this.fighting.fighter.name} action catch no func`, interrupt);
       }
       if(isMain) return interrupt.promiseFunc()
       else throw interrupt
@@ -66,20 +67,24 @@ export default class FighterActions {
     const moveActions: MoveAction[] = ['move to attack', 'retreat', 'retreat from flanked', 'fast retreat', 'cautious retreat', 'retreat around edge', 'reposition']
     const otherActions: ActionName[] = ['turn around', 'recover', 'do nothing']
 
-
-    let decidedAction: ActionName
-
-    const responseProbabilities: [ActionName, number][] = []
+    const responseProbabilities: ActionProbability[] = []
     
+    const includeCombatActions = enemyWithinStrikingRange || (hallucinating && closestEnemy)
 
-    if(enemyWithinStrikingRange || (hallucinating && closestEnemy))
+    const includeMoveActions = closestEnemy
+
+    if(includeCombatActions && includeMoveActions){
+      this.decideActionProbability.setGeneralAttackAndRetreatProbabilities()
+    }
+
+    if(includeCombatActions)
       responseProbabilities.push(
         ...combatActions.map(action => 
           this.decideActionProbability.getProbabilityTo(action)
         )
       )
 
-    if(closestEnemy)
+    if(includeMoveActions)
       responseProbabilities.push(
         ...moveActions.map(action =>   
           this.decideActionProbability.getProbabilityTo(action)
@@ -98,30 +103,28 @@ export default class FighterActions {
       `\n ${rp[0]}: ${Math.round(rp[1]/totalNum*100)}%`
     )}`,responseProbabilities); */
 
-    decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
+    const decidedAction = selectRandomResponseBasedOnProbability(responseProbabilities)    
 
-    if(!proximity){
-      debugger
-    }
 
     const {rememberedEnemyBehind} = this.fighting
     const enemyKO = rememberedEnemyBehind?.fighting.knockedOut
-      
-    if(!decidedAction && (rememberedEnemyBehind && !enemyKO)){
-      console.log(proximity);
-      console.log(closestEnemy);
+    this.decidedActionLog.unshift([decidedAction, responseProbabilities])
+    if(!decidedAction){
       console.log(`${fighter.name} had no decided action, wait half a sec then decide again`, responseProbabilities); 
-      debugger
-      wait(500).then(() => this.decideAction())
+      if(rememberedEnemyBehind && !enemyKO){
+        console.log(proximity);
+        console.log(closestEnemy);
+        debugger
+        wait(500).then(() => this.decideAction())
+      }
     }
     else {
 
-      this.fighting.actionLog.unshift(decidedAction)
     
       /* console.log(`${fighter.name} decided action  ${decidedAction}`, responseProbabilities); */
 
-      if(decidedAction == 'reposition'){
-        //console.log(`${fighter.name} reposition`, responseProbabilities);
+      if(decidedAction == 'fast retreat'){
+        console.log(`${fighter.name} Fast Retreat`, responseProbabilities);
       }
       
       const currentAction = (() => {
@@ -150,12 +153,14 @@ export default class FighterActions {
             return this.doNothing()
         }
       })()
+
+      if(!currentAction){
+        console.log(`${fighter.name} had no decided action, wait half a sec then decide again`, responseProbabilities); 
+
+      }
       
       currentAction
       .then(() => {
-        if(this.fighting.animation.inProgress){            
-          console.error(`${fighter.name} completed ${this.currentActionName} while animation is in progress`, this.fighting.animation.inProgress);  
-        }
 
         if(logistics.allOtherFightersAreKnockedOut()){
           this.fighting.modelState = 'Victory'
@@ -170,6 +175,8 @@ export default class FighterActions {
       .catch((reason) => {
         console.log('******* action catch should not be called ',reason);
       }) 
+
+      this.decidedAction = decidedAction
     }
   }
 
@@ -197,10 +204,11 @@ export default class FighterActions {
       this.fighting.timers.cancelTimers(['memory of enemy behind'], 'finished recovering')
       if(this.fighting.stamina < stats.maxStamina)
         this.fighting.stamina++
-      else
-        this.fighting.stamina = stats.maxStamina
+
       if(this.fighting.spirit < stats.maxSpirit)
         this.fighting.spirit++
+
+      this.fighting.regenEnergy()
     })
     .catch((interrupt: Interrupt) => interrupt.promiseFunc())
   }

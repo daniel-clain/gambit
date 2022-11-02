@@ -39,8 +39,8 @@ export type ListOption = TargetTypes | SourceTypes
 
 export interface AbilityData{
   name: AbilityName
-  target: TargetTypes
-  source: SourceTypes
+  target: TargetTypes | undefined
+  source: SourceTypes | undefined
   additionalData?: any
 }
 

@@ -1,12 +1,13 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import Fighter from '../../../game-components/fighter/fighter';
 
 import './configure-test-fighters.scss'
 
 export const ConfigureTestFighters = ({onFightersUpdated}) => {
 
-  const [fighters, setFighters] = useState([])
+  const [fighters, setFighters] = useState<Fighter[]>([])
   const emptyFighter = {name: '', strength: '', fitness: '', intelligence: '', aggression: ''}
   const [newFighter, setNewFighter] = useState(emptyFighter)
   const [configOpen, setConfigOpen] = useState(false)

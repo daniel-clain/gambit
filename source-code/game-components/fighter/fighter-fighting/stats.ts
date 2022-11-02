@@ -1,6 +1,4 @@
-import { random } from "../../../helper-functions/helper-functions"
 import Fighter from "../fighter"
-import FighterFighting from "./fighter-fighting"
 
 export default class FighterStats {
   
@@ -10,6 +8,7 @@ export default class FighterStats {
   private _baseAggression: number = 2
 
   maxSpirit = 5
+  maxEnergy = 10
 
 
   constructor(public fighter: Fighter){}
@@ -82,18 +81,6 @@ export default class FighterStats {
 
 
     return maxStamina
-  }
-
-
-  // not used
-  get maxEnergy(){
-    const {sick, injured, takingADive} = this.fighter.state
-    let x = 5
-    if(sick) x *= .8
-    if(injured) x *= .8 
-    if(takingADive) x *= .5
-
-    return Math.round(x)
   }
 
   

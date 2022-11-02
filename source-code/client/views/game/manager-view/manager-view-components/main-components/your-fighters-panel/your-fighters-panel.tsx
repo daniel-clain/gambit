@@ -9,7 +9,8 @@ import { showFighter } from '../../../../../../front-end-service/front-end-servi
 
 export const YourFightersPanel = observer(() => {
 
-  const {fighters} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {fighters} = serverGameUIState!.playerManagerUIState!.managerInfo
 
   return (
     <div className='panel your-fighters'>

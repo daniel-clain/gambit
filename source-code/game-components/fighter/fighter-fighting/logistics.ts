@@ -14,8 +14,8 @@ export default class Logistics {
   justDodged: boolean
   justTookHit: boolean
   memoryOfEnemyBehind: Fighter
-  moveActionInProgress: MoveAction
   retreatBetweenFlankersDirection: number
+  hasFullEnergy: boolean
 
 
   constructor(public fighting: FighterFighting){}
@@ -31,22 +31,14 @@ export default class Logistics {
   }
   
   isARetreatInProgress(): boolean{
+    const {movement} = this.fighting
 
     const retreatActions: MoveAction[] = ['retreat', 'cautious retreat', 'fast retreat', 'retreat from flanked', 'reposition', 'retreat around edge']
     
-    return retreatActions.some(moveAction => moveAction == this.moveActionInProgress)
+    return retreatActions.some(moveAction => moveAction == movement.moveActionInProgress)
   }
 
 
-  
-
-
-
-  enemyAttackingThisFighter(enemy: Fighter): boolean{
-    const {name} = this.fighting.fighter
-    const {enemyTargetedForAttack} = enemy.fighting
-    return enemyTargetedForAttack && enemyTargetedForAttack.name == name
-  }
 
   otherFightersStillFighting(): Fighter[]{
     return this.fighting.otherFightersInFight.filter(fighter => !fighter.fighting.knockedOut)

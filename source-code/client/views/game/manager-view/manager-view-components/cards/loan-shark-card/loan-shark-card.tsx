@@ -9,15 +9,11 @@ import { frontEndState } from '../../../../../../front-end-state/front-end-state
 import { websocketService } from '../../../../../../front-end-service/websocket-service';
 
 export const LoanSharkCard = observer(() => {
-  const {
-    serverUIState: {serverGameUIState: {
-      playerManagerUIState: {managerInfo: {loan, money}}
-    }}
-  } = frontEndState
-
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {managerInfo: {loan, money}} = serverGameUIState!.playerManagerUIState!
   const [state, setState] = useState({
-    paybackAmount: undefined,
-    borrowAmount: undefined
+    paybackAmount: undefined as number | undefined,
+    borrowAmount: undefined as number | undefined
   })
 
  
@@ -59,7 +55,7 @@ export const LoanSharkCard = observer(() => {
             <div className='get-loan-input'>
               Borrow amount: 
               <input 
-                value={borrowAmount > 0 ? borrowAmount : ''} 
+                value={borrowAmount && borrowAmount > 0 ? borrowAmount : ''} 
                 onChange={updateBorrowAmount}  
                 onKeyPress={handleEnterEvent}
                 type='number' step='10' min='0' max='500' 
@@ -79,7 +75,7 @@ export const LoanSharkCard = observer(() => {
             <div className='pay-back-input'>
               Pay back amount: 
               <input 
-                value={paybackAmount > 0 ? paybackAmount : ''} 
+                value={paybackAmount && paybackAmount > 0 ? paybackAmount : ''} 
                 disabled={!loan || !loan.debt}
                 onChange={e => updatePaybackAmount(e.target.value)} 
                 onKeyPress={handleEnterEvent}
@@ -136,7 +132,7 @@ export const LoanSharkCard = observer(() => {
       return
     }
 
-    if(state.paybackAmount > loan.debt){
+    if(loan && state.paybackAmount > loan.debt){
       alert(`You can't pay back more than what you owe`)
       return
     }

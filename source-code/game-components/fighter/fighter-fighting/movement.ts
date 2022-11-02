@@ -20,7 +20,7 @@ export default class Movement {
   reverseMoving: boolean
 
   moveActionInProgress: MoveAction
-
+  speedBoostActive: undefined | 'fast' | 'medium'
   stuckCounter = 0
 
   
@@ -30,7 +30,7 @@ export default class Movement {
 
 
   doMoveAction(enemy: Fighter, moveAction: MoveAction){    
-    const {flanking, timers, proximity, facingDirection, fighter, actions} = this.fighting
+    const {flanking, timers, proximity, facingDirection, fighter, actions, logistics, stats} = this.fighting
 
     
     this.moveActionInProgress = moveAction
@@ -74,6 +74,23 @@ export default class Movement {
       }
     }
 
+    if(['retreat from flanked', 'fast retreat'].find(x => x == this.moveActionInProgress)){
+      
+      if(this.fighting.energy > 0){
+        this.speedBoostActive = 'fast'
+        this.fighting.energy -= .2
+      }
+    }
+    else if(['retreat', 'retreat around edge', 'reposition'].find(x => x == this.moveActionInProgress) || logistics.onARampage){      
+      if(this.fighting.energy > 0){
+        this.speedBoostActive = 'medium'
+        this.fighting.energy -= .1
+      }
+    }
+    else{      
+      this.speedBoostActive = undefined
+    }
+
     let willTurnAround
     const movingLeftOrRight: LeftOrRight = this.movingDirection < 180 ? 'right' : 'left'
 
@@ -109,7 +126,7 @@ export default class Movement {
 
 
   turnAround(){
-    const {timers, animation, fighter, actions} = this.fighting
+    const {timers, animation, actions} = this.fighting
 
     return (
       actions.actionPromise({
@@ -151,6 +168,26 @@ export default class Movement {
     }
   }
 
+
+  moveSpeed(){
+    const {stats} = this.fighting
+    const {speed} = stats  
+
+    let timeToMove2Pixels = (100 - (speed * 5))
+
+
+    if(this.moveActionInProgress == 'cautious retreat') 
+      timeToMove2Pixels *=  1.15
+    if(this.speedBoostActive == 'fast')
+      timeToMove2Pixels *= 0.4
+    if(this.speedBoostActive == 'medium')
+      timeToMove2Pixels *= .8
+
+    if(timeToMove2Pixels < 10) timeToMove2Pixels = 10
+
+    return Math.round(timeToMove2Pixels)
+  }
+  
 
   handlePassedEnemy(oldCoords: Coords){
     const {logistics, fighter, facingDirection, proximity, rememberedEnemyBehind} = this.fighting
@@ -226,30 +263,8 @@ export default class Movement {
       proximity.inCornerOfEdges = undefined
   }
 
-  moveSpeed(){
-    const {logistics, stats, timers, fighter} = this.fighting
-    const {activeTimers} = timers
-    const {speed} = stats  
-
-    const onARampage = activeTimers.some(timer => timer.name == 'on a rampage')
-
-    let speedBoostActive: boolean = false
-    if(this.moveActionInProgress == 'fast retreat' || onARampage || this.moveActionInProgress == 'retreat from flanked' || this.moveActionInProgress == 'retreat around edge' || this.moveActionInProgress == 'reposition')
-      speedBoostActive = true
-
-    let timeToMove2Pixels = (100 - (speed * 5))
-    if(this.moveActionInProgress == 'cautious retreat') 
-      timeToMove2Pixels *=  1.15
-    if(speedBoostActive)
-      timeToMove2Pixels *= 0.6
-
-    if(timeToMove2Pixels < 10) timeToMove2Pixels = 10
-    return Math.round(timeToMove2Pixels)
-  }
-  
-
   isMoveOutsideOfBounds(newMoveCoords: Coords): boolean{
-    const {fighter, timers, proximity} = this.fighting
+    const {fighter} = this.fighting
     const modelWidth = getFighterModelDimensions(fighter, 'Idle').width 
     
     for (let edgeKey of octagon.edgeKeys) {

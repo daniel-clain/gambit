@@ -10,20 +10,19 @@ import { observer } from 'mobx-react';
 
 export const Fight_View = observer(() => {
   const {
-    serverUIState:{serverGameUIState:{
-      fightUIState,
-      displayManagerUIState
-    }},
+    serverUIState:{serverGameUIState},
     clientUIState: {clientPreGameUIState: {clientName}}
     
   } = frontEndState
+
+  const {fightUIState, displayManagerUIState} = serverGameUIState!
 
   const isDisplay = clientName == 'Game Display'
 
 
   const {
     startCountdown, timeRemaining, fighterFightStates, 
-    report, managersBets, knownFighterStates
+    report, managersBets, knownFighterStateData
   } = fightUIState
 
   const doStartAnimation = startCountdown == 0
@@ -35,7 +34,7 @@ export const Fight_View = observer(() => {
       ${report?.managerWinnings?.some(m => m.winnings > 0) ? 'has-winnings' : ''}
     `}>
       <OverlayMessaging {...{report, timeRemaining, startCountdown, doStartAnimation}}/>
-      <FighterStates fighterStates={knownFighterStates} />
+      <FighterStates fighterStates={knownFighterStateData!} />
 
       <ArenaUi {...{fighterFightStates}}/>
       <ManagersBets_C {...{report, managersBets, isDisplay}}/>

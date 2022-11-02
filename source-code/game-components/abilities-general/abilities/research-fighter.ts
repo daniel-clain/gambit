@@ -1,11 +1,9 @@
-import { Ability, ServerAbility, AbilityData, SourceTypes } from "../ability"
-import SkillLevel from "../../../types/game/skill-level.type"
-import { random } from "../../../helper-functions/helper-functions"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
-import { FighterInfo, KnownFighterStat, Employee } from "../../../interfaces/front-end-state-interface"
-import { getAbilitySourceManager, getSourceType } from "../ability-service-server"
-import { ifSourceIsEmployee, ifSourceIsManager, ifTargetIsFighter } from "../../../client/front-end-service/ability-service-client"
+import { FighterInfo, KnownFighterStat } from "../../../interfaces/front-end-state-interface"
+import { getAbilitySourceManager } from "../ability-service-server"
+import { randomNumber } from "../../../helper-functions/helper-functions"
 
 
 export const researchFighter: Ability = {
@@ -19,26 +17,19 @@ export const researchFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const {source, target} = abilityData
 
-    ifTargetIsFighter(target, knownFighter => {
-      let numberOfStats
-      const manager: Manager = getAbilitySourceManager(source, game)
-      const existingFighter: FighterInfo = manager.has.knownFighters.find(fighter => fighter.name == abilityData.target.name)
+      const sourceManager = getAbilitySourceManager(source!, game)
+      const existingFighter: FighterInfo = sourceManager.has.knownFighters.find(fighter => fighter.name == abilityData.target.name)
       const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name).getInfo()
-      const sourceType = getSourceType(source)
 
-      ifSourceIsManager(source, () => {
-        numberOfStats = 4
-      })
-
-      ifSourceIsEmployee(source, employee => {
-        if(employee.profession == 'Talent Scout'){
-          numberOfStats = 2 + employee.skillLevel
-        }
-        if(employee.profession == 'Private Agent'){
-          numberOfStats = 4 + employee.skillLevel
-        }
-      })
-
+      const numberOfStats = (
+        source.characterType == 'Manager' && 4 ||
+        source.characterType == 'Employee' &&
+        (
+          source.profession == 'Talent Scout' && 2 + source.skillLevel ||
+          source.profession == 'Private Agent' && 5 + source.skillLevel
+        )
+      )
+      
       const researchedStats = getRandomStatsFromFighter()
   
       for(let key in researchedStats){
@@ -47,7 +38,7 @@ export const researchFighterServer: ServerAbility = {
         existingFighter[key] = researchedStats[key]
       }
   
-      console.log(`${sourceType} ${source.name} used research fighter and found out the following stats about ${target.name}`, researchedStats);
+      console.log(`${source.characterType} ${source.name} used research fighter and found out the following stats about ${target.name}`, researchedStats);
 
       /* functions */
       type StatsObj = {
@@ -60,7 +51,7 @@ export const researchFighterServer: ServerAbility = {
         console.log('knownStatsKeys :>> ', knownStatsKeys);
       
         for(let loops = 0; continueCondition(loops) ;loops ++){
-          const randomKey = knownStatsKeys[random(knownStatsKeys.length - 1)]
+          const randomKey = knownStatsKeys[randomNumber({to: knownStatsKeys.length - 1})]
           console.log('randomKey :>> ', randomKey);
           if(invalidKey(randomKey)) continue
       
@@ -102,7 +93,6 @@ export const researchFighterServer: ServerAbility = {
       function invalidKey(key){
         return !['strength', 'fitness', 'intelligence', 'aggression', 'numberOfFights', 'numberOfWins', 'manager'].includes(key)
       }
-    })
 
     
   },

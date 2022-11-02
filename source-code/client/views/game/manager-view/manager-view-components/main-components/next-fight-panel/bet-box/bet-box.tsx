@@ -8,8 +8,8 @@ import { frontEndState } from '../../../../../../../front-end-state/front-end-st
 export const BetBox = (({fighterName}: {fighterName: string}) => {
 
   const {sendUpdate} = websocketService
-  const {managerInfo
-  } = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {managerInfo} = serverGameUIState!.playerManagerUIState!
   const {money, nextFightBet, } = managerInfo
 
 

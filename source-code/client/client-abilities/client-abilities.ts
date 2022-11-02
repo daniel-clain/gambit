@@ -17,9 +17,7 @@ import { takeADive } from "../../game-components/abilities-general/abilities/tak
 import { trainFighter } from "../../game-components/abilities-general/abilities/train-fighter"
 import { wealthVictory } from "../../game-components/abilities-general/abilities/wealth-victory"
 import { ClientAbility, TargetTypes } from "../../game-components/abilities-general/ability"
-import { KnownManager, ManagerInfo } from "../../game-components/manager"
-import { FighterInfo, JobSeeker } from "../../interfaces/front-end-state-interface"
-import { fighterOwnedByManager, fighterInNextFight, ifTargetIsFighter, ifTargetIsManager, isThisManager, fighterIsAJobSeeker, ifTargetIsJobSeeker } from "../front-end-service/ability-service-client"
+import { fighterOwnedByManager, fighterInNextFight, ifTargetIsFighter, isThisManager } from "../front-end-service/ability-service-client"
 
 
 
@@ -28,12 +26,8 @@ export const researchFighterClient: ClientAbility = {
   ...researchFighter,
   longDescription: 'find out more stats about fighter, amount of stats is relative to skill level and profession',
   isValidTarget(target: TargetTypes){
-    let isValid
-    ifTargetIsFighter(target, fighter =>
-      isValid = !fighterOwnedByManager(fighter)
-    )
-    return isValid
-  },
+    return target.characterType == 'Fighter'
+  }
 }
 
 
@@ -41,14 +35,12 @@ export const assaultFighterClient: ClientAbility = {
   ...assaultFighter,
   longDescription: 'An injured fighter will be slower in a fight and have less stamina and recovery',
   isValidTarget(target: TargetTypes){
-    let isValid
-    ifTargetIsFighter(target, fighter =>
-      isValid = 
-        !fighterOwnedByManager(fighter) && 
-        fighterInNextFight(fighter)
+    return (
+      target.characterType == 'Fighter' && 
+      !fighterOwnedByManager(target) && 
+      fighterInNextFight(target)
     )
-    return isValid
-  },
+  }
 }
 
 
@@ -56,15 +48,17 @@ export const doSurveillanceClient: ClientAbility = {
   ...doSurveillance,
   longDescription: 'Find out what is happening with target manager or fighter. If the manager does anything or if anything happens to the fighter while they are being watched, the private agent will collect evidence.',
   isValidTarget(target: TargetTypes){
-    let isValid
-    ifTargetIsFighter(target, fighter => {
-      isValid = fighterInNextFight(fighter) && !fighterOwnedByManager(fighter)
-    })
-    ifTargetIsManager(target, manager => {
-      isValid = !isThisManager(manager)
-    })
-    return isValid
-  },
+    return (
+      (
+        target.characterType == 'Fighter' && 
+        fighterInNextFight(target) && 
+        !fighterOwnedByManager(target)
+      ) || (
+        target.characterType == 'Known Manager' && 
+        !isThisManager(target)
+      )
+    )
+  }
 }
 
 
@@ -105,11 +99,10 @@ export const investigateManagerClient: ClientAbility = {
   ...investigateManager,
   longDescription: `Find out stats about opponent manager, including: money, loan debt, employees, fighters, evidence on other managers. This ability resolves at the end of the week`,
   isValidTarget(target: TargetTypes){
-    let isValid
-    ifTargetIsManager(target, manager =>
-      isValid = !isThisManager(manager)
+    return (
+      target.characterType == 'Known Manager' && 
+      !isThisManager(target)
     )
-    return isValid
   }
 }
 
@@ -130,11 +123,7 @@ export const offerContractClient: ClientAbility = {
   ...offerContract,
   longDescription: `Offer a fighter or professional a contract to work for you, you earn more money when your fighter wins, and your employees can perform actions on your behalf. If you offer less than what they're asking for, theres a chance they will refuse. If another manager makes a better offer, they will take that offer instead`,
   isValidTarget(target: TargetTypes) {
-    let isValid
-    ifTargetIsJobSeeker(target, jobSeeker => {
-      isValid = true
-    })
-    return isValid
+    return target.characterType == 'Job Seeker'
   }
 }
 
@@ -154,11 +143,10 @@ export const prosecuteManagerClient: ClientAbility = {
   longDescription: 'Prosecute an opponent manager for illegal activity, amount sued for is relative to the severity of each account manager is found guilty of. +100 cost for each accusation, 20% chance of success without evidence',
   ...prosecuteManager,
   isValidTarget(target: TargetTypes){
-    let isValid
-    ifTargetIsManager(target, manager =>
-      isValid = !isThisManager(manager)
+    return (
+      target.characterType == 'Known Manager' && 
+      !isThisManager(target)
     )
-    return isValid
   }
 }
 

@@ -8,7 +8,8 @@ import { frontEndState } from '../../../../../../front-end-state/front-end-state
 
 export const EmployeesPanel = observer(() => {
 
-  const {employees} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {employees} = serverGameUIState!.playerManagerUIState!.managerInfo
 
   return (
   <div className='panel employees'>

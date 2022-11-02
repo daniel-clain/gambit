@@ -1,6 +1,5 @@
 import FighterFighting from "./fighter-fighting";
 import Animation from "../../../interfaces/game/fighter/animation";
-import { wait, random } from "../../../helper-functions/helper-functions";
 import { AnimationName } from "../../../types/fighter/animation-name";
 
 export default class FighterAnimation{

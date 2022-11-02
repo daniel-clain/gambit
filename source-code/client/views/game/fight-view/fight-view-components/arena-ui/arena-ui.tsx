@@ -5,27 +5,20 @@ import Coords from '../../../../../../interfaces/game/fighter/coords';
 import { FighterComponent } from '../fighter/fighter.component';
 
 export const ArenaUi = ({fighterFightStates}) => {
-	const cornerPoints = []
-	const [arenaWidth, setArenaWidth] = useState(null)
+	const cornerPoints: Coords[] = Object.values(octagon.points)
+	const [arenaWidth, setArenaWidth] = useState<number>()
 	useEffect(() => {
 		setArenaWidth(getArenaWidth())
 		window.addEventListener('resize', 
 			() => setArenaWidth(getArenaWidth())
 		)
+		function getArenaWidth(){
+			return document.querySelector('.octagon')!.clientWidth
+		}
+	
 	})
 
-
-	function getArenaWidth(){
-		return document.querySelector('.octagon')?.clientWidth
-	}
-
 	
-
-	for (let key in octagon.points) {
-		cornerPoints.push(octagon.points[key])
-	}
-
-		
 	return <div className='arena-ui'>
 		{arenaWidth}
 		<div className="background-top"></div>

@@ -12,12 +12,14 @@ import { observer } from 'mobx-react';
 export const Headbar = observer(() => {
 
   let {sendUpdate} = websocketService 
+  const {serverUIState: {serverGameUIState}} = frontEndState
+
   const {
-    serverUIState: {serverGameUIState: {disconnectedPlayerVotes, playerManagerUIState: {
-      managerOptionsTimeLeft,
-      managerInfo: {actionPoints, money, nextFightBet}, otherPlayersReady, thisManagerReady
-    }}}
-  } = frontEndState
+    managerOptionsTimeLeft,
+    managerInfo: {actionPoints, money, nextFightBet}, otherPlayersReady, thisManagerReady
+  } = serverGameUIState!.playerManagerUIState!
+
+  const {disconnectedPlayerVotes} = serverGameUIState!
 
 
   let [timeLeft, setTimeLeft] = useState(managerOptionsTimeLeft)
@@ -46,7 +48,7 @@ export const Headbar = observer(() => {
   return (
     <div className='headbar' >
       <div className='headbar__left'>
-        <div>Time left: {isNaN(timeLeft) ? '...' : timeLeft }</div>
+        <div>Time left: {isNaN(timeLeft!) ? '...' : timeLeft }</div>
       </div>
       {otherPlayersReady?.map(({name, ready}) => 
         <div 

@@ -15,14 +15,9 @@ import './post-game.view.sass'
 
 
 export const PostGame_View = observer(() => { 
-  const {gameFinishedData} = frontEndState.serverUIState.serverGameUIState
+  const {gameFinishedData} = frontEndState.serverUIState.serverGameUIState!
 
-  if(!gameFinishedData){
-    alert('should have game finished data')
-    return 
-  } 
-
-  const {winner, players} = gameFinishedData
+  const {winner, players} = gameFinishedData!
 
   return (
     <post-game>

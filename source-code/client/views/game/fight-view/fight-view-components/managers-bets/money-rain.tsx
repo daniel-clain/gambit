@@ -9,7 +9,7 @@ interface FallingMoney{
   xVal: number
 }
 
-export const MoneyRain = ({money}: {money: number}) => {
+export const MoneyRain = ({money}: {money?: number}) => {
   const [moneyFalling, setMoneyFalling] = useState<FallingMoney[]>([])
   const [paused, setPaused] = useState<boolean>(false)
 

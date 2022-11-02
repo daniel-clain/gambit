@@ -12,7 +12,7 @@ import { defaultFighterImages, fastFighterImages, FighterImageObj, fightUiImages
 
 export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightState: FighterFightState, arenaWidth}) => {	
 
-	const [processedSounds, setProcessedSounds] = useState([])
+	const [processedSounds, setProcessedSounds] = useState<SoundTime[]>([])
 	//original octagon width height 
 	const originalWidth = 782
 	const originalHeight = 355
@@ -29,9 +29,9 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		block: blockSound    
 	}
 
-	const {name, coords, modelState, facingDirection, retreatingFromFlanked, soundsMade, onRampage, skin, strikingCenters, spirit, energy, repositioning, direction} = fighterFightState
+	const {name, coords, modelState, facingDirection, currentAction, soundsMade, onRampage, skin, strikingCenters, spirit, energy, direction} = fighterFightState
 
-	const soundsToPlay = soundsMade.reduce((soundsToPlay, soundMade) => {
+	const soundsToPlay = soundsMade.reduce<SoundTime[]>((soundsToPlay, soundMade) => {
 		if(processedSounds.some(sound => sound.time == soundMade.time))
 			return soundsToPlay
 		if(!soundsToPlay.some((sound: SoundTime) => sound.soundName == soundMade.soundName)){				
@@ -41,7 +41,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		return soundsToPlay
 	}, [])
 
-	if(soundsToPlay.length > 0){
+	if(soundsToPlay.length){
 		soundsToPlay.forEach((sound: SoundTime) => {
 			const {punch, criticalStrike, dodge, block} = soundEffects
 			switch(sound.soundName){
@@ -69,7 +69,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 	const fighterModelImages: FighterModelImage[] = getSkinModelImages()
 
 	const fighterModelImage: FighterModelImage = fighterModelImages.find(
-		(fighterModelImage: FighterModelImage) => fighterModelImage.modelState == modelState)
+		(fighterModelImage: FighterModelImage) => fighterModelImage.modelState == modelState)!
 	
 	const fighterImageStyle = {
 		transform: (facingDirection === 'left' ? `scalex(-1) translateX(50%)` : `scalex(1) translateX(-50%)`),
@@ -131,17 +131,19 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 					}</span>
 					: ''
 				}
-				<div className='fighter__energy-bar'>
-					<div 
-						className='fighter__energy-bar__inner' 
-						style={{width: `${Math.round(energy / 10)}%` }}
-					>
-						
-						</div>
-				</div>
+				
+				{modelState != 'Knocked Out' ?
+					<div className='fighter__energy-bar'>
+						<div 
+							className='fighter__energy-bar__inner' 
+							style={{width: `${Math.floor(energy * 10)}%` }}
+						></div>
+					</div>
+				:''}
 			</div>
-			{retreatingFromFlanked && <div className='fighter__flanked' style={flankedStyle}></div>}
-			{repositioning && <div className='fighter__repositioning' style={repositioningStyle}></div>}
+			{currentAction == 'retreat from flanked' && <div className='fighter__flanked' style={flankedStyle}></div>}
+			{currentAction == 'reposition' && <div className='fighter__repositioning' style={repositioningStyle}></div>}
+			{currentAction == 'fast retreat' && <div className='fighter__fast-retreat' style={repositioningStyle}></div>}
 			
 			<div className='fighter__direction' style={directionStyle}></div>
 			<div 

@@ -12,7 +12,7 @@ import { ConnectedClient } from '../game-host/game-host.types'
 import { postStartTestState, setupTestState, testSetupBeginning } from './setupTestState'
 import { GameHost } from '../game-host/game-host'
 import { Professional, ServerGameUIState } from '../interfaces/front-end-state-interface'
-import { randomNumber } from "../helper-functions/helper-functions"
+import { randomNumberDigits } from "../helper-functions/helper-functions"
 import gameConfiguration from "../game-settings/game-configuration"
 import { VictoryType } from "../types/game/victory-type"
 import { FinalTournament } from "./week-controller/final-tournament/final-tournament"
@@ -70,7 +70,7 @@ export class GameState{
 
 class GameHas{
   protected state: GameState
-  id = randomNumber({digits: 6}).toString()
+  id = randomNumberDigits(6).toString()
   fighters: Fighter[]
   professionals: Professional[]
   players: Player[] = []

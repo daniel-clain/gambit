@@ -1,6 +1,7 @@
 import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway } from "../proximity"
+import { getProbabilityForGeneralAttack } from "./getProbabilityForGeneralAttack"
 
 export const getProbabilityToMoveToAttack = (fighting: FighterFighting): number => {
   const { aggression, intelligence } = fighting.stats
@@ -32,6 +33,9 @@ export const getProbabilityToMoveToAttack = (fighting: FighterFighting): number 
   const log = (...args) => {
     instanceLog(...args, 'probability', probability)
   }
+
+  probability += getProbabilityForGeneralAttack(fighting)
+  log('getProbabilityForGeneralAttack')
 
   if(logistics.onARampage)
     probability += 20

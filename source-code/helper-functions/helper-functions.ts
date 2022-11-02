@@ -6,10 +6,32 @@ import { Angle } from "../types/game/angle";
  * @param startAtOne From 1 to x instead
  * @returns 
  */
-export function random(number: number, startAtOne?: boolean){
-  return Math.round((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
 
-export function randomFloor(number: number, startAtOne?: boolean){return Math.floor((Math.random() * (number + (startAtOne ? -1 : 0))) + (startAtOne ? 1 : 0))}
+ export type OptionProbability<T> = {
+  option: T, 
+  probability: number
+}
+
+export function selectByProbability<T>(optionProbabilities: OptionProbability<T>[]): T {
+
+  const totalProbability = optionProbabilities.reduce(
+    (totalProbability, {probability}) => 
+      totalProbability + probability, 0
+  )
+  const randomProbability = randomNumber({to: totalProbability})
+  let probabilityCount = 0
+  const randomOption = optionProbabilities.find(
+    ({probability}) => {
+      if(
+        randomProbability >= probabilityCount &&
+        randomProbability <= probabilityCount + probability
+      ) return true
+    }
+  )!
+
+  return randomOption.option
+}
+
 
 export const shuffle = <T>(array: T[]): T[] => {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -36,7 +58,10 @@ export function toCamelCase(string: string): string{
 
 
 
-
+export function randomNumber({from, to}:{from?: number, to: number}){
+  from = from || 0
+  return Math.floor(Math.random()*(to-from) + from)
+}
 
 
 export function toWrittenList(array: string[]): string {
@@ -56,7 +81,7 @@ export const percentageChance = ({percentage}: {percentage: number}): boolean =>
   return percentage > Math.floor((Math.random() * 100))
 }
 
-export function check(value, func: (value: number) => [boolean, number][]){
+export function check(value: number, func: (value: number) => [boolean, number][]){
   const array = func(value)
   let result = 0
   array.forEach(([condition, val]: [boolean, number]) => {
@@ -65,16 +90,16 @@ export function check(value, func: (value: number) => [boolean, number][]){
   return result
 }
 
-export function numberLoop(amount, func: (number?: number) => void): any[] {
+export function numberLoop(amount: number, func: (number?: number) => void): any[] {
   let returnVal: any[] = []
   for(let number = 1; number <= amount; number++){
-    returnVal.push(func(number || null))
+    returnVal.push(func(number))
   }
   return returnVal
 }
 
 
-export const randomNumber = ({digits}:{digits: number}) => Math.round(Math.random() * Math.pow(10, digits))
+export const randomNumberDigits = (digits: number) => Math.round(Math.random() * Math.pow(10, digits))
 
 
 export const wait = (milliseconds: number): Promise<void> => new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -137,9 +162,9 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
   let directionOfPosition2FromPosition1: Angle
   let xLength = pos2.x - pos1.x
   let yLength = pos2.y - pos1.y
-  let adjacentSide
-  let oppositeSide
-  let addedDegrees
+  let adjacentSide: number
+  let oppositeSide: number
+  let addedDegrees: number
   if(xLength == 0 && yLength == 0)
     return 0
   if (xLength < 0 && yLength >= 0) {
@@ -163,13 +188,13 @@ export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords)
     addedDegrees = 0
   }
 
-  const degrees = Math.round(Math.atan(oppositeSide / adjacentSide) * (180 / Math.PI))
-  directionOfPosition2FromPosition1 = degrees + addedDegrees
+  const degrees = Math.round(Math.atan(oppositeSide! / adjacentSide!) * (180 / Math.PI))
+  directionOfPosition2FromPosition1 = degrees + addedDegrees!
 
   if(isNaN(directionOfPosition2FromPosition1))
     debugger
 
-  if(degrees + addedDegrees == 360){
+  if(degrees + addedDegrees! == 360){
     directionOfPosition2FromPosition1 = 0
   }
 
@@ -221,25 +246,4 @@ export function validateAngle(angle: Angle): Angle{
   
   return angle
 }
-
-
-export const unwrapToBody = selector => {
-  const element = document.querySelector(selector)
-  const parentElement = element.parentElement
-  if(parentElement.tagName.toLowerCase() == 'body') {
-    const siblings = document.querySelectorAll(`body > *:not(${selector})`)
-    siblings.forEach(sibling => sibling.remove())
-    return
-  }
-  replaceParentWithElement()
-  unwrapToBody(selector)
-
-
-  function replaceParentWithElement(){
-    parentElement.outerHTML = element.outerHTML
-  }
-}
-
-
-
 

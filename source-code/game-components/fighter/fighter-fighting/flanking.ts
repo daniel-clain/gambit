@@ -1,5 +1,5 @@
 import FighterFighting from "./fighter-fighting";
-import { random, getDirectionOfPosition2FromPosition1, getSmallestAngleBetween2Directions, getOppositeDirection } from "../../../helper-functions/helper-functions";
+import { getDirectionOfPosition2FromPosition1, getSmallestAngleBetween2Directions, getOppositeDirection } from "../../../helper-functions/helper-functions";
 import Fighter from "../fighter";
 import { octagon } from "../../fight/octagon";
 import { Angle } from "../../../types/game/angle";
@@ -27,8 +27,8 @@ export default class Flanking {
       behindCloseness > Closeness['nearby']
     ) return
 
-    const inFrontAttacking = logistics.enemyAttackingThisFighter(enemyInFront)
-    const behindAttacking = logistics.enemyAttackingThisFighter(rememberedEnemyBehind)
+    const inFrontAttacking = logistics.isEnemyTargetingThisFighter(enemyInFront)
+    const behindAttacking = logistics.isEnemyTargetingThisFighter(rememberedEnemyBehind)
 
     proximity.flanked = {flankingFighters: [enemyInFront, rememberedEnemyBehind], severityRating: 0}
 
@@ -101,8 +101,8 @@ export default class Flanking {
       
       const closeness1 = proximity.getClosenessBasedOnDistance(fighter1)
       const closeness2 = proximity.getClosenessBasedOnDistance(fighter2)
-      const fighter1Attacking = logistics.enemyAttackingThisFighter(fighter1)
-      const fighter2Attacking = logistics.enemyAttackingThisFighter(fighter2)
+      const fighter1Attacking = logistics.isEnemyTargetingThisFighter(fighter1)
+      const fighter2Attacking = logistics.isEnemyTargetingThisFighter(fighter2)
       if(
         closeness1 <= Closeness['close'] && closeness2 <= Closeness['close']
         &&

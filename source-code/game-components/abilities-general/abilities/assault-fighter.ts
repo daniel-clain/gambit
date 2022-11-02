@@ -1,9 +1,10 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import { random } from "../../../helper-functions/helper-functions"
 import { Employee } from "../../../interfaces/front-end-state-interface"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
 import { handleUnderSurveillance } from "./do-surveillance"
+import { getAbilitySourceManager } from "../ability-service-server"
+import { randomNumber } from "../../../helper-functions/helper-functions"
 
 
 export const assaultFighter: Ability = {
@@ -15,22 +16,15 @@ export const assaultFighter: Ability = {
 
 export const assaultFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
-
+    const {source, target} = abilityData
+    const fighter = game.has.fighters.find(fighter => fighter.name == target!.name)!
     
     const {weekNumber} = game.has.weekController
     
+    const assaultersManager = getAbilitySourceManager(source!, game)    
 
-    let assaulter: Employee
-    let assaultersManager: Manager
-    for(let manager of game.has.managers){
-      assaulter = manager.has.employees.find(employee => employee.name == abilityData.source.name)
-      if(assaulter){
-        assaultersManager = manager
-        break
-      }
-    }
-    
+    const assaulter = assaultersManager.has.employees.find(employee => employee.name == abilityData.source!.name)!
+
     if(assaultersManager.state.underSurveillance){
       handleUnderSurveillance({surveilledManager: assaultersManager, abilityData, game})
     }
@@ -42,14 +36,14 @@ export const assaultFighterServer: ServerAbility = {
     let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)
     if(guardLevel > 0){
-      const randomNum = random(100, true)
+      const randomNum = randomNumber({to: 100})
       if(randomNum < 15 - guardLevel * 5 + assaulter.skillLevel * 5)
         success = true
       else
         guardBlocked = true
     }
     else {
-      const randomNum = random(100, true)
+      const randomNum = randomNumber({to: 100})
       if(randomNum < 85 + assaulter.skillLevel * 5)
         success = true
 
@@ -74,14 +68,14 @@ export const assaultFighterServer: ServerAbility = {
       })   
       assaultersManager.functions.addToLog({        
         weekNumber,
-        message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name} because he was guarded by thugs`, type: 'employee outcome'
+        message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${target!.name} because he was guarded by thugs`, type: 'employee outcome'
       })  
     }
     else
       assaultersManager.functions.addToLog({
         weekNumber,
         type: 'employee outcome',         
-        message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${abilityData.target.name}`
+        message: `${assaulter.profession} ${assaulter.name} failed to assault target fighter ${target!.name}`
       })
       
 

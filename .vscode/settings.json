@@ -10,8 +10,12 @@
     "headbar",
     "hitmen",
     "Matchups",
+    "Norbit",
     "Objs",
     "Regen",
     "scalex"
+  ],
+  "cSpell.enableFiletypes": [
+    "!json"
   ]
 }

@@ -1,7 +1,8 @@
-import { random } from "../../../helper-functions/helper-functions"
+
+import { randomNumber } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import { getAbilitySourceManager, getSourceType } from "../ability-service-server"
+import { Ability, ServerAbility, AbilityData } from "../ability"
+import { getAbilitySourceManager } from "../ability-service-server"
 import { handleUnderSurveillance } from "./do-surveillance"
 
 
@@ -14,9 +15,9 @@ export const dopeFighter: Ability = {
 
 export const dopeFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const {source} = abilityData
-    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
-    const sourceManager = getAbilitySourceManager(source, game)
+    const {source, target} = abilityData
+    const fighter = game.has.fighters.find(fighter => fighter.name == target!.name)!
+    const sourceManager = getAbilitySourceManager(source!, game)
 
 
     if(sourceManager.state.underSurveillance){
@@ -29,9 +30,9 @@ export const dopeFighterServer: ServerAbility = {
 
     
     if(fighter.state.doping){
-      if(random(100) < 10) fighterDead()
+      if(randomNumber({to: 100}) < 10) fighterDead()
     } else {
-      if(random(100) < 2) fighterDead()
+      if(randomNumber({to: 100}) < 2) fighterDead()
     }
 
     if(!fighter.state.dead){

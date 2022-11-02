@@ -88,7 +88,7 @@ const gameConfiguration = {
     {week: 6, fighters:3},
     {week: 14, fighters:4}
   ],
-  videos: <{name: VideoName, videos}[]>[
+  videos: <{name: VideoName, videos: {duration: number}[]}[]>[
     {
       name: 'Final Tournament',
       videos:[{

@@ -8,10 +8,10 @@ import { ActivityLogItem } from '../types/game/activity-log-item';
 import { ManagerImage } from '../types/game/manager-image';
 import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
 import { Game } from './game';
-import { FighterInfo, Loan, Employee } from '../interfaces/front-end-state-interface';
+import { FighterInfo, Loan, Employee, FighterStateData } from '../interfaces/front-end-state-interface';
 import { Evidence } from '../types/game/evidence.type';
 import { Lawsuit } from '../types/game/lawsuit.type';
-import { randomFloor } from '../helper-functions/helper-functions';
+import { randomNumber } from '../helper-functions/helper-functions';
 
 
 
@@ -41,7 +41,7 @@ export interface ManagerInfo{
   knownFighters: FighterInfo[]
   loan?: Loan
   nextFightBet?: Bet
-  employees?: Employee[]
+  employees: Employee[]
   readyForNextFight: boolean
   otherManagers: KnownManager[]
   activityLogs: ActivityLogItem[]
@@ -52,7 +52,7 @@ export interface ManagerInfo{
 
 export class ManagerState{
   readyForNextFight: boolean = false
-  underSurveillance: {professional: string} = undefined
+  underSurveillance?: {professional: string}
   beingProsecuted: boolean = false
   retired: boolean
   inJail: {
@@ -72,7 +72,7 @@ class ManagerHas{
   fighters: Fighter[] = []
   employees: Employee[] = []
   loan: Loan
-  image: ManagerImage = randomFloor(2) ? 'Fat Man' : 'Moustache Man'
+  image: ManagerImage = randomNumber({to: 1}) ? 'Fat Man' : 'Moustache Man'
   nextFightBet?: Bet
   otherManagers: KnownManager[] = []
   knownFighters: FighterInfo[] = []
@@ -117,7 +117,7 @@ class ManagerFunctions{
       characterType: 'Manager',
       ...this.manager.state,
       ...this.manager.has,
-      otherManagers: this.manager.has.otherManagers?.filter(om => !this.game.has.managers.find(m => m.has.name == om.name).state.retired),
+      otherManagers: this.manager.has.otherManagers?.filter(om => !this.game.has.managers.find(m => m.has.name == om.name)!.state.retired),
       fighters: this.manager.has.fighters.map(f => f.getInfo())
     }
   }
@@ -156,8 +156,9 @@ class ManagerFunctions{
     }
   }
 
-  getKnownFighterStats(nextFightFighters: Fighter[]){
-    return nextFightFighters.map(fighter => {
+  getFighterStateData(fighters: Fighter[]): FighterStateData[] {
+    
+    return fighters.map(fighter => {
       const {sick, injured, doping, hallucinating, takingADive} = fighter.state
       const foundFighter = [
         ...this.manager.has.knownFighters,
@@ -168,18 +169,11 @@ class ManagerFunctions{
 
         return {name, sick, hallucinating, injured, doping, takingADive, ...knownFighterStats}
       }
-      return {
+      const unknownFighter: FighterStateData = {
         name: fighter.name, 
-        sick, injured, hallucinating, doping, 
-        fitness: undefined, 
-        strength: undefined, 
-        aggression: undefined, 
-        intelligence: undefined, 
-        numberOfFights: undefined, 
-        manager: undefined, 
-        numberOfWins: undefined, 
-        takingADive: undefined}
-
+        sick, injured, hallucinating, doping, takingADive, 
+      }
+      return unknownFighter
     })
   }
 

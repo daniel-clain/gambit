@@ -8,15 +8,13 @@ import './ability-block.scss'
 import { isPossibleToPerformAbility } from '../../../../../../front-end-service/ability-service-client';
 
  export const AbilityBlock = observer(({abilityData}: {abilityData: AbilityData}) => {
-  const {
-    serverUIState: {serverGameUIState: {
-      enoughFightersForFinalTournament,
-      playerManagerUIState: {managerInfo, delayedExecutionAbilities, week, jobSeekers, nextFightFighters}
-    }}
-  } = frontEndState
+  const {serverUIState: {serverGameUIState}} = frontEndState
 
+  const {managerInfo, delayedExecutionAbilities, week, jobSeekers} = serverGameUIState!.playerManagerUIState!
 
-  let disabled = !isPossibleToPerformAbility(abilityData, managerInfo, delayedExecutionAbilities, week, enoughFightersForFinalTournament, jobSeekers, nextFightFighters)
+  const {enoughFightersForFinalTournament} = serverGameUIState!
+
+  let disabled = !isPossibleToPerformAbility(abilityData, managerInfo, delayedExecutionAbilities, week, enoughFightersForFinalTournament, jobSeekers)
 
   
   return (

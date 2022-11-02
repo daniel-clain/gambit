@@ -23,7 +23,7 @@ export function initialSetup(){
   }
 
   runInAction(() => {
-    frontEndState.clientUIState.clientPreGameUIState.clientId = clientId
+    frontEndState.clientUIState.clientPreGameUIState.clientId = clientId!
   })
 
   let clientName = localStorage.getItem('clientName')
@@ -48,32 +48,12 @@ export const setNameAndTryToConnect = name => {
   }
 }
 
-function setActiveModal(name: CardName | null, data?: unknown){
-  let modalObj: Modal
-  if(!name){
-    modalObj = null
-  }else{
-    modalObj = {
-      name,
-      data
-    }
-  }
+function setActiveModal(name?: CardName, data?: unknown){
+  const modalObj = name && {name, data}
+  const {clientManagerUIState} = frontEndState.clientUIState.clientGameUIState
   runInAction(() => {
-    frontEndState.clientUIState.clientGameUIState.clientManagerUIState.activeModal = modalObj
+    clientManagerUIState.activeModal = modalObj
   })
-}
-
-export function convertThisManagerToKnownManager(): KnownManager{
-  const {name, image, money, loan, employees, fighters, evidence} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
-  return {
-    name, image,
-    characterType: 'Known Manager',
-    money: {weeksSinceUpdated: null, lastKnownValue: money},
-    loan: {weeksSinceUpdated: null, lastKnownValue: loan},
-    employees: {weeksSinceUpdated: null, lastKnownValue: employees},
-    fighters: {weeksSinceUpdated: null, lastKnownValue: fighters},
-    evidence: {weeksSinceUpdated: null, lastKnownValue: evidence},
-  }
 }
 
 export function showLoanShark(){
@@ -102,10 +82,7 @@ export function showGameExplanation(){
   setActiveModal('Game Explanation')
 }
 export function closeModal(){
-  setActiveModal(null)
-}
-export function closeSelectList(){
-  setActiveModal(null)
+  setActiveModal()
 }
 export function showFighter(fighterName: string){
   setActiveModal('Fighter', fighterName)
@@ -126,7 +103,7 @@ export function connectToGameHost() {
 }
 
 export function getSortedActivityLogs(): ActivityLogItem[]{
-  const {activityLogs} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState.managerInfo
+  const {activityLogs} = frontEndState.serverUIState.serverGameUIState!.playerManagerUIState!.managerInfo
   
 
   const sortedLogs = activityLogs.sort((a, b) => b.weekNumber - a.weekNumber)

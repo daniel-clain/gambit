@@ -18,13 +18,7 @@ import { toJS } from 'mobx';
 
 
 export const FighterCard = observer(() => {
-  const {
-    serverUIState: {serverGameUIState: {
-      playerManagerUIState: {
-        managerInfo: {knownFighters, fighters}, nextFightFighters
-      },
-      
-    }},
+  const {serverUIState: {serverGameUIState},
     clientUIState: {
       clientPreGameUIState: {clientName},
       clientGameUIState: {
@@ -32,20 +26,29 @@ export const FighterCard = observer(() => {
       }
     }
   } = frontEndState
-  const fighterName = activeModal.data as string
+  
+  const {
+    enoughFightersForFinalTournament,
+    playerManagerUIState
+  } = serverGameUIState!
+
+  const {
+    managerInfo: {knownFighters, fighters},
+    delayedExecutionAbilities,
+    jobSeekers,
+    week
+  } = playerManagerUIState!
+
+  const fighterName = activeModal!.data as string
   const thisPlayersName = clientName
   const allFighters = [...knownFighters, ...fighters]
-  const fighter = allFighters.find(f => f.name == fighterName)
+  const fighter = allFighters.find(f => f.name == fighterName)!
   const isYourFighter = fighter.manager?.lastKnownValue == thisPlayersName
 
-  let goalContractInfo: InfoBoxListItem[]
-
-  if(fighter.goalContract){
-    goalContractInfo = [        
+  const goalContractInfo = fighter.goalContract && [        
     {label: 'Number of weeks', value: fighter.goalContract.numberOfWeeks},
     {label: 'Weekly cost', value: fighter.goalContract.weeklyCost}
-    ]
-  }
+  ]
 
   const abilitiesThatTargetFighter = getAbilitiesThatCanTargetThis(fighter)
   
@@ -75,13 +78,10 @@ export const FighterCard = observer(() => {
 
 
   
-  let contractInfo: InfoBoxListItem[]
-  
-  if(isYourFighter)
-    contractInfo = [
-      {label: 'Weeks remaining', value: fighter.activeContract.weeksRemaining},
-      {label: 'Cost per week', value: fighter.activeContract.weeklyCost}
-    ]
+  const contractInfo = isYourFighter && [
+    {label: 'Weeks remaining', value: fighter.activeContract.weeksRemaining},
+    {label: 'Cost per week', value: fighter.activeContract.weeklyCost}
+  ] || undefined
 
 
   return (

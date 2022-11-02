@@ -15,7 +15,7 @@ import { decideAction, promTest } from './prom-test';
 export const FighterTest_C = () => {
 
   const [paused, setPaused] = useState(false)
-  const [fight, setFight] = useState<Fight>(undefined)
+  const [fight, setFight] = useState<Fight>()
   const [fightersList, setFightersList] = useState([])
 
 

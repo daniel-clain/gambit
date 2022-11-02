@@ -1,9 +1,10 @@
 import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
 import { Employee } from "../../../interfaces/front-end-state-interface"
-import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
 import { Manager } from "../../manager"
 import { handleUnderSurveillance } from "./do-surveillance"
+import { getAbilitySourceManager } from "../ability-service-server"
+import { randomNumber } from "../../../helper-functions/helper-functions"
 
 
 export const murderFighter: Ability = {
@@ -16,23 +17,17 @@ export const murderFighter: Ability = {
 
 export const murderFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const {source, target} = abilityData
+    const fighter = game.has.fighters.find(fighter => fighter.name == target!.name)!
     const {weekNumber} = game.has.weekController
     
     const fightersManager = fighter.state.manager
-    let hitman: Employee
-    let hitmansManager: Manager
-    for(let manager of game.has.managers){
-      hitman = manager.has.employees.find(employee => employee.name == abilityData.source.name)
-      if(hitman){
-        hitmansManager = manager
-        break
-      }
-    }
 
+    const sourceManager = getAbilitySourceManager(source!, game)
+    const hitman = sourceManager.has.employees.find(employee => employee.name == source!.name)!
     
-    if(hitmansManager.state.underSurveillance){
-      handleUnderSurveillance({surveilledManager: hitmansManager, abilityData, game})
+    if(sourceManager.state.underSurveillance){
+      handleUnderSurveillance({surveilledManager: sourceManager, abilityData, game})
     }
     if(fighter.state.underSurveillance){
       handleUnderSurveillance({surveilledFighter: fighter, abilityData, game})
@@ -42,14 +37,14 @@ export const murderFighterServer: ServerAbility = {
     let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)
     if(guardLevel > 0){
-      const randomNum = random(100, true)
+      const randomNum = randomNumber({to: 100})
       if(randomNum < 15 - guardLevel * 5 + hitman.skillLevel * 5)
         success = true
       else
         guardBlocked = true
     }
     else {
-      const randomNum = random(100, true)
+      const randomNum = randomNumber({to: 100})
       if(randomNum < 65 + hitman.skillLevel * 5)
         success = true
     }
@@ -65,10 +60,10 @@ export const murderFighterServer: ServerAbility = {
           weekNumber,
           type: 'critical', message: `Your fighter, ${fighter.name}, has been murdered`})
         
-      hitmansManager.functions.addToLog({
+          sourceManager.functions.addToLog({
         weekNumber,
         type: 'employee outcome',
-        message: `Hitman ${hitman.name} has murdered fighter ${abilityData.target.name}`
+        message: `Hitman ${hitman.name} has murdered fighter ${target!.name}`
       })
     }
     else if(guardBlocked){
@@ -77,17 +72,17 @@ export const murderFighterServer: ServerAbility = {
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${fighter.name} from an attempted murder`
       })      
-      hitmansManager.functions.addToLog({
+      sourceManager.functions.addToLog({
         weekNumber,        
         type: 'employee outcome',
-        message: `Hitman ${hitman.name} failed to murder target fighter ${abilityData.target.name} because he was guarded by thugs`
+        message: `Hitman ${hitman.name} failed to murder target fighter ${target!.name} because he was guarded by thugs`
       })
     }
     else
-      hitmansManager.functions.addToLog({
+      sourceManager.functions.addToLog({
         weekNumber,        
         type: 'employee outcome', 
-        message: `Hitman ${hitman.name} failed to murder target fighter ${abilityData.target.name}`
+        message: `Hitman ${hitman.name} failed to murder target fighter ${target!.name}`
       })
 
   },

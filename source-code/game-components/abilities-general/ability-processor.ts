@@ -13,7 +13,6 @@ import { sellDrugsServer } from './abilities/sell-drugs';
 import { prosecuteManagerServer } from './abilities/prosecute-manager';
 import { trainFighterServer } from './abilities/train-fighter';
 import { dopeFighterServer } from './abilities/dope-fighter';
-import { random } from '../../helper-functions/helper-functions';
 import { ContractOffer, GoalContract } from '../../interfaces/game/contract.interface';
 import { Game } from '../game';
 import { investigateManagerServer } from './abilities/investigate-manager';
@@ -23,8 +22,8 @@ import { wealthVictoryServer } from './abilities/wealth-victory';
 import { takeADiveServer } from './abilities/take-a-dive';
 
 import { getAbilitySourceManager } from './ability-service-server';
-import { ifSourceIsEmployee, ifSourceIsManager } from '../../client/front-end-service/ability-service-client';
 import { giveUpServer } from './abilities/give-up';
+import { randomNumber } from '../../helper-functions/helper-functions';
 
 export interface AbilityProcessor{
   delayedExecutionAbilities: AbilityData[]
@@ -192,15 +191,11 @@ export class AbilityProcessor{
 
     const manager = getAbilitySourceManager(source, this.game)
 
-    ifSourceIsManager(source, () => {
-      console.log('ability :>> ', ability);
-      manager.has.actionPoints -= ability.cost.actionPoints
-    })
-    
-    ifSourceIsEmployee(source, () => {
-      const employee = manager.has.employees.find(e => e.name == source.name)
-      employee.actionPoints -= ability.cost.actionPoints
-    })
+
+    ;(
+      source.characterType == 'Manager' && manager.has || 
+      manager.has.employees.find(e => e.name == source.name)!
+    ).actionPoints -= ability.cost.actionPoints
     
     manager.has.money -= ability.cost.money
 
@@ -209,7 +204,7 @@ export class AbilityProcessor{
   private handleOfferContractInstances(offerContractAbility: ServerAbility, offerContractInstances: AbilityData[]){
     const {weekController, fighters} = this.game.has
     const {jobSeekers, weekNumber} = weekController
-    const offerContractTargets = getOffersArray()
+    const offerContractTargets = getOffersArray(this.game)
 
   
     
@@ -230,7 +225,7 @@ export class AbilityProcessor{
       if(numberOfTiedInstances == 1)   
         selectedSourceName = bestOfferInstances[0].source.name
       else{
-        const randomSelection = random(numberOfTiedInstances - 1)
+        const randomSelection = randomNumber({to: numberOfTiedInstances - 1})
         selectedSourceName = bestOfferInstances[randomSelection].source.name
       }
       offerContractTarget.instances.forEach(offerContractInstance => {
@@ -256,7 +251,7 @@ export class AbilityProcessor{
 
     /* implementation */
   
-    function getOffersArray(): {targetName: string, instances: AbilityData[]}[]{
+    function getOffersArray(game: Game): {targetName: string, instances: AbilityData[]}[]{
       
       const offers: {targetName: string, instances: AbilityData[]}[] = []
 
@@ -271,10 +266,10 @@ export class AbilityProcessor{
         else
           goalContract = fighters.find(fighter => fighter.name == target.name).state.goalContract
 
-        const randomThreshold = (random(5) + 5) / 10
+        const randomThreshold = (randomNumber({to: 5}) + 5) / 10
         if(contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold){
           
-          const manager = this.getAbilitySourceManager(offerContractInstance)
+          const manager = getAbilitySourceManager(offerContractInstance.source, game)
 
           manager.functions.addToLog({
             weekNumber,

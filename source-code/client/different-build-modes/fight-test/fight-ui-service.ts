@@ -1,5 +1,6 @@
 
 import { runInAction } from 'mobx';
+import { Subscription } from 'rxjs';
 import Fight from '../../../game-components/fight/fight';
 import Fighter from '../../../game-components/fighter/fighter';
 import gameConfiguration from '../../../game-settings/game-configuration';
@@ -42,8 +43,8 @@ const fighters = [
 
 export const fightUiService = {
 	
-	fight: new Fight(shuffle(fighters), null),
-	fightSubscription: undefined,
+	fight: <Fight | undefined> new Fight(shuffle(fighters), null!),
+	fightSubscription: <Subscription | undefined>undefined,
 	newFight(fightersList){
 		this.fightSubscription?.unsubscribe()
 		delete this.fight
@@ -57,7 +58,7 @@ export const fightUiService = {
 			return newFighter
 		}) : this.fighters
 		fighters.forEach(f => f.reset())
-		this.fight = new Fight(fighters, null)
+		this.fight = new Fight(fighters, null!)
 		
 		this.fightSubscription = (this.fight as Fight).fightUiDataSubject.subscribe(fightUiData => {
 			runInAction(() => {
@@ -75,7 +76,7 @@ export const fightUiService = {
 
 
 
-const f = n => fighters.find(f => f.name == n)
+const f = n => fighters.find(f => f.name == n)!
 const s = (f:Fighter,u) => f && Object.keys(u).forEach(updateKey => 
 	f.fighting.stats[updateKey] = u[updateKey]
 )

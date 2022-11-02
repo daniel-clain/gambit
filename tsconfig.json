@@ -2,9 +2,11 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "noImplicitAny": false,
     "sourceMap": true,
-    "strict": false,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
     "module": "CommonJS",
     "target": "es6",
     "jsx": "react",
@@ -12,9 +14,6 @@
     "moduleResolution": "node",
   },
   "include": [
-    "./source-code/**/*"
-, "source-code/custom.d.ts"  ],
-  "exclude": [
-    "./node_modules"
+    "./source-code/"
   ]
 }

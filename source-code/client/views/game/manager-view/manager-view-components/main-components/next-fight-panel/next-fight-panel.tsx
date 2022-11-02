@@ -8,9 +8,8 @@ import { showFighter } from '../../../../../../front-end-service/front-end-servi
 
 export const NextFightPanel = observer(() => {
 
-  const {
-    nextFightFighters, managerInfo
-  } = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {managerInfo, nextFightFighters} = serverGameUIState!.playerManagerUIState!
   const {nextFightBet, fighters} = managerInfo
   
   return (

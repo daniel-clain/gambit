@@ -1,6 +1,6 @@
 
 import gameConfiguration from "../../game-settings/game-configuration";
-import { random } from "../../helper-functions/helper-functions";
+import { randomNumber } from "../../helper-functions/helper-functions";
 import { Employee, FighterInfo, KnownFighterStat, Professional } from "../../interfaces/front-end-state-interface";
 import Fighter from "../fighter/fighter";
 import { Game } from "../game";
@@ -59,8 +59,8 @@ export function doEndOfWeekUpdates(game: Game) {
     }))
 
     fighters.forEach(f => {
-      const isAJobseeker = weekController.jobSeekers.some(j => j.name == f.name)
-      if(isAJobseeker){
+      const isAJobSeeker = weekController.jobSeekers.some(j => j.name == f.name)
+      if(isAJobSeeker){
         delete f.state.goalContract
       }
     })
@@ -85,13 +85,13 @@ export function doEndOfWeekUpdates(game: Game) {
     fighters.forEach(fighter => {
       let {stats} = fighter.fighting
 
-      if(stats.fitness > 8  && random(3, true) == 3)
+      if(stats.fitness > 8  && randomNumber({from: 1, to: 3}) == 3)
         stats.baseFitness = reduceStat(stats.baseFitness)
         
-      if(stats.strength > 8  && random(3, true) == 3)
+      if(stats.strength > 8  && randomNumber({from: 1, to: 3}) == 3)
         stats.baseStrength = reduceStat(stats.baseStrength)
         
-      if(stats.baseAggression > 8  && random(3, true) == 3)
+      if(stats.baseAggression > 8  && randomNumber({from: 1, to: 3}) == 3)
         stats.baseAggression = reduceStat(stats.baseAggression)
         
 
@@ -246,14 +246,14 @@ export function doEndOfWeekUpdates(game: Game) {
       if(manager.has.fighters.length == 0)
         return
       
-      const randomFighter = manager.has.fighters[random(manager.has.fighters.length - 1)]
+      const randomFighter = manager.has.fighters[randomNumber({to: manager.has.fighters.length - 1})]
 
       let randomStat
       let failSafeTries = 0
       const decrement = 2
       while(!randomStat || randomFighter.fighting.stats[randomStat] < decrement){
         const stats = ['baseStrength', 'baseFitness', 'baseIntelligence']
-        randomStat = stats[random(3)]
+        randomStat = stats[randomNumber({to: 3})]
         failSafeTries ++
         if(failSafeTries == 10)
           return        

@@ -28,15 +28,8 @@ import { toJS } from "mobx"
 
 export const Manager_View = observer(() => {
 
-  const {
-    serverUIState: { serverGameUIState: {
-      playerManagerUIState: {
-        week, managerOptionsTimeLeft, managerInfo
-      }
-    }},
-    clientUIState: { clientGameUIState }
-  } = frontEndState
-
+  const {serverUIState: {serverGameUIState},clientUIState:{clientGameUIState}} = frontEndState
+  const {managerInfo, managerOptionsTimeLeft, week} = serverGameUIState!.playerManagerUIState!
   const activeModal = clientGameUIState?.clientManagerUIState?.activeModal
 
   useEffect(() => {

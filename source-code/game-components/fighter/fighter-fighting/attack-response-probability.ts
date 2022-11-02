@@ -3,19 +3,20 @@ import Fighter from "../fighter"
 import { AttackType } from "../../../types/fighter/attack-types"
 import { ActionName, AttackResponseAction } from "../../../types/fighter/action-name"
 import { isFacingAwayFromEnemy } from "./proximity"
+import { ActionProbability } from "./random-based-on-probability"
 
 export default class AttackResponseProbability {
   
   constructor(public fighting: FighterFighting){}
 
-  getProbabilityTo(action: AttackResponseAction, enemy: Fighter, attackType: AttackType): [AttackResponseAction, number]{
+  getProbabilityTo(action: AttackResponseAction, enemy: Fighter, attackType: AttackType): ActionProbability{
     switch(action){      
       case 'dodge':
-        return [action, this.getProbabilityToDodge(enemy, attackType)]
+        return {action, probability: this.getProbabilityToDodge(enemy, attackType)}
       case 'block':
-        return [action, this.getProbabilityToBlock(enemy, attackType)]
+        return {action, probability: this.getProbabilityToBlock(enemy, attackType)}
       case 'take hit':
-        return [action, this.getProbabilityToTakeHit(enemy, attackType)]
+        return {action, probability: this.getProbabilityToTakeHit(enemy, attackType)}
     }
   }
   

@@ -1,7 +1,6 @@
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
-import { Employee } from "../../../interfaces/front-end-state-interface"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 import { Game } from "../../game"
-import { Manager } from "../../manager"
+import { getAbilitySourceManager } from "../ability-service-server"
 
 
 export const guardFighter: Ability = {
@@ -13,18 +12,11 @@ export const guardFighter: Ability = {
 
 export const guardFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const fighter = game.has.fighters.find(fighter => fighter.name == abilityData.target.name)
+    const {source, target} = abilityData
+    const fighter = game.has.fighters.find(fighter => fighter.name == target!.name)!
 
-    
-    let bodyGuard: Employee
-    let guardsManager: Manager
-    for(let manager of game.has.managers){
-      bodyGuard = manager.has.employees.find(employee => employee.name == abilityData.source.name)
-      if(bodyGuard){
-        guardsManager = manager
-        break
-      }
-    } 
+    const sourceManager = getAbilitySourceManager(source!, game)
+    const bodyGuard = sourceManager.has.employees.find(employee => employee.name == source!.name)!
 
 
     fighter.state.guards.push(bodyGuard)

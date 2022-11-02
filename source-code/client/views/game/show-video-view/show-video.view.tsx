@@ -1,23 +1,24 @@
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect , useRef } from 'react';
 import {getVideos} from '../../../videos/videos';
 import { frontEndState } from '../../../front-end-state/front-end-state';
 import {observer} from 'mobx-react'
 
 export const ShowVideo_View = observer(() => {
-  const {selectedVideo} = frontEndState.serverUIState.serverGameUIState
+  const {selectedVideo} = frontEndState.serverUIState.serverGameUIState!
   const videos = getVideos()
   console.log(videos)
 
-  useEffect(() => {
-    (videoElement.current as HTMLVideoElement).play()
+  const videoElement = useRef<HTMLVideoElement>(null)
+
+  useLayoutEffect (() => {
+    videoElement.current?.play()
   }, [])
 
-  const videoElement = useRef()
 
   const relevantVideos = videos?.find(v => 
     v.name == selectedVideo.name
-  ).videos
+  )!.videos
 
   const video = relevantVideos[selectedVideo.index].source
 

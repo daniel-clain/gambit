@@ -8,7 +8,8 @@ import { observer } from 'mobx-react';
 import { getTryToWinAbilities } from '../../../../../../front-end-service/ability-service-client';
 
 export const WinOptionsCard = observer(() => {
-  const {managerInfo} = frontEndState.serverUIState.serverGameUIState.playerManagerUIState
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {managerInfo} = serverGameUIState!.playerManagerUIState!
   const winOptions = getTryToWinAbilities()
   return (
     <Modal>

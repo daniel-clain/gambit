@@ -7,12 +7,10 @@ import './display-manager-options-ui.scss'
 
 export const DisplayManagerOptionsUi = observer(() => {
 
-  const {
-    serverUIState: { serverGameUIState: { weekStage, displayManagerUIState: {
-        timeLeft, nextFightFighters, jobSeekers, managersDisplayInfo
-      }
-    }}
-  } = frontEndState
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {displayManagerUIState} = serverGameUIState!
+  const {timeLeft, nextFightFighters, jobSeekers, managersDisplayInfo} = displayManagerUIState!
+
   return (
     <div className='game-display-manager-options'>
       <div className="game-display-manager-options__background"></div>

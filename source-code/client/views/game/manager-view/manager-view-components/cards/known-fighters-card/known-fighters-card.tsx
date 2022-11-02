@@ -6,11 +6,8 @@ import { showFighter } from '../../../../../../front-end-service/front-end-servi
 
 
 export const KnownFightersCard = observer(() => {
-  const {
-    serverUIState: {serverGameUIState: {
-      playerManagerUIState: {managerInfo: {knownFighters}}
-    }}
-  } = frontEndState
+  const {serverUIState: {serverGameUIState}} = frontEndState
+  const {knownFighters} = serverGameUIState!.playerManagerUIState!.managerInfo
   return (
     <Modal>    
       <div className='panel known-fighters'>

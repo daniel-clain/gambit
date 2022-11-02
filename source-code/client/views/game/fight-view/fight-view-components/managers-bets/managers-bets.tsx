@@ -3,6 +3,7 @@ import './managers-bets.scss'
 import { useEffect, useState } from 'react';
 import { MoneyRain } from './money-rain';
 import { ManagersBet, FightReport } from '../../../../../../interfaces/front-end-state-interface';
+import { ManagerInfo } from '../../../../../../game-components/manager';
 
 interface ManagersBetProps {
   managersBets: ManagersBet[]
@@ -16,7 +17,7 @@ export const ManagersBets_C = ({ managersBets, report, isDisplay }: ManagersBetP
   const hasWinnings = report?.managerWinnings?.some(({ winnings }) => winnings > 0)
 
 
-  const managerWinnings = (manager): number => {
+  const managerWinnings = (manager: ManagersBet) => {
     return report?.managerWinnings?.find(m => m.managerName == manager.name)?.winnings
   }
 

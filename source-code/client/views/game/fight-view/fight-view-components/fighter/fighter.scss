@@ -33,9 +33,9 @@ $image-folder: '../../../../../images';
     width: 90px;
   }
   &__energy-bar{
-    display: none;
+    //display: none;
     height: 4px;
-    width: 100%;
+    width: 50px;
     border: 1px solid black;
     &__inner{
       height: 100%;
@@ -52,6 +52,15 @@ $image-folder: '../../../../../images';
     height: 17px;
     background-image: url('#{$image-folder}/icons/exclamations.png');
     left: -25px
+  }
+  &__fast-retreat{
+    //display: none;
+    position: absolute;
+    width: 15px;
+    height: 17px;
+    background-image: url('#{$image-folder}/icons/exclamations.png');
+    left: -25px;
+    filter: hue-rotate(260deg);
   }
   
   &__repositioning{

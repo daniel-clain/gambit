@@ -1,6 +1,6 @@
 
 import gameConfiguration from "../../game-settings/game-configuration";
-import { shuffle, random, percentageChance } from "../../helper-functions/helper-functions";
+import { shuffle, percentageChance, randomNumber, OptionProbability, selectByProbability } from "../../helper-functions/helper-functions";
 import { GoalContract } from "../../interfaces/game/contract.interface";
 import Fighter from "../fighter/fighter";
 import Fight from "../fight/fight";
@@ -109,42 +109,42 @@ export function setupNewWeek(game: Game){
       switch(professional.profession){
         case 'Drug Dealer':
           goalContract = {
-            numberOfWeeks: 2 + random(4, true),
+            numberOfWeeks: 2 + randomNumber({from: 1, to: 4}),
             weeklyCost: 20 * professional.skillLevel
           }; break
         case 'Hitman':
           goalContract = {
-            numberOfWeeks: 1 + random(1, true),
+            numberOfWeeks: 1 + randomNumber({from: 1, to: 2}),
             weeklyCost: 30 * professional.skillLevel
           }; break      
         case 'Private Agent':
           goalContract = {
-            numberOfWeeks: 2 + random(2, true),
+            numberOfWeeks: 2 + randomNumber({from: 1, to: 3}),
             weeklyCost: 20 * professional.skillLevel
           }; break
         case 'Lawyer':
           goalContract = {
-            numberOfWeeks: 1 + random(1, true),
+            numberOfWeeks: 1 + randomNumber({from: 1, to: 2}),
             weeklyCost: 20 * professional.skillLevel
           }; break      
         case 'Promoter':
           goalContract = {
-            numberOfWeeks: 2 + random(3, true),
+            numberOfWeeks: 2 + randomNumber({from: 1, to: 4}),
             weeklyCost: 10 * professional.skillLevel
         }; break      
         case 'Talent Scout':
           goalContract = {
-            numberOfWeeks: 1 + random(5, true),
+            numberOfWeeks: 1 + randomNumber({from: 1, to: 6}),
             weeklyCost: 5 * professional.skillLevel
         }; break
         case 'Thug':
           goalContract = {
-            numberOfWeeks: 5 + random(3, true),
+            numberOfWeeks: 5 + randomNumber({from: 1, to: 4}),
             weeklyCost: 10 
         }; break
         case 'Trainer':
           goalContract = {
-            numberOfWeeks: 6 + random(4, true),
+            numberOfWeeks: 6 + randomNumber({from: 1, to: 5}),
             weeklyCost: 5 * professional.skillLevel
         }; break
       }
@@ -196,7 +196,7 @@ export function setupNewWeek(game: Game){
     const randomFighters: Fighter[] = []
 
     for (; randomFighters.length < numOfFighters;) {
-      const fightersRandomChance: {fighter: Fighter, chance: number}[] = fighters
+      const fightersRandomChance: OptionProbability<Fighter>[] = fighters
       .filter(fighter => 
         !fighter.state.dead &&
         !weekController.lastFightFighters.includes(fighter.name) &&
@@ -204,28 +204,11 @@ export function setupNewWeek(game: Game){
       )
       .map(fighter => (
         {
-          fighter,
-          chance: 1 + fighter.state.publicityRating
+          option: fighter,
+          probability: 1 + fighter.state.publicityRating
         }
       ))
-
-      const totalProbability: number = fightersRandomChance.reduce((total, fighter) => total + fighter.chance, 0)  
-
-      const randomNum = random(totalProbability, true)
-
-      let probabilityRange: number = 0;
-
-      for (let fighterChance of fightersRandomChance) {
-        if (
-          randomNum > probabilityRange &&
-          randomNum <= probabilityRange + fighterChance.chance
-        ){
-          randomFighters.push(fighterChance.fighter)
-          break
-        }
-        else
-          probabilityRange += fighterChance.chance
-      }
+      randomFighters.push(selectByProbability(fightersRandomChance))
     }
 
     

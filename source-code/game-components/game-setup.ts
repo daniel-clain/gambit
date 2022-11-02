@@ -1,12 +1,13 @@
-import { Employee, FightUIState, GameFinishedData, Professional, SelectedVideo } from "../interfaces/front-end-state-interface";
+import { Employee, FighterStateData, FightUIState, GameFinishedData, Professional, SelectedVideo } from "../interfaces/front-end-state-interface";
 import gameConfiguration from "../game-settings/game-configuration";
-import { numberLoop, random, shuffle } from "../helper-functions/helper-functions";
+import { numberLoop, randomNumber, selectByProbability, shuffle } from "../helper-functions/helper-functions";
 import { Profession } from "../types/game/profession";
 import SkillLevel from "../types/game/skill-level.type";
 import Fighter from "./fighter/fighter";
 import { Game } from "./game";
 import { Manager } from "./manager";
 import { VideoName } from "../client/videos/videos";
+import Fight from "./fight/fight";
 
 export class Game_Implementation{
   shuffledNames: string[]
@@ -26,11 +27,11 @@ export class Game_Implementation{
 
     const newFighters: Fighter[] = []
     for(;newFighters.length < baseFightersCount;){
-      const newFighter = new Fighter(this.shuffledNames.pop())
-      newFighter.fighting.stats.baseStrength = random(5, true)
-      newFighter.fighting.stats.baseFitness = random(5, true)
-      newFighter.fighting.stats.baseAggression = random(5)
-      newFighter.fighting.stats.baseIntelligence = random(10, true)
+      const newFighter = new Fighter(this.shuffledNames.pop()!)
+      newFighter.fighting.stats.baseStrength = randomNumber({from: 1, to: 4})
+      newFighter.fighting.stats.baseFitness = randomNumber({from: 1, to: 4})
+      newFighter.fighting.stats.baseAggression = randomNumber({from: 1, to: 5})
+      newFighter.fighting.stats.baseIntelligence = randomNumber({from: 1, to: 10})
 
       newFighter.fighting.reset()
       newFighters.push(newFighter)
@@ -45,12 +46,12 @@ export class Game_Implementation{
       const numberOfFights = newFighters.length * 5
   
       for (let fight = 0; fight < numberOfFights; fight++) {
-        const randomNumberOfFightersInTheFight = random(3, true) + 1
+        const randomNumberOfFightersInTheFight = randomNumber({from: 2, to: 4})
   
   
         let randomFighters: Fighter[] = []
         for (; randomFighters.length != randomNumberOfFightersInTheFight; ) {
-          const randomFighterIndex = random(newFighters.length - 1)
+          const randomFighterIndex = randomNumber({to: newFighters.length - 1})
           const randomFighter = newFighters[randomFighterIndex]
           const fighterAlreadyInList = randomFighters.some(fighter => fighter.name == randomFighter.name)
   
@@ -65,32 +66,11 @@ export class Game_Implementation{
         const fightersChanceToWin = randomFighters.map(fighter => {
           const {fitness, strength, aggression, intelligence} = fighter.fighting.stats
           return {
-            fighter,
-            chance: Math.round(fitness + strength + (aggression / 2) + intelligence)
+            option: fighter,
+            probability: Math.round(fitness + strength + (aggression / 2) + intelligence)
           }
         })
-  
-        const totalProbability: number = fightersChanceToWin.reduce(
-          (totalProbability, {chance}) =>
-            totalProbability + chance, 0)
-  
-  
-        const randomNum = random(totalProbability, true)
-        let probabilityRange: number = 0;
-  
-  
-        let fightWinner: Fighter
-        for (let {fighter, chance} of fightersChanceToWin) {
-          if (
-            randomNum > probabilityRange &&
-            randomNum <= probabilityRange + chance
-          ){
-            fightWinner = fighter
-            break
-          }
-          else
-            probabilityRange += chance
-        }
+        const fightWinner = selectByProbability(fightersChanceToWin)
         if(!fightWinner)
           throw console.error('There should have been a fight winner', fightersChanceToWin)
   
@@ -109,9 +89,13 @@ export class Game_Implementation{
 
     const {shuffledNames} = this
 
-    const professionals: Professional[] = (
-      Object.keys(gameConfiguration.professionalTypeProbability)
-      .reduce((professionals, profession: Profession): Professional[] => {
+    const professionNames: Profession[] = [
+      'Lawyer', 'Thug', 'Drug Dealer', 'Talent Scout', 
+      'Private Agent', 'Hitman', 'Promoter', 'Trainer'
+    ]
+
+    const professionals: Professional[] = professionNames.reduce(
+      (professionals: Professional[], profession: Profession) => {
         console.log('profession :>> ', profession);
         const {minimum} = gameConfiguration.professionalTypeProbability[profession]
         console.log('minimum :>> ', minimum);
@@ -120,12 +104,12 @@ export class Game_Implementation{
           ...numberLoop(minimum, () => 
             new Professional(
               profession, 
-              <SkillLevel>random(3, true), 
+              <SkillLevel>randomNumber({from: 1, to: 3}), 
               this.shuffledNames.pop()
             )
           )
         ]
-      }, [])
+      }, []
     )
       
     
@@ -145,28 +129,16 @@ export class Game_Implementation{
       return createProfessional(getRandomProfession())
       
       function getRandomProfession(): Profession {
-        let totalProbability = 0
-        
-        for( let profession in gameConfiguration.professionalTypeProbability){
-          totalProbability += gameConfiguration.professionalTypeProbability[profession].probability
-        }
-        const randomNumber = random(totalProbability, true)
-        let probabilityRange = 0
-        for ( let profession in gameConfiguration.professionalTypeProbability) {
-          if (
-            randomNumber > probabilityRange &&
-            randomNumber <= probabilityRange + gameConfiguration.professionalTypeProbability[profession].probability
-          ){
-            return profession as Profession
-          }
-          else
-            probabilityRange += gameConfiguration.professionalTypeProbability[profession].probability
-        }
+        const professionProbabilities = professionNames.map(profession => ({
+          option: profession,
+          probability: gameConfiguration.professionalTypeProbability[profession].probability
+        })) 
+        return selectByProbability(professionProbabilities)
       }
     }
 
     function createProfessional(profession: Profession){
-      return new Professional(profession, <SkillLevel>random(3, true), shuffledNames.pop())
+      return new Professional(profession, <SkillLevel>randomNumber({from: 1, to: 3}), shuffledNames.pop())
 
     }
   }
@@ -178,8 +150,8 @@ export class Game_Implementation{
   }
 
 
-  removeFighterFromTheGame = (fighterName, game: Game) => {
-    const fighter = game.has.fighters.find(fighter => fighter.name == fighterName)
+  removeFighterFromTheGame = (fighterName: string, game: Game) => {
+    const fighter = game.has.fighters.find(fighter => fighter.name == fighterName)!
     fighter.state.dead = true
   
     game.has.managers.forEach(manager => {
@@ -226,31 +198,34 @@ export class Game_Implementation{
           case 'Wealth Victory': return 'Wealth Victory Fail'
         }
       }
-    })()
+    })()!
     const videos = gameConfiguration.videos.find(v => v.name == name)!.videos
-    const index = random(videos.length - 1)
+    const index = randomNumber({to: videos.length - 1})
 
     return {name, index}
   }
 
   getFightUiState(manager?: Manager): FightUIState{
-    const {has:{weekController}, state:{finalTournament}} = this.game
+    const {has:{weekController: {activeFight}}, state:{finalTournament}} = this.game
     
     if(finalTournament){
       const {activeFight} = finalTournament
-      const finalTournamentFight = {
-        ...activeFight?.fightUiData, 
-        knownFighterStates: 
-          !activeFight ? [] : manager?.functions.getKnownFighterStats(activeFight?.fighters)
+      const finalTournamentFight: FightUIState = {
+        ...activeFight.fightUiData, 
+        knownFighterStateData: manager && getFighterStateData(activeFight, manager)
       }
       return finalTournamentFight
     }
     const weekFight = {
-      ...weekController.activeFight?.fightUiData, 
-      knownFighterStates: 
-        !weekController.activeFight ? [] : manager?.functions.getKnownFighterStats(weekController.activeFight?.fighters)
+      ...activeFight.fightUiData, 
+      knownFighterStates: manager && getFighterStateData(activeFight, manager)
     }
     return weekFight
+
+    function getFighterStateData(fight: Fight, manager: Manager){
+
+      return manager.functions.getFighterStateData(fight.fighters)
+    }
   }
 
   getGameFinishedData(): GameFinishedData{
@@ -258,7 +233,7 @@ export class Game_Implementation{
     const winner = {
       name: state.playerHasVictory.name,
       victoryType: state.playerHasVictory.victoryType,
-      image: has.managers.find(m => m.has.name == state.playerHasVictory.name).has.image
+      image: has.managers.find(m => m.has.name == state.playerHasVictory.name)!.has.image
     }
     const players = has.managers.map(m => {
       return {

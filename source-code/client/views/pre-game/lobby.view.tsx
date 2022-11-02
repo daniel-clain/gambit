@@ -22,11 +22,11 @@ export const Lobby_View = observer(() => {
 
   const {
     gamesBeingCreated, connectedClients, activeGames, globalChat,
-  } = serverPreGameUIState
+  } = serverPreGameUIState!
 
   const [chatVal, setChatVal] = useState('')
 
-  const joinedGameBeingCreated: GameBeingCreated = gamesBeingCreated.find((g: GameBeingCreated) =>
+  const joinedGameBeingCreated = gamesBeingCreated.find((g: GameBeingCreated) =>
     g.clients.some(c => c.id == clientId) || g.creator.id == clientId
   )
 

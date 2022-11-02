@@ -4,14 +4,17 @@ import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): number => {
-  const { fighter, logistics, proximity, actions} = fighting
+  const { fighter, logistics, proximity, actions, movement} = fighting
 
   const {decideActionProbability} = actions
   const { intelligence, speed, aggression } = fighting.stats
   const closestEnemy = proximity.getClosestRememberedEnemy()
 
 
-  const invalid: boolean =  logistics.onARampage 
+  const invalid: boolean =  (
+    logistics.onARampage || 
+    movement.moveActionInProgress == 'fast retreat'
+  )
 
   if (invalid)
     return 0
@@ -22,11 +25,9 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
 
   const instanceLog = decideActionProbability.logInstance('retreat')
   const log = (...args) => {
-    instanceLog(args, 'probability', probability)
+    instanceLog(...args, 'probability', probability)
   }
 
-  if (logistics.isARetreatInProgress())
-    probability += 100
     
   probability -= aggression    
 
@@ -47,7 +48,6 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
     if(enemyCloseness == Closeness['close'] || enemyCloseness == Closeness['nearby']){
 
       
-    log('enemy close or nearby', enemyCloseness == Closeness['close'] || enemyCloseness == Closeness['nearby'])
 
       if (logistics.hasLowStamina()) {
         probability += intelligence * 3
@@ -59,12 +59,22 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
         probability += aggression
       }
     }
+    log('enemy close or nearby', enemyCloseness == Closeness['close'] || enemyCloseness == Closeness['nearby'])
+
     if(enemyCloseness == Closeness['striking range']){
       probability += 5
       probability -= aggression * 2
       
       if(logistics.hasRetreatOpportunity(closestEnemy)){
-        probability += intelligence * 4
+        probability += 4 + intelligence
+        if (logistics.hasLowStamina()) {
+          probability += intelligence
+          probability -= aggression
+        }
+        if (logistics.hasLowSpirit()) {
+          probability += intelligence
+          probability += aggression
+        }
       }
     }
     log('enemy striking range', enemyCloseness == Closeness['striking range'])
@@ -80,13 +90,23 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
       }
 
       if (logistics.hasLowSpirit()) {
-        probability += speed
         probability += (5 + intelligence *4)
       }
-      
-      if (isEnemyFacingAway(closestEnemy, fighter))
-        probability += intelligence * 4
 
+      if(logistics.hasRetreatOpportunity(closestEnemy)){
+        probability += 10 - aggression * 2
+        probability += intelligence * 2
+      }
+      else {
+        if(closestEnemy.fighting.stats.speed > speed)
+          probability -= intelligence * 2
+        else
+          probability += intelligence * 2
+        
+      }
+
+    }
+    if(enemyCloseness >= Closeness['near']){
     }
     if(enemyCloseness >= Closeness['far']){
       if (logistics.hasLowStamina()) {
@@ -104,24 +124,52 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
   else {
     probability -= aggression
     probability -= 5
+
+    if(!logistics.hasFullStamina()){
+      probability += intelligence
+      probability += 6 - aggression * 2
+    }
+    log('not FullStamina', !logistics.hasFullStamina())
+
+    if(!logistics.hasFullSpirit()){
+      probability += intelligence
+      probability += 8 - aggression * 3
+      log('not Full Spirit', !logistics.hasFullSpirit())
+    }
+    else{
+      probability -= aggression * 3
+      log('Full Spirit', logistics.hasFullSpirit())
+
+    }
     
   
-    if(proximity.getEnemyCombatCloseness(closestEnemy) >= Closeness['nearby'])
-      probability -= intelligence * 2
+    if(proximity.getEnemyCombatCloseness(closestEnemy) >= Closeness['far']){
+      probability -= 4 + intelligence + aggression
+    }
 
       
-    log('enemy further than near', proximity.getEnemyCombatCloseness(closestEnemy) >= Closeness['nearby'])
+    log('enemy bigger or equal to far', proximity.getEnemyCombatCloseness(closestEnemy) >= Closeness['far'])
 
-    if(logistics.hasAttackOpportunity(closestEnemy)){
-      probability -= intelligence
-      probability -= aggression
+    if(proximity.getEnemyCombatCloseness(closestEnemy) <= Closeness['close']){
+      if(logistics.hasAttackOpportunity(closestEnemy)){
+        probability -= intelligence * 2
+        probability -= aggression
+      }
+    } else {
+      if(logistics.hasAttackOpportunity(closestEnemy)){
+        probability -= aggression * 2
+      }
+      else{
+
+      }
+
     }
     log('hasAttackOpportunity', logistics.hasAttackOpportunity(closestEnemy))
 
     if (isEnemyFacingAway(closestEnemy, fighter))
       probability -= (5 + intelligence * 4)
 
-      log('isEnemyFacingAway', isEnemyFacingAway(closestEnemy, fighter))
+    log('isEnemyFacingAway', isEnemyFacingAway(closestEnemy, fighter))
   }
 
 

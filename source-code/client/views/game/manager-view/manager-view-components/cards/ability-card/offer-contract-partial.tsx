@@ -19,12 +19,10 @@ export const OfferContractPartial = ({activeAbility, setActiveAbility, jobSeeker
     if(!target) return <></>
     
 
-    let goalContract: GoalContract
-    ifTargetIsFighter(target, fighterInfo => {
-      goalContract = fighterInfo.goalContract
-    }).else(() => {
-      goalContract = jobSeekers.find(jobSeeker => jobSeeker.name == target.name).goalContract
-    })
+    const goalContract = (
+      target.characterType == 'Fighter' && target.goalContract ||
+      jobSeekers.find(jobSeeker => jobSeeker.name == target.name)!.goalContract
+    )
    
 
     useEffect(() => {

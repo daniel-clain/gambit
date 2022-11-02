@@ -7,7 +7,7 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
 
   const { intelligence } = fighting.stats
 
-  const { proximity, logistics, rememberedEnemyBehind, fighter, otherFightersInFight} = fighting
+  const { proximity, logistics, rememberedEnemyBehind, fighter, movement} = fighting
 
   const {hallucinating} = fighter.state
 
@@ -21,7 +21,8 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
     (
       logistics.otherFightersStillFighting().length == 1 && 
       !!proximity.getClosestEnemyInFront()
-    ) 
+    ) || 
+    movement.moveActionInProgress == 'fast retreat'
   )
   
 

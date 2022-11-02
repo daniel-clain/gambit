@@ -1,12 +1,12 @@
 import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
 import { AttackType } from "../../../types/fighter/attack-types"
-import { random } from "../../../helper-functions/helper-functions"
 import { AttackResponseAction, ActionName } from "../../../types/fighter/action-name"
 import AttackResponseProbability from "./attack-response-probability"
 import { isFacingAwayFromEnemy } from "./proximity"
 import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability"
 import { Interrupt } from "../../../types/game/interrupt"
+import { randomNumber } from "../../../helper-functions/helper-functions"
 
 export default class FighterCombat {
 
@@ -42,7 +42,7 @@ export default class FighterCombat {
   
   attackEnemy(enemy: Fighter, attackType: AttackType) { 
     const {fighting} = this
-    const {animation, proximity, fighter, movement, timers, stats, spirit, actions} = fighting
+    const {animation, proximity, fighter, movement, timers, stats, spirit, actions, energy} = fighting
     
     fighting.enemyTargetedForAttack = enemy
     let landedAttack: boolean
@@ -51,8 +51,12 @@ export default class FighterCombat {
       promise: (
         preAttack()
         .then(() => {
+          
           if(landedAttack){
             onAttackLanded()
+            if(this.fighting.energy > 0){
+              this.fighting.energy -= 1
+            }
             return postAttackHit()
           }
           else{
@@ -101,9 +105,8 @@ export default class FighterCombat {
       if(spirit < stats.maxSpirit)
         fighting.spirit ++  
 
-      if(attackType == 'critical strike'){
-        //if(this.fighting.energy == 5){}
-        const chanceToGoOnARampage = random(60)
+      if(attackType == 'critical strike' && energy == stats.maxEnergy){
+        const chanceToGoOnARampage = randomNumber({to: 60})
         if(chanceToGoOnARampage < (fighting.stats.aggression * fighting.spirit + (enemy.fighting.knockedOut ? 10 : 0))){
           fighting.combat.goOnRampage()
         }
@@ -279,8 +282,8 @@ export default class FighterCombat {
 
   takeAHit(attackType: AttackType, attackingFighter: Fighter){
 
-    let {stamina, timers, animation, actions} = this.fighting
-    const {strength} = attackingFighter.fighting.stats
+    let {stamina, timers, animation, actions, energy} = this.fighting
+    const {strength, maxEnergy} = attackingFighter.fighting.stats
     
     let hitDamage = Math.round(
       (
@@ -300,10 +303,11 @@ export default class FighterCombat {
     }  
     if(!this.fighting.knockedOut){
       timers.start('had action recently')
-      timers.start('just took a hit')
-      const chanceToGoOnARampage = random(60)
-      if(chanceToGoOnARampage < (this.fighting.stats.aggression *.5 * this.fighting.spirit)){
-        this.goOnRampage()
+      if(energy == maxEnergy){
+        const chanceToGoOnARampage = randomNumber({to: 60})
+        if(chanceToGoOnARampage < (this.fighting.stats.aggression *.5 * this.fighting.spirit)){
+          this.goOnRampage()
+        }
       }
     }
 

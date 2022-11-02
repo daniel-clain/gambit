@@ -11,8 +11,16 @@ import { getRepositionMoveDirection, getSideRepositionSpace } from "../repositio
 
     const repositionDirection = getRepositionMoveDirection(fighter, true)
 
-    let probability = -20
+    let probability = 0
 
+    if(repositionDirection){
+      if(movement.moveActionInProgress == 'reposition'){
+        probability += 200
+      }
+      
+      probability += -20 + intelligence * 6
+
+    }
 
     if(!repositionDirection){
       if(movement.moveActionInProgress == 'reposition'){
@@ -44,17 +52,9 @@ import { getRepositionMoveDirection, getSideRepositionSpace } from "../repositio
       }
       else return 0
     }
-    probability += intelligence * 6
-    probability -= intelligence * 2
 
     
     
-    if(movement.moveActionInProgress == 'reposition'){
-      probability += 400
-    }
-    if(logistics.isARetreatInProgress()){
-      probability += 100
-    }
 
     if (probability < 0)
       probability = 0

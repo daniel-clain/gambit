@@ -14,10 +14,10 @@ interface VotesByPlayer{
 export const DisconnectedPlayerModal = () => {
 
   const {
-    serverUIState: {serverGameUIState: {disconnectedPlayerVotes}},
+    serverUIState: {serverGameUIState},
     clientUIState: {clientPreGameUIState: {clientId, clientName}}
   } = frontEndState
-
+  const {disconnectedPlayerVotes} = serverGameUIState!
   let {toggleDropPlayer} = websocketService.sendUpdate
 
   console.log('disconnectedPlayerVotes :', disconnectedPlayerVotes);
@@ -26,14 +26,14 @@ export const DisconnectedPlayerModal = () => {
       votingPlayer,
       disconnectedPlayersVotes: disconnectedPlayerVotes.map(d => ({
         disconnectedPlayer: d.disconnectedPlayer,
-        voteToDrop: d.playerVotesToDrop.find(v => v.votingPlayer.id == votingPlayer.id).drop
+        voteToDrop: d.playerVotesToDrop.find(v => v.votingPlayer.id == votingPlayer.id)!.drop
       }))
     })
   )
 
   const player: ClientNameAndID = {
-    id: clientId,
-    name: clientName
+    id: clientId!,
+    name: clientName!
   }
 
 

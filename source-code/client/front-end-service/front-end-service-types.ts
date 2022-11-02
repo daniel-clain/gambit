@@ -20,4 +20,4 @@ export type SetStateFunctionName = SetStatePreGameUIFunctionName | SetStateManag
 export type SetStatePreGameUIFunctionName = 'setName'
 
 export type SetStateManagerUIFunctionName = 
-'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' | 'closeSelectList' | 'showReport' | 'showWinOptions'
+'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' |  'showReport' | 'showWinOptions'

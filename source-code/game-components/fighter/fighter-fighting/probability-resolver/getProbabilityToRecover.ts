@@ -33,7 +33,8 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   const invalid: boolean =
     logistics.hasFullStamina() ||
-    logistics.onARampage
+    logistics.onARampage || 
+    movement.moveActionInProgress === 'fast retreat'
 
   if (invalid)
     return 0
@@ -41,10 +42,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   let probability = 10
 
-  if(sick){
-    probability += 20
-  }
-  if (movement.againstEdge){
+  if (proximity.againstEdge){
     probability += 6
   }
 
@@ -56,7 +54,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     probability -= intelligence * 6
 
   if (logistics.justTookHit)
-    probability += 10 + (5 - spirit)
+    probability += 20 - spirit * 2
   
 
   if (enemyBehind){
@@ -278,10 +276,10 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
     
     if(hasRetreatOpportunityFromBehind){   
-      const enemySpeed = enemyBehind.fighting.movement.moveSpeed()
+      const enemySpeed = enemyBehind.fighting.stats.speed
       const {fitness} = fighting.stats
 
-      if(enemySpeed > 60 && fitness > 5){
+      if(enemySpeed < 5 && fitness > 5){
         if(lowStamina)
           probability += intelligence
   

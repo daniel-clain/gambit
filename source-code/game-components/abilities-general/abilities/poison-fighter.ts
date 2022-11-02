@@ -1,10 +1,9 @@
-import { Ability, ClientAbility, ServerAbility, AbilityData } from "../ability"
+import { Ability, ServerAbility, AbilityData } from "../ability"
 import { Employee } from "../../../interfaces/front-end-state-interface"
-import { random } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
-import { Manager } from "../../manager"
 import { handleUnderSurveillance } from "./do-surveillance"
 import { getAbilitySourceManager } from "../ability-service-server"
+import { randomNumber } from "../../../helper-functions/helper-functions"
 
 
 export const poisonFighter: Ability = {
@@ -35,21 +34,21 @@ export const poisonFighterServer: ServerAbility = {
     let guardBlocked
     const guardLevel = fighter.state.guards.reduce((totalSkill, thugGuardingFighter) => totalSkill += thugGuardingFighter.skillLevel, 0)
     if(guardLevel > 0){
-      const randomNum = random(100, true)
+      const randomNum = randomNumber({to: 100})
       if(randomNum < 15 - guardLevel * 5 + poisoner.skillLevel * 5)
         success = true
       else
         guardBlocked = true
     }
     else {
-      const randomNum = random(100, true)
+      const randomNum = randomNumber({to: 100})
       if(randomNum < 85 + poisoner.skillLevel * 5)
         success = true
 
     }
     if(success){
 
-      const r10 = random(10)
+      const r10 = randomNumber({to: 10})
 
       const severityLevel = 
         r10 < 1 ? 'death' :

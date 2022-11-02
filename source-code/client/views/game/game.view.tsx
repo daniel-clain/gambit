@@ -24,7 +24,7 @@ export const Game_View = observer(() => {
 
   const {
     disconnectedPlayerVotes, weekStage, finalTournamentBoard, selectedVideo, gameFinishedData, playerManagerUIState
-  } = serverGameUIState
+  } = serverGameUIState!
 
   
   useEffect(() => {
@@ -34,7 +34,7 @@ export const Game_View = observer(() => {
   })
 
 
-  const {retired} = playerManagerUIState.managerInfo
+  const {retired} = playerManagerUIState!.managerInfo
 
   const getActiveView = () => {
     if(selectedVideo){
@@ -43,8 +43,7 @@ export const Game_View = observer(() => {
     if(finalTournamentBoard){
       return <FinalTournament_View />
     }
-    if(gameFinishedData){
-      
+    if(gameFinishedData){      
       return <PostGame_View/>
     }
     switch (weekStage) {

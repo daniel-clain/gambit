@@ -3,24 +3,32 @@ import { getProbabilityForGeneralRetreat } from "./getProbabilityForGeneralRetre
 
 
   export const getProbabilityToRetreatFromFlanked = (fighting: FighterFighting): number => {
-    const { proximity, logistics, movement} = fighting
+    const { proximity, logistics, movement, energy} = fighting
     const { intelligence, aggression } = fighting.stats
 
 
     const invalid: boolean =
       !proximity.flanked ||
       logistics.onARampage ||
-      proximity.trapped
+      proximity.trapped ||
+      energy == 0
 
     if (invalid)
       return 0
 
     let probability = 0
 
+    if (movement.moveActionInProgress == 'retreat from flanked'){
+      probability +=  200
+    }
+    else if(!logistics.hasFullEnergy){
+      return 0
+    }
+
     
     probability += getProbabilityForGeneralRetreat(fighting)
 
-    probability += -20 + intelligence * 4
+    probability += -40 + intelligence * 6
 
     probability -= aggression * 2
 

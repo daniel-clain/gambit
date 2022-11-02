@@ -1,10 +1,8 @@
 import { observer } from "mobx-react"
 import * as React from "react"
-import { KnownManager } from "../../../../../../../game-components/manager"
 import { InfoBoxListItem } from "../../../../../../../interfaces/game/info-box-list"
 import { Evidence } from "../../../../../../../types/game/evidence.type"
 import { ManagerImage } from "../../../../../../../types/game/manager-image"
-import { abilities } from "../../../../../../client-abilities/client-abilities"
 import { getAbilitiesThatCanTargetThis, getAbilitiesThisSourceCanDo } from "../../../../../../front-end-service/ability-service-client"
 import { frontEndState } from "../../../../../../front-end-state/front-end-state"
 import {AbilityBlock} from '../../partials/ability-block/ability-block';
@@ -21,10 +19,11 @@ export const ManagerCard = observer(() => {
         clientManagerUIState: {activeModal}
       }
     },
-    serverUIState:{serverGameUIState: {playerManagerUIState: {managerInfo}}}
+    serverUIState:{serverGameUIState}
   } = frontEndState
+  const {managerInfo} = serverGameUIState!.playerManagerUIState!
 
-  const managerName = activeModal.data as string
+  const managerName = activeModal!.data as string
   const isYourManager = managerName == clientName
   
 
@@ -32,7 +31,7 @@ export const ManagerCard = observer(() => {
     managerImage: ManagerImage,
     abilityBlocks: JSX.Element[], 
     infoBoxList: InfoBoxListItem[], 
-    evidenceAgainstManager: Evidence[]
+    evidenceAgainstManager: Evidence[] | undefined
 
   if(isYourManager){
 
@@ -62,7 +61,7 @@ export const ManagerCard = observer(() => {
   }
 
   if(!isYourManager){
-    const selectedManager = managerInfo.otherManagers.find(m => m.name == managerName)
+    const selectedManager = managerInfo.otherManagers.find(m => m.name == managerName)!
     managerImage = selectedManager.image
     const abilitiesManagerCanBeTheTargetOf = getAbilitiesThatCanTargetThis(selectedManager) 
     abilityBlocks = abilitiesManagerCanBeTheTargetOf.map(a => 
@@ -96,12 +95,12 @@ export const ManagerCard = observer(() => {
       <div className='card manager-card'>
         <div className='card__heading heading'>{managerName}</div>
         <div className="card__two-columns">
-          <div className={`card__two-columns__left manager-card__image manager-card__image--${managerImage.toLowerCase().split(' ').join('-')}`}></div>
+          <div className={`card__two-columns__left manager-card__image manager-card__image--${managerImage!.toLowerCase().split(' ').join('-')}`}></div>
           <div className='card__two-columns__right'>
             <div className='manager-card__stats'>
               <InfoBox
                 heading={`Manager Info`}
-                list={infoBoxList}
+                list={infoBoxList!}
               >
                 {evidenceAgainstManager?.length ?                 
                   <div className="manager-card__evidence-container">
@@ -120,7 +119,7 @@ export const ManagerCard = observer(() => {
 
         <div className='heading'>Options</div>
         <div className='card__options'> 
-          {abilityBlocks}
+          {abilityBlocks!}
         </div>
       </div >
     </Modal>

@@ -11,7 +11,7 @@ export const giveUp: Ability = {
 
 export const giveUpServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
-    const manager = getAbilitySourceManager(abilityData.source, game)
+    const manager = getAbilitySourceManager(abilityData.source!, game)
 
     
     console.log(`${manager.has.name} has given up`);

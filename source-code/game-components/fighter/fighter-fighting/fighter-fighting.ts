@@ -1,5 +1,5 @@
 import Fighter from "../fighter";
-import { random } from "../../../helper-functions/helper-functions";
+import { randomNumber } from "../../../helper-functions/helper-functions";
 import FighterModelState from "../../../types/fighter/fighter-model-states";
 import Movement from "./movement";
 import Proximity, { getFighterStrikingCenter } from "./proximity";
@@ -21,13 +21,13 @@ export default class FighterFighting {
 
   modelState: FighterModelState = 'Idle'
   stamina: number
-  energy: number
   spirit: number
+  _energy: number
+  
   knockedOut: boolean = false
   _facingDirection: FacingDirection
   enemyTargetedForAttack: Fighter  
   rememberedEnemyBehind: Fighter
-  actionLog: string[]
 
   soundsMade: SoundTime[] = []
 
@@ -36,7 +36,7 @@ export default class FighterFighting {
 
   otherFightersInFight: Fighter[] = []
 
-  energyRegenInterval = 1000
+  energyRegenInterval = 500
   energyRegenTimeout
 
   stats: FighterStats
@@ -67,9 +67,8 @@ export default class FighterFighting {
     this.stamina = injured || sick ? this.stats.maxStamina * 0.5 : this.stats.maxStamina
     
     this.spirit = injured || sick ? 1 : 3
-    this.energy = this.stats.maxEnergy
-    this.energyRegenTimeout = setInterval(() => this.regenEnergy, this.energyRegenInterval);
-    this.actionLog = []
+    this.energy = injured || sick ? this.stats.maxEnergy * 0.5 : this.stats.maxEnergy
+    this.energyRegenTimeout = setInterval(() => this.regenEnergy(), this.energyRegenInterval);
     this.otherFightersInFight = fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
     if(gameConfiguration.freezeFight) return
@@ -78,6 +77,7 @@ export default class FighterFighting {
   stop() {
     //console.log(`${this.fighter.name} stopped fighting`);
     this.stopFighting = true
+    clearTimeout(this.energyRegenTimeout)
   }
 
   getState(): FighterFightState {
@@ -89,14 +89,13 @@ export default class FighterFighting {
       soundsMade: this.soundsMade,
       onRampage: this.timers.activeTimers.some(timer => timer.name == 'on a rampage'),
       skin: this.fighter.skin,
-      retreatingFromFlanked: this.movement.moveActionInProgress == 'retreat from flanked',
       strikingCenters: {
         front: getFighterStrikingCenter(this.fighter),
         back: getFighterStrikingCenter(this.fighter, true)
       },
       spirit: this.spirit,
       energy: this.energy,
-      repositioning: this.movement.moveActionInProgress == 'reposition',
+      currentAction: this.actions.decidedAction,
       direction: this.movement.movingDirection
     }
   }
@@ -108,7 +107,7 @@ export default class FighterFighting {
     this.spirit = 3
     this.otherFightersInFight = []
     this.stopFighting = false    
-    this.facingDirection = !!random(2) ? 'left' : 'right'
+    this.facingDirection = !!randomNumber({to: 2}) ? 'left' : 'right'
     this.soundsMade = []
     this.stamina = this.stats.maxStamina
 
@@ -128,14 +127,24 @@ export default class FighterFighting {
       this._facingDirection = direction  
 
   }
-  get facingDirection(): FacingDirection{
-    return this._facingDirection
+  get facingDirection(): FacingDirection{return this._facingDirection}
+  
+  set energy(val: number){
+    
+    if(val < 0)
+      this._energy = 0
+    else if(val > this.stats.maxEnergy)
+      this._energy = this.stats.maxEnergy
+    else
+      this._energy = val
+
+    this.logistics.hasFullEnergy = this._energy  == this.stats.maxEnergy
   }
 
+  get energy(){return this._energy}
+
   regenEnergy(){
-    if(this.energy){
-      this.energy = this.energy + 1 + this.stats.fitness/10
-    }
+    this.energy +=  .25 + this.stats.fitness * .1
   }
 
 

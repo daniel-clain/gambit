@@ -101,7 +101,7 @@ export default class ManagerOptionsStage implements IStage {
         [x > 15, 20],
         [x > 20, 40]
       ]) +
-      check(weekController.activeFight.fighters, x => [
+      check(weekController.activeFight.fighters.length, x => [
         [x == 3, 10],
         [x == 4, 30],
         [x > 4, 60]

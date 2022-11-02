@@ -17,11 +17,11 @@ export const offerContractServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game){
     const {weekNumber} = game.has.weekController
     const {target, source} = abilityData
-    const sourceManager = getAbilitySourceManager(source, game)
+    const sourceManager = getAbilitySourceManager(source!, game)
  
     const contractOffer: ContractOffer = abilityData.additionalData.contractOffer
 
-    const jobSeeker: JobSeeker = game.has.weekController.jobSeekers.find(jobSeeker => jobSeeker.name == target.name)
+    const jobSeeker: JobSeeker = game.has.weekController.jobSeekers.find(jobSeeker => jobSeeker.name == target!.name)!
 
     const isRecontractingFighter: boolean = !jobSeeker
 
@@ -32,9 +32,13 @@ export const offerContractServer: ServerAbility = {
           weeklyCost: contractOffer.weeklyCost, 
           weeksRemaining: contractOffer.numberOfWeeks
         }
-        const jobSeekerIndex = game.has.weekController.jobSeekers.findIndex(jobSeeker => jobSeeker.name == target.name)
+        const jobSeekerIndex = game.has.weekController.jobSeekers.findIndex(jobSeeker => jobSeeker.name == target!.name)
         game.has.weekController.jobSeekers.splice(jobSeekerIndex, 1)
-        const employee: Employee = {characterType: 'Employee', abilities, profession, skillLevel, name, activeContract, actionPoints: 1}
+        const employee: Employee = {
+          characterType: 'Employee', 
+          abilities, profession, skillLevel, 
+          name, activeContract, actionPoints: 1
+        }
         sourceManager.has.employees.push(employee)
       }
       if(jobSeeker.type == 'Fighter'){

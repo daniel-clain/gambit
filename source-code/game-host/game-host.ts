@@ -3,7 +3,7 @@ import {GameHost_Implementation} from './game-host.implementation'
 import { GameHostState, ConnectedClient, FromClientToHost, JoinedClient } from './game-host.types';
 import { Socket } from 'socket.io';
 import { Server } from 'socket.io';
-import { randomNumber } from '../helper-functions/helper-functions';
+import { randomNumberDigits } from '../helper-functions/helper-functions';
 
 
 
@@ -50,7 +50,7 @@ export class GameHost{
       create: () => {
         if(this.i.isCreateGameValid(client)){
           this.state.gamesBeingCreated.push({
-            id: randomNumber({digits: 6}).toString(),
+            id: randomNumberDigits(6).toString(),
             creator: new JoinedClient(
               client.name,
               client.id

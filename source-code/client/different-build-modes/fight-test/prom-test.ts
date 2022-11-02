@@ -1,4 +1,5 @@
-import { random } from "../../../helper-functions/helper-functions";
+import { randomNumber } from "../../../helper-functions/helper-functions"
+
 
 type Interrupt = {
   name: string
@@ -6,7 +7,7 @@ type Interrupt = {
 }
 
 for(let i = 0; i < 100; i++){
-  console.log(random(1) == 1 ? 'chicken' : 'wing')
+  console.log(randomNumber({to: 1}) == 1 ? 'chicken' : 'wing')
 }
 
 export function promTest(){
@@ -22,7 +23,7 @@ let mainRej: (interrupt: Interrupt) => void
 export function decideAction(){
   console.log('START DECIDE ACTION');
 
-  const action = random(1) == 1 ? attack : move
+  const action = randomNumber({to: 1}) == 1 ? attack : move
 
   action()
   .then(() => {
@@ -55,7 +56,7 @@ export function decideAction(){
   function attack(){
     console.log('- attack start');
     return (
-      random(1) == 1 ? Promise.resolve() : Promise.resolve()
+      randomNumber({to: 1}) == 1 ? Promise.resolve() : Promise.resolve()
       .then(preAttack)
       .then(postAttack)
       .then(attackCooldown)
@@ -75,7 +76,7 @@ export function decideAction(){
   function move(){
     console.log('- move start');
     return (
-      (random(1) == 1 ? turnAround() : Promise.resolve())
+      (randomNumber({to: 1}) == 1 ? turnAround() : Promise.resolve())
       .then(moveABit)
       .then(() => {
         console.log('- move finished')
@@ -112,9 +113,9 @@ export function decideAction(){
 
 
 function randomTakeHit(){
-  const randomNum = random(10000)
+  const randomNum = randomNumber({to: 10000})
   setTimeout(() => {
-    console.log('random take hit', randomNum);
+    console.log('randomNumber {to: t}ake hit', randomNum);
     mainRej({
       name: 'xx - take hit',
       promiseFunc: takeHit
@@ -124,7 +125,7 @@ function randomTakeHit(){
 }
 
 function randomDodge(){
-  const randomNum = random(10000)
+  const randomNum = randomNumber({to: 10000})
   setTimeout(() => {
     console.log('xx - dodge', randomNum);
     mainRej({

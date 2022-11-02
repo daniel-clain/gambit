@@ -14,41 +14,53 @@ import { getProbabilityToReposition } from "./probability-resolver/getProbabilit
 import { getProbabilityToRetreatAroundEdge } from "./probability-resolver/getProbabilityToRetreatAroundEdge"
 import { getProbabilityToRetreatFromFlanked } from "./probability-resolver/getProbabilityToRetreatFromFlanked"
 import { getProbabilityToDoNothing } from "./probability-resolver/getProbabilityToDoNothing"
+import { getProbabilityForGeneralAttack } from "./probability-resolver/getProbabilityForGeneralAttack"
+import { getProbabilityForGeneralRetreat } from "./probability-resolver/getProbabilityForGeneralRetreat"
+import { ActionProbability } from "./random-based-on-probability"
 
 export default class DecideActionProbability {
   includeLogs = true
   logs = []
+  generalAttackProbability: number
+  generalRetreatProbability: number
+
   constructor(public fighting: FighterFighting) { }
 
-  getProbabilityTo(action: ActionName): [ActionName, number] {
+  getProbabilityTo(action: ActionName): ActionProbability {
     switch (action) {
       case 'do nothing':
-        return [action, getProbabilityToDoNothing(this.fighting)]
+        return {action, probability: getProbabilityToDoNothing(this.fighting)}
       case 'punch':
-        return [action, getProbabilityToPunch(this.fighting)]
+        return {action, probability: getProbabilityToPunch(this.fighting)}
       case 'critical strike':
-        return [action, getProbabilityToCriticalStrike(this.fighting)]
+        return {action, probability: getProbabilityToCriticalStrike(this.fighting)}
       case 'defend':
-        return [action, getProbabilityToDefend(this.fighting)]
+        return {action, probability: getProbabilityToDefend(this.fighting)}
       case 'move to attack':
-        return [action, getProbabilityToMoveToAttack(this.fighting)]
+        return {action, probability: getProbabilityToMoveToAttack(this.fighting)}
       case 'cautious retreat':
-        return [action, getProbabilityToCautiousRetreat(this.fighting)]
+        return {action, probability: getProbabilityToCautiousRetreat(this.fighting)}
       case 'retreat around edge':
-        return [action, getProbabilityToRetreatAroundEdge(this.fighting)]
+        return {action, probability: getProbabilityToRetreatAroundEdge(this.fighting)}
       case 'reposition':
-        return [action, getProbabilityToReposition(this.fighting)]
+        return {action, probability: getProbabilityToReposition(this.fighting)}
       case 'fast retreat':
-        return [action, getProbabilityToFastRetreat(this.fighting)]
+        return {action, probability: getProbabilityToFastRetreat(this.fighting)}
       case 'retreat':
-        return [action, getProbabilityToRetreat(this.fighting)]
+        return {action, probability: getProbabilityToRetreat(this.fighting)}
       case 'retreat from flanked':
-        return [action, getProbabilityToRetreatFromFlanked(this.fighting)]
+        return {action, probability: getProbabilityToRetreatFromFlanked(this.fighting)}
       case 'recover':
-        return [action, getProbabilityToRecover(this.fighting)]
+        return {action, probability: getProbabilityToRecover(this.fighting)}
       case 'turn around':
-        return [action, getProbabilityToCheckFlank(this.fighting)]
+        return {action, probability: getProbabilityToCheckFlank(this.fighting)}
     }
+  }
+
+  setGeneralAttackAndRetreatProbabilities(){
+
+    this.generalAttackProbability = getProbabilityForGeneralAttack(this.fighting)
+    this.generalRetreatProbability = getProbabilityForGeneralRetreat(this.fighting)
   }
 
   logInstance(name: ActionName){
