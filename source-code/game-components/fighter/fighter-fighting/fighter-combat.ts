@@ -1,12 +1,43 @@
 import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
-import { AttackType } from "../../../types/fighter/attack-types"
-import { AttackResponseAction, ActionName } from "../../../types/fighter/action-name"
+import { AttackAction, AttackResponseAction, MainActionName } from "../../../types/fighter/action-name"
 import AttackResponseProbability from "./attack-response-probability"
-import { isFacingAwayFromEnemy } from "./proximity"
-import { selectRandomResponseBasedOnProbability } from "./random-based-on-probability"
-import { Interrupt } from "../../../types/game/interrupt"
-import { randomNumber } from "../../../helper-functions/helper-functions"
+import { randomNumber, selectByProbability } from "../../../helper-functions/helper-functions"
+import { MainAction } from "./action-promises"
+import { Sound } from "../../../types/fighter/sound"
+import FighterModelState from "../../../types/fighter/fighter-model-states"
+
+type AttackTypeData = {
+  warmUp: number
+  preAttack: number
+  model: FighterModelState
+  sound: Sound
+  postHit: number
+  postMiss: number
+  cooldownHit: number
+  cooldownMiss: number
+}
+
+const punchData: AttackTypeData = {
+  warmUp: 100,
+  preAttack: 100,
+  model: 'Punching',
+  sound: 'Punch',
+  postHit: 400,
+  postMiss: 500,
+  cooldownHit: 600,
+  cooldownMiss: 700
+}
+const criticalStrikeData: AttackTypeData = {
+  warmUp: 200,
+  preAttack: 300,
+  model: 'Kicking',
+  sound: 'Critical Strike',
+  postHit: 500,
+  postMiss: 600,
+  cooldownHit: 600,
+  cooldownMiss: 800
+}
 
 export default class FighterCombat {
 
@@ -18,326 +49,244 @@ export default class FighterCombat {
 
 
 
-  startDefending(enemy: Fighter) {   
-    const {fighter, animation, movement, actions} = this.fighting
-    const willTurnAround = isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating
+  startDefending(): MainAction {   
+    const {logistics, actions} = this.fighting
+    const { mainAction, interruptibleAction } = actions.actionPromises
+    const {enemyIsBehind} = logistics
     
-    return actions.actionPromise({
-      isMain: true,
-      promise: (
-        willTurnAround ? 
-        actions.actionPromise({promise: movement.turnAround()}) : Promise.resolve()
-        .then(() => actions.actionPromise({
+    return mainAction({
+      name: 'defend',
+      actionChain: [
+        ...(enemyIsBehind ? actions.turnAroundActionChain: []),
+        interruptibleAction({
           name: 'defend',
-          promise: animation.start({      
-            name: 'defending',
-            model: 'Defending',
-            duration: animation.speedModifier(1000)
-          })
-        }))
-      )
+          model: 'Defending',
+          duration: 1000
+        })
+      ]
     })
   }
+
+  attack(attackType: AttackAction): MainAction{
+    const { actions, logistics} = this.fighting
+    const {enemyIsBehind, closestRememberedEnemy} = logistics
+    const { mainAction, interruptibleAction, instantAction } = actions.actionPromises
+
+    this.fighting.enemyTargetedForAttack = closestRememberedEnemy
+
+    const attackTypeData: AttackTypeData = (
+      attackType == 'punch' && punchData ||
+      attackType == 'critical strike' && criticalStrikeData
+    )
+
+    let attackResult: AttackResponseAction | 'miss'
+
+    return mainAction({
+      name: attackType,
+      actionChain: [
+        ...(enemyIsBehind ? actions.turnAroundActionChain: []),
+        interruptibleAction({
+          name: `${attackType} warmup`,
+          model: 'Idle',
+          duration: attackTypeData.warmUp
+        }),
+        interruptibleAction({
+          name: `pre ${attackType}`,
+          model: attackTypeData.model,
+          duration: attackTypeData.preAttack
+        }),
+        instantAction({
+          name: attackType,
+          action: () => {
+            attackResult = this.doAttack(attackType)
+            console.log(`attack result ${attackResult}(${this.fighting.fighter.name})`);
+            if(attackResult == 'take hit')
+              this.makeSound(attackTypeData.sound)
+            if(attackResult == 'miss')
+              this.makeSound('Dodge')
+
+            return Promise.resolve()
+          }
+        }),
+        interruptibleAction({
+          name: `post ${attackType} ${attackResult == 'take hit' ? 'hit' : 'miss'}`,
+          duration: attackResult == 'take hit' ? attackTypeData.postHit : attackTypeData.postMiss
+        }),
+        interruptibleAction({
+          name: `${attackType} cooldown`,
+          model: 'Idle',
+          duration: attackResult == 'take hit' ? attackTypeData.cooldownHit : attackTypeData.cooldownMiss
+        })
+      ]
+    })
+  }
+
 
   
-  attackEnemy(enemy: Fighter, attackType: AttackType) { 
-    const {fighting} = this
-    const {animation, proximity, fighter, movement, timers, stats, spirit, actions, energy} = fighting
-    
-    fighting.enemyTargetedForAttack = enemy
-    let landedAttack: boolean
-    return actions.actionPromise({
-      isMain: true,
-      promise: (
-        preAttack()
-        .then(() => {
-          
-          if(landedAttack){
-            onAttackLanded()
-            if(this.fighting.energy > 0){
-              this.fighting.energy -= 1
-            }
-            return postAttackHit()
-          }
-          else{
-            return postAttackMissed()
-          }
-        })
-      )
-    })
+
+  private doAttack(attackAction: AttackAction): AttackResponseAction | 'miss'{
+    const {proximity, fighter, timers, logistics, actions} = this.fighting
+    timers.start('had action recently')
+
+    const enemy = logistics.closestRememberedEnemy
+
+    this.fighting.enemyTargetedForAttack = enemy
+    this.fighting.energy -= {'punch': 2, 'critical strike': 3}[attackAction]
 
 
-    function preAttack(){
-      const willTurnAround = isFacingAwayFromEnemy(enemy, fighter) && !fighter.state.hallucinating
-          
-      return (
-        willTurnAround ? 
-        actions.actionPromise({promise: movement.turnAround()}) : Promise.resolve()
-        .then(() => actions.actionPromise({
-          name: 'pre attack',
-          promise: animation.start(
-            attackType == 'punch' && {
-              name: 'trying to punch',
-              model: 'Punching',
-              duration: animation.speedModifier(200)
-            }
-            ||
-            attackType == 'critical strike' && {
-              name: 'trying to critical strike',
-              model: 'Kicking',
-              duration: animation.speedModifier(300)
-            }      
-          )
-          .then(() => {
-            timers.start('had action recently')
-            timers.start('just did attack')
+    const stillInRange = proximity.enemyWithinStrikingRange(enemy)
+    if(stillInRange){
+      const attackResult: AttackResponseAction = enemy.fighting.combat.getAttacked(fighter, attackAction)
 
-            const stillInRange = proximity.enemyWithinStrikingRange(enemy)
-            
-            landedAttack = stillInRange && enemy.fighting.combat.getAttacked(fighter, attackType)
-            return
-          })
-        }))
-      )
-    }
+      if(attackResult == 'take hit'){
+        this.fighting.spirit ++  
+        actions.nextDecisionFactors.justHitAttack = true
 
-    function onAttackLanded(){
-      if(spirit < stats.maxSpirit)
-        fighting.spirit ++  
-
-      if(attackType == 'critical strike' && energy == stats.maxEnergy){
-        const chanceToGoOnARampage = randomNumber({to: 60})
-        if(chanceToGoOnARampage < (fighting.stats.aggression * fighting.spirit + (enemy.fighting.knockedOut ? 10 : 0))){
-          fighting.combat.goOnRampage()
+        if(attackAction == 'critical strike'){
+          this.chanceToRampage()
         }
       }
-      fighting.enemyTargetedForAttack.fighting.combat.takeAHit(attackType, fighter)
+      else {
+        actions.nextDecisionFactors.justMissedAttack = true
+        this.fighting.spirit --
+      }
+      return attackResult
     }
-
-    function postAttackHit(): Promise<void>{
-      return fighting.actions.actionPromise({
-        name: 'post attack hit',
-        promise: animation.start(
-          attackType == 'punch' && {
-            name: 'punching',
-            sound: 'Punch',
-            model: 'Punching',
-            duration: animation.speedModifier(700)
-          } ||
-          attackType == 'critical strike' && {
-            name: 'critical striking',
-            sound: 'Critical Strike',
-            model: 'Kicking',
-            duration: animation.speedModifier(900)
-          }
-        )
-        .then(() => fighting.actions.actionPromise({
-          name: 'post attack hit cooldown',
-          promise: animation.cooldown(
-            attackType == 'punch' && animation.speedModifier(700) ||
-            attackType == 'critical strike' && animation.speedModifier(1000)
-          )
-        }))
-      })
+    else {
+      return 'miss'
     }
-
-
     
-    function postAttackMissed(): Promise<void>{
-      const stillInRange = proximity.enemyWithinStrikingRange(enemy)
-      if(stillInRange && fighting.spirit != 0)
-        fighting.spirit --
 
-      
-      return fighting.actions.actionPromise({
-        name: 'post attack missed',
-        promise: animation.start(
-          attackType == 'punch' && {
-            name: 'missed punch',
-            sound: 'Dodge',
-            model: 'Punching',
-            duration: animation.speedModifier(500)   
-          } ||
-          attackType == 'critical strike' && {
-            name: 'missed critical strike',
-            sound: 'Dodge',
-            model: 'Kicking',
-            duration: animation.speedModifier(600)
-          }
-        )        
-        .then(() => fighting.actions.actionPromise({
-          name: 'post attack missed cooldown',
-          promise: animation.cooldown(
-            attackType == 'punch' && animation.speedModifier(800) ||
-            attackType == 'critical strike' && animation.speedModifier(1100)
-          )
-        }))
-      })
-    }
   }
-    
-  getAttacked(enemy: Fighter, attackType: AttackType): boolean {  
 
-    const {proximity, fighter, timers} = this.fighting
+  private makeSound(sound: Sound){
+    this.fighting.soundsMade.push({soundName: sound, time: Date.now()})
+  }
+
+
+
+    
+  getAttacked(enemy: Fighter, attackType: AttackAction) {  
+
+    const {actions, fighter} = this.fighting
+    const {mainAction, interruptibleAction} = actions.actionPromises
+
+    const result: AttackResponseAction = this.getAttackedResult(enemy, attackType)
+
+    console.log(`${enemy.name} attacked ${fighter.name}, result ${result}`);
+
+    actions.rejectCurrentAction({
+      name: `${result} main`,
+      interruptAction: () => (
+        mainAction({
+          name: result,
+          actionChain: [
+            interruptibleAction({
+              name: result,
+              model: (
+                result == 'dodge' && 'Dodging' ||
+                result == 'block' && 'Blocking' ||
+                result == 'take hit' && 'Taking Hit' || null
+              )!,
+              duration: (
+                result == 'dodge' && 500 ||
+                result == 'block' && 500 ||
+                result == 'take hit' && 600 || null
+              )!,
+            }),
+            interruptibleAction({
+              name: `${result} cooldown`,
+              model: 'Idle',
+              duration: (
+                result == 'dodge' && 300 ||
+                result == 'block' && 300 ||
+                result == 'take hit' && (
+                  this.fighting.knockedOut ? 0 : 400
+                )
+              )
+            })
+          ]
+        })
+      )      
+    })
+
+    return result
+  }
+
+
+  private getAttackedResult(enemy: Fighter, attackType: AttackAction): AttackResponseAction{
+    
+    const {proximity, timers, fighter, actions} = this.fighting
+    const {strength} = enemy.fighting.stats
+
+    timers.start('had action recently')
 
     if(proximity.isEnemyBehind(enemy)){
       //console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
-      proximity.rememberEnemyBehind(enemy)
+      this.fighting.rememberEnemyBehind(enemy)
     }
+    
 
     const attackResponseActions: AttackResponseAction[] = ['dodge', 'block', 'take hit']
 
     const responseProbabilities = attackResponseActions.map(response => 
       this.attackResponseProbability.getProbabilityTo(response, enemy, attackType)
     )
-  
-    const result: ActionName = selectRandomResponseBasedOnProbability(responseProbabilities)
+    const result = selectByProbability(responseProbabilities)
+
+    if(result == 'block'){
+      this.fighting.spirit ++
+      this.makeSound('Block')
+      actions.nextDecisionFactors.justBlocked = true
+    }
+    if(result == 'dodge'){
+      this.fighting.spirit ++
+      this.makeSound('Dodge')
+      actions.nextDecisionFactors.justDodged = true
+    }
 
     if(result == 'take hit'){
-      if(this.fighting.spirit != 0)
+
+      let hitDamage = Math.round(
+        (
+          attackType == 'critical strike' ?
+          1 + (strength * .6) :
+          0.5 + strength * .3
+        ) * 10
+      ) / 10
+
+      this.fighting.stamina -= hitDamage
+      //console.log(`${this.fighting.fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
+      
+
+      if(!this.fighting.stamina){
+        this.fighting.knockedOut = true
+        console.warn(`${fighter.name} has been knocked out`);
+      }  
+
+      if(!this.fighting.knockedOut){
         this.fighting.spirit --
-        
-    }
-    else{
-      if(this.fighting.spirit < this.fighting.stats.maxSpirit)
-        this.fighting.spirit ++
-
-    }  
-
-
-    switch(result){
-      case 'dodge' : 
-        this.dodgeEnemyAttack(enemy, attackType)
-        return false
-      case 'block' : 
-        this.blockEnemyAttack(enemy, attackType)
-        return false
-      case 'take hit' : 
-        return true
-    }
-  }  
-
-  
-  goOnRampage() {
-    const {proximity, timers} = this.fighting
-    proximity.trapped = false
-    timers.start('on a rampage')
-  }
-
-
-  blockEnemyAttack(enemy: Fighter, attackType: AttackType){
-    const {animation, fighter, timers, actions} = this.fighting
-    timers.start('just blocked')
-    //console.log(`${fighter.name} blocked ${enemy.name}'s ${attackType}`);
-    actions.rejectCurrentAction({
-      promiseFunc: () => (
-        actions.actionPromise({
-          isMain: true,
-          promise: (
-            actions.actionPromise({
-              name: 'block',
-              promise: animation.start({
-                name: 'blocking',
-                model: 'Blocking',
-                sound: 'Block',
-                duration: animation.speedModifier(700)
-              })
-            })
-            .then(() => actions.actionPromise({
-              promise: animation.cooldown(animation.speedModifier(300))
-            }))
-          )
-        })     
-      )
-    })
-  }
-
-
-  dodgeEnemyAttack(enemy: Fighter, attackType: AttackType){
-    const {animation, fighter, timers, actions} = this.fighting
-    timers.start('just dodged')
-    //console.log(`${fighter.name} dodged ${enemy.name}'s ${attackType}`); 
-    actions.rejectCurrentAction({
-      promiseFunc: () => (
-        actions.actionPromise({
-          isMain: true,  
-          promise: (
-            actions.actionPromise({
-              name: 'dodge',
-              promise: animation.start({
-                name: 'dodging',
-                duration: animation.speedModifier(600),
-                model: 'Dodging'
-              })
-            })
-            .then(() => actions.actionPromise({
-              promise: animation.cooldown(animation.speedModifier(200))
-            }))
-          )
-        })
-      )     
-    })
-  }
-
-
-  takeAHit(attackType: AttackType, attackingFighter: Fighter){
-
-    let {stamina, timers, animation, actions, energy} = this.fighting
-    const {strength, maxEnergy} = attackingFighter.fighting.stats
-    
-    let hitDamage = Math.round(
-      (
-        attackType == 'critical strike' ?
-        1 + (strength * .6) :
-        0.5 + strength * .3
-      ) * 10
-    ) / 10
-
-    this.fighting.stamina = stamina - hitDamage
-    //console.log(`${this.fighting.fighter.name} took ${hitDamage} from ${attackingFighter.name}'s ${attackType} attack`);
-    
-
-    if (this.fighting.stamina <= 0){
-      this.fighting.knockedOut = true
-      console.warn(`${this.fighting.fighter.name} has been knocked out`);
-    }  
-    if(!this.fighting.knockedOut){
-      timers.start('had action recently')
-      if(energy == maxEnergy){
-        const chanceToGoOnARampage = randomNumber({to: 60})
-        if(chanceToGoOnARampage < (this.fighting.stats.aggression *.5 * this.fighting.spirit)){
-          this.goOnRampage()
-        }
+        actions.nextDecisionFactors.justTookHit = true
+        this.chanceToRampage(enemy)
       }
     }
 
+    return result
+  }
 
-    actions.rejectCurrentAction({
-      name: 'taking hit reject',
-      promiseFunc: () => (
-        actions.actionPromise({
-          isMain: true,
-          promise: (
-            actions.actionPromise({
-              name: 'taking hit',
-              promise: animation.start({
-                name: 'taking a hit',
-                duration: animation.speedModifier(800),
-                model: 'Taking Hit'
-              })
-            })
-            .then(() => 
-              this.fighting.knockedOut ?
-                Promise.resolve() :
-                actions.actionPromise({
-                  name: 'taking hit cooldown',
-                  promise: animation.cooldown(300)
-                })
-            )
-          )
-        })
-      )     
-    })
+  
+  private chanceToRampage(enemy?: Fighter) {
+    const {timers, energy, stats, spirit} = this.fighting    
+    const randomNum = randomNumber({to: 100})
+
+    const goOnRampage = randomNum < (
+      stats.aggression * spirit + 
+      energy * 3 +
+      (enemy?.fighting.knockedOut ? 10 : 0)
+    )
+    if(goOnRampage){
+      timers.start('on a rampage')
+    }
   }
 
 };

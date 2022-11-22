@@ -1,10 +1,8 @@
-import { Edge } from "../../interfaces/game/fighter/edge"
-import { Edges } from "../../interfaces/game/fighter/edges"
+import { EdgePoints, Edge } from "../../types/fighter/edge"
 import Coords from "../../interfaces/game/fighter/coords"
-import { getDistanceBetweenTwoPoints, getDirectionOfPosition2FromPosition1 } from "../../helper-functions/helper-functions"
 import { Angle } from "../../types/game/angle"
+import { getDistanceBetweenTwoPoints, getDirectionOfPosition2FromPosition1 } from "../fighter/fighter-fighting/proximity"
 
-const edgeKeys: Edge[] = ['left', 'topLeft', 'top', 'topRight', 'right', 'bottomRight', 'bottom', 'bottomLeft']
 
 const points = {
   leftTop: { x: 16, y: 261 },
@@ -16,7 +14,7 @@ const points = {
   bottomLeft: { x: 223, y: 0 },
   leftBottom: { x: 0, y: 113 }
 }
-const edges: Edges = {
+const edges: EdgePoints = {
   left: { point1: points.leftTop, point2: points.leftBottom },
   topLeft: { point1: points.leftTop, point2: points.topLeft },
   top: { point1: points.topLeft, point2: points.topRight },
@@ -116,7 +114,6 @@ function getDistanceOfClosestEdge(point: Coords): number{
 
 
 export const octagon = {
-  edgeKeys,
   edges,
   points,
   getDistanceOfClosestEdge,

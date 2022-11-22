@@ -2,12 +2,12 @@
 import { Subject, Subscription } from "rxjs"
 import Fighter from "../fighter/fighter"
 import gameConfiguration from "../../game-settings/game-configuration"
-import { getPointGivenDistanceAndDirectionFromOtherPoint } from "../../helper-functions/helper-functions"
 import Coords from '../../interfaces/game/fighter/coords';
 import { Angle } from "../../types/game/angle"
 import { Manager } from "../manager"
-import { FighterInfo, FightReport, FightUIState, ManagersBet } from "../../interfaces/front-end-state-interface"
+import { FightReport, FightUIState, ManagersBet } from "../../interfaces/front-end-state-interface"
 import { octagon } from "./octagon";
+import { add2Angles, getPointGivenDistanceAndDirectionFromOtherPoint, validateAngle } from "../fighter/fighter-fighting/proximity";
 
 
 
@@ -192,7 +192,8 @@ export default class Fight {
       startCountdown: this.startCountdown,
       timeRemaining: this.timeRemaining,
       report: this._report,
-      fighterFightStates: this.fighters.map(fighter => fighter.fighting.getState()),
+      fighterFightStates: this.fighters
+      .map(fighter => fighter.fighting.getState()),
       managersBets: this.managers?.filter(m => !m.state.retired).map((manager: Manager): ManagersBet => {
         return {
           name: manager.has.name,
@@ -222,9 +223,10 @@ export default class Fight {
     }
 
     this.fighters.forEach((fighter: Fighter, index) => {
-      let angle: Angle = 90 + angleBetweenEachFighter * index
-      if(angle >= 360)
-        angle -= 360
+      let angle: Angle = add2Angles(
+        90 as Angle, 
+        validateAngle(angleBetweenEachFighter * index)
+      )
       fighter.fighting.movement.coords = getPointGivenDistanceAndDirectionFromOtherPoint(centerPoint, distanceFromCenter, angle)
     })
   }

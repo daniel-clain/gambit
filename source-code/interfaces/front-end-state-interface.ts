@@ -21,9 +21,9 @@ import { Skin } from "../types/fighter/skin"
 import { VictoryType } from "../types/game/victory-type"
 import { VideoName } from "../client/videos/videos"
 import { MatchupInfo } from "../game-components/week-controller/final-tournament/final-tournament"
-import { Edge } from "./game/fighter/edge"
-import { ActionName } from "../types/fighter/action-name"
 import { randomNumberDigits } from "../helper-functions/helper-functions"
+import { InterruptibleActionName, MainActionName } from "../types/fighter/action-name"
+import { DirectionBasedOn } from "../types/fighter/direction-based-on"
 
 export interface FrontEndState {
   serverUIState: ServerUIState
@@ -165,8 +165,10 @@ export default interface FighterFightState{
   strikingCenters: {front: Coords, back: Coords}
   spirit: number
   energy: number
-  currentAction: ActionName
+  currentMainAction: MainActionName
+  currentInterruptibleAction: InterruptibleActionName
   direction: Angle
+  directionBasedOn: DirectionBasedOn
 }
 
 export interface DisconnectedPlayerVote{

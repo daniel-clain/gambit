@@ -1,4 +1,4 @@
-import { Edge } from "./edge";
+import { Edge } from "../../../types/fighter/edge";
 import Coords from "./coords";
 
 export default interface EdgeCoordDistance{

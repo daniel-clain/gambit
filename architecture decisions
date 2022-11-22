@@ -1,0 +1,20 @@
+different types of modules
+=============================
+* use file name suffixes and class name suffixes to describe and categorise the different type of module
+  - types:
+    ~ high level modules that are designed for reading whats happing at a high level
+      * there should be no detailed complex raw code, that should all be encapsulated away and represented by a descriptive abstraction
+    ~ encapsulated single responsibility
+  - there is essentially a tree structure, where only the leaf nodes have the complex raw syntax code. all the branches close to the trunk should contain easy to read abstract representations. each branch divide off the main one should be a more specific abstract representation. until you get to the leaf node where nothing is abstract, everything is raw code
+  - the trunk of the tree should be a complete representation of the entire system, it shows all the main branches to give you an idea of the main parts of the app
+
+
+* as you write code there starts to become a lot, and every time you go to understand what happens you have to read through a lot
+  - what if, instead of having to read through a lot, you could see something that summarised description that represented all that code, and instead of having to read all the detail, you could just see the short represenation, and trust that the code inside that representation does what it says it does
+  - lets say your original code did a crap load of stuff, but clearly certain chunks were related to specific separate parts.
+  - if you got all the code related to a specific part, and replaced it with a summarised description to represent it, then you could read over all the short representations and be able to understand what is happening a lot quicker and easier
+  - those short representations need to still run the code, so each representation need a function to call to run whats inside
+  - all the code that was there is now moved into different files. the function to run all that code is exported from that file, and imported into the original file
+  - a summarised description would not run code, but a function would, so name the function the same as the short summary so that not only does the function run the code, but its also a description of what its doing
+  - when reading the main code file, when you read the representation, you can only trust it does what it says it does when you run it, but you dont know the specific details of what its doing. if you want to check the specifics, you cant go to that file to see what code is actually running to get reassurance that it is doing what you think it does
+  - repeating this strategy, you codebase almost becomes a descriptive story, where the details of the actual code are hidden away, so it makes it so much quicker and easier to understand and rationalise whats happening

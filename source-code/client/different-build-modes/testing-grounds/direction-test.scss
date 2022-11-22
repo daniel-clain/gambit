@@ -1,0 +1,55 @@
+
+@use 'layout' as *;
+
+direction-test{
+  position: absolute;
+  inset: 0;
+  background-color: white;
+}
+
+
+directions-info-panel {
+  position: absolute;
+  z-index: 5000;
+  right: 0;
+  background-color: white;
+}
+
+
+origin-point{
+  z-index: 5001;
+  position: absolute;
+  left: 200px;
+  top: 200px;
+  width: 8px;
+  height: 8px;
+  background-color: green;
+
+  .enemy-point{
+    width: 3px;
+    background-color: rgb(209, 49, 49);
+    position: absolute;
+    transform-origin: 50% 100%;
+    bottom: 4px;
+    left: 4px;
+  }
+  .edge-point{
+    width: 3px;
+    background-color: rgb(223, 210, 66);
+    position: absolute;
+    transform-origin: 50% 100%;
+    bottom: 4px;
+    left: 4px;
+  }
+
+  direction-away{
+    width: 1px;
+    height: 100px;
+    transform-origin: 50% 100%;
+    background-color: rgb(80, 105, 203);
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+
+  }
+}

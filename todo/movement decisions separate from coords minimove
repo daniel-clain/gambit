@@ -1,0 +1,7 @@
+
+* all move actions have a decided action duration, 
+  - however this is separate from the move speed, change coords iteration
+  - on each move iteration, a check is done to see if the move is no longer valid and ends the move action prematurely
+    ~ only logic breaking scenarios will break the move duration
+
+* a move decision will last longer before redeciding, but certain things can end it instantly

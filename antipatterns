@@ -1,0 +1,6 @@
+* prop drilling:
+ sending args into a function because it has a function that needs those, and doesnt actually use those args itself
+  - why problem:
+    refactoring nightmare, verbose without value, unclear arg origin
+  - counter: 
+    instead of passing it down, make that data an imported dependency from a source designed for holding data

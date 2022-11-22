@@ -1,0 +1,12 @@
+
+
+how should i do docs
+=====================
+* challenges
+  - categorisation
+    ~ items could be logical under 1 branch, but also under another
+    ~ solution: categories are broken down into 2 types, major, and tags
+      * major is high level separation of concern, eg fighting, lawyers, loanshark, betting
+      * tags is within a major, and arent relevant in any other
+        - examples of how tags work
+          ~ an intelligent fighter will have a higher chance to do intelligent things, eg he will wait to defend an attack and then take the opportunity to counter attack

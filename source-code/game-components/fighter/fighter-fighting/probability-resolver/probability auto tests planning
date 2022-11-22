@@ -1,0 +1,28 @@
+factors
+=============
+* closeness: striking, close, near, far
+* state: spirit, energy, stamina, rampage
+* proximity: flanked, against edge, trapped
+* stats: intelligence, strength, aggression, fitness
+* timers: just (dodged, blocked, took hit, attacked, had action, memory behind)
+* current move action: strategic, desperate, cautious, attacking
+* enemy: state (facing), stats, action (recovering, desperate)
+
+assertions
+=============
+* given any combination of possible factors, what should the probability be to do any possible action
+
+
+how do i code this efficiently
+================================
+* the more factors there are, there are exponentially more scenarios, coding each one is too hard, what should be done
+  - example of 1
+    to recover: infront = far, behind = near, stam = low, spirit = high, infront is attacking, behing is not facing
+
+* hypathetically, if i had coded out all scenarios, there would be patterns that would allow me to reduce/simplify to cover a group of scenarios where probability is always relative to the factor, eg close always + 2, near always + 4
+
+
+
+i want to ask andrew for his recommendation
+================================
+* how do i phrase the question so that he understands and i get a useful answer

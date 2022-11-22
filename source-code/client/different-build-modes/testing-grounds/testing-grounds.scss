@@ -1,0 +1,16 @@
+
+@use 'layout' as *;
+
+testing-grounds{
+  background-color: #fff;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+view-container{
+  display: block;
+  flex: 1;
+}

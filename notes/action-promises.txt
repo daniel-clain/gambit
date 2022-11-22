@@ -1,0 +1,86 @@
+* when a promise is started, its waiting for its internal thing to finish
+  - usually the reject will happen within the promises sequence and everything after in the sequence wont continue, however in this scenario, the reject is triggered from outside, and has no knowledge of how far throught the async process it is. therefore the reject will only block what comes after the promise, it will not stope the rest of whats in the promise from completing
+  - eg, if a promise has a timeout inside it, and the resolve occurs when the timeout expires, if that promise is rejected, that timeout will still complete, only, once the timeout completes, it will try to resolve but the promise will already be rejected
+  - brainstorming possible problems
+    ~ the interruptible promises are animations, an they are simple in the way that they set the model at the start, then wait a duration, then do the next thing. the animations dont start any process 
+  
+
+
+*
+  - an action is an interruptible series of events
+  - certain things take time before the next thing
+    - those things should only be concerned with time and not include other things
+  - if the action is interrupted, then whatever is taking time in that action throws the interrupt function to the top, and all other items in the series are not started
+  - when the top level action catches the interrupt, it starts the interrupt function and returns that
+
+  promise is only rejected in response to being attacked
+    - only 1 of 3 things
+      - block, dodge or take hit
+
+  decide action should start a function that is the top level that runs a chain of promises, the top level functions should never throw, they should only catch if any of the child chain promises throw
+    - if the top level function catches, then it should return the execution of the interrupt promise
+    - when the main promise chain is rejected, it will be only caught by a child function, the child function receives the interrupt function call, but doesnt call it, it should throw the interrupt function
+    - chain functions can be any level of depth, they should keep throwing the interrupt upward, until the top level function catches it and executes the interrupt
+    - only child chain promises should overwrite the global reject function, not the main top level functions
+    - when one of the reject promise functions are called they should always pass a function a top level function, to replace the top level function it rejected its self, incase the interrupt function gets rejected its self
+    
+
+    * i feel like putting the action reject in the animation, but is the animation really wehre it should be
+    * i have it in my head that rejectable promise should have the timeout, but this isnt true
+    * how could i write it more logically
+   
+
+
+  rules
+  =========
+  - an action can have lots of stages, but only stages with timers will be interrupted
+  - when i timer is running, if a reject happens, everything after it should not happen
+  - interruptible action should always be a flat structure
+    - it should return a promise
+    - it should catch and execute action interrupts
+    - it should have all its sequence of events in order
+  - it should call a general function so the catch is abstracted out of the specific function, and so it can log when it starts, finishes and is interrupted
+  - its creation should include 1 promise chain made up of 2 types of things ony  
+    - functions that execute logic at different stages
+    - timer functions that are interruptable
+  - while making my interruptible promises, i have to be aware of how the promise will behave once the promise is rejected, i need to be aware that whatever action was started by the promise will complete, only things that come after the promise will not occur
+
+  problems/questions
+  ====================
+  - it should be easy to read, but flexible, what is the best way to organise the code so that its stucture is clear and valid
+  - do all things have to be flattened out on one level, or can things be burried down inside nested functions
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function setModelState(stateName){
+
+}

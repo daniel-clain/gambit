@@ -1,0 +1,64 @@
+properties and methods never end up as planned
+==================================================
+x eg1
+* background: 
+  - it seems like you should be able to express your app simply with:
+    ~ Entity Relationship Diagram (ERD), has public properties and methods of each module and how they relate to other adjacent modules
+    ~ Unified Modeling Language (UML), to express system structure, behaviour and process
+* problem
+  - it never really works out the way you expect
+    ~ eg, you have a soldier with attack and move ability
+      * what calls the attack function?
+        - does something external call it? why would it?, wouldnt he call it internally? if he did call it internally, wouldnt it be private?, if its not public then wouldnt the attack method not be exposed on the soldier?
+        - if it were called from the outside, what entity makes sens that it could be responsible for calling it? maybe if you had a soldier AI module, and when he dicides to attack, he calls the function
+
+x eg2
+* eg2:
+  - background: 
+    it makes sense that if my design is that a player can initiate a game and other join, and that game start, that many games can exist at once. and it seems obvious to have a game object, but what should its properties be, what methods should it have. put asside public and private. I makes sense to have a game object, but what should it be responsible for
+  - problem:
+    when the game is initiated, it needs to do some setup before it can start. and several other game related processes. but where should that code reside, should it all be in the game class, or abstracted away into sub modules
+* eg3 
+  - question: if it seems logical for a game to have a players array property, but no external logic has any reason to use that public player property, then does it makes sense for game to even have that property public
+
+
+nesting functions
+===================
+* background:
+  if a procedure has a single responsibility of a certain goal then it makes sense to abstract that as a function. however, where, does it make sense, to store that function. if you know nothing else uses it, and its only used by 1 thing, then to me it makes sense to store it within the scope of that thing. that way, whenever you look at a context, you know that anything you see at that scope is only relevant in that scope.
+* problem: but if you follow this idea all the way you could end up with some deep nesting which could affect readabililty, and makes the idea of testing each of the functions more difficult
+
+testing public vs private
+===========================
+* background: it makes sense to prove that functions do what they say they do, however, unless the function is public, it cant be extracted for testing. Ive heard that anything private is to be used by the public thing, however, 1 public thing can could be responsible for doing a lot of complex stuff before resolving, which makes it so hard to test whats happening along the way.
+* pros and cons: it seems like if you made all those dependant private functions in another module, then and the main module was dependant on that module, then all those functions that were private would now have to be public, which is good for testing, but is it too granular and decoupled now
+* problem: if you do abstract there functions to another module, the hard part is, what do you name the module, and how do you stucture your codebase directory
+* problem: if you do put them in another module, youve lost the advantage of those functions having access to the everything that was in that scope
+
+    
+
+
+
+what is single responsibility
+================================
+* if you have a class called fighter, but there is a lot of complexity, it makes sense to have a module to encapsulate each idea, but then the fighter class doesnt have anyting itself, its all been abstracted, waht is the fighter class now responsible for.
+* if the fighting side of a fighter is only relevant in a fight, does it belong in the fighter class? does it make sense to have a fighter-fighting class? this doesnt seem very intuitive
+* what is meant by single, in my movement class 
+  - it had moveing direction, but it gets the retreat direction from the retreat module
+  - it calculates the maths of what the next coord is, but there is 95% of the movement and direction maths in the proximity class
+  - the thing that dicides to move is the figher actions class
+  - the facing direction is used a lot by movement, but its stored in fighting class
+  - turn around is one of the possible actions, but it lives in the movement class and all the others dont
+* question: so often i go crazy trying to rationalise why something should live where, i can always come up with reasons of why it should or shouldnt live there
+
+* there seems a diffence between separation based on highlevel intuitive separation, which seems different from separation based on system behavior and relationship
+
+design patterns
+==================
+* backgorund: the concept of design patterns makes a lot of sense to me, but when i look into each one, they never seem as intuitive as id want them to be, and none of my modules ever seem to adhere to any of them
+
+
+open closed principle
+========================
+* doesnt makes sent to me
+  - 

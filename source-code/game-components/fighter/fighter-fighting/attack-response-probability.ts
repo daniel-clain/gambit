@@ -1,33 +1,46 @@
 import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
-import { AttackType } from "../../../types/fighter/attack-types"
-import { ActionName, AttackResponseAction } from "../../../types/fighter/action-name"
+import { AttackAction, AttackResponseAction } from "../../../types/fighter/action-name"
 import { isFacingAwayFromEnemy } from "./proximity"
-import { ActionProbability } from "./random-based-on-probability"
+import { OptionProbability } from "../../../helper-functions/helper-functions"
 
 export default class AttackResponseProbability {
   
   constructor(public fighting: FighterFighting){}
 
-  getProbabilityTo(action: AttackResponseAction, enemy: Fighter, attackType: AttackType): ActionProbability{
+  getProbabilityTo(action: AttackResponseAction, enemy: Fighter, attackType: AttackAction): OptionProbability<AttackResponseAction>{
     switch(action){      
       case 'dodge':
-        return {action, probability: this.getProbabilityToDodge(enemy, attackType)}
+        return {
+          option: action, 
+          probability: this.getProbabilityToDodge(enemy, attackType)
+        }
       case 'block':
-        return {action, probability: this.getProbabilityToBlock(enemy, attackType)}
+        return {
+          option: action, 
+          probability: this.getProbabilityToBlock(enemy, attackType)
+        }
       case 'take hit':
-        return {action, probability: this.getProbabilityToTakeHit(enemy, attackType)}
+        return {
+          option: action, 
+          probability: this.getProbabilityToTakeHit()
+        }
     }
   }
   
-  getProbabilityToDodge(enemy: Fighter, attackType: AttackType): number {
+  getProbabilityToDodge(enemy: Fighter, attackType: AttackAction): number {
 
     const {speed, intelligence} = this.fighting.stats
-    const {animation, fighter, movement, spirit} = this.fighting
+    const {fighter, spirit, actions, logistics} = this.fighting
     
     if(
       isFacingAwayFromEnemy(enemy, fighter) ||
-      (animation.inProgress && animation.inProgress != 'defending' && animation.inProgress != 'recovering')
+      (
+        actions.currentInterruptibleAction != 'defend' && 
+        actions.currentInterruptibleAction != 'recover' &&
+        actions.currentInterruptibleAction != 'move' &&
+        actions.currentInterruptibleAction != 'do nothing'
+      )
     )
       return 0
 
@@ -37,10 +50,10 @@ export default class AttackResponseProbability {
     if(enemy.state.hallucinating){
       probability -= 6
     }
-    if(animation.inProgress == 'defending')
+    if(actions.currentInterruptibleAction == 'defend')
       probability += 8
 
-    if(movement.moveActionInProgress == 'cautious retreat')
+    if(actions.currentMainAction == 'cautious retreat')
       probability += 4
 
 
@@ -53,14 +66,14 @@ export default class AttackResponseProbability {
     if(attackType == 'critical strike')
       probability += 1
 
-    if(this.hasLowStamina())
+    if(logistics.hasLowStamina)
       probability ++
 
       if(fighter.state.hallucinating){
         probability -= 6
       }
       
-    if(animation.inProgress == 'recovering')
+    if(actions.currentInterruptibleAction == 'recover')
     probability = probability * 0.3  + spirit * .4
     
     if(probability < 0)
@@ -70,23 +83,23 @@ export default class AttackResponseProbability {
     return probability
   }
 
-  getProbabilityToBlock(enemy: Fighter, attackType: AttackType): number {
+  getProbabilityToBlock(enemy: Fighter, attackType: AttackAction): number {
     const {strength, speed, intelligence} = this.fighting.stats
-    const {spirit, animation, fighter, movement} = this.fighting
+    const {spirit, actions, fighter, logistics} = this.fighting
 
     
     if(
       isFacingAwayFromEnemy(enemy, fighter) ||
-      (animation.inProgress && animation.inProgress != 'defending' && animation.inProgress != 'recovering')
+      (actions.currentInterruptibleAction && actions.currentInterruptibleAction != 'defend' && actions.currentInterruptibleAction != 'recover')
     )
       return 0
 
     let probability: number = 0
    
-    if(animation.inProgress == 'defending')
+    if(actions.currentInterruptibleAction == 'defend')
       probability += 10 + intelligence
 
-    if(movement.moveActionInProgress == 'cautious retreat')
+    if(actions.currentMainAction == 'cautious retreat')
       probability += 8
 
           
@@ -101,7 +114,7 @@ export default class AttackResponseProbability {
     if(attackType == 'punch')
       probability += 1
       
-    if(this.hasFullStamina())
+    if(logistics.hasFullStamina)
       probability += 1
 
     if(enemy.state.takingADive){
@@ -109,7 +122,7 @@ export default class AttackResponseProbability {
     }
 
       
-    if(animation.inProgress == 'recovering')
+    if(actions.currentInterruptibleAction == 'recover')
       probability = probability * 0.2  + spirit * .5
 
 
@@ -119,28 +132,7 @@ export default class AttackResponseProbability {
     return probability
   }
   
-  getProbabilityToTakeHit(enemy: Fighter, attackType: AttackType): number {
+  getProbabilityToTakeHit(): number {
     return 5
-  }
-
-
-  hasLowStamina(): boolean{
-    const {stamina, fighter} = this.fighting
-    return stamina < fighter.fighting.stats.maxStamina * .5
-  }
-
-  hasLowSpirit(): boolean{
-    const {spirit, fighter} = this.fighting
-    return spirit < fighter.fighting.stats.maxSpirit * .5
-  }
-
-  hasFullStamina(): boolean{
-    const {stamina, fighter} = this.fighting
-    return stamina == fighter.fighting.stats.maxStamina
-  }
-
-  hasFullSpirit(): boolean{
-    const {spirit, fighter} = this.fighting
-    return spirit == fighter.fighting.stats.maxSpirit
   }
 };

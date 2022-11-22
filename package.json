@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
+    "dev-testing-grounds": "parcel serve source-code/client/different-build-modes/testing-grounds/index.html --dist-dir host-packages/testing-grounds",
     "dev": "parcel watch source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game --no-content-hash",
     "prod": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod --no-content-hash",
     "run-server": "cross-env NODE_ENV=development nodemon -q server.ts",
     "run-server-prod": "cross-env NODE_ENV=production nodemon -q server.ts",
     "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test"
+  },
+  "engines": {
+    "node": "16.4"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -38,7 +42,9 @@
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^1.4.36",
     "buffer": "^6.0.3",
+    "console-browserify": "^1.2.0",
     "cross-env": "^7.0.3",
+    "jest": "^29.3.1",
     "process": "^0.11.10"
   }
 }

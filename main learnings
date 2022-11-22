@@ -1,0 +1,20 @@
+* promises
+* dev tools stack trace shows lots of info on state from its path depending on how you structure ur code. if the external one always calls one internal one, then you can see the values all the way back, but if functions go out to do things and come back, you can see what theyre doing
+* if there is a point if you app where is a decission is made based on different variables, there could be a wide range of possible outcomes. BDD could be a smart approach to verify that all possible scenarios have the expected outcome
+
+* testing & architecture
+  - background: my choice was a key abstractions, i pass the root level object down into each its sub abstractions, and that way they each have access to everythign within that abstraction
+  - pros and cons: i would always have access to what i needed and there was no problems until it came to testing
+  - unsure: is it ok to do this, and then when it comes to testing, put stubs in for each of the uninvolved properties, or should i have kept it all separate so that i can test without having to handle the lose ends
+  - pros and cons: it seems extreneous to pass in the same object every time when its always the same, and i like using getter functions to make the code less verbose, but getters cant take args
+  - decision: although i didnt do extensive testing, i think that tightly coupled made the adventure a lot more intuitive minimal, and its still possible to test. but im worried its an anti pattern that others would disapprove of
+
+* principles and patterns
+  - i think ive been sceptical of patterns for 1 main reason
+    ~ every time i got to learn about principles and patterns, they try to make it easy to demonstrate with very very simple examples. these very simple examples i what has misled me. 
+    ~ the value of these principles really comes about when there in non-simple code. a lot of code or complex code. it makes sense to implement these strategies to really make things better
+    ~ the problem with the very simple examples is it looks like these principles and patterns are anti patterns. because they start with something very simple and intuitive, and they then break it down into tiny pieces and make it overengineers and harder for understand, they make things so loosley coupled.
+    ~ the advantages of these principles/patterns is not apparent, and makes my sceptical side hard to be convinced
+    ~ i think the problem is theyre too focused on explaining how its done, but they never help you understand why to do it, they never show you a context that proves its value. they think that giving simple examples makes it easier to understand, but it actually makes it harder to understand
+    ~ its like demonstrating the value of a shipping tanker in a swimming pool
+

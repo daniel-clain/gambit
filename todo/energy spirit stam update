@@ -1,0 +1,17 @@
+
+* if a fighters been out of action for long enough, they start a passive slow recovery
+
+* only landing attacks can take a fighters spirit to max, otherwise half way is max
+  - if out of action for too long spirit goes to half
+
+* spirit, stamina and energy recover slowly over time, but recover quicker when recovering
+
+* if a fighter has max stamina and out of combat for too long, and they dont have low spirit: then they can use a speed boost to run down enemy
+* fast retreat is the fastest move, but it depletes energy quickly
+
+* energy affects attack speed
+  - more energy down on attack, (spirit down only if blocked/dodged)
+
+  
+* intelligent fighter defends and looks for attacking fighter to have low energy
+  - more energy down on attack, (spirit down only if blocked/dodged)

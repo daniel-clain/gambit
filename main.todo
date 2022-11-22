@@ -1,5 +1,15 @@
 
+
 Deal Breakers:
+  ☐ refactor proximity and logistics
+    - proximity should be only for small composable functions to process direction and distance
+    - logistics should only be get functions that do no calculations, just calls external functions to get specific data in a more (short hand, readable, direct)
+  ☐ combine flanking and reposition, they are the same thing
+  ☐ factor in 'nextDecisionFactors'
+    - reset at start of each new main action
+  ☐ sometimes they are moving while taking hit, move loop must be continuing when taking hit cos it doesnt reach finally to stop loop
+  ☐ when chosing retreat from flankd, reposition retreat around edge, show symbol avove so you know what their direction is based on
+  ☐ somtimes the enemy infront is stored as enemy behind, and they act on enemy infront as tho they were behind. make sure when they turn, enemy behind is set to whatever was infrone, even if its null
   ☐ move along edge bug, reverses direction toward fighter instead of away
     - direction chosen is based on 
   ☐ reposition should not allow moving toward opponent
@@ -55,9 +65,12 @@ Priority:
 QA:
   ☐ failed victory scenarios play out correctly
     - if opponensts have enought money/lawyers or thugs/hitmen
+  ☐ review attack-response-probability
 
 
 Secondary priority:  
+  ☐ take hit duration based on spirit
+  ☐ attack damage based on agression
   ☐ coins doint all spin at same point
   ☐ add move type run away to recover, and when far away enought, higher chance to recover
   ☐ drug money more random
@@ -170,7 +183,7 @@ ideas:
 
 
 Big wins (to remember my achievements):
-  
+  ✔ timers, see if you can improve @done(22-11-09 10:51)
 ✔ when fighters trying to get direction of fight center, if too close, the number are reversed and it bugs @done(22-10-30 20:15)
   - detect if too close and handle differently
 ✔ bug when fighter is in corner, @done(22-10-30 20:14)

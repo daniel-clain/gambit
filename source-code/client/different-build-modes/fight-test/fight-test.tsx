@@ -7,9 +7,6 @@ import { useState } from 'react';
 import { ConfigureTestFighters } from './configure-test-fighters';
 import { Fight_View } from '../../views/game/fight-view/fight.view';
 import { frontEndState } from '../../front-end-state/front-end-state';
-import { decideAction, promTest } from './prom-test';
-
-
 
 
 export const FighterTest_C = () => {

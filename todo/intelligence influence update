@@ -1,0 +1,19 @@
+
+* intelligent fighter defends and looks for attacking fighter to have low energy
+  - more energy down on attack, (spirit down only if blocked/dodged)
+  
+how does intelligence (stupidity) factor in
+==============================================
+* intelligent fighter will
+  - check behind to not get flanked
+    ~ any fighter will withdraw from flanked but an intelligent fighter will thing to check
+  - reposition on the outside to avoid being flanked
+    ~ a stupid fighter (and aggressive) fighter will go to fight whoever they can see
+  - if flanked critically, and intelligent fighter will fast retreat
+  - when low spirit
+    ~ a fighter (non aggressive) will use fast retreat
+      - an intelligent fighter will consider how much stamina he and the opponent will have
+        - if intelligent fighter has higher than half and other fighter has lower than half, and other has higher spirit, then int fighter will look to defend then counter attack
+        - where as stupid fighter will fast retreat on low spirit regardless (coward mechanic)
+  
+

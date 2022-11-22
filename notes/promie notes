@@ -1,0 +1,14 @@
+if there is a promise chain, and one of the promises reject, then all the 'then's after the promise that rejects wont fire
+
+* however if you catch within that promise, and return, then the chain can continue
+
+* if a promise runs functions within it, and the promise is rejected, that will have no affect on the promises running within it
+
+* the situation where i want the next things to fail is where 1 major action is made up of several main actions, if an interupt happens during any of the main actions, then it should short circuit and go to the end of the major action
+
+* the reject function is created within the main function, so in order to reject that main function, the reject has to be passed to be made available to anything that could reject it
+
+* in this situation, whenever an interupt happens, the only thing that will be in progress is an animation, those are the only things that are interuptable
+  - therefore its the animations job to pass its reject to a scope where interuptors can call it
+
+* anything that catches and reject will prevent anything higher catching the bubble up, therefore if you want to identify the interupt but not handle it int he animation, then the error has to be rethrown 

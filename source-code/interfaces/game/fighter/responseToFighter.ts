@@ -1,1 +1,0 @@
-export type ResponseToFighter = 'cautious retreat' | 'fast retreat' | 'defend' | 'attack'

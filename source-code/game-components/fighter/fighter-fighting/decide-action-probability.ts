@@ -1,22 +1,19 @@
 
 import FighterFighting from "./fighter-fighting"
-import { ActionName } from "../../../types/fighter/action-name"
-import { getProbabilityToRecover } from "./probability-resolver/getProbabilityToRecover"
-import { getProbabilityToRetreat } from "./probability-resolver/getProbabilityToRetreat"
-import { getProbabilityToCautiousRetreat } from "./probability-resolver/getProbabilityToCautiousRetreat"
-import { getProbabilityToCheckFlank } from "./probability-resolver/getProbabilityToCheckFlank"
-import { getProbabilityToCriticalStrike } from "./probability-resolver/getProbabilityToCriticalStrike"
-import { getProbabilityToDefend } from "./probability-resolver/getProbabilityToDefend"
-import { getProbabilityToFastRetreat } from "./probability-resolver/getProbabilityToFastRetreat"
-import { getProbabilityToMoveToAttack } from "./probability-resolver/getProbabilityToMoveToAttack"
-import { getProbabilityToPunch } from "./probability-resolver/getProbabilityToPunch"
-import { getProbabilityToReposition } from "./probability-resolver/getProbabilityToReposition"
-import { getProbabilityToRetreatAroundEdge } from "./probability-resolver/getProbabilityToRetreatAroundEdge"
-import { getProbabilityToRetreatFromFlanked } from "./probability-resolver/getProbabilityToRetreatFromFlanked"
-import { getProbabilityToDoNothing } from "./probability-resolver/getProbabilityToDoNothing"
-import { getProbabilityForGeneralAttack } from "./probability-resolver/getProbabilityForGeneralAttack"
-import { getProbabilityForGeneralRetreat } from "./probability-resolver/getProbabilityForGeneralRetreat"
-import { ActionProbability } from "./random-based-on-probability"
+import { getProbabilityToRecover } from "./probability-resolver/recover"
+import { getProbabilityToCautiousRetreat } from "./probability-resolver/cautious-retreat"
+import { getProbabilityToCheckFlank } from "./probability-resolver/check-flank"
+import { getProbabilityToCriticalStrike } from "./probability-resolver/critical-strike"
+import { getProbabilityToDefend } from "./probability-resolver/defend"
+import { getProbabilityToMoveToAttack } from "./probability-resolver/move-to-attack"
+import { getProbabilityToPunch } from "./probability-resolver/punch"
+import { getProbabilityToDoNothing } from "./probability-resolver/do-nothing"
+import { getProbabilityForGeneralAttack } from "./probability-resolver/general-attack"
+import { getProbabilityForGeneralRetreat } from "./probability-resolver/general-retreat"
+import { OptionProbability } from "../../../helper-functions/helper-functions"
+import { getProbabilityToDesperateRetreat } from "./probability-resolver/desperate-retreat"
+import { getProbabilityToStrategicRetreat } from "./probability-resolver/strategic-retreat"
+import { MainActionName } from "../../../types/fighter/action-name"
 
 export default class DecideActionProbability {
   includeLogs = true
@@ -26,34 +23,32 @@ export default class DecideActionProbability {
 
   constructor(public fighting: FighterFighting) { }
 
-  getProbabilityTo(action: ActionName): ActionProbability {
+  getProbabilityTo(action: MainActionName): OptionProbability<MainActionName> {
     switch (action) {
-      case 'do nothing':
-        return {action, probability: getProbabilityToDoNothing(this.fighting)}
       case 'punch':
-        return {action, probability: getProbabilityToPunch(this.fighting)}
+        return {option: action, probability: getProbabilityToPunch(this.fighting, this.generalAttackProbability)}
       case 'critical strike':
-        return {action, probability: getProbabilityToCriticalStrike(this.fighting)}
+        return {option: action, probability: getProbabilityToCriticalStrike(this.fighting, this.generalAttackProbability)}
       case 'defend':
-        return {action, probability: getProbabilityToDefend(this.fighting)}
+        return {option: action, probability: getProbabilityToDefend(this.fighting)}
+
+
       case 'move to attack':
-        return {action, probability: getProbabilityToMoveToAttack(this.fighting)}
+        return {option: action, probability: getProbabilityToMoveToAttack(this.fighting, this.generalAttackProbability)}
       case 'cautious retreat':
-        return {action, probability: getProbabilityToCautiousRetreat(this.fighting)}
-      case 'retreat around edge':
-        return {action, probability: getProbabilityToRetreatAroundEdge(this.fighting)}
-      case 'reposition':
-        return {action, probability: getProbabilityToReposition(this.fighting)}
-      case 'fast retreat':
-        return {action, probability: getProbabilityToFastRetreat(this.fighting)}
-      case 'retreat':
-        return {action, probability: getProbabilityToRetreat(this.fighting)}
-      case 'retreat from flanked':
-        return {action, probability: getProbabilityToRetreatFromFlanked(this.fighting)}
+        return {option: action, probability: getProbabilityToCautiousRetreat(this.fighting, this.generalRetreatProbability)}
+      case 'strategic retreat':
+        return {option: action, probability: getProbabilityToStrategicRetreat(this.fighting, this.generalRetreatProbability)}
+      case 'desperate retreat':
+        return {option: action, probability: getProbabilityToDesperateRetreat(this.fighting, this.generalRetreatProbability)}
+
+
       case 'recover':
-        return {action, probability: getProbabilityToRecover(this.fighting)}
-      case 'turn around':
-        return {action, probability: getProbabilityToCheckFlank(this.fighting)}
+        return {option: action, probability: getProbabilityToRecover(this.fighting)}
+      case 'check flank':
+        return {option: action, probability: getProbabilityToCheckFlank(this.fighting)}
+      case 'do nothing':
+        return {option: action, probability: getProbabilityToDoNothing(this.fighting)}
     }
   }
 
@@ -63,7 +58,7 @@ export default class DecideActionProbability {
     this.generalRetreatProbability = getProbabilityForGeneralRetreat(this.fighting)
   }
 
-  logInstance(name: ActionName){
+  logInstance(name: MainActionName | 'general attack' | 'general retreat'){
     let instance = {
       name,
       entries:[]

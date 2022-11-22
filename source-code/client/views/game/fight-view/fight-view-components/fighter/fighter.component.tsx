@@ -29,7 +29,10 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		block: blockSound    
 	}
 
-	const {name, coords, modelState, facingDirection, currentAction, soundsMade, onRampage, skin, strikingCenters, spirit, energy, direction} = fighterFightState
+	const {name, coords, modelState, facingDirection, currentInterruptibleAction, soundsMade, onRampage, skin, strikingCenters, spirit, energy, direction, directionBasedOn} = fighterFightState
+
+	if(directionBasedOn)
+	console.log(name +' directionBasedOn :>> ', directionBasedOn);
 
 	const soundsToPlay = soundsMade.reduce<SoundTime[]>((soundsToPlay, soundMade) => {
 		if(processedSounds.some(sound => sound.time == soundMade.time))
@@ -141,9 +144,36 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 					</div>
 				:''}
 			</div>
-			{currentAction == 'retreat from flanked' && <div className='fighter__flanked' style={flankedStyle}></div>}
-			{currentAction == 'reposition' && <div className='fighter__repositioning' style={repositioningStyle}></div>}
-			{currentAction == 'fast retreat' && <div className='fighter__fast-retreat' style={repositioningStyle}></div>}
+			{directionBasedOn == 'flanked' && 
+				<div 
+					className='fighter__marker fighter__marker--flanked' 
+					style={flankedStyle}
+				></div>
+			}
+			{directionBasedOn == 'reposition' && 
+				<div 
+					className='fighter__marker fighter__marker--reposition' 
+					style={repositioningStyle}
+				></div>
+			}
+			{directionBasedOn == 'between flankers' && 
+				<div 
+					className='fighter__marker fighter__marker--between' 
+					style={repositioningStyle}
+				></div>
+			}
+			{directionBasedOn == 'away from fighter' && 
+				<div 
+					className='fighter__marker fighter__marker--away' 
+					style={repositioningStyle}
+				></div>
+			}
+			{directionBasedOn == 'around edge' && 
+				<div 
+					className='fighter__marker fighter__marker--around' 
+					style={repositioningStyle}
+				></div>
+			}
 			
 			<div className='fighter__direction' style={directionStyle}></div>
 			<div 

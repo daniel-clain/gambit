@@ -1,0 +1,12 @@
+
+
+probability problem with decide action
+============================
+* how can i write my probability logic so i can see it transparently without having to put in logs or watch the game
+  - unit tests: for each scenario that i want to be true, write a test that outputs the result i want
+    - in X scenario, what should a fighters's probabilities be based on their stats
+    - need to cover all scenarios
+      ~ how do i write the scenarios in an efficient way, its like a graph of situations, but how do i write it
+      ~ i could have a function that represents each graph item
+      ~ ill create an item or an array for each influencer, and then use code to loop out all the graph scenarios, then use that out put to build the template for all my scenarios and their expecations
+      

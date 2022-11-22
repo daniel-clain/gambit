@@ -45,32 +45,39 @@ $image-folder: '../../../../../images';
   &__spirit{
     margin-left: 5px;
   }
-  &__flanked{
-    //display: none;
-    position: absolute;
-    width: 15px;
-    height: 17px;
-    background-image: url('#{$image-folder}/icons/exclamations.png');
-    left: -25px
-  }
-  &__fast-retreat{
-    //display: none;
+
+  &__marker{
     position: absolute;
     width: 15px;
     height: 17px;
     background-image: url('#{$image-folder}/icons/exclamations.png');
     left: -25px;
-    filter: hue-rotate(260deg);
-  }
-  
-  &__repositioning{
-    //display: none;
-    position: absolute;
-    width: 15px;
-    height: 17px;
-    background-image: url('#{$image-folder}/icons/exclamations.png');
-    left: -25px;
-    filter: hue-rotate(160deg);
+
+    &--flanked{
+      //display: none;
+      filter: hue-rotate(0deg);
+
+    }
+    &--away{
+      //display: none;
+      filter: hue-rotate(260deg);
+
+    }
+    &--reposition{
+      //display: none;
+      filter: hue-rotate(160deg);
+
+    }
+    &--between{
+      //display: none;
+      filter: hue-rotate(220deg);
+
+    }
+    &--around{
+      //display: none;
+      filter: hue-rotate(320deg);
+
+    }
   }
 
   &__direction{

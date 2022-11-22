@@ -1,3 +1,4 @@
+import { dir } from "console";
 import Coords from "../interfaces/game/fighter/coords";
 import { Angle } from "../types/game/angle";
 /**
@@ -13,25 +14,27 @@ import { Angle } from "../types/game/angle";
 }
 
 export function selectByProbability<T>(optionProbabilities: OptionProbability<T>[]): T {
-
-  const totalProbability = optionProbabilities.reduce(
+  const filteredOptionProbabilities = optionProbabilities.filter(x => x.probability)
+  const totalProbability = filteredOptionProbabilities.reduce(
     (totalProbability, {probability}) => 
-      totalProbability + probability, 0
+      totalProbability + (probability || 0), 0
   )
-  const randomProbability = randomNumber({to: totalProbability})
+  const randomProbability = randomNumber({from: 1, to: totalProbability})
   let probabilityCount = 0
-  const randomOption = optionProbabilities.find(
+  const randomOption = filteredOptionProbabilities.find(
     ({probability}) => {
       if(
-        randomProbability >= probabilityCount &&
+        randomProbability > probabilityCount &&
         randomProbability <= probabilityCount + probability
-      ) return true
+      )
+        return true
+      else
+        probabilityCount += probability
     }
-  )!
+  )
 
-  return randomOption.option
+  return randomOption?.option
 }
-
 
 export const shuffle = <T>(array: T[]): T[] => {
   var currentIndex = array.length, temporaryValue, randomIndex;
@@ -57,10 +60,9 @@ export function toCamelCase(string: string): string{
 }
 
 
-
 export function randomNumber({from, to}:{from?: number, to: number}){
   from = from || 0
-  return Math.floor(Math.random()*(to-from) + from)
+  return Math.round(Math.random()*(to-from) + from)
 }
 
 
@@ -98,152 +100,50 @@ export function numberLoop(amount: number, func: (number?: number) => void): any
   return returnVal
 }
 
+export function deleteByProperty<T, T2 extends keyof T>(
+  {array, prop, val}:
+  {array: T[], prop: T2, val:any}
+): void{
+  const index = array.findIndex(item => item[prop] == val)
+  array.splice(index, 1)
+}
+
+export type RejectablePromise<T = void> = {
+  promise: Promise<T>
+  reject: (reason?: unknown) => void
+}
+
 
 export const randomNumberDigits = (digits: number) => Math.round(Math.random() * Math.pow(10, digits))
 
 
 export const wait = (milliseconds: number): Promise<void> => new Promise(resolve => setTimeout(resolve, milliseconds))
 
-export const getDistanceBetweenTwoPoints = (point1: Coords, point2: Coords): number =>{
-  return Math.sqrt(
-    Math.pow(point1.x - point2.x, 2) + 
-    Math.pow(point1.y - point2.y, 2)
-  )
+
+let bounceObj: {
+  id
+  timeout,
+  reject
+}[] = []
+export function debounce(functionId: string): Promise<void>{
+  return new Promise((resolve, reject) => {
+    const existing = bounceObj.find(b => b.id == functionId)
+
+    if(existing){
+      clearTimeout(existing.timeout)
+      existing.reject()
+      bounceObj = bounceObj.filter(b => b.id != functionId)
+    } 
+
+
+    bounceObj.push({
+      id: functionId,
+      timeout: setTimeout(() => {
+        resolve()
+        bounceObj = bounceObj.filter(b => b.id != functionId)
+      }, 500),
+      reject
+    })
+
+  });
 }
-
-export function getPointGivenDistanceAndDirectionFromOtherPoint(point: Coords, distance: number, direction: Angle): Coords{
-  const hypotenuse = distance
-  let {x, y} = point
-
-  if(direction < 90){
-    const angle = direction - 0
-    const sinAngle = Math.sin(angle * (Math.PI/180))
-    const cosAngle = Math.cos(angle * (Math.PI/180))
-    x += Math.round(sinAngle * hypotenuse)
-    y += Math.round(cosAngle * hypotenuse)
-  }
-  else if(direction < 180){
-    const angle = direction - 90
-    const sinAngle = Math.sin(angle * (Math.PI/180))
-    const cosAngle = Math.cos(angle * (Math.PI/180))
-    x += Math.round(cosAngle * hypotenuse)
-    y -= Math.round(sinAngle * hypotenuse)
-  }
-  else if(direction < 270){
-    const angle = direction - 180
-    const sinAngle = Math.sin(angle * (Math.PI/180))
-    const cosAngle = Math.cos(angle * (Math.PI/180))
-    x -= Math.round(sinAngle * hypotenuse)
-    y -= Math.round(cosAngle * hypotenuse)
-  }
-  else if(direction < 360){
-    const angle = direction - 270
-    const sinAngle = Math.sin(angle * (Math.PI/180))
-    const cosAngle = Math.cos(angle * (Math.PI/180))
-    x -= Math.round(cosAngle * hypotenuse)
-    y += Math.round(sinAngle * hypotenuse)
-
-  }
-
-
-
-
-
-
-  const sinAngle = Math.sin(direction * (Math.PI/180))
-  const cosAngle = Math.cos(direction * (Math.PI/180))
-
-  
-  return {x, y}
-}
-
-
-export const getDirectionOfPosition2FromPosition1 = (pos1: Coords, pos2: Coords): Angle => {
-  let directionOfPosition2FromPosition1: Angle
-  let xLength = pos2.x - pos1.x
-  let yLength = pos2.y - pos1.y
-  let adjacentSide: number
-  let oppositeSide: number
-  let addedDegrees: number
-  if(xLength == 0 && yLength == 0)
-    return 0
-  if (xLength < 0 && yLength >= 0) {
-    oppositeSide = yLength
-    adjacentSide = xLength * -1
-    addedDegrees = 270
-  }
-  if (xLength < 0 && yLength < 0) {
-    adjacentSide = yLength * -1
-    oppositeSide = xLength * -1
-    addedDegrees = 180
-  }
-  if (xLength >= 0 && yLength < 0) {
-    oppositeSide = yLength * -1
-    adjacentSide = xLength
-    addedDegrees = 90
-  }
-  if (xLength >= 0 && yLength >= 0) {
-    adjacentSide = yLength
-    oppositeSide = xLength
-    addedDegrees = 0
-  }
-
-  const degrees = Math.round(Math.atan(oppositeSide! / adjacentSide!) * (180 / Math.PI))
-  directionOfPosition2FromPosition1 = degrees + addedDegrees!
-
-  if(isNaN(directionOfPosition2FromPosition1))
-    debugger
-
-  if(degrees + addedDegrees! == 360){
-    directionOfPosition2FromPosition1 = 0
-  }
-
-  return directionOfPosition2FromPosition1
-}
-
-
-export function getOppositeDirection(direction: Angle): Angle{
-  return (direction >= 180 ? direction - 180 : 180 + direction) as Angle
-}
-
-export function getSmallestAngleBetween2Directions(direction1: Angle, direction2: Angle){
-  const {biggest, smallest} = direction1 > direction2 ? {biggest: direction1, smallest: direction2} : { biggest: direction2, smallest: direction1}
-  
-  if(biggest - smallest > 180)
-    return {smallestAngle: 360 - biggest + smallest, crosses0: true}
-  else
-    return {smallestAngle: biggest - smallest, crosses0: false}
-}
-
-
-export function subtractAngle2FromAngle1(angle1: Angle, angle2: Angle): Angle {
-  validateAngle(angle1)
-  validateAngle(angle2)
-  if(angle1 >= angle2)
-    return angle1 - angle2
-  else
-    return 360 + angle1 - angle2
-}
-
-export function add2Angles(angle1: Angle, angle2: Angle) {
-  validateAngle(angle1)
-  validateAngle(angle2)
-
-  let returnAngle
-  const addedAngles = angle1 + angle2
-  if(addedAngles >= 360)
-    returnAngle = addedAngles % 360
-  else
-    returnAngle = addedAngles
-  
-  validateAngle(returnAngle)
-  return returnAngle
-}
-
-export function validateAngle(angle: Angle): Angle{
-  if(angle >= 360 || angle < 0)
-    throw 'angle is invalid: ' + angle
-  
-  return angle
-}
-

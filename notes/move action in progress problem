@@ -1,0 +1,87 @@
+original problem
+================
+when the probability decides a move action, the action ends within 200 millisecond, cos as they move (an other fighters move), their context could change a lot (eg, some other fighter could become close). they cant just blindly ignore whats around them, they have to constantly reevaluate
+  - however with constantly redeciding their situation, they could constantly change their mind and get nothing done
+  - there needs to be some balance between re assessing and doing what they decided
+  
+
+* mistake, tying the pixel movement interval to the decision making interval
+  - they are different concepts and should be separate
+  - however, every tiny move action puts the fighter in a different context, they cant just blatantly ignore movement
+
+challenges
+============
+* when should the fighter commit to their decision, and when should they do something else
+* how do i affect their probability of action in a way that allows them to continue their decision without over influencing
+* how do stats factor in
+  - redecide based on aggression, intelligence
+
+
+brainstorming
+============
+* different categories of situation
+  - code breaking decisions: as soon as invalid, cancel
+    ~ cant attack someone who is knocked out
+    ~ cant retreat outside of arena
+    ~ cant attack someone when someone else is between
+    ~ cant keep moving to attack someone once they're there
+  - continuation decisions
+    ~ once deciding a move action, they will be highly influenced by it for a short amount
+    ~ however its not locked in, if other probabilities overcome it then they can override
+    ~ once a move decision 
+* is adapting my existing solution the best way? brainstorm other ways of doing it if i were to do it fresh
+
+post brainstorming challenges
+================================
+* if each move has a move duration, should they have different durations, if so, based on what
+  - retreat from flanked
+    ~ retreat until not flanked or until there is an opportunity to attack
+  - move to attack
+    ~ move until in range or another fighter becomes closer
+  - fast retreat
+    ~ move until energy is depleted
+    ~ move actions include: retreat from flanked, reposition, retreat around edge
+* should there be a regular retreat?
+    - or should there only be a cautious retreat and fast retreat only
+
+* if its a 1v1, retreating makes less sense if the enemy can keep on them
+
+
+after implementation problems
+=================================
+* its logical for move to attack to be invalid at striking range, and cautious retreat outside of striking range, however for the retreats, they kinda retreat forever
+  - at first i made it invalid if they are against edge but this is illogical
+    ~ just cos they're at edge doesnt mean they should not retreat around edge
+
+* original problem is, as long as its probability, because of the frequency of the move iteration, even a really high probability could be broken by a low one
+  ~ possible solution, timers, probability is exponential based on timers, making it almost guaranteed at certain times and almost impossible at others, and 50/50 in between
+    
+what are options after rules are set
+==================================
+* rules
+  - only code breaking things should be 'invalid' otherwise probability based
+  - intelligent repositions to get out of flanked
+    ~ should not end immediately when 1 pixel past the furthest fighter, should be a whole striking position passed
+    ~ if against edge, should try to reposition to side using the edge
+    ~ if both edge directions are blocked by fighters, try to retreat between flankers
+  - desperate retreat logic
+    ~ when their spirit is low they run until their energy is depleted or they are far
+    ~ after, they should have run from anyone close so closest should be behind, they should turn to see any fighter approaching and recover
+    ~ they should end desperate retreat with recover because their empty energy and low spirit (and low stamina, and/or against edge) should put the probability hight
+    ~ as they run and their memory of behind == far, they break before empty energy to check if they're still far and have an opportunity to attack
+    ~ if they finish
+
+
+new idea
+==========
+* combination of both
+  - dont decide action as often as move loop cos that is too intense on performance
+  - recheck decisions very often, all move actions go the same duration (for performance)
+  - counter old problem with timers
+    ~ instead of boolean of timer active or not, probability based on how long timer has been running
+      * instead of remembered behind lasts 3 seconds, probability under 3 is very low, probability above 3 is very high, exponential relative to how far from sweet spot
+  - after move a bit, some situations can: cancel timers or move actions, or change state to influence probability checks
+
+* eg, desperate retreat starts timer
+  - if the first second they will ignore everything except edge
+  - 

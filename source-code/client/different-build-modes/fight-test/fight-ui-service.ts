@@ -15,26 +15,26 @@ const fighters = [
 	
 	new Fighter('Superman'),
 	new Fighter('Daniel'),
-	new Fighter('Dave'),*/
+	new Fighter('Hyper'),
+	new Fighter('Crafty'),
+	new Fighter('Dave'),
 	new Fighter('Bob'),
 	new Fighter('Fred'),
 	new Fighter('Jeff'),
 	new Fighter('Kevin'),
 	new Fighter('Joe'),
-	new Fighter('Steve'), 
+	new Fighter('Steve'),*/ 
 	new Fighter('Stupid'),
 	new Fighter('Intelligent'),
 	
 	new Fighter('Average'),
 	new Fighter('Passive'),
-	new Fighter('Hyper'),
 	new Fighter('Tough'),
 
 	
 	new Fighter('Fit'),
 	new Fighter('Strong'),
 	new Fighter('Aggressive'),
-	new Fighter('Crafty'),
 	/**/
 ]
 

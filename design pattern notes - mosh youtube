@@ -1,0 +1,21 @@
+https://www.youtube.com/watch?v=NU_1StN5Tkk
+
+
+what i want to know
+======================
+* which is my preferred pattern for each category
+* di
+
+notes
+=============
+* focus on the art of designing software, not just a catalog of patterns
+* focus how how to structure, and how they should collaborate
+* focus on building reusable and extensible software
+* design patterns are elegant solutions to repeating problems
+* a design pattern should show you how to structure you classes and how these classes should talk to each other
+* gang of 4 patterns, 24 design patterns in 3 categories
+* the 3 categories of design patterns are:
+  - creation: different ways to create object
+  - structure: relationship between objects 
+  - behavior: interaction between objects
+* one of the main benefits of understanding design patterns is to allow developers to be on the same page when communicating about software design

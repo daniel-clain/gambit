@@ -1,0 +1,22 @@
+* singleton
+  - my definition:
+    ~ no need for multiple instances
+    ~ not possible to create multiple instances
+  - my criticism:
+    why design your system in a way where you would create your 'singleton' with a pattern thats usually used for multiple instances. eg, a class or factory functions is designed for being able to have more than one instance. why not just have all the singleton methods and properties on the root module, that way anything that needs to use it is always refering to the same thing
+    ~ eg instead of
+      {
+        function createSingleton(){
+          const singletonInstance = {
+            variable: undefined
+            doThing():{}
+          }
+          return singleInstance
+        }
+      }
+    ~ do this instead
+    {
+      let variable
+      function doThing(){}
+    }
+

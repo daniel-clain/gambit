@@ -1,0 +1,20 @@
+* there are 3 kinds of retreat
+  - cautious, defending while moving away, uses no energy, is to safely get out of range
+  - normal retreat
+    - only used when flanked or to reposition
+    - uses small energy for medium speed
+  - fast retreat
+    - fast speed but uses large energy
+    - only used when slow stamina/spirit, or close retreat from flanked
+    - cant be started if not high energy(2/3 or bigger
+    - fast retreat continues until gets to edge or trapped or recovered stam/spirit
+    - continues even if no energy, goes from fast to normal speed
+
+* a cautious retreat is only to get out of striking range, and then a fast retreat
+
+
+  ☐ retreat change
+    - reposition if far and intelligent
+    - retreat from flanked if >= near and intelligent
+    - retreat from flanked if <= close
+    - fast retreat activates and holds if low spirit (routing)

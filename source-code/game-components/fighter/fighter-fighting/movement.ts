@@ -1,202 +1,206 @@
 import FighterFighting from "./fighter-fighting";
 import Fighter from "../fighter";
 import Coords from '../../../interfaces/game/fighter/coords';
-import { Edge } from "../../../interfaces/game/fighter/edge";
-import { wait, getDirectionOfPosition2FromPosition1 } from "../../../helper-functions/helper-functions";
+import { Edge, edgeNames } from "../../../types/fighter/edge";
+import { wait } from "../../../helper-functions/helper-functions";
 import { MoveAction } from "../../../types/fighter/action-name";
 import { octagon } from "../../fight/octagon";
-import { getFighterModelDimensions, getDirectionOfEnemyStrikingCenter, isFacingAwayFromEnemy, getDistanceOfEnemyStrikingCenter } from "./proximity";
-import { getRepositionMoveDirection } from "./reposition";
+import { getDistanceOfEnemyStrikingCenter, isFacingAwayFromEnemy, getDirectionOfPosition2FromPosition1, getFighterBasePointFromEdge } from "./proximity";
 import { Angle } from "../../../types/game/angle";
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
-import { getRetreatAroundEdgeDirection } from "./retreat-around-edge";
+import { DirectionBasedOn } from "../../../types/fighter/direction-based-on";
+import { fighterRetreatImplementation } from "./fighter-retreat.i";
+import { getRetreatDirection } from "./fighter-retreat";
 
-export default class Movement {
+export default class Movement{
 
   
   movingDirection: Angle
   coords: Coords = {x: 0, y: 0}
-
   reverseMoving: boolean
-
-  moveActionInProgress: MoveAction
-  speedBoostActive: undefined | 'fast' | 'medium'
   stuckCounter = 0
+  moveAction: MoveAction
+  moveLoopReject: () => void
+  speedModifier: 'very fast' | 'fast' | 'normal' | 'slow'
+  directionBasedOn: DirectionBasedOn
+  fighterRetreatImplementation: ReturnType<typeof fighterRetreatImplementation>
 
+  constructor(private fighting: FighterFighting){
+    this.turnAround = this.turnAround.bind(this)
+    this.fighterRetreatImplementation = fighterRetreatImplementation(fighting)
+  }
   
 
-  constructor(public fighting: FighterFighting){
+  startMoveLoop(moveAction: MoveAction){
+    const {fighter} = this.fighting
+    console.log(`${fighter.name} move loop started`);
+    this.moveAction = moveAction
+    if(moveAction == 'move to attack'){    
+      this.fighting.enemyTargetedForAttack = this.fighting.logistics.closestRememberedEnemy
+    }
+
+    this.setSpeedModifier()
+    this.moveLoop()
   }
 
+  stopMoveLoop(){
+    this.moveLoopReject()
+  }
 
-  doMoveAction(enemy: Fighter, moveAction: MoveAction){    
-    const {flanking, timers, proximity, facingDirection, fighter, actions, logistics, stats} = this.fighting
-
-    
-    this.moveActionInProgress = moveAction
-
-    timers.start('move action in progress')
-
-
-    this.fighting.enemyTargetedForAttack = 
-    moveAction == 'move to attack' ? enemy : null
-
-    const shouldRetreatAroundEdge = (
-      proximity.againstEdge && 
-      moveAction != 'move to attack' ||
-      moveAction == 'retreat around edge'
-    )
-
-    if(shouldRetreatAroundEdge){
-      this.moveActionInProgress = 'retreat around edge'
-      this.movingDirection = getRetreatAroundEdgeDirection(enemy, this.fighting)
-    }
-    else{
-      if(moveAction == 'retreat from flanked')
-        this.movingDirection = flanking.getRetreatFromFlankedDirection()
-      else if(moveAction == 'reposition'){
-        const repositionDirection = getRepositionMoveDirection(this.fighting.fighter)
-        if(repositionDirection){
-          this.movingDirection = repositionDirection
-        }
+  private async moveLoop(){
+    return new Promise<void>(async (resolve, reject) => {
+      this.moveLoopReject = reject
+      try{
+        await this.moveABit()
+      }catch{
+        console.log('reject move in move loop');
+        reject()
       }
-
-      else if(moveAction == 'move to attack'){
-        this.movingDirection = getDirectionOfEnemyStrikingCenter(enemy, this.fighting.fighter)
-        if(proximity.isEnemyTooCloseForStrikingCenter(enemy)){
-          //console.log(`${this.fighting.fighter.name} too close to ${enemy.name}`);
-          //this.movingDirection = proximity.getDirectionOfEnemyCenterPoint(enemy, moveAction != 'move to attack')
-        }
-      }
-      else{
-        this.movingDirection = proximity.getDirectionOfEnemyCenterPoint(enemy, true)
-        
-      }
-    }
-
-    if(['retreat from flanked', 'fast retreat'].find(x => x == this.moveActionInProgress)){
-      
-      if(this.fighting.energy > 0){
-        this.speedBoostActive = 'fast'
-        this.fighting.energy -= .2
-      }
-    }
-    else if(['retreat', 'retreat around edge', 'reposition'].find(x => x == this.moveActionInProgress) || logistics.onARampage){      
-      if(this.fighting.energy > 0){
-        this.speedBoostActive = 'medium'
-        this.fighting.energy -= .1
-      }
-    }
-    else{      
-      this.speedBoostActive = undefined
-    }
-
-    let willTurnAround
-    const movingLeftOrRight: LeftOrRight = this.movingDirection < 180 ? 'right' : 'left'
-
-    if(moveAction == 'cautious retreat'){
-      if(movingLeftOrRight == facingDirection){
-        willTurnAround = true
-      }
-    }
-    else if(moveAction == 'move to attack'){
-      if(isFacingAwayFromEnemy(enemy, fighter)){
-        willTurnAround = true
-      }
-    }
-    else {
-      if(movingLeftOrRight != facingDirection){
-        willTurnAround = true
-      }
-    } 
-
-    
-    return actions.actionPromise({
-      isMain: true,
-      promise: (
-        willTurnAround ?
-          actions.actionPromise({promise: this.turnAround()}) : 
-          Promise.resolve()
-        .then(() => 
-          actions.actionPromise({name: 'move', promise: this.moveABit()})
-        )
-      )
+      await wait(this.moveSpeed)
+      resolve()
+    })
+    .then(this.moveLoop.bind(this))
+    .catch(() => {
+      const {fighter} = this.fighting
+      console.log(`${fighter.name} move loop finished`);
     })
   }
 
-
-  turnAround(){
-    const {timers, animation, actions} = this.fighting
-
-    return (
-      actions.actionPromise({
-        name: 'turn around',
-        promise: animation.start({
-          name: 'turning around',
-          duration: animation.speedModifier(150)
-        })
-      })
-      .then(() => {      
-        this.fighting.facingDirection = this.fighting.facingDirection == 'left' ? 'right' : 'left'
-        timers.start('just turned around')
-        return actions.actionPromise({promise: animation.cooldown(100)})
-      })
-    )
-  }
-
   
-  async moveABit(): Promise<void> {   
-    const {proximity} = this.fighting
-    this.fighting.modelState = this.moveActionInProgress == 'cautious retreat' ? 'Defending' : 'Walking'
+  
+  private async moveABit(): Promise<void> { 
+    const {proximity, fighter} = this.fighting
+
+    this.movingDirection = (
+      this.moveAction == 'move to attack' ?
+        proximity.attackDirection :
+        getRetreatDirection(this.fighting)
+    )
+
+    const invalid = this.checkIfMoveStillValid()
+    if(invalid){
+      throw 'move action invalid'
+    }
+    console.log('after throw');
+
+
+    if(this.fighting.energy > 0){
+      if(this.speedModifier == 'very fast')
+        this.fighting.energy -= .2
+      if(this.speedModifier == 'fast')
+        this.fighting.energy -= .1
+    }  
+
     const newMoveCoords: Coords = this.getNewMoveCoords(this.movingDirection, this.coords)
 
     if(this.isMoveOutsideOfBounds(newMoveCoords)){
       this.stuckCounter ++
       if(this.stuckCounter >= 3){
+        console.warn(`stuck 3 times moving away from edge ${this.fighting.fighter.name}`)
         await this.moveAwayFromEdge()
       }
     }
     else{
       this.stuckCounter = 0
       const oldCoords = this.coords
-      await wait(this.moveSpeed())
       this.coords = newMoveCoords
-      proximity.againstEdge = proximity.getNearestEdge()?.edgeName
+      console.log(`${fighter.name} moving, ${this.moveAction}`);
       this.handlePassedEnemy(oldCoords)
-      this.checkIfInCorner()
-      return
+    }
+  }
+
+  turnAround(){    
+    const {facingDirection} = this.fighting
+    this.fighting.facingDirection = facingDirection == 'left' ? 'right' : 'left'
+    return Promise.resolve()
+  }
+
+  private checkIfMoveStillValid(){
+    const {proximity, logistics} = this.fighting
+    const enemy = logistics.closestRememberedEnemy
+    const moveInvalid = (
+      !this.movingDirection ||
+      this.moveAction == 'move to attack' &&
+      proximity.enemyWithinStrikingRange(enemy)
+    )
+    if(moveInvalid){      
+      this.fighting.actions.rejectCurrentAction()
+      return true
     }
   }
 
 
-  moveSpeed(){
+  private setSpeedModifier(){
+    const {onARampage} = this.fighting.logistics
+    this.speedModifier = (
+      (
+        (this.moveAction == 'desperate retreat' || onARampage)
+        && 'very fast' 
+      ) || (
+        this.moveAction == 'strategic retreat'
+        && 'fast' 
+      ) || (
+        this.moveAction == 'cautious retreat'
+        && 'slow'
+      ) ||
+      'normal'
+    )
+  }
+
+
+  get moveSpeed(): number{
+    
     const {stats} = this.fighting
     const {speed} = stats  
 
-    let timeToMove2Pixels = (100 - (speed * 5))
 
+    let timeToMove2Pixels = (100 - (speed * 4))
 
-    if(this.moveActionInProgress == 'cautious retreat') 
+    if(this.fighting.energy > 0){
+      if(this.speedModifier == 'very fast')
+        timeToMove2Pixels *= 0.3
+      if(this.speedModifier == 'fast')
+        timeToMove2Pixels *= .6
+    }
+
+    if(this.speedModifier == 'slow') 
       timeToMove2Pixels *=  1.15
-    if(this.speedBoostActive == 'fast')
-      timeToMove2Pixels *= 0.4
-    if(this.speedBoostActive == 'medium')
-      timeToMove2Pixels *= .8
 
     if(timeToMove2Pixels < 10) timeToMove2Pixels = 10
 
     return Math.round(timeToMove2Pixels)
   }
   
+  get shouldTurnAround(): boolean{
+    const {facingDirection, fighter, logistics} = this.fighting
+    const movingLeftOrRight: LeftOrRight = this.movingDirection < 180 ? 'right' : 'left'
 
-  handlePassedEnemy(oldCoords: Coords){
-    const {logistics, fighter, facingDirection, proximity, rememberedEnemyBehind} = this.fighting
+    if(this.moveAction == 'cautious retreat'){
+      if(movingLeftOrRight == facingDirection){
+        return true
+      }
+    }
+    else if(this.moveAction == 'move to attack'){
+      if(isFacingAwayFromEnemy(logistics.closestRememberedEnemy, fighter)){
+        return true
+      }
+    }
+    else {
+      if(movingLeftOrRight != facingDirection){
+        return true
+      }
+    }
+  }
+  
+
+  private handlePassedEnemy(oldCoords: Coords){
+    const {logistics, fighter, facingDirection} = this.fighting
     const movingLeftOrRight: LeftOrRight = this.movingDirection <= 180 ? 'right' : 'left'
 
     let passedEnemy: Fighter
 
     if(movingLeftOrRight == 'left'){
-      passedEnemy = logistics.otherFightersStillFighting().find(f => {
+      passedEnemy = logistics.otherFightersStillFighting.find(f => {
         const {x} = f.fighting.movement.coords
         if(x < oldCoords.x && x > this.coords.x)
           return true
@@ -204,47 +208,55 @@ export default class Movement {
     }
 
     if(movingLeftOrRight == 'right'){
-      passedEnemy = logistics.otherFightersStillFighting().find(f => {
+      passedEnemy = logistics.otherFightersStillFighting.find(f => {
         const {x} = f.fighting.movement.coords
         if(x > oldCoords.x && x < this.coords.x)
           return true
       })
     }   
     if(passedEnemy){
+
+        console.log(`${fighter.name} has passed ${passedEnemy.name}. facing ${facingDirection}, moving ${movingLeftOrRight}, remembered enemy behind ${logistics.rememberedEnemyBehind?.name}`);
+
+      if(logistics.persistAlongEdgePastFlanker?.name == passedEnemy.name){
+        console.log(`${fighter.name} has passed flanker ${passedEnemy.name}`);
+        logistics.persistAlongEdgePastFlanker = undefined
+      }
+
       // this fighter update memory
       if(facingDirection == movingLeftOrRight){
-        if(rememberedEnemyBehind){
-          const rememberedDistance = getDistanceOfEnemyStrikingCenter(rememberedEnemyBehind, fighter)
+        if(logistics.rememberedEnemyBehind){
+          const rememberedDistance = getDistanceOfEnemyStrikingCenter(logistics.rememberedEnemyBehind, fighter)
           const passedDistance = getDistanceOfEnemyStrikingCenter(passedEnemy, fighter)
-          if(passedDistance < rememberedDistance){            
-            proximity.rememberEnemyBehind(passedEnemy)
+          if(passedDistance < rememberedDistance){
+            this.fighting.rememberEnemyBehind(passedEnemy)
           }
         }
         else{
-          proximity.rememberEnemyBehind(passedEnemy)
+          this.fighting.rememberEnemyBehind(passedEnemy)
         }
       }
-      else if(rememberedEnemyBehind?.name == passedEnemy.name){
-        proximity.rememberEnemyBehind(undefined)
+      else if(logistics.rememberedEnemyBehind?.name == passedEnemy.name){
+        this.fighting.rememberEnemyBehind(undefined)
       }
 
       // enemy fighter update memory
 
       if(passedEnemy.fighting.facingDirection == movingLeftOrRight){
-        if(passedEnemy.fighting.rememberedEnemyBehind?.name == fighter.name){
-          passedEnemy.fighting.proximity.rememberEnemyBehind(undefined)
+        if(passedEnemy.fighting.logistics.rememberedEnemyBehind?.name == fighter.name){
+          passedEnemy.fighting.rememberEnemyBehind(undefined)
         }
         
       }
-      else if(passedEnemy.fighting.rememberedEnemyBehind){
-        const rememberedDistance = getDistanceOfEnemyStrikingCenter(passedEnemy.fighting.rememberedEnemyBehind, passedEnemy)
+      else if(passedEnemy.fighting.logistics.rememberedEnemyBehind){
+        const rememberedDistance = getDistanceOfEnemyStrikingCenter(passedEnemy.fighting.logistics.rememberedEnemyBehind, passedEnemy)
         const thisDistance = getDistanceOfEnemyStrikingCenter(fighter, passedEnemy)
         if(thisDistance < rememberedDistance){            
-          passedEnemy.fighting.proximity.rememberEnemyBehind(fighter)
+          passedEnemy.fighting.rememberEnemyBehind(fighter)
         }
       }
       else{         
-        passedEnemy.fighting.proximity.rememberEnemyBehind(fighter)
+        passedEnemy.fighting.rememberEnemyBehind(fighter)
       }
 
 
@@ -254,39 +266,23 @@ export default class Movement {
 
   }
 
-  checkIfInCorner(){
-    const {proximity} = this.fighting
-    const nearEdges: Edge[] = proximity.getNearEdges()    
-    if(nearEdges.length == 2)
-      proximity.inCornerOfEdges = nearEdges
-    else
-      proximity.inCornerOfEdges = undefined
-  }
 
-  isMoveOutsideOfBounds(newMoveCoords: Coords): boolean{
-    const {fighter} = this.fighting
-    const modelWidth = getFighterModelDimensions(fighter, 'Idle').width 
-    
-    for (let edgeKey of octagon.edgeKeys) {
-      const point: Coords = {...newMoveCoords}
-      switch (edgeKey) {    
-        case 'bottomLeft': point.x -= modelWidth*.4; break;
-        case 'left': point.x -= modelWidth*.5; break;
-        case 'topLeft': point.y += 10; point.x -= modelWidth*.4; break;
-        case 'top': point.y += 20; break;
-        case 'topRight': point.y += 10; point.x += modelWidth*.4; break;
-        case 'right': point.x += modelWidth*.5; break;
-        case 'bottomRight': point.x += modelWidth*.4
-        break;    
+  private isMoveOutsideOfBounds(newMoveCoords: Coords): boolean{
+    const newMoveDiff = {
+      x: newMoveCoords.x - this.coords.x,
+      y: newMoveCoords.y - this.coords.y,
+    }
+    return edgeNames.some(edge => {
+      const fighterBasePoint =  getFighterBasePointFromEdge(edge, this.fighting)
+      const newBasePoint = {
+        x: fighterBasePoint.x + newMoveDiff.x,
+        y: fighterBasePoint.y + newMoveDiff.y,
       }
-
-      const pointOutsideOfEdge: boolean = octagon.isPointOutsideOfEdge(edgeKey, point)
+      const pointOutsideOfEdge: boolean = octagon.isPointOutsideOfEdge(edge, newBasePoint)
       if (pointOutsideOfEdge) {
         return true
       }
-
-    }
-    return false
+    })
   }
 
 
@@ -331,11 +327,11 @@ export default class Movement {
   }
 
   moveAwayFromEdge(){
-    const {proximity} = this.fighting
-    const edge: Edge = proximity.getNearestEdge().edgeName
+    const {edge} = this.fighting.proximity.getClosestEdge()
+
     const coordsOnEdge: Coords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, this.coords)
+
     this.movingDirection = getDirectionOfPosition2FromPosition1(coordsOnEdge, this.coords)
-    return this.moveABit()
   }
 
 };
