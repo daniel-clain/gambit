@@ -1,12 +1,12 @@
 import { observable } from "mobx"
-import { getOppositeDirection, getSmallestAngleBetween2Directions, add2Angles, validateAngle } from "../../../game-components/fighter/fighter-fighting/proximity"
+import { getOppositeDirection, getSmallestAngleBetween2Directions, add2Angles, toAngle } from "../../../game-components/fighter/fighter-fighting/proximity"
 
 
 function getDirectionAway(){
   const {enemies, edgeDir, edgeDist} = state
   const {enemy1dir, enemy1dist, enemy2dir, enemy2dist} = enemies
-  const awayFromEnemy1 = getOppositeDirection(validateAngle(enemy1dir))
-  const awayFromEnemy2 = getOppositeDirection(validateAngle(enemy2dir))
+  const awayFromEnemy1 = getOppositeDirection(toAngle(enemy1dir))
+  const awayFromEnemy2 = getOppositeDirection(toAngle(enemy2dir))
   
   const {angleBetween, crosses0} = getSmallestAngleBetween2Directions(awayFromEnemy1, awayFromEnemy2)
 
@@ -19,18 +19,18 @@ function getDirectionAway(){
   let factoredDistanceAway
   if(crosses0){
     if(awayFromEnemy1 > awayFromEnemy2){
-      factoredDistanceAway = add2Angles(awayFromEnemy1, validateAngle(angleBetween*enemy1DistanceInfluence))
+      factoredDistanceAway = add2Angles(awayFromEnemy1, toAngle(angleBetween*enemy1DistanceInfluence))
     }
     else{
-      factoredDistanceAway = add2Angles(awayFromEnemy2, validateAngle(angleBetween*enemy2DistanceInfluence))
+      factoredDistanceAway = add2Angles(awayFromEnemy2, toAngle(angleBetween*enemy2DistanceInfluence))
     }
   }
   else{
     if(awayFromEnemy1 < awayFromEnemy2){
-      factoredDistanceAway = add2Angles(awayFromEnemy1, validateAngle(angleBetween*enemy1DistanceInfluence))
+      factoredDistanceAway = add2Angles(awayFromEnemy1, toAngle(angleBetween*enemy1DistanceInfluence))
     }
     else{
-      factoredDistanceAway = add2Angles(awayFromEnemy2, validateAngle(angleBetween*enemy2DistanceInfluence))
+      factoredDistanceAway = add2Angles(awayFromEnemy2, toAngle(angleBetween*enemy2DistanceInfluence))
     }
 
   }

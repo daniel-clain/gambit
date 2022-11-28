@@ -10,7 +10,7 @@ import FighterFightState from '../../../../../../interfaces/front-end-state-inte
 import './fighter.scss'
 import { defaultFighterImages, fastFighterImages, FighterImageObj, fightUiImages, muscleFighterImages } from '../../../../../images/images';
 
-export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightState: FighterFightState, arenaWidth}) => {	
+export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightState: FighterFightState, arenaWidth: number}) => {	
 
 	const [processedSounds, setProcessedSounds] = useState<SoundTime[]>([])
 	//original octagon width height 
@@ -56,7 +56,7 @@ export const FighterComponent = ({fighterFightState, arenaWidth}: {fighterFightS
 		})
 	}
 
-	function soundDidntPlay(e){
+	function soundDidntPlay(e: unknown){
 		console.log('sound didnt play :>> ', e);
 	}
 

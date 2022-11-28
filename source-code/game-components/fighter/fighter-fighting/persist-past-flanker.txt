@@ -1,0 +1,32 @@
+* when retreating past flanker along edge
+  - what is the condition for persist to end?
+    ~ needs to make it passed the flanker that its moving past
+  - what is considered passed
+    ~ the x val needs to go passed
+      * this could go wrong because once 1px past, then what
+        - should drop the persist state, and resume normal decide action
+  - what is being persisted
+    ~ the state should be active until the condition is met, and the state should affect the logic determining the direction
+    ~ the goal is to get from one side of the fighter to the other
+    ~ when against edge, and to the right of flanking fighter, should keep moving along the edge until on the left of fighter, or until direction is blocked
+  - what data needs to be stored to persist past flanker
+    ~ needs to store is moving left or right, and needs to store which fighter hes concerned with
+  - what scenarios make persist invalid
+    ~ if direction is blocked
+    ~ no longer flanked (flanker is knocked out or moves out of flanking range)
+    ~ if is against left or right edge and still not passed
+  - everytime the fighter finishes a move action, and then decides the next action, how is persist related, isnt there a risk of them chosing another action that retreat and breaking the logic?
+
+  
+  - notes:
+    ~ along edge scenario is only concerned with x axis (left or right), is not relevant on vertical edges
+      
+
+
+* when retreating between flankers
+  - what is considered passed
+    ~ when y value goes past
+  - when is it invalid
+    ~ if fighter is blocking
+    ~ no longer flanked (flanker is knocked out or moves out of flanking range or moves past x axis)
+  

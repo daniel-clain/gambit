@@ -126,17 +126,13 @@ export default class FighterFighting {
   }
 
   rememberEnemyBehind(enemy: Fighter | null | undefined){
+    const oldVal = this.logistics.rememberedEnemyBehind
+    const newVal = enemy ? {...enemy} as Fighter : enemy
 
-    if(enemy === undefined)
-      return
+    console.log(`memory of behind changed from ${oldVal?.name || oldVal} to ${newVal?.name || newVal} (${this.fighter.name})`);
 
-    if(enemy == null)
-      this.logistics.rememberedEnemyBehind = null
+    this.logistics.rememberedEnemyBehind = newVal
 
-    else if(enemy){   
-      this.logistics.rememberedEnemyBehind = {...enemy} as Fighter
-      
-    }   
     this.timers.start('memory of enemy behind')
   }
 

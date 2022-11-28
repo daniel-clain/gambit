@@ -1,9 +1,19 @@
 import { Closeness } from "../../../../types/fighter/closeness";
 import FighterFighting from "../fighter-fighting";
 
-export function getProbabilityToDesperateRetreat(fighting: FighterFighting, generalAttackProbability: number){
+/* 
+  once starts, should continue until specific things influence it
+    - should not end prematurely because other probability outweighs it
+    - should not persist when its not relevant anymore
+    - main goal is to use a burst of energy to get away, then when far enough away recover
+      ~ when far enough away, recover probability should be higher than normal
+    - runs out of energy, should keep trying to get away, but no longer be fast
+    - becareful of loop, if the desperate 
+*/
+
+export function getProbabilityToDesperateRetreat(fighting: FighterFighting, generalRetreatProbability: number){
   const { intelligence } = fighting.stats
-  const { logistics, proximity, fighter, spirit } = fighting
+  const { logistics, proximity, timers, spirit, movement } = fighting
   const enemy = logistics.closestRememberedEnemy
   const enemyCloseness = proximity.getEnemyCombatCloseness(enemy)
   const enemyAttacking = logistics.isEnemyAttacking(enemy)
@@ -15,16 +25,16 @@ export function getProbabilityToDesperateRetreat(fighting: FighterFighting, gene
 
   if (invalid) return
 
-  let probability = generalAttackProbability
+  let probability = generalRetreatProbability
 
-  if(spirit == 2)
-    probability += 10 
-    
-  if(spirit == 1)
-    probability += 20 
+  const moveTimer = timers.get('move action')
+  
+  if(moveTimer && movement.moveAction == 'desperate retreat'){
+    moveTimer.timeElapsed
+    probability += movement.getExponentialMoveFactor(500) 
+  }
 
-  if(spirit == 0)
-    probability += 30 
+  probability += 60 - (spirit * 20)
 
   if(logistics.hasLowStamina)
     probability += 6 + intelligence * 4

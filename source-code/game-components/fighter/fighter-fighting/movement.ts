@@ -11,6 +11,7 @@ import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 import { DirectionBasedOn } from "../../../types/fighter/direction-based-on";
 import { fighterRetreatImplementation } from "./fighter-retreat.i";
 import { getRetreatDirection } from "./fighter-retreat";
+import { toPercent } from "../../../types/game/percent";
 
 export default class Movement{
 
@@ -20,7 +21,7 @@ export default class Movement{
   reverseMoving: boolean
   stuckCounter = 0
   moveAction: MoveAction
-  moveLoopReject: () => void
+  moveLoopReject: (reason: string) => void
   speedModifier: 'very fast' | 'fast' | 'normal' | 'slow'
   directionBasedOn: DirectionBasedOn
   fighterRetreatImplementation: ReturnType<typeof fighterRetreatImplementation>
@@ -29,12 +30,26 @@ export default class Movement{
     this.turnAround = this.turnAround.bind(this)
     this.fighterRetreatImplementation = fighterRetreatImplementation(fighting)
   }
+
+  getExponentialMoveFactor(total: number):number{
+    const {timers}= this.fighting
+    const {timeElapsed, maxDuration} = timers.get('move action')
+
+    const timerPercentage = toPercent(1 - timeElapsed/maxDuration)
+
+    const exponentialTimerPercentage = toPercent(Math.pow(timerPercentage, 1.3))
+
+    const returnProbability = total * exponentialTimerPercentage
+
+    return returnProbability
+  }
   
 
   startMoveLoop(moveAction: MoveAction){
-    const {fighter} = this.fighting
+    const {fighter, timers} = this.fighting
     console.log(`${fighter.name} move loop started`);
     this.moveAction = moveAction
+    timers.start('move action')
     if(moveAction == 'move to attack'){    
       this.fighting.enemyTargetedForAttack = this.fighting.logistics.closestRememberedEnemy
     }
@@ -43,26 +58,29 @@ export default class Movement{
     this.moveLoop()
   }
 
-  stopMoveLoop(){
-    this.moveLoopReject()
+  stopMoveLoop(reason){
+    this.moveLoopReject(reason)
   }
 
   private async moveLoop(){
     return new Promise<void>(async (resolve, reject) => {
       this.moveLoopReject = reject
+      
       try{
         await this.moveABit()
-      }catch{
-        console.log('reject move in move loop');
-        reject()
+      }catch(reason){
+        if(typeof reason == 'string')
+          this.moveLoopReject(reason)
       }
+      
       await wait(this.moveSpeed)
+      
       resolve()
     })
     .then(this.moveLoop.bind(this))
-    .catch(() => {
+    .catch((reason) => {
       const {fighter} = this.fighting
-      console.log(`${fighter.name} move loop finished`);
+      console.log(`${fighter.name} move loop finished. ${reason}`);
     })
   }
 
@@ -77,11 +95,7 @@ export default class Movement{
         getRetreatDirection(this.fighting)
     )
 
-    const invalid = this.checkIfMoveStillValid()
-    if(invalid){
-      throw 'move action invalid'
-    }
-    console.log('after throw');
+    this.checkIfMoveStillValid()
 
 
     if(this.fighting.energy > 0){
@@ -116,17 +130,19 @@ export default class Movement{
   }
 
   private checkIfMoveStillValid(){
-    const {proximity, logistics} = this.fighting
-    const enemy = logistics.closestRememberedEnemy
-    const moveInvalid = (
-      !this.movingDirection ||
+    const {proximity, logistics, enemyTargetedForAttack} = this.fighting
+
+    if(!this.movingDirection)
+      throw 'no move direction'
+
+    const moveToAttackEnemyArrived = (
       this.moveAction == 'move to attack' &&
-      proximity.enemyWithinStrikingRange(enemy)
+      proximity.enemyWithinStrikingRange(enemyTargetedForAttack)
     )
-    if(moveInvalid){      
-      this.fighting.actions.rejectCurrentAction()
-      return true
-    }
+
+    if(moveToAttackEnemyArrived) 
+      throw 'move to attack enemy arrived'
+    
   }
 
 
@@ -218,10 +234,10 @@ export default class Movement{
 
         console.log(`${fighter.name} has passed ${passedEnemy.name}. facing ${facingDirection}, moving ${movingLeftOrRight}, remembered enemy behind ${logistics.rememberedEnemyBehind?.name}`);
 
-      if(logistics.persistAlongEdgePastFlanker?.name == passedEnemy.name){
+      /* if(logistics.persistAlongEdgePastFlanker?.name == passedEnemy.name){
         console.log(`${fighter.name} has passed flanker ${passedEnemy.name}`);
         logistics.persistAlongEdgePastFlanker = undefined
-      }
+      } */
 
       // this fighter update memory
       if(facingDirection == movingLeftOrRight){
@@ -242,28 +258,31 @@ export default class Movement{
 
       // enemy fighter update memory
 
+      const passedRememberedEnemyBehind = passedEnemy.fighting.logistics.rememberedEnemyBehind
+
       if(passedEnemy.fighting.facingDirection == movingLeftOrRight){
-        if(passedEnemy.fighting.logistics.rememberedEnemyBehind?.name == fighter.name){
+        console.log(`${passedEnemy.name} was passed by ${fighter.name}from behind`);
+        if(passedRememberedEnemyBehind?.name == fighter.name){
+          
+          console.log(`${passedEnemy.name}'s memory or behind was ${fighter.name}, so he now has no memory of whose behind`);
           passedEnemy.fighting.rememberEnemyBehind(undefined)
         }
         
       }
-      else if(passedEnemy.fighting.logistics.rememberedEnemyBehind){
-        const rememberedDistance = getDistanceOfEnemyStrikingCenter(passedEnemy.fighting.logistics.rememberedEnemyBehind, passedEnemy)
+      else if(!!passedRememberedEnemyBehind){
+        const rememberedDistance = getDistanceOfEnemyStrikingCenter(passedRememberedEnemyBehind, passedEnemy)
         const thisDistance = getDistanceOfEnemyStrikingCenter(fighter, passedEnemy)
+
+        console.log(`${passedEnemy.name} was passed by ${fighter.name} from in front and is now behind`);
         if(thisDistance < rememberedDistance){            
           passedEnemy.fighting.rememberEnemyBehind(fighter)
+          console.log(`${fighter.name} is closer than remembered enemy behind (${passedRememberedEnemyBehind.name}), so new enemy behind is now ${fighter.name}`);
         }
       }
-      else{         
+      else {
         passedEnemy.fighting.rememberEnemyBehind(fighter)
       }
-
-
     }
-
-
-
   }
 
 

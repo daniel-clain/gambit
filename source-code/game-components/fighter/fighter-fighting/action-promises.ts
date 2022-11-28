@@ -61,18 +61,12 @@ export class ActionPromises{
     const promise = new Promise<void>(async (res, rej) => {
       console.log(`++O ${name} started (${fighter.name})`);
       try{
-        for await(const interruptibleAction of actionChain){
+        for (const interruptibleAction of actionChain){
           await interruptibleAction.start()
         }
         console.log(`++X ${name} finished (${fighter.name})`)
-        if(moveActions.find(x => x == name)){
-          movement.stopMoveLoop()
-        }
         res()
-      }catch(e: unknown){
-        console.log('caught in main action loop, throwing', e);
-        rej(e)
-      }
+      }catch(e: unknown){rej(e)}
     })
     .catch((interrupt?: Interrupt) => {
       if(!interrupt){
@@ -80,6 +74,12 @@ export class ActionPromises{
         return
       }
       console.log(`${name} (main) interrupted by ${interrupt.name} (${fighter.name})`);
+
+      
+      if(moveActions.some(x => x == name)){
+        console.log(`main move action interrupted, stopping move loop ${fighter.name}`);
+        movement.stopMoveLoop(`interrupted by ${interrupt.name}`)
+      }
 
       return interrupt.interruptAction().promise
     })
@@ -110,10 +110,8 @@ export class ActionPromises{
         .catch((interrupt: Interrupt) => {
           if(!interrupt){
             console.log(`no interrupt action (interruptible)`);
+            debugger
             return
-          }
-          if(name == 'move'){
-            movement.stopMoveLoop()
           }
           console.log(`interruptible action ${name} interrupted by ${interrupt.name} (${fighter.name})`);
 

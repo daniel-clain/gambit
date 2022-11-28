@@ -5,11 +5,23 @@ export class Timer{
   private interval = 50
   private rejectActiveTimer: () => void
 
-  timeElapsed: number
+  private _timeElapsed: number
+
+  get timeElapsed(): number{
+    return this._timeElapsed
+  }
+
+  get name(){
+    return this._name
+  }
+
+  get maxDuration(){
+    return this._maxDuration
+  }
 
   constructor(
-    public name: TimerName, 
-    public maxDuration?: number
+    private _name: TimerName, 
+    private _maxDuration?: number
   ){}
 
   get active(){
@@ -31,9 +43,9 @@ export class Timer{
     this.rejectActiveTimer?.()
     try{
       for(
-        this.timeElapsed = 0; 
+        this._timeElapsed = 0; 
         this.active;
-        this.timeElapsed += await (
+        this._timeElapsed += await (
           new Promise<number>((res, rej) => {
             this.rejectActiveTimer = rej
             setTimeout(res, this.interval, this.interval)
@@ -45,7 +57,7 @@ export class Timer{
   
   cancel(){
     this.rejectActiveTimer?.()
-    delete this.timeElapsed
+    delete this._timeElapsed
   }
 }
 

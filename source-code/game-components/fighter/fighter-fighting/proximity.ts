@@ -43,9 +43,10 @@ export default class Proximity {
 
 
   getEdges(withinDistance?: number): EdgeDistance[]{
-    return this.edgeDistances.filter(({distance}) => 
+    const edgesWithinDistance = this.edgeDistances.filter(({distance}) => 
       withinDistance ? distance < withinDistance : true
     )
+    return edgesWithinDistance
   }
 
   get edgeDistances(): EdgeDistance[]{
@@ -66,7 +67,7 @@ export default class Proximity {
     return flankers.sort((a: Fighter, b: Fighter) => this.compareSmallest(getDistanceOfEnemyStrikingCenter(a, f), getDistanceOfEnemyStrikingCenter(b, f)))
   } 
 
-  compareSmallest(number1, number2){
+  compareSmallest(number1: number, number2: number){
     if ( number1 < number2 ){
       return -1;
     }
@@ -156,7 +157,7 @@ export default class Proximity {
   }
 
 
-  getDirectionOfEnemyCenterPoint(enemy: Fighter, opposite?): Angle{
+  getDirectionOfEnemyCenterPoint(enemy: Fighter, opposite?: boolean): Angle{
 
     const thisCoords = this.fighting.movement.coords
     const enemyCoords = enemy.fighting.movement.coords  
@@ -221,7 +222,7 @@ export default class Proximity {
   }
 
 
-  getClosenessBasedOnDistance(distance): Closeness{
+  getClosenessBasedOnDistance(distance: number): Closeness{
     if(distance <= strikingRange)
       return Closeness['striking range']
     else if(distance <= closeRange)
@@ -268,7 +269,6 @@ function getFighterModelDimensions(fighter: Fighter, modelState?: FighterModelSt
 }
 
 function getFighterBasePointFromEdge(edge: Edge, fighting: FighterFighting): Coords{
-
   const {movement: {coords}, fighter} = fighting
   const modelWidth = getFighterModelDimensions(fighter, 'Idle').width 
   const point: Coords = {...coords}
@@ -315,7 +315,7 @@ function getFighterStrikingCenter(fighter: Fighter, behindCenter?: boolean): Coo
 
   return {x, y}
 }
-function getDirectionOfEnemyStrikingCenter(enemy: Fighter, thisFighter: Fighter, opposite?): Angle{
+function getDirectionOfEnemyStrikingCenter(enemy: Fighter, thisFighter: Fighter, opposite?: boolean): Angle{
   if(!enemy){
     debugger
   }
@@ -437,7 +437,7 @@ function getDirectionOfPosition2FromPosition1(pos1: Coords, pos2: Coords): Angle
     addedDegrees = 0
   }
 
-  const degrees = validateAngle(Math.round(
+  const degrees = toAngle(Math.round(
     Math.atan(oppositeSide! / adjacentSide!) * (180 / Math.PI)
   ))
   directionOfPosition2FromPosition1 = add2Angles(degrees, addedDegrees!)
@@ -465,7 +465,7 @@ function getSmallestAngleBetween2Directions(direction1: Angle, direction2: Angle
 
 function subtractAngle2FromAngle1(angle1: Angle, angle2: Angle): Angle {
   const subtracted = angle1 - angle2
-  return validateAngle(
+  return toAngle(
     subtracted < 0 ?
       360 - (subtracted*-1) :
       subtracted
@@ -473,10 +473,10 @@ function subtractAngle2FromAngle1(angle1: Angle, angle2: Angle): Angle {
 }
 
 function add2Angles(angle1: Angle, angle2: Angle) {
-  return validateAngle((angle1 + angle2) % 360)
+  return toAngle((angle1 + angle2) % 360)
 }
 
-function validateAngle(angle: number): Angle{
+function toAngle(angle: number): Angle{
   const rounded = Math.round(angle)
   if(rounded >= 360 || rounded < 0)
     throw 'angle is invalid: ' + rounded
@@ -502,7 +502,7 @@ export {
   getSmallestAngleBetween2Directions,
   add2Angles,
   subtractAngle2FromAngle1,
-  validateAngle,
+  toAngle,
   getOppositeDirection,
   getDirectionOfEnemyStrikingCenter,
   getFighterStrikingCenter,
@@ -515,7 +515,7 @@ export {
 
 
 function directionWithinDegreesOfDirection(testDirection: Angle, degrees: Angle, withinDirection: Angle): boolean{
-
+  console.log(testDirection, degrees, withinDirection);
   if((withinDirection - degrees) >= 0 && (withinDirection + degrees) < 360){
     if(testDirection > (withinDirection - degrees) && testDirection < (withinDirection + degrees))
       return true
@@ -540,4 +540,5 @@ function directionWithinDegreesOfDirection(testDirection: Angle, degrees: Angle,
 
   }
 
-}
+} 
+

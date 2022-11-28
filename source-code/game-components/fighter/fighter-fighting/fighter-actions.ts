@@ -79,13 +79,6 @@ export default class FighterActions {
         this.decideActionProbability.getProbabilityTo(action)
       )
     )
-    const totalNum = responseProbabilities.reduce((count, rp) => count + rp[1], 0)
-    
-
-    /* console.log(`${fighter.name}'s action probabilities are: ${responseProbabilities.map((rp: [MainAction, number]) => 
-      `\n ${rp[0]}: ${Math.round(rp[1]/totalNum*100)}%`
-    )}`,responseProbabilities); */
-
     return responseProbabilities
 
   }
@@ -178,11 +171,11 @@ export default class FighterActions {
   
 
   move(name: MoveAction): MainAction{
-    const { mainAction, interruptibleAction } = this.actionPromises
+    const { mainAction, interruptibleAction, instantAction } = this.actionPromises
     const {movement, timers} = this.fighting
 
-    if(!timers.get('desperate retreat')){
-      timers.start('desperate retreat')
+    if(!timers.get('move action')){
+      timers.start('move action')
     }
 
     movement.startMoveLoop(name)
@@ -193,13 +186,23 @@ export default class FighterActions {
       duration: 1000,
     })
     
-    return mainAction({
-      name: `${name}`, 
+    const mainMoveAction = mainAction({
+      name, 
       actionChain: [
         ...(movement.shouldTurnAround ? this.turnAroundActionChain : []),
         moveAction
       ]
     })
+
+    mainMoveAction.promise
+    .then(() => {
+      console.log('move action then stop move loop');
+      movement.stopMoveLoop('move action finished')
+
+    })
+
+    return mainMoveAction
+    
     
   }
   

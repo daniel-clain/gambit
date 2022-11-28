@@ -6,8 +6,7 @@ export default class FighterTimers {
   private timers: Timer[] = [
     new Timer('had action recently', 5000),
     new Timer('on a rampage', 5000),
-    new Timer('retreat between flankers'),
-    new Timer('desperate retreat'),
+    new Timer('move action', 3000),
     new Timer('memory of enemy behind', 3000),
   ]
   

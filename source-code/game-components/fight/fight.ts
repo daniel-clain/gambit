@@ -7,7 +7,7 @@ import { Angle } from "../../types/game/angle"
 import { Manager } from "../manager"
 import { FightReport, FightUIState, ManagersBet } from "../../interfaces/front-end-state-interface"
 import { octagon } from "./octagon";
-import { add2Angles, getPointGivenDistanceAndDirectionFromOtherPoint, validateAngle } from "../fighter/fighter-fighting/proximity";
+import { add2Angles, getPointGivenDistanceAndDirectionFromOtherPoint, toAngle } from "../fighter/fighter-fighting/proximity";
 
 
 
@@ -225,7 +225,7 @@ export default class Fight {
     this.fighters.forEach((fighter: Fighter, index) => {
       let angle: Angle = add2Angles(
         90 as Angle, 
-        validateAngle(angleBetweenEachFighter * index)
+        toAngle(angleBetweenEachFighter * index)
       )
       fighter.fighting.movement.coords = getPointGivenDistanceAndDirectionFromOtherPoint(centerPoint, distanceFromCenter, angle)
     })

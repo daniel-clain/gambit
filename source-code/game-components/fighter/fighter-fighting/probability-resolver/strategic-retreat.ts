@@ -1,9 +1,9 @@
 import { Closeness } from "../../../../types/fighter/closeness";
 import FighterFighting from "../fighter-fighting";
 
-export function getProbabilityToStrategicRetreat(fighting: FighterFighting, generalAttackProbability: number){
+export function getProbabilityToStrategicRetreat(fighting: FighterFighting, generalRetreatProbability: number){
   const { intelligence } = fighting.stats
-  const { logistics, proximity, stamina } = fighting
+  const { logistics, proximity, timers, movement } = fighting
   const enemy = logistics.closestRememberedEnemy
   const enemyCloseness = proximity.getEnemyCombatCloseness(enemy)
   const enemyAttacking = logistics.isEnemyAttacking(enemy)
@@ -15,7 +15,14 @@ export function getProbabilityToStrategicRetreat(fighting: FighterFighting, gene
 
   if (invalid) return
 
-  let probability = generalAttackProbability
+  let probability = generalRetreatProbability
+
+  
+  const moveTimer = timers.get('move action')
+  if(moveTimer && movement.moveAction == 'strategic retreat'){
+    moveTimer.timeElapsed
+    probability += movement.getExponentialMoveFactor(500) 
+  }
   
   if(!logistics.hasFullStamina)
     probability += intelligence * 2

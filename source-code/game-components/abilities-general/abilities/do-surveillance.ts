@@ -53,7 +53,7 @@ export const handleUnderSurveillance = ({surveilledManager, surveilledFighter, a
   if(surveilledManager){
     const evidenceDescription = `(Week ${weekNumber}) - ${surveilledManager.has.name} ${source!.characterType != 'Manager' ? `'s ${source!.characterType} ${source!.name}`: ''} was seen using ability ${name} ${target ? `targeting ${target.characterType} ${target.name}` : ''}`
   
-    managerDoingSurveillance.has.evidence.push({id: Number(randomNumberDigits(8)),managerName: surveilledManager.has.name, abilityData, illegalActivity, evidenceDescription})
+    managerDoingSurveillance.has.evidence.push({id: Number(randomNumberDigits(8)), managerName: surveilledManager.has.name, abilityData, illegalActivity, evidenceDescription})
   
     managerDoingSurveillance.functions.addToLog({
       weekNumber,

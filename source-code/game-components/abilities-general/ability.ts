@@ -4,6 +4,7 @@ import { ExecutesWhenOptions } from "../../types/game/executes-when-options";
 import { Game } from "../game";
 import { Employee, FighterInfo, JobSeeker } from "../../interfaces/front-end-state-interface";
 import { ManagerInfo, KnownManager } from "../manager";
+import { Evidence } from "../../types/game/evidence.type";
 
 
 export type Ability = {
@@ -21,12 +22,12 @@ export type Ability = {
 
 
 export interface ServerAbility extends Ability {
-  execute(abilityData: AbilityData, game: Game, executes?: ExecutesWhenOptions)
-  onSelected?(abilityData: AbilityData, game: Game)
+  execute(abilityData: AbilityData, game: Game, executes?: ExecutesWhenOptions): void
+  onSelected?(abilityData: AbilityData, game: Game): void
 }
 
 export interface ClientAbility extends Ability {
-  longDescription
+  longDescription: string
   isValidTarget?(target: TargetTypes): boolean
 }
 
@@ -42,6 +43,11 @@ export interface AbilityData{
   target: TargetTypes | undefined
   source: SourceTypes | undefined
   additionalData?: any
+}
+
+export type DataEvidence = {
+  id: string
+  evidence: Evidence
 }
 
 export type AbilityName = 

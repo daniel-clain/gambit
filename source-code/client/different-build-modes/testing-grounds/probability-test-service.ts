@@ -70,5 +70,5 @@ export function getProbabilities(){
 export function setMemoryOfBehindElapsed(val: number){
   const timer = testFighter.fighting.timers.get('memory of enemy behind')
   timer.cancel()
-  timer.timeElapsed = val
+  //timer.timeElapsed = val
 }

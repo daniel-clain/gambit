@@ -3,10 +3,11 @@ import FighterFighting from "./fighter-fighting"
 import Fighter from "../fighter"
 import { MoveAction } from "../../../types/fighter/action-name"
 import { Closeness } from "../../../types/fighter/closeness"
-import { getDistanceOfEnemyStrikingCenter, isEnemyFacingAway } from "./proximity"
+import { farRange, getDistanceOfEnemyStrikingCenter, isEnemyFacingAway, strikingRange } from "./proximity"
 import { Flanked, PersistPastFlanker } from "../../../types/fighter/flanked"
 import { Angle } from "../../../types/game/angle"
 import { getRetreatDirection } from "./fighter-retreat"
+import { Percent, toPercent } from "../../../types/game/percent"
 
 export default class Logistics {
 
@@ -105,7 +106,7 @@ export default class Logistics {
 
   
   get enemiesInFront(){  
-    const {movement, logistics} = this.fighting
+    const {movement} = this.fighting
     const thisX = movement.coords.x 
 
     const fightersInFront: Fighter[] = this.otherFightersStillFighting.filter((fighter: Fighter) => {  
@@ -138,13 +139,32 @@ export default class Logistics {
     return spirit < stats.maxSpirit * .5
   }
 
-  getEnemyThreatLevel(enemy: Fighter): number {
+  /**
+   * 
+   * @param enemy 
+   * @returns threatRating: number
+   * @description the closer the enemy is, the bigger threat they are, multiplied if they're attacking
+   */
+   getEnemyThreatPercentage(enemy: Fighter): Percent {
     const {proximity} = this.fighting
-    
-    const distance = proximity.getDistanceFromEnemyCenterPoint(enemy)
-    const isAttacking = this.isEnemyAttacking(enemy) 
 
-    return isAttacking ? distance *.3 : distance
+    const distance = proximity.getDistanceFromEnemyCenterPoint(enemy)
+    if(distance < strikingRange){
+      return 1
+    }
+    if(distance > farRange){
+      return 0
+    }
+    
+    const isAttacking = this.isEnemyAttacking(enemy) 
+    const distancePercentage = toPercent((distance-strikingRange)/(farRange-strikingRange))
+    const closenessExponentialFactor = isAttacking ? 1.6 : 1.3
+    
+    const exponentialDistancePercentage = toPercent(Math.pow(distancePercentage, closenessExponentialFactor))
+
+    const inverseExponentialDistancePercentage = toPercent(1 - exponentialDistancePercentage)
+
+    return inverseExponentialDistancePercentage
   }
   
 

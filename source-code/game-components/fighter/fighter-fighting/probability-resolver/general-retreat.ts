@@ -1,11 +1,12 @@
 
+import { timer } from "rxjs"
 import { Closeness } from "../../../../types/fighter/closeness"
 
 import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): number => {
-  const { fighter, logistics, proximity, actions, movement} = fighting
+  const { fighter, logistics, proximity, actions, movement, timers} = fighting
   const { intelligence, speed, aggression } = fighting.stats
   const closestEnemy = logistics.closestRememberedEnemy
 
@@ -21,8 +22,9 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
 
   let probability = 0
 
+
   const instanceLog = actions.decideActionProbability.logInstance('general retreat')
-  const log = (...args) => {
+  const log = (...args: unknown[]) => {
     instanceLog(...args, 'probability', probability)
   }
 
@@ -103,8 +105,6 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
       }
 
     }
-    if(enemyCloseness >= Closeness['near']){
-    }
     if(enemyCloseness >= Closeness['far']){
       if (logistics.hasLowStamina) {
         probability -= (5 + intelligence * 4)
@@ -171,7 +171,7 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
 
   
   if (logistics.flanked)
-    probability -= 4 + intelligence * logistics.getEnemyThreatLevel(closestEnemy)
+    probability -= 4 + intelligence * logistics.getEnemyThreatPercentage(closestEnemy)
 
 
   log('flanked', logistics.flanked)

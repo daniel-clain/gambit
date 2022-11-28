@@ -26,8 +26,6 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
   let direction: Angle
   if(flanked){
 
-    const directionFromFlanked = i.getDirectionFromFlanked()
-    const nearEdgeInDirectionFromFlanked = i.getNearEdgeInDirection(directionFromFlanked)
 
      if(isAgainstEdge){
       const directionAlongEdgePastFlanker = i.getDirectionAlongEdgePastFlanker()
@@ -46,36 +44,36 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
 
       }
     }    
-    else if(nearEdgeInDirectionFromFlanked){        
-      const directionBetweenFlankers = i.getDirectionBetweenFlankers()
-      if(!!directionBetweenFlankers){
-        direction = directionBetweenFlankers
+    else {        
+      
+      const directionFromFlanked = i.getDirectionFromFlanked()
+      const nearEdgeInDirectionFromFlanked = i.getNearEdgeInDirection(directionFromFlanked)
+
+      if(nearEdgeInDirectionFromFlanked){
+        const directionFromFlankedInfluencedByNearEdge = i.getDirectionInfluencedByNearEdge(directionFromFlanked, nearEdgeInDirectionFromFlanked)
+
+        direction = directionFromFlankedInfluencedByNearEdge
       }
       else {
-        const directionFromFlankedInfluencedByNearEdge = i.getDirectionInfluencedByNearEdge(directionFromFlanked, nearEdgeInDirectionFromFlanked)
-        direction = directionFromFlankedInfluencedByNearEdge
+        direction = directionFromFlanked
       }      
-    }
-    else    
-      direction = directionFromFlanked
+    } 
 
   }
  // not done
  // need getDirectionFromEnemyInfluencedByNearEdge
   else if(!flanked){
-    const directionAwayFromClosestEnemy = i.getDirectionAwayFromEnemy(logistics.closestRememberedEnemy)
-    const nearEdgeInDirectionFromClosestEnemy = i.getNearEdgeInDirection(directionAwayFromClosestEnemy)
-
-    if(!nearEdgeInDirectionFromClosestEnemy){
-      direction = directionAwayFromClosestEnemy
+    if(isAgainstEdge){
+      direction = i.getDirectionAlongEdgeAwayFromEnemy(logistics.closestRememberedEnemy)
     }
-    else {
-      if(isAgainstEdge){
-        direction = i.getDirectionAlongEdgeAwayFromEnemy(logistics.closestRememberedEnemy)
-      }
-      else{
-
+    else{
+      const directionAwayFromClosestEnemy = i.getDirectionAwayFromEnemy(logistics.closestRememberedEnemy)
+      const nearEdgeInDirectionFromClosestEnemy = i.getNearEdgeInDirection(directionAwayFromClosestEnemy)
+      if(nearEdgeInDirectionFromClosestEnemy){
         direction = i.getDirectionInfluencedByNearEdge(directionAwayFromClosestEnemy, nearEdgeInDirectionFromClosestEnemy)
+      }
+      else {
+        direction = directionAwayFromClosestEnemy
       }
     }
   }

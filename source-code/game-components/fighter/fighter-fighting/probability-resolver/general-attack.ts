@@ -27,7 +27,7 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
   log('closestEnemy defending', closestEnemy.fighting.actions.currentInterruptibleAction == 'defend')
   
   if(logistics.flanked && !logistics.onARampage)
-    probability -= intelligence * logistics.getEnemyThreatLevel(closestEnemy)
+    probability -= intelligence * logistics.getEnemyThreatPercentage(closestEnemy)
 
 
   if(logistics.hasAttackOpportunity(closestEnemy)){

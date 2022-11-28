@@ -1,9 +1,8 @@
-import { Edge } from "../../../types/fighter/edge"
-import { Angle } from "../../../types/game/angle"
-import { octagon } from "../../fight/octagon"
-import FighterFighting from "./fighter-fighting"
-import { fighterRetreatImplementation } from "./fighter-retreat.i"
-import { add2Angles, getSmallestAngleBetween2Directions, subtractAngle2FromAngle1, validateAngle } from "./proximity"
+import { Edge } from "../../../../types/fighter/edge"
+import { Angle } from "../../../../types/game/angle"
+import { octagon } from "../../../fight/octagon"
+import FighterFighting from "../../fighter-fighting/fighter-fighting"
+import { fighterRetreatImplementation } from "../../fighter-fighting/fighter-retreat.i"
 
 
 const {point1, point2} = octagon.edges.right

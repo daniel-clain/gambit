@@ -4,7 +4,7 @@ import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityToMoveToAttack = (fighting: FighterFighting, generalAttackProbability: number): number => {
   const { aggression, intelligence } = fighting.stats
-  const { proximity, logistics, fighter, spirit, actions} = fighting
+  const { proximity, logistics, fighter, spirit, actions, timers, movement } = fighting
 
   const {decideActionProbability} = actions
 
@@ -26,6 +26,13 @@ export const getProbabilityToMoveToAttack = (fighting: FighterFighting, generalA
 
   probability += generalAttackProbability
   log('getProbabilityForGeneralAttack')
+
+  
+  const moveTimer = timers.get('move action')
+  if(moveTimer && movement.moveAction == 'move to attack'){
+    moveTimer.timeElapsed
+    probability += movement.getExponentialMoveFactor(500) 
+  }
 
   if(logistics.onARampage)
     probability += 20

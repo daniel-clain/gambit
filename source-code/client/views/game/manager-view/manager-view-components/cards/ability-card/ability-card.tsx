@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { AbilityData, ClientAbility, ListOption, SourceTypes, TargetTypes } from '../../../../../../../game-components/abilities-general/ability';
+import { AbilityData, ClientAbility, DataEvidence, ListOption, SourceTypes, TargetTypes } from '../../../../../../../game-components/abilities-general/ability';
 import { InfoBoxListItem } from '../../../../../../../interfaces/game/info-box-list';
 import { FighterInfo } from '../../../../../../../interfaces/front-end-state-interface';
 import '../modal-card.scss';
@@ -192,8 +192,11 @@ export const AbilityCard = observer(() => {
     </Modal>
   )
   
-  function isEvidenceSelected(evidence, index){
-    return !!activeAbility.additionalData?.find(e => e.id == evidence.illegalActivity+evidence.managerName+index)
+  function isEvidenceSelected(evidence: Evidence, index: number){
+    const evidenceItems = activeAbility.additionalData as DataEvidence[]
+    return !!evidenceItems?.find(e => 
+      e.id == evidence.illegalActivity + evidence.managerName + index
+    )
   }
 
   function showSelectList(type: 'source' | 'target'){
@@ -233,15 +236,16 @@ export const AbilityCard = observer(() => {
 
   function onEvidenceToggle(evidence: Evidence, index: number){
     const evidenceId = evidence.illegalActivity+evidence.managerName+index
-    const evidenceAlreadyChecked = activeAbility.additionalData?.find(e => e.id == evidenceId)
+    const evidenceItems = activeAbility.additionalData as DataEvidence[]
+    const evidenceAlreadyChecked = evidenceItems?.find(e => e.id == evidenceId)
     if(evidenceAlreadyChecked){
-      setActiveAbility({...activeAbility, additionalData: [...activeAbility.additionalData?.filter(e => e.id != evidenceId)]})
+      setActiveAbility({...activeAbility, additionalData: [...evidenceItems?.filter(e => e.id != evidenceId)]})
     } else {
-      const evidenceObj = {
+      const evidenceObj: DataEvidence = {
         id: evidenceId,
         evidence
       }
-      const checkedEvidence = activeAbility.additionalData ? [...activeAbility.additionalData, evidenceObj] : [evidenceObj]
+      const checkedEvidence: DataEvidence[] = activeAbility.additionalData ? [...evidenceItems, evidenceObj] : [evidenceObj]
       setActiveAbility({...activeAbility, additionalData: checkedEvidence})
     }
 

@@ -258,7 +258,7 @@ export class Game {
     this.functions.startGame()
   }
 
-  private setupPlayersAndManagers(players){
+  private setupPlayersAndManagers(players: ConnectedClient[]){
 
     players.forEach(player => {
       const manager = new Manager(player.name, this)

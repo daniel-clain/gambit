@@ -147,3 +147,6 @@ export function debounce(functionId: string): Promise<void>{
 
   });
 }
+export function twoDec(num: number){
+  return (Math.round((num) * 100) / 100)
+}

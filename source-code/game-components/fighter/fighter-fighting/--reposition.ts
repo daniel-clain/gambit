@@ -1,4 +1,4 @@
-import { getSmallestAngleBetween2Directions, validateAngle, getDirectionOfPosition2FromPosition1, add2Angles, subtractAngle2FromAngle1, check } from "../../../helper-functions/helper-functions";
+import { getSmallestAngleBetween2Directions, toAngle, getDirectionOfPosition2FromPosition1, add2Angles, subtractAngle2FromAngle1, check } from "../../../helper-functions/helper-functions";
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 import { Closeness } from "../../../types/fighter/closeness";
 import { Angle } from "../../../types/game/angle";

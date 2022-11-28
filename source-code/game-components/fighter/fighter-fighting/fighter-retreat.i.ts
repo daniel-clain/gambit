@@ -2,44 +2,28 @@ import Coords from "../../../interfaces/game/fighter/coords";
 import { Closeness } from "../../../types/fighter/closeness";
 import { EdgeDistance, Edge } from "../../../types/fighter/edge";
 import { Angle } from "../../../types/game/angle";
+import { Percent, toPercent } from "../../../types/game/percent";
 import { octagon } from "../../fight/octagon";
 import Fighter from "../fighter";
 import FighterFighting from "./fighter-fighting";
-import { getSmallestAngleBetween2Directions, add2Angles, validateAngle, directionWithinDegreesOfDirection, getDirectionOfPosition2FromPosition1, getDistanceFromEdge, getDistanceBetweenTwoPoints, subtractAngle2FromAngle1, closeRange, strikingRange, getOppositeDirection } from "./proximity";
+import { getSmallestAngleBetween2Directions, add2Angles, toAngle, directionWithinDegreesOfDirection, getDirectionOfPosition2FromPosition1, getDistanceFromEdge, getDistanceBetweenTwoPoints, subtractAngle2FromAngle1, closeRange, strikingRange, getOppositeDirection } from "./proximity";
+
+export const maxNearEdgeDistance = closeRange
+export const maxAgainstEdgeDistance = strikingRange
 
 export const fighterRetreatImplementation = (fighting: FighterFighting) => {
-  const {logistics, proximity, movement, fighter, facingDirection} = fighting
-
-  const maxNearEdgeDistance = closeRange
-  const maxAgainstEdgeDistance = strikingRange
-
-
+  const {logistics, proximity, movement} = fighting
 
 
   function getIsAgainstEdge(): boolean{
     return !!proximity.getClosestEdge(maxAgainstEdgeDistance)
   }
   
-
-  /* 
-    this one is big
-       - if flanked and cornered theyre pretty much screwed, but should still check if theres an escape option
-        ~ should look at 2 possible escape routes, (escape between is another option)
-        ~ factor in, how close they are, if theyre attacking, and if theyre in direction of along edge
-      - break it down into chunks
-        ~ need the along edge directions, distance, directions and if attacking from fighters
-      - consider reuse in other functions, non flanked will have similar
-      - if both directions are blocked return nothing, if both directions arent blocked, choose best direction
-        ~ best direction is based on: if they attacking, if they already dedicated to that direction, how far they are vs what angle they are away relative to what angle along edge is
-  */
-  /* 
-    done
-  */
   function getDirectionAlongEdgePastFlanker(): Angle{
     const isInCorner = getIsInCorner()
 
     const [flanker1Data, flanker2Data] = logistics.flanked.flankers.map(flanker => {
-      const threatLevel = logistics.getEnemyThreatLevel(flanker)
+      const threatLevel = logistics.getEnemyThreatPercentage(flanker)
       const directionFromFighter = getDirectionAwayFromEnemy(flanker)
       const directionAlongEdge = (
         isInCorner ?
@@ -65,63 +49,63 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
 
   }
 
+  function getFlankerThreatInfluence(): [Percent, Percent]{
+    const {flankers} = logistics.flanked
+
+    const [flanker1Threat, flanker2Threat] = flankers.map(logistics.getEnemyThreatPercentage.bind(logistics))
+    const totalThreatValue = flanker1Threat + flanker2Threat
+    
+    const [flanker1Influence, flanker2Influence] = [flanker1Threat, flanker2Threat].map(t => toPercent(t/totalThreatValue))
+    return [flanker1Influence, flanker2Influence]
+  }
+
 
   function getDirectionBetweenFlankers(): Angle{
-    const [flanker1Data, flanker2Data] = logistics.flanked.flankers.map(flanker => {
-      const threatLevel = logistics.getEnemyThreatLevel(flanker)
-      const directionFromFighter = getDirectionAwayFromEnemy(flanker)
-      return {threatLevel, directionFromFighter}
-    })
+    const {flankers} = logistics.flanked
     
-    const combinedDistanceInfluence = flanker1Data.threatLevel + flanker2Data.threatLevel
+    const [directionOfFlanker1, directionOfFlanker2] = flankers.map(f => proximity.getDirectionOfEnemyCenterPoint(f))
 
-    const enemy1Influence = 1 - flanker1Data.threatLevel / combinedDistanceInfluence
-    const enemy2Influence = 1 - flanker2Data.threatLevel / combinedDistanceInfluence
+    const [flanker1Influence, flanker2Influence] = getFlankerThreatInfluence()
 
-    return getDirectionBetweenInfluencedByDistance(
-      flanker1Data.directionFromFighter,
-      enemy1Influence,
-      flanker2Data.directionFromFighter,
-      enemy2Influence
+    const influencedDirection = getDirectionBetweenBasedOnInfluence(
+      directionOfFlanker1,
+      flanker1Influence,
+      directionOfFlanker2,
+      flanker2Influence,
+      'repulse'
     )
+    return influencedDirection
   }
 
-  function getDirectionFromFlanked(): Angle{
-    const [flanker1Data, flanker2Data] = logistics.flanked.flankers.map(flanker => {
-      const threatLevel = logistics.getEnemyThreatLevel(flanker)
-      const directionFromFighter = getDirectionAwayFromEnemy(flanker)
-      return {threatLevel, directionFromFighter}
-
-    })
+  function getDirectionFromFlanked(){
+    const {flankers} = logistics.flanked
     
-    const combinedDistanceInfluence = flanker1Data.threatLevel + flanker2Data.threatLevel
+    const [directionFromFlanker1, directionFromFlanker2] = flankers.map(getDirectionAwayFromEnemy)
 
-    const enemy1Influence = flanker1Data.threatLevel / combinedDistanceInfluence
-    const enemy2Influence = flanker2Data.threatLevel / combinedDistanceInfluence
+    const [flanker1Influence, flanker2Influence] = getFlankerThreatInfluence()
 
-    return getDirectionBetweenInfluencedByDistance(
-      flanker1Data.directionFromFighter,
-      enemy1Influence,
-      flanker2Data.directionFromFighter,
-      enemy2Influence
+    const influencedDirection = getDirectionBetweenBasedOnInfluence(
+      directionFromFlanker1,
+      flanker1Influence,
+      directionFromFlanker2,
+      flanker2Influence,
+      'attract'
     )
+    return influencedDirection
   }
 
-  function getNearEdgeInDirection(direction: Angle): Edge | undefined{
-    return getNearEdges()?.find(({edge}) =>
-      directionWithinDegreesOfDirection(
-        direction, 45, getDirectionOfEdgeFromFighter(edge)
-      )
+  function getNearEdgeInDirection(retreatDirection: Angle): Edge | undefined{
+    const nearEdges = proximity.getEdges(maxNearEdgeDistance)
+    const edgeInDirection = nearEdges.find(({edge}) => {
+      const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, movement.coords)
+      const directionOfEdge =  getDirectionOfPosition2FromPosition1(movement.coords, edgeCoords)
+      const directionTowardEdge = directionWithinDegreesOfDirection(retreatDirection, 45, directionOfEdge)
+      return directionTowardEdge
+    }
     )?.edge
+    return edgeInDirection
   }
 
-  /* 
-    - logic:
-      ~ when retreating toward edge, instead of directly to edge and then along edge, move toward edge corner away from least threatening enemy
-    - notes:
-      ~ retreat from corner and retreat between flankers is handled elsewhere
-  */
- /* done */
   function getDirectionInfluencedByNearEdge(initialDirection: Angle, nearEdgeInDirection: Edge){
 
     const distanceFromEdge = getDistanceFromEdge(nearEdgeInDirection, fighting)
@@ -131,13 +115,17 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
 
     const directionOfCorner = getDirectionOfEdgeCornerClosestToDirection(nearEdgeInDirection, initialDirection)
     
-    const percentageDistanceToEdge = distanceFromEdge/maxNearEdgeDistance
+    const percentageDistanceToEdge = toPercent(distanceFromEdge/maxNearEdgeDistance)
 
-    return getDirectionBetweenInfluencedByDistance(
+    const edgeInfluence = percentageDistanceToEdge
+    const initialDirectionInfluence = toPercent(1-percentageDistanceToEdge)
+
+    return getDirectionBetweenBasedOnInfluence(
       directionOfCorner,
-      percentageDistanceToEdge,
+      edgeInfluence,
       initialDirection,
-      1 - percentageDistanceToEdge
+      initialDirectionInfluence,
+      'attract'
     )
   }
 
@@ -178,7 +166,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     getDirectionFromFlanked, // ✓
     getNearEdgeInDirection, // ✓
     getDirectionAlongEdgePastFlanker, // ✓
-    getDirectionBetweenFlankers, // ✓
+    getDirectionBetweenFlankers, // seems off
     getDirectionInfluencedByNearEdge, // ✓
     getDirectionAwayFromEnemy, // ✓
     getDirectionAlongEdgeAwayFromEnemy, // ✓
@@ -187,7 +175,10 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   const privateProperties = {
     getDistanceFromEdge,
     getCorneredDirectionAlongEdgeAwayFromEnemy,
-    getDirectionOfEdgeCornerClosestToDirection
+    getDirectionOfEdgeCornerClosestToDirection,
+    getDirectionBetweenBasedOnInfluence,
+    getFlankerThreatInfluence,
+    enemyBlockingDirection
   }
 
   return {publicProperties, privateProperties}
@@ -197,7 +188,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   
 
   function getIsInCorner(): boolean{
-    return !!proximity.getEdges(maxAgainstEdgeDistance)
+    return !!(proximity.getEdges(maxAgainstEdgeDistance).length == 2)
   }
 
   
@@ -211,12 +202,6 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     return getDirectionOfPosition2FromPosition1(closestPoint, furthestPoint)
   }
 
-
-  /* 
-    - need both edge corner directions
-    - get smallest angle of each
-    - whichever's smaller return its direction
-  */
   function getDirectionOfEdgeCornerClosestToDirection(edge: Edge, retreatDirection: Angle): Angle{
    
 
@@ -239,31 +224,17 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     const furthestEdgeFromEnemy = getEdgeFurthestFromEnemy(getCornerEdges(), enemy)
 
     const directionAlongEdge = getDirectionAlongEdgeToFurthestCorner(furthestEdgeFromEnemy)
+    console.log('directionAlongEdge :>> ', directionAlongEdge);
     return directionAlongEdge
   }
 
 
-  function getNearEdges(): [EdgeDistance, EdgeDistance] | undefined{
-    const closeEdges = proximity.getEdges(maxNearEdgeDistance)
-    if(closeEdges.length == 2)
-      return [closeEdges[0], closeEdges[1]]
-    else
-      return undefined 
-  }
-
-  
-  function getDirectionOfEdgeFromFighter(edge: Edge): Angle{  
-    const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, movement.coords)
-    return getDirectionOfPosition2FromPosition1(movement.coords, edgeCoords)
-  }
-
 
   function getEdgeFurthestFromEnemy(edges: Edge[], enemy: Fighter): Edge{
         
-    const {highestThreatEnemy} = logistics
     const [edge1, edge2] = edges
-    const edge1Distance = getDistanceFromEdge(edge1, highestThreatEnemy.fighting)
-    const edge2Distance = getDistanceFromEdge(edge2, highestThreatEnemy.fighting)
+    const edge1Distance = getDistanceFromEdge(edge1, enemy.fighting)
+    const edge2Distance = getDistanceFromEdge(edge2, enemy.fighting)
     return edge1Distance > edge2Distance ? edge1 : edge2
   }
 
@@ -275,11 +246,12 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   }
   
 
-  function getDirectionBetweenInfluencedByDistance(
+  function getDirectionBetweenBasedOnInfluence(
     direction1: Angle, 
-    direction1Influence: number, 
+    direction1Influence: Percent,
     direction2: Angle, 
-    direction2Influence: number
+    direction2Influence: Percent,
+    influenceRepulseOrAttract: 'repulse' | 'attract'
   ): Angle{
 
     const {angleBetween, crosses0} = getSmallestAngleBetween2Directions(direction1, direction2)
@@ -293,15 +265,35 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
       [direction2, direction1]
     )
 
-    const direction1AngleInfluenceAmount = validateAngle(angleBetween * direction1Influence)
-    const direction2AngleInfluenceAmount = validateAngle(angleBetween * direction2Influence)
-    if(direction1 == leftAngle) 
-      return subtractAngle2FromAngle1(rightAngle, direction1AngleInfluenceAmount)
-      
-    if(direction2 == rightAngle) 
+    const direction1AngleInfluenceAmount = toAngle(angleBetween * direction1Influence)
+    const direction2AngleInfluenceAmount = toAngle(angleBetween * direction2Influence)
+
+    if(influenceRepulseOrAttract == 'attract'){
+      if(direction1 == leftAngle) 
+        return subtractAngle2FromAngle1(rightAngle, direction1AngleInfluenceAmount)
+        
+      if(direction2 == leftAngle) 
+        return subtractAngle2FromAngle1(rightAngle, direction2AngleInfluenceAmount)
+    }
+    if(influenceRepulseOrAttract == 'repulse'){
+      if(direction1 == leftAngle) 
+        return add2Angles(leftAngle, direction1AngleInfluenceAmount)
+        
+      if(direction2 == leftAngle) 
         return add2Angles(leftAngle, direction2AngleInfluenceAmount)
+    }
 
   }
+
+/* 
+
+  direction away influence
+    - get direction away from each flanker
+    - smallest angle between
+    - if left direction away has closer enemy, then left direction has bigger influence
+    - bigger influence should logically mean that 
+
+*/
 
 
   /* blocking angle based on distance away */
@@ -312,10 +304,41 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     if(closeness == Closeness['striking range'])
       return true
     if(closeness == Closeness['close'])
-      return directionWithinDegreesOfDirection(direction, 90, directionFromEnemy)
+      return directionWithinDegreesOfDirection(direction, 135, directionFromEnemy)
     if(closeness == Closeness['nearby']) 
-      return directionWithinDegreesOfDirection(direction, 45, directionFromEnemy)
+      return directionWithinDegreesOfDirection(direction, 90, directionFromEnemy)
     if(closeness == Closeness['far']) 
-      return directionWithinDegreesOfDirection(direction, 30, directionFromEnemy)
+      return directionWithinDegreesOfDirection(direction, 45, directionFromEnemy)
   }
+
 }
+
+
+  /* 
+    getDirectionOfEdgeCornerClosestToDirection
+    - need both edge corner directions
+    - get smallest angle of each
+    - whichever's smaller return its direction
+  */
+
+  /* 
+    getDirectionAlongEdgePastFlanker
+      - this one is big
+      - if flanked and cornered theyre pretty much screwed, but should still check if theres an escape option
+        ~ should look at 2 possible escape routes, (escape between is another option)
+        ~ factor in, how close they are, if theyre attacking, and if theyre in direction of along edge
+      - break it down into chunks
+        ~ need the along edge directions, distance, directions and if attacking from fighters
+      - consider reuse in other functions, non flanked will have similar
+      - if both directions are blocked return nothing, if both directions arent blocked, choose best direction
+        ~ best direction is based on: if they attacking, if they already dedicated to that direction, how far they are vs what angle they are away relative to what angle along edge is
+  */
+
+
+  /* 
+  getDirectionInfluencedByNearEdge
+    - logic:
+      ~ when retreating toward edge, instead of directly to edge and then along edge, move toward edge corner away from least threatening enemy
+    - notes:
+      ~ retreat from corner and retreat between flankers is handled elsewhere
+  */

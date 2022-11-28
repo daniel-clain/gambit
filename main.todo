@@ -1,6 +1,22 @@
 
 
 Deal Breakers:
+  ☐ on move toward edge, logic to move between comes before move away from flanked, if move between is invalid, they will move do direction from flanked influenced by edg.
+    - the problem is, as soon as they walk enough toward the edge, the move between option becomes valid again, and they go back ad forth.
+    - they need to make a decision and stick with it
+  ☐ on move action, start timer
+    - has exponential influence on the same action based on how much time has passed
+    - timer doesnt restart until full duration expires
+    - other actions end the timer
+    - certain conditions end the timer immediately
+  ☐ repositioning is what smart fighers should do, work the mechanics to esure unintelligent fighters are not as effective as intelligent ones
+  ☐ need logic for:
+    - if fighter wants to attack and approach is inbetween fighter, the closer he is the more flanked will trigger
+    - to counter this, needs to move past the target and attack from other side
+    - this logic should be included in strategic retreat
+      - if low severity flanked and low probability for retreat, move past flanking pair toward side that has most space
+  ☐ retreat between flankers and retreat along edge past flanker needs to persist direction
+  ☐ what functions are in proximity taht are only used by retreat
   ☐ refactor proximity and logistics
     - proximity should be only for small composable functions to process direction and distance
     - logistics should only be get functions that do no calculations, just calls external functions to get specific data in a more (short hand, readable, direct)

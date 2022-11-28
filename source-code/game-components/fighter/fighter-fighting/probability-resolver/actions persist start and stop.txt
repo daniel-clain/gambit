@@ -1,0 +1,10 @@
+* problem with move abilities, they need to check check logic for situation every little movement or buggyness,
+  - however, if it goes back to decide action, then the move action can flip flow between the movement and other deccisions
+  - the initial attempt to handle this was 'if move action in progress equals this one, then higher probability'
+    ~ but this is bad because:
+      * still a small chance to premature end
+      * when its done it for too long what when does it stop
+        - possible strategy, when start a move action, also start a timer, and then the amount of influence the decision has is relative to how long its been running for
+          ~ as the move action timer grows longer, influence exponentially diminishes
+            * problem is when does the timer restart, you cant have it restart each time it does the action
+              - the timer should have an expiry, and if no other action is chosen before it expires, then when it expires, go to normal chance to decide, and if the chosen action is teh same again, then it resets the timer fromt eh start
