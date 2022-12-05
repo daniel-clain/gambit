@@ -10,9 +10,6 @@
     "run-server-prod": "cross-env NODE_ENV=production nodemon -q server.ts",
     "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test"
   },
-  "engines": {
-    "node": "16.4"
-  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
@@ -20,7 +17,7 @@
     "mobx-react": "^7.5.3",
     "node-sass": "^6.0.0",
     "nodemon": "^2.0.20",
-    "parcel": "^2.7.0",
+    "parcel": "^2.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "^7.5.7",
@@ -29,22 +26,19 @@
     "typescript": "^4.8.4"
   },
   "devDependencies": {
-    "@parcel/config-default": "^2.7.0",
-    "@parcel/packager-raw-url": "2.7.0",
-    "@parcel/transformer-raw": "^2.7.0",
-    "@parcel/transformer-sass": "2.7.0",
-    "@parcel/transformer-webmanifest": "2.7.0",
+    "@parcel/config-default": "^2.8.0",
+    "@parcel/packager-raw-url": "^2.8.0",
+    "@parcel/transformer-raw": "^2.8.0",
+    "@parcel/transformer-sass": "^2.8.0",
+    "@parcel/transformer-webmanifest": "^2.8.0",
     "@types/express": "^4.17.14",
-    "@types/jest": "^29.2.1",
     "@types/node": "^18.8.2",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.1",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.9",
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^1.4.36",
     "buffer": "^6.0.3",
-    "console-browserify": "^1.2.0",
     "cross-env": "^7.0.3",
-    "jest": "^29.3.1",
     "process": "^0.11.10"
   }
 }

@@ -87,7 +87,7 @@ export const postStartTestState = (game: Game) => {
   //testMainEvent()
   //testContractEnding()
   //quickSinisterVictory()
-  //lotsOfMoney()
+  lotsOfMoney()
   //testFighterJobSeeker()
   //managerHasFighters()
 

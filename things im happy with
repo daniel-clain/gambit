@@ -2,3 +2,6 @@
 * fight test ui
 * for loop in timer
 * mobx simplicity
+
+
+yarn add -D @parcel/config-default @parcel/packager-raw-url @parcel/transformer-raw @parcel/transformer-sass @parcel/transformer-webmanifest
