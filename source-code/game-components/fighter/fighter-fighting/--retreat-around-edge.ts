@@ -1,4 +1,4 @@
-import { getDirectionOfPosition2FromPosition1, getDistanceBetweenTwoPoints, getSmallestAngleBetween2Directions } from "../../../helper-functions/helper-functions";
+import { getDirectionOfPosition1ToPosition2, getDistanceBetweenTwoPoints, getSmallestAngleBetween2Directions } from "../../../helper-functions/helper-functions";
 import Coords from "../../../interfaces/game/fighter/coords";
 import { Edge } from "../../../types/fighter/edge";
 import { Angle } from "../../../types/game/angle";
@@ -88,7 +88,7 @@ export function getRetreatAroundEdgeDirection(thisFighting: FighterFighting): An
       pointAwayFromCorner = point1
     }
     
-    const directionAlongEdge = getDirectionOfPosition2FromPosition1(corneredPoint, pointAwayFromCorner)
+    const directionAlongEdge = getDirectionOfPosition1ToPosition2(corneredPoint, pointAwayFromCorner)
     return directionAlongEdge
   }
 }

@@ -35,13 +35,6 @@ export default class Proximity {
     }, undefined)
   }
 
-
-  get attackDirection(): Angle{
-    const {closestRememberedEnemy} = this.fighting.logistics
-    return getDirectionOfEnemyStrikingCenter(closestRememberedEnemy, this.fighting.fighter)
-  } 
-
-
   getEdges(withinDistance?: number): EdgeDistance[]{
     const edgesWithinDistance = this.edgeDistances.filter(({distance}) => 
       withinDistance ? distance < withinDistance : true
@@ -162,7 +155,7 @@ export default class Proximity {
     const thisCoords = this.fighting.movement.coords
     const enemyCoords = enemy.fighting.movement.coords  
 
-    const direction: Angle = getDirectionOfPosition2FromPosition1(thisCoords, enemyCoords)
+    const direction: Angle = getDirectionOfPosition1ToPosition2(thisCoords, enemyCoords)
     
     if(opposite)
       return (direction >= 180 ? direction - 180 : 180 + direction) as Angle
@@ -232,6 +225,10 @@ export default class Proximity {
     else
       return Closeness['far']
   }
+
+  spaceToMove(LeftOrRight: LeftOrRight){
+    
+  }
   
 
   
@@ -247,6 +244,18 @@ export default class Proximity {
 
 
   
+
+
+
+
+
+
+
+
+
+
+
+
 function getDistanceOfEnemyStrikingCenter(enemy: Fighter, thisFighter: Fighter): number{
 
   const thisStrikingCenter: Coords = getFighterStrikingCenter(thisFighter, isFacingAwayFromEnemy(enemy, thisFighter))
@@ -322,7 +331,7 @@ function getDirectionOfEnemyStrikingCenter(enemy: Fighter, thisFighter: Fighter,
   const thisStrikingCenter: Coords = getFighterStrikingCenter(thisFighter, isFacingAwayFromEnemy(enemy, thisFighter))
   const enemyStrikingCenter: Coords = getFighterStrikingCenter(enemy, isEnemyFacingAway(enemy, thisFighter))
 
-  const direction: Angle = getDirectionOfPosition2FromPosition1(thisStrikingCenter, enemyStrikingCenter)
+  const direction: Angle = getDirectionOfPosition1ToPosition2(thisStrikingCenter, enemyStrikingCenter)
   
   if(opposite)
     return getOppositeDirection(direction)
@@ -407,7 +416,7 @@ function getPointGivenDistanceAndDirectionFromOtherPoint(point: Coords, distance
 }
 
 
-function getDirectionOfPosition2FromPosition1(pos1: Coords, pos2: Coords): Angle{
+function getDirectionOfPosition1ToPosition2(pos1: Coords, pos2: Coords): Angle{
   let directionOfPosition2FromPosition1: Angle
   let xLength = pos2.x - pos1.x
   let yLength = pos2.y - pos1.y
@@ -498,7 +507,7 @@ export {
   directionWithinDegreesOfDirection,
   getDistanceBetweenTwoPoints,
   getPointGivenDistanceAndDirectionFromOtherPoint,
-  getDirectionOfPosition2FromPosition1,
+  getDirectionOfPosition1ToPosition2,
   getSmallestAngleBetween2Directions,
   add2Angles,
   subtractAngle2FromAngle1,
@@ -515,7 +524,7 @@ export {
 
 
 function directionWithinDegreesOfDirection(testDirection: Angle, degrees: Angle, withinDirection: Angle): boolean{
-  console.log(testDirection, degrees, withinDirection);
+  
   if((withinDirection - degrees) >= 0 && (withinDirection + degrees) < 360){
     if(testDirection > (withinDirection - degrees) && testDirection < (withinDirection + degrees))
       return true
@@ -542,3 +551,16 @@ function directionWithinDegreesOfDirection(testDirection: Angle, degrees: Angle,
 
 } 
 
+export function getCornerPoint(cornerEdges: [Edge, Edge]): Coords{
+  const {cornerPoint} = cornerEdges.reduce((passedObj, edge, i): {points, cornerPoint} => {
+    const points = Object(octagon.edges[edge]).values
+    if(i == 0){
+      return {...passedObj,points} 
+    }
+    else {
+      return {...passedObj, cornerPoint: points.find(p => p.x == passedObj.points.some(po => po.x == p.x && po.y == p.y))}
+    }
+  },{points: undefined, cornerPoint: undefined})
+  
+  return cornerPoint
+}

@@ -11,7 +11,10 @@ const xAverage = (point1.x + point2.x)/2
 
 const mockFighting = {
   logistics:{flanked: undefined},
-  movement: {coords: {x: xAverage - 50, y: yAverage}}
+  movement: {coords: {x: xAverage - 50, y: yAverage}},
+  fighter: {
+    skin: 'Default'
+  }
 } as FighterFighting
 
 const {

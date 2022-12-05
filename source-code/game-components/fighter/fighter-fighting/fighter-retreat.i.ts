@@ -6,7 +6,7 @@ import { Percent, toPercent } from "../../../types/game/percent";
 import { octagon } from "../../fight/octagon";
 import Fighter from "../fighter";
 import FighterFighting from "./fighter-fighting";
-import { getSmallestAngleBetween2Directions, add2Angles, toAngle, directionWithinDegreesOfDirection, getDirectionOfPosition2FromPosition1, getDistanceFromEdge, getDistanceBetweenTwoPoints, subtractAngle2FromAngle1, closeRange, strikingRange, getOppositeDirection } from "./proximity";
+import { getSmallestAngleBetween2Directions, add2Angles, toAngle, directionWithinDegreesOfDirection, getDirectionOfPosition1ToPosition2, getDistanceFromEdge, getDistanceBetweenTwoPoints, subtractAngle2FromAngle1, closeRange, strikingRange, getOppositeDirection, getCornerPoint } from "./proximity";
 
 export const maxNearEdgeDistance = closeRange
 export const maxAgainstEdgeDistance = strikingRange
@@ -20,13 +20,12 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   }
   
   function getDirectionAlongEdgePastFlanker(): Angle{
-    const isInCorner = getIsInCorner()
 
     const [flanker1Data, flanker2Data] = logistics.flanked.flankers.map(flanker => {
       const threatLevel = logistics.getEnemyThreatPercentage(flanker)
       const directionFromFighter = getDirectionAwayFromEnemy(flanker)
       const directionAlongEdge = (
-        isInCorner ?
+        getIsInCorner() ?
           getCorneredDirectionAlongEdgeAwayFromEnemy(flanker) :
           getDirectionAlongEdgeAwayFromEnemy(flanker)
       )
@@ -98,7 +97,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     const nearEdges = proximity.getEdges(maxNearEdgeDistance)
     const edgeInDirection = nearEdges.find(({edge}) => {
       const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, movement.coords)
-      const directionOfEdge =  getDirectionOfPosition2FromPosition1(movement.coords, edgeCoords)
+      const directionOfEdge =  getDirectionOfPosition1ToPosition2(movement.coords, edgeCoords)
       const directionTowardEdge = directionWithinDegreesOfDirection(retreatDirection, 45, directionOfEdge)
       return directionTowardEdge
     }
@@ -115,7 +114,10 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
 
     const directionOfCorner = getDirectionOfEdgeCornerClosestToDirection(nearEdgeInDirection, initialDirection)
     
-    const percentageDistanceToEdge = toPercent(distanceFromEdge/maxNearEdgeDistance)
+    const percentageDistanceToEdge = toPercent(
+      (distanceFromEdge - maxAgainstEdgeDistance) /
+      (maxNearEdgeDistance - maxAgainstEdgeDistance)
+    )
 
     const edgeInfluence = percentageDistanceToEdge
     const initialDirectionInfluence = toPercent(1-percentageDistanceToEdge)
@@ -139,26 +141,120 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     }
     else {
       const directionAwayFromEnemy = getDirectionAwayFromEnemy(enemy)
-      const {edge} = proximity.getClosestEdge(maxAgainstEdgeDistance)
-      return getDirectionAlongEdgeClosestToDirection(edge, directionAwayFromEnemy)
+      return getDirectionAlongEdgeClosestToDirection(directionAwayFromEnemy)
 
     }
-
     
-    function getDirectionAlongEdgeClosestToDirection(edge: Edge, direction: Angle): Angle{
+  }
+  
+  function getDirectionAlongEdgeClosestToDirection(direction: Angle): Angle{
       
-      const {point1, point2} = octagon.edges[edge]
+    const {edge} = proximity.getClosestEdge(maxAgainstEdgeDistance)
 
-      const edgeDirection1 = getDirectionOfPosition2FromPosition1(point1, point2)
-      const edgeDirection2 = getOppositeDirection(edgeDirection1)
+    const [edgeDirection1, edgeDirection2] = getDirectionsAlongEdge(edge)
 
-      const point1AngleDiff = getSmallestAngleBetween2Directions(edgeDirection1, direction).angleBetween
-      const point2AngleDiff = getSmallestAngleBetween2Directions(edgeDirection2, direction).angleBetween
+    const point1AngleDiff = getSmallestAngleBetween2Directions(edgeDirection1, direction).angleBetween
+    const point2AngleDiff = getSmallestAngleBetween2Directions(edgeDirection2, direction).angleBetween
 
-      return point1AngleDiff < point2AngleDiff ? edgeDirection1 : edgeDirection2
-    }
+    return point1AngleDiff < point2AngleDiff ? edgeDirection1 : edgeDirection2
   }
 
+/* is this the same as getDirectionAlongEdgeToFurthestCorner*/
+  function getDirectionAlongEdgeToCornerFurthestFromEnemy(): Angle{
+
+    const enemyCoords = logistics.closestRememberedEnemy.fighting.movement.coords
+    if(getIsInCorner()){
+      const cornerEdges = proximity.getEdges(maxAgainstEdgeDistance)
+
+      const cornerPoint = getCornerPoint([cornerEdges[0].edge, cornerEdges[1].edge])
+
+      const {furthestPoint, edgeDistance} = cornerEdges.reduce(
+        (selected, edgeDistance) => {
+
+          const [point1, point2]: Coords[] = Object(octagon.edges[edgeDistance.edge]).values
+          const [distance1, distance2] = [point1, point2].map(point => getDistanceBetweenTwoPoints(point, enemyCoords))
+
+          const [furthestPoint, furthestPointDistance] = distance1 > distance2 ? [point1, distance1] : [point2, distance2]
+
+          if(!selected){
+            return {edgeDistance, furthestPoint, furthestPointDistance }
+          }
+          else {
+            if(furthestPointDistance > selected.furthestPointDistance){
+              return {edgeDistance, furthestPoint, furthestPointDistance} 
+            }
+            else {
+              return selected
+            }
+          }
+        }, {} as {
+          furthestPoint: Coords, 
+          edgeDistance: EdgeDistance, 
+          furthestPointDistance: number
+        }
+      )
+      const directionAlongEdge = getDirectionOfPosition1ToPosition2(cornerPoint, furthestPoint)
+      return directionAlongEdge
+      
+    }
+    else {
+      const {edge} = proximity.getClosestEdge(maxAgainstEdgeDistance)
+      const {point1, point2} = octagon.edges[edge]
+      /* no good */
+      const point1Direction = getDirectionOfPosition1ToPosition2(point2,point1)
+      const point2Direction = getDirectionOfPosition1ToPosition2(point1, point2)
+      const point1Distance = getDistanceBetweenTwoPoints(point1, enemyCoords)
+      const point2Distance = getDistanceBetweenTwoPoints(point2, enemyCoords)
+
+      return point1Distance > point2Distance ? point1Direction : point2Direction
+
+    }
+
+
+
+
+  }
+
+  function getCorneredDirectionAlongEdgeAwayFromEnemy(enemy: Fighter): Angle{
+    const furthestEdgeFromEnemy = getEdgeFurthestFromEnemy(getCornerEdges(), enemy)
+
+    const directionAlongEdge = getDirectionAlongEdgeToFurthestCorner(furthestEdgeFromEnemy)
+    return directionAlongEdge
+  }
+
+  function getIsDirectionIntoEdge(direction: Angle){
+    if(getIsAgainstEdge()){
+      if(getIsInCorner()){
+        const [edge1, edge2] = getCornerEdges()
+        const [edge1Directions, edge2Directions] = [edge1, edge2].map(getDirectionsAlongEdge)
+
+        if(edge1Directions.some(x => x == direction)){
+          
+          const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge2, movement.coords)
+          const directionOfEdge =  getDirectionOfPosition1ToPosition2(movement.coords, edgeCoords)
+          return directionWithinDegreesOfDirection(direction, 180, directionOfEdge)
+        }
+        if(edge2Directions.some(x => x == direction)){
+          
+          const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge1, movement.coords)
+          const directionOfEdge =  getDirectionOfPosition1ToPosition2(movement.coords, edgeCoords)
+          return directionWithinDegreesOfDirection(direction, 180, directionOfEdge)
+        }
+        return true
+
+      }
+      else{
+        const {edge} = proximity.getClosestEdge(maxAgainstEdgeDistance)
+        const directions = getDirectionsAlongEdge(edge)
+        if(!directions.some(x => x == direction)){
+          return true
+        }
+      }
+    }
+    else{
+      return false
+    }
+  }
 
 
   const publicProperties = {
@@ -170,15 +266,19 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     getDirectionInfluencedByNearEdge, // ✓
     getDirectionAwayFromEnemy, // ✓
     getDirectionAlongEdgeAwayFromEnemy, // ✓
+    enemyBlockingDirection,// ✓,
+    getDirectionAlongEdgeClosestToDirection,
+    getDirectionAlongEdgeToCornerFurthestFromEnemy,
+    getCorneredDirectionAlongEdgeAwayFromEnemy,
+    getIsInCorner,
+    getIsDirectionIntoEdge
 
   }
   const privateProperties = {
     getDistanceFromEdge,
-    getCorneredDirectionAlongEdgeAwayFromEnemy,
     getDirectionOfEdgeCornerClosestToDirection,
     getDirectionBetweenBasedOnInfluence,
-    getFlankerThreatInfluence,
-    enemyBlockingDirection
+    getFlankerThreatInfluence
   }
 
   return {publicProperties, privateProperties}
@@ -188,18 +288,18 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   
 
   function getIsInCorner(): boolean{
-    return !!(proximity.getEdges(maxAgainstEdgeDistance).length == 2)
+    return !!(proximity.getEdges(maxAgainstEdgeDistance*1.5).length == 2)
   }
 
   
-
+/* is this the same as getCorneredDirectionAlongEdgeAwayFromEnemy*/
   function getDirectionAlongEdgeToFurthestCorner(edge: Edge): Angle{    
     const {point1, point2} = octagon.edges[edge]
     const [distanceFromPoint1, distanceFromPoint2] = [point1,point2].map(point => getDistanceBetweenTwoPoints(movement.coords, point))
 
     const [furthestPoint, closestPoint] =  distanceFromPoint1 > distanceFromPoint2 ? [point1, point2] : [point2, point1]
 
-    return getDirectionOfPosition2FromPosition1(closestPoint, furthestPoint)
+    return getDirectionOfPosition1ToPosition2(closestPoint, furthestPoint)
   }
 
   function getDirectionOfEdgeCornerClosestToDirection(edge: Edge, retreatDirection: Angle): Angle{
@@ -207,7 +307,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
 
     const [point1Data, point2Data] = Object.values(octagon.edges[edge]).map((corner: Coords) => {
       
-      const cornerDirection = getDirectionOfPosition2FromPosition1(movement.coords, corner)
+      const cornerDirection = getDirectionOfPosition1ToPosition2(movement.coords, corner)
       const angleDiff = getSmallestAngleBetween2Directions(cornerDirection, retreatDirection).angleBetween
 
       return {cornerDirection, angleDiff}
@@ -220,13 +320,6 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   }
 
 
-  function getCorneredDirectionAlongEdgeAwayFromEnemy(enemy: Fighter): Angle{
-    const furthestEdgeFromEnemy = getEdgeFurthestFromEnemy(getCornerEdges(), enemy)
-
-    const directionAlongEdge = getDirectionAlongEdgeToFurthestCorner(furthestEdgeFromEnemy)
-    console.log('directionAlongEdge :>> ', directionAlongEdge);
-    return directionAlongEdge
-  }
 
 
 
@@ -285,18 +378,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
 
   }
 
-/* 
 
-  direction away influence
-    - get direction away from each flanker
-    - smallest angle between
-    - if left direction away has closer enemy, then left direction has bigger influence
-    - bigger influence should logically mean that 
-
-*/
-
-
-  /* blocking angle based on distance away */
   function enemyBlockingDirection(enemy: Fighter, direction: Angle): boolean{
     const distance = proximity.getDistanceFromEnemyCenterPoint(enemy)
     const closeness = proximity.getClosenessBasedOnDistance(distance)
@@ -304,11 +386,20 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
     if(closeness == Closeness['striking range'])
       return true
     if(closeness == Closeness['close'])
-      return directionWithinDegreesOfDirection(direction, 135, directionFromEnemy)
+      return directionWithinDegreesOfDirection(direction, 70, directionFromEnemy)
     if(closeness == Closeness['nearby']) 
-      return directionWithinDegreesOfDirection(direction, 90, directionFromEnemy)
+      return directionWithinDegreesOfDirection(direction, 50, directionFromEnemy)
     if(closeness == Closeness['far']) 
-      return directionWithinDegreesOfDirection(direction, 45, directionFromEnemy)
+      return directionWithinDegreesOfDirection(direction, 30, directionFromEnemy)
+  }
+
+
+  function getDirectionsAlongEdge(edge: Edge): [Angle, Angle]{
+    const {point1, point2} = octagon.edges[edge]
+
+    const edgeDirection1 = getDirectionOfPosition1ToPosition2(point1, point2)
+    const edgeDirection2 = getOppositeDirection(edgeDirection1)
+    return [edgeDirection1, edgeDirection2]
   }
 
 }

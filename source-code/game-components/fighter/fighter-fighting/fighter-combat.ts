@@ -6,6 +6,7 @@ import { randomNumber, selectByProbability } from "../../../helper-functions/hel
 import { MainAction } from "./action-promises"
 import { Sound } from "../../../types/fighter/sound"
 import FighterModelState from "../../../types/fighter/fighter-model-states"
+import Logistics from "./logistics"
 
 type AttackTypeData = {
   warmUp: number
@@ -19,24 +20,24 @@ type AttackTypeData = {
 }
 
 const punchData: AttackTypeData = {
-  warmUp: 100,
-  preAttack: 100,
+  warmUp: 20,
+  preAttack: 150,
   model: 'Punching',
   sound: 'Punch',
   postHit: 400,
   postMiss: 500,
-  cooldownHit: 600,
-  cooldownMiss: 700
+  cooldownHit: 300,
+  cooldownMiss: 500
 }
 const criticalStrikeData: AttackTypeData = {
-  warmUp: 200,
-  preAttack: 300,
+  warmUp: 50,
+  preAttack: 350,
   model: 'Kicking',
   sound: 'Critical Strike',
   postHit: 500,
   postMiss: 600,
-  cooldownHit: 600,
-  cooldownMiss: 800
+  cooldownHit: 400,
+  cooldownMiss: 600
 }
 
 export default class FighterCombat {
@@ -88,12 +89,12 @@ export default class FighterCombat {
         interruptibleAction({
           name: `${attackType} warmup`,
           model: 'Idle',
-          duration: attackTypeData.warmUp
+          duration: actions.speedModifier(attackTypeData.warmUp)
         }),
         interruptibleAction({
           name: `pre ${attackType}`,
           model: attackTypeData.model,
-          duration: attackTypeData.preAttack
+          duration: actions.speedModifier(attackTypeData.preAttack)
         }),
         instantAction({
           name: attackType,
@@ -110,12 +111,15 @@ export default class FighterCombat {
         }),
         interruptibleAction({
           name: `post ${attackType} ${attackResult == 'take hit' ? 'hit' : 'miss'}`,
-          duration: attackResult == 'take hit' ? attackTypeData.postHit : attackTypeData.postMiss
+          duration: actions.speedModifier(attackResult == 'take hit' ? attackTypeData.postHit : attackTypeData.postMiss)
         }),
         interruptibleAction({
           name: `${attackType} cooldown`,
           model: 'Idle',
-          duration: attackResult == 'take hit' ? attackTypeData.cooldownHit : attackTypeData.cooldownMiss
+          duration: (
+            (attackResult == 'take hit' ? attackTypeData.cooldownHit : attackTypeData.cooldownMiss)
+            + (logistics.lowEnergy ? 200 : 0)
+          )
         })
       ]
     })
@@ -168,7 +172,7 @@ export default class FighterCombat {
     
   getAttacked(enemy: Fighter, attackType: AttackAction) {  
 
-    const {actions, fighter} = this.fighting
+    const {actions, fighter, logistics} = this.fighting
     const {mainAction, interruptibleAction} = actions.actionPromises
 
     const result: AttackResponseAction = this.getAttackedResult(enemy, attackType)
@@ -189,8 +193,8 @@ export default class FighterCombat {
                 result == 'take hit' && 'Taking Hit' || null
               )!,
               duration: (
-                result == 'dodge' && 500 ||
-                result == 'block' && 500 ||
+                result == 'dodge' && actions.speedModifier(500) ||
+                result == 'block' && actions.speedModifier(500) ||
                 result == 'take hit' && 600 || null
               )!,
             }),
@@ -198,8 +202,8 @@ export default class FighterCombat {
               name: `${result} cooldown`,
               model: 'Idle',
               duration: (
-                result == 'dodge' && 300 ||
-                result == 'block' && 300 ||
+                result == 'dodge' && actions.speedModifier(300) ||
+                result == 'block' && actions.speedModifier(300) ||
                 result == 'take hit' && (
                   this.fighting.knockedOut ? 0 : 400
                 )
@@ -276,12 +280,11 @@ export default class FighterCombat {
 
   
   private chanceToRampage(enemy?: Fighter) {
-    const {timers, energy, stats, spirit} = this.fighting    
+    const {timers, energy, stats, spirit, stamina} = this.fighting    
     const randomNum = randomNumber({to: 100})
 
     const goOnRampage = randomNum < (
-      stats.aggression * spirit + 
-      energy * 3 +
+      stats.aggression * spirit - energy - stamina +
       (enemy?.fighting.knockedOut ? 10 : 0)
     )
     if(goOnRampage){

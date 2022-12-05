@@ -19,7 +19,9 @@ export function getProbabilityToDesperateRetreat(fighting: FighterFighting, gene
   const enemyAttacking = logistics.isEnemyAttacking(enemy)
 
   const invalid: boolean = (
-    !logistics.highEnergy ||
+    generalRetreatProbability == null ||
+    enemyCloseness >= Closeness['nearby'] ||
+    logistics.lowEnergy ||
     spirit >= 2
   )
 
@@ -29,7 +31,7 @@ export function getProbabilityToDesperateRetreat(fighting: FighterFighting, gene
 
   const moveTimer = timers.get('move action')
   
-  if(moveTimer && movement.moveAction == 'desperate retreat'){
+  if(moveTimer.active && movement.moveAction == 'desperate retreat'){
     moveTimer.timeElapsed
     probability += movement.getExponentialMoveFactor(500) 
   }

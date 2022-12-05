@@ -33,15 +33,7 @@ export default class AttackResponseProbability {
     const {speed, intelligence} = this.fighting.stats
     const {fighter, spirit, actions, logistics} = this.fighting
     
-    if(
-      isFacingAwayFromEnemy(enemy, fighter) ||
-      (
-        actions.currentInterruptibleAction != 'defend' && 
-        actions.currentInterruptibleAction != 'recover' &&
-        actions.currentInterruptibleAction != 'move' &&
-        actions.currentInterruptibleAction != 'do nothing'
-      )
-    )
+    if(!logistics.getHasDefendOpportunity(enemy))
       return 0
 
     let probability: number = 1
@@ -88,10 +80,7 @@ export default class AttackResponseProbability {
     const {spirit, actions, fighter, logistics} = this.fighting
 
     
-    if(
-      isFacingAwayFromEnemy(enemy, fighter) ||
-      (actions.currentInterruptibleAction && actions.currentInterruptibleAction != 'defend' && actions.currentInterruptibleAction != 'recover')
-    )
+    if(!logistics.getHasDefendOpportunity(enemy))
       return 0
 
     let probability: number = 0

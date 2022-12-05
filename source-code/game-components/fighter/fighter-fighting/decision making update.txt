@@ -1,0 +1,38 @@
+* there are situations where they get stuck between. situations:
+  - toward edege away from flanked <=> between flanked
+  - against edge away edge closest to enemy <=> away
+
+* one they make decision, a timer runs for 1 sec that persists that direction
+  - timer scales off movements speed
+
+
+trap logic
+  * if in corner 2 stratiegies, each have scenario where they dont work 
+    - strategy 1 
+      ~ go to corner on edge furthest away from enemy
+      ~ problem: if fighter is 1/7th the way along an edge, and enemy is 3/7th the way along the same edge, fighter is furthest from corner behind enemy, so fighter retreats toward corner behind enemy and toward enemy
+    - strategy 2
+      ~ go along edge direction that is closest to reatreat from enemy direction 
+      ~ problem: if fighter in corner, and enemy is equal distance between both edges, whichever edge is chosen, will hit the logic to retreat from fighter and back toward corner
+
+  * what conditions should trapped logic trigger
+    - strategy 2 but only if close
+    - they should not go back and forth between logic until trapped
+      ~ if a persist action canceled, delay before next decision
+
+  * flaw with persist, 
+    - they cant be running through fighters
+    - should it end on timer or relative position
+
+  * is a solution to use both? or a persist 
+    - strategy 3
+      ~ retreat to corner furthest from enemy, if direction blocked, retreat to along edge direction closest to retreat from enemy
+      ~ pesist chosen direction for 1 second
+      ~ if persist action blocked, cancel persist
+      ~ if when deciding, both direction are blocked, trapped
+
+  * factor in distance
+    - the closer the enemy the bigger the angl is for considered blocked
+      ~ eg:
+        * if theyre far, angle for blocked is within 30
+        * if close, angle for blocked within 90

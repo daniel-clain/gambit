@@ -1,57 +1,10 @@
 
 
 Deal Breakers:
-  ☐ on move toward edge, logic to move between comes before move away from flanked, if move between is invalid, they will move do direction from flanked influenced by edg.
-    - the problem is, as soon as they walk enough toward the edge, the move between option becomes valid again, and they go back ad forth.
-    - they need to make a decision and stick with it
-  ☐ on move action, start timer
-    - has exponential influence on the same action based on how much time has passed
-    - timer doesnt restart until full duration expires
-    - other actions end the timer
-    - certain conditions end the timer immediately
-  ☐ repositioning is what smart fighers should do, work the mechanics to esure unintelligent fighters are not as effective as intelligent ones
-  ☐ need logic for:
-    - if fighter wants to attack and approach is inbetween fighter, the closer he is the more flanked will trigger
-    - to counter this, needs to move past the target and attack from other side
-    - this logic should be included in strategic retreat
-      - if low severity flanked and low probability for retreat, move past flanking pair toward side that has most space
-  ☐ retreat between flankers and retreat along edge past flanker needs to persist direction
-  ☐ what functions are in proximity taht are only used by retreat
-  ☐ refactor proximity and logistics
-    - proximity should be only for small composable functions to process direction and distance
-    - logistics should only be get functions that do no calculations, just calls external functions to get specific data in a more (short hand, readable, direct)
-  ☐ combine flanking and reposition, they are the same thing
-  ☐ factor in 'nextDecisionFactors'
-    - reset at start of each new main action
-  ☐ sometimes they are moving while taking hit, move loop must be continuing when taking hit cos it doesnt reach finally to stop loop
-  ☐ when chosing retreat from flankd, reposition retreat around edge, show symbol avove so you know what their direction is based on
-  ☐ somtimes the enemy infront is stored as enemy behind, and they act on enemy infront as tho they were behind. make sure when they turn, enemy behind is set to whatever was infrone, even if its null
-  ☐ move along edge bug, reverses direction toward fighter instead of away
-    - direction chosen is based on 
-  ☐ reposition should not allow moving toward opponent
-    - invalid if toward enemy
-  ☐ retreat from flanked has timer to allow to escape between 2 flankers
-    - sometimes walks directly at 3rd fighter
-    - should be invalid if toward any fighter (especially non flankers)
-  ☐ sometimes they attack a still fighter in range and miss
-    - i think this is theyre too close to hit the hit box, but they try, and counds as a miss
-    - they should only try to attack if the hit will be inside the hit box
-    x infrequent to replicate
-  ☐ sometiems they decide no acction because all probabilities are zero
-    - this should never happen
-    - sometiems happens when they have no closest enemy when should cos there is a closest enemy
-      x infrequent to repeat
-    - it may happen when all things are trueL
-      - no enemy infront, enemy behind is invalid cos KO, and  have recently turend around so shouldnt again, on full health so no recover, too intelligent/agressive to do nothing. leaves no other options
-  ☐ retreat from flanked direction weighted based of how close each flanking fighter is
-    - if if flanker 1 is rly close, and flanker 2 is rly far, then direction should be much more based on flanker1 than 2
-  ☐ when attacking at retreating fighter, instead of missing 100% shots, chance to land shot based on speed of each fighter
- 
   ☐ money buggy
     - some times it seems fine, test large quantity of players or money to see if that is the cause
     - fix falling money, high numbers should be money bags instead
-  ☐ wealth victory video is fucked, change it
-  - new wealth victory video more about using money to crush all opponents rather than court cases
+ 
   ☐ if game display is on, 
     - cut the job seeker info
     - by default all players fight views are turned off, and it only shows amount bet and fighter research stats
@@ -85,6 +38,8 @@ QA:
 
 
 Secondary priority:  
+  ☐ when chosing retreat from flankd, reposition retreat around edge, show symbol avove so you know what their direction is based on
+  ☐ what functions are in proximity taht are only used by retreat
   ☐ take hit duration based on spirit
   ☐ attack damage based on agression
   ☐ coins doint all spin at same point

@@ -7,7 +7,8 @@ export default class FighterTimers {
     new Timer('had action recently', 5000),
     new Timer('on a rampage', 5000),
     new Timer('move action', 3000),
-    new Timer('memory of enemy behind', 3000),
+    new Timer('memory of enemy behind'),
+    new Timer('persist direction', 2000),
   ]
   
   constructor(public fighting: FighterFighting){}
@@ -25,10 +26,7 @@ export default class FighterTimers {
   }
   
   cancel(timerName: TimerName, reason?: string){
-    console.log(`
-      ${timerName} finished 
-      ${reason ? `, reason: ${reason}`: ''}
-    `);
+    console.log(`${timerName} finished ${reason ? `, reason: ${reason}`: ''}(${this.fighting.fighter.name})`);
     this.timers.find(t => t.name == timerName).cancel()
   }
 

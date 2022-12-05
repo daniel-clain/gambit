@@ -1,7 +1,7 @@
 import { EdgePoints, Edge } from "../../types/fighter/edge"
 import Coords from "../../interfaces/game/fighter/coords"
 import { Angle } from "../../types/game/angle"
-import { getDistanceBetweenTwoPoints, getDirectionOfPosition2FromPosition1 } from "../fighter/fighter-fighting/proximity"
+import { getDistanceBetweenTwoPoints, getDirectionOfPosition1ToPosition2 } from "../fighter/fighter-fighting/proximity"
 
 
 const points = {
@@ -90,7 +90,7 @@ function getDistanceFromEdge(edgeName: Edge, point: Coords){
 function getDirectionToClosestEdge(point: Coords): Angle{
   const closestEdge = getClosestEdge(point)
   const closestPointOnClosestEdge: Coords = getClosestCoordsOnAnEdgeFromAPoint(closestEdge, point)
-  return getDirectionOfPosition2FromPosition1(point, closestPointOnClosestEdge)   
+  return getDirectionOfPosition1ToPosition2(point, closestPointOnClosestEdge)   
 }
 
 

@@ -5,7 +5,7 @@ import { Edge, edgeNames } from "../../../types/fighter/edge";
 import { wait } from "../../../helper-functions/helper-functions";
 import { MoveAction } from "../../../types/fighter/action-name";
 import { octagon } from "../../fight/octagon";
-import { getDistanceOfEnemyStrikingCenter, isFacingAwayFromEnemy, getDirectionOfPosition2FromPosition1, getFighterBasePointFromEdge } from "./proximity";
+import { getDistanceOfEnemyStrikingCenter, isFacingAwayFromEnemy, getDirectionOfPosition1ToPosition2, getFighterBasePointFromEdge, getDirectionOfEnemyStrikingCenter, getDistanceBetweenTwoPoints } from "./proximity";
 import { Angle } from "../../../types/game/angle";
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 import { DirectionBasedOn } from "../../../types/fighter/direction-based-on";
@@ -46,8 +46,9 @@ export default class Movement{
   
 
   startMoveLoop(moveAction: MoveAction){
-    const {fighter, timers} = this.fighting
+    const {fighter, logistics, timers} = this.fighting
     console.log(`${fighter.name} move loop started`);
+    logistics.trapped = false
     this.moveAction = moveAction
     timers.start('move action')
     if(moveAction == 'move to attack'){    
@@ -85,13 +86,37 @@ export default class Movement{
   }
 
   
+
+  private getAttackDirection(): Angle{
+    const {fighter, logistics, timers, proximity} = this.fighting
+    const {closestRememberedEnemy, flanked} = logistics
+
+    if(timers.get('persist direction').active && this.moveAction == 'move to attack'){
+      const {persistDirection} = logistics
+      return persistDirection
+    }
+
+    if(!flanked){
+      return getDirectionOfEnemyStrikingCenter(closestRememberedEnemy, fighter)
+    }
+    else{
+      const [flanker1Coords, flanker2Coords] = flanked.flankers.map(f => f.fighting.movement.coords)
+      const distanceBetweenFlankers = getDistanceBetweenTwoPoints(flanker1Coords, flanker2Coords)
+      if(distanceBetweenFlankers < 50){
+        const enemyX = closestRememberedEnemy.fighting.movement.coords.x
+        const direction = enemyX < this.coords.x ? 270 : 90
+        timers.start('persist direction')
+        logistics.persistDirection = direction
+      }
+    }
+  }
   
   private async moveABit(): Promise<void> { 
     const {proximity, fighter} = this.fighting
 
     this.movingDirection = (
       this.moveAction == 'move to attack' ?
-        proximity.attackDirection :
+        this.getAttackDirection() :
         getRetreatDirection(this.fighting)
     )
 
@@ -100,9 +125,9 @@ export default class Movement{
 
     if(this.fighting.energy > 0){
       if(this.speedModifier == 'very fast')
-        this.fighting.energy -= .2
-      if(this.speedModifier == 'fast')
         this.fighting.energy -= .1
+      if(this.speedModifier == 'fast')
+        this.fighting.energy -= .2
     }  
 
     const newMoveCoords: Coords = this.getNewMoveCoords(this.movingDirection, this.coords)
@@ -174,9 +199,9 @@ export default class Movement{
 
     if(this.fighting.energy > 0){
       if(this.speedModifier == 'very fast')
-        timeToMove2Pixels *= 0.3
+        timeToMove2Pixels *= 0.5
       if(this.speedModifier == 'fast')
-        timeToMove2Pixels *= .6
+        timeToMove2Pixels *= .8
     }
 
     if(this.speedModifier == 'slow') 
@@ -212,7 +237,10 @@ export default class Movement{
   private handlePassedEnemy(oldCoords: Coords){
     const {logistics, fighter, facingDirection} = this.fighting
     const movingLeftOrRight: LeftOrRight = this.movingDirection <= 180 ? 'right' : 'left'
-
+    const x = (z) => {
+      
+    console.log(`set rememberEnemyBehind ${z ? 'fighter' : z} (${fighter.name})`);
+    }
     let passedEnemy: Fighter
 
     if(movingLeftOrRight == 'left'){
@@ -234,10 +262,6 @@ export default class Movement{
 
         console.log(`${fighter.name} has passed ${passedEnemy.name}. facing ${facingDirection}, moving ${movingLeftOrRight}, remembered enemy behind ${logistics.rememberedEnemyBehind?.name}`);
 
-      /* if(logistics.persistAlongEdgePastFlanker?.name == passedEnemy.name){
-        console.log(`${fighter.name} has passed flanker ${passedEnemy.name}`);
-        logistics.persistAlongEdgePastFlanker = undefined
-      } */
 
       // this fighter update memory
       if(facingDirection == movingLeftOrRight){
@@ -245,14 +269,17 @@ export default class Movement{
           const rememberedDistance = getDistanceOfEnemyStrikingCenter(logistics.rememberedEnemyBehind, fighter)
           const passedDistance = getDistanceOfEnemyStrikingCenter(passedEnemy, fighter)
           if(passedDistance < rememberedDistance){
+            x(passedEnemy)
             this.fighting.rememberEnemyBehind(passedEnemy)
           }
         }
         else{
+          x(passedEnemy)
           this.fighting.rememberEnemyBehind(passedEnemy)
         }
       }
       else if(logistics.rememberedEnemyBehind?.name == passedEnemy.name){
+        x(undefined)
         this.fighting.rememberEnemyBehind(undefined)
       }
 
@@ -265,6 +292,7 @@ export default class Movement{
         if(passedRememberedEnemyBehind?.name == fighter.name){
           
           console.log(`${passedEnemy.name}'s memory or behind was ${fighter.name}, so he now has no memory of whose behind`);
+          x(undefined)
           passedEnemy.fighting.rememberEnemyBehind(undefined)
         }
         
@@ -274,12 +302,14 @@ export default class Movement{
         const thisDistance = getDistanceOfEnemyStrikingCenter(fighter, passedEnemy)
 
         console.log(`${passedEnemy.name} was passed by ${fighter.name} from in front and is now behind`);
-        if(thisDistance < rememberedDistance){            
+        if(thisDistance < rememberedDistance){     
+          x(fighter)       
           passedEnemy.fighting.rememberEnemyBehind(fighter)
           console.log(`${fighter.name} is closer than remembered enemy behind (${passedRememberedEnemyBehind.name}), so new enemy behind is now ${fighter.name}`);
         }
       }
       else {
+        x(fighter)      
         passedEnemy.fighting.rememberEnemyBehind(fighter)
       }
     }
@@ -350,7 +380,7 @@ export default class Movement{
 
     const coordsOnEdge: Coords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge, this.coords)
 
-    this.movingDirection = getDirectionOfPosition2FromPosition1(coordsOnEdge, this.coords)
+    this.movingDirection = getDirectionOfPosition1ToPosition2(coordsOnEdge, this.coords)
   }
 
 };

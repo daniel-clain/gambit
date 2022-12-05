@@ -32,9 +32,9 @@ export default class FighterFighting {
 
   otherFightersInFight: Fighter[] = []
 
-  energyRegenInterval = 500
+  energyRegenInterval = 1000
   energyRegenTimeout
-  passiveRecoverInterval = 500
+  passiveRecoverInterval = 1000
   passiveRecoverTimeout
 
   stats: FighterStats
@@ -56,18 +56,25 @@ export default class FighterFighting {
     this.combat = new FighterCombat(this)
   }
 
-
-  start() {
+  setup(){
+    this.fightStarted = false
+    this.modelState = 'Idle'
+    this.facingDirection = !!randomNumber({to: 1}) ? 'left' : 'right'
     const {fight, injured, sick} = this.fighter.state
-    this.fightStarted = true
+
     this.stamina = (injured || sick) ? this.stats.maxStamina * 0.5 : this.stats.maxStamina
     
     this.spirit = (injured || sick) ? 1 : 3
     this.energy = (injured || sick) ? this.stats.maxEnergy * 0.5 : this.stats.maxEnergy
-    this.energyRegenTimeout = setInterval(() => this.regenEnergy(), this.energyRegenInterval);
-    this.passiveRecoverTimeout = setInterval(() => this.regenEnergy(), this.passiveRecoverInterval);
     this.otherFightersInFight = fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
+  }
+
+  start() {
+    this.fightStarted = true
+    this.energyRegenTimeout = setInterval(() => this.regenEnergy(), this.energyRegenInterval);
+    this.passiveRecoverTimeout = setInterval(() => this.regenEnergy(), this.passiveRecoverInterval);
+
     if(gameConfiguration.freezeFight) return
     this.actions.decideAction()
   }
@@ -77,6 +84,16 @@ export default class FighterFighting {
     clearTimeout(this.energyRegenTimeout)
     clearTimeout(this.passiveRecoverTimeout)
   }
+  reset() {
+    this.knockedOut = false
+    this.otherFightersInFight = []
+    this.stopFighting = false    
+    this.soundsMade = []
+    this.timers.activeTimers.forEach(t => t.cancel())
+    this.logistics.rememberedEnemyBehind = undefined
+    this.actions.decidedActionLog = []
+
+  }
 
   getState(): FighterFightState {
     return {
@@ -85,7 +102,7 @@ export default class FighterFighting {
       facingDirection: this.facingDirection,
       modelState: this.modelState,
       soundsMade: this.soundsMade,
-      onRampage: this.timers.activeTimers.some(timer => timer.name == 'on a rampage'),
+      onRampage: this.logistics.onARampage,
       skin: this.fighter.skin,
       strikingCenters: {
         front: getFighterStrikingCenter(this.fighter),
@@ -100,23 +117,16 @@ export default class FighterFighting {
     }
   }
 
-  reset() {
-    this.modelState = 'Idle'
-    this.knockedOut = false
-    this.spirit = 3
-    this.otherFightersInFight = []
-    this.stopFighting = false    
-    this.facingDirection = !!randomNumber({to: 1}) ? 'left' : 'right'
-    this.soundsMade = []
-    this.stamina = this.stats.maxStamina
-
-  }
 
   set facingDirection(direction: FacingDirection){   
-
+    const {closestEnemyInFront} = this.logistics
+    console.log(`set facing direction from ${this._facingDirection} to ${direction} (${this.fighter.name})`);
     if(this.fightStarted){
+      if(direction == this.facingDirection){
+        debugger
+      }
       if(direction != this.facingDirection){
-        const enemy: Fighter = this.logistics.closestEnemyInFront
+        const enemy: Fighter = closestEnemyInFront
         this.rememberEnemyBehind(enemy || null)   
       }
     }
@@ -126,17 +136,18 @@ export default class FighterFighting {
   }
 
   rememberEnemyBehind(enemy: Fighter | null | undefined){
-    const oldVal = this.logistics.rememberedEnemyBehind
-    const newVal = enemy ? {...enemy} as Fighter : enemy
 
-    console.log(`memory of behind changed from ${oldVal?.name || oldVal} to ${newVal?.name || newVal} (${this.fighter.name})`);
+      
+    const newVal = enemy ? {...enemy} as Fighter : enemy
 
     this.logistics.rememberedEnemyBehind = newVal
 
     this.timers.start('memory of enemy behind')
   }
 
-  get facingDirection(): FacingDirection{return this._facingDirection}
+  get facingDirection(): FacingDirection{
+    return this._facingDirection
+  }
   
 
   passiveRecover(){
@@ -153,7 +164,7 @@ export default class FighterFighting {
   }
 
   regenEnergy(){
-    this.energy += .25 + this.stats.fitness * .1
+    this.energy += .05 + this.stats.fitness * .01
   }
   set energy(val: number){
     

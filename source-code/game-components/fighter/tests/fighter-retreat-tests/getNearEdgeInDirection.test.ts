@@ -2,7 +2,7 @@ import { Angle } from "../../../../types/game/angle"
 import { octagon } from "../../../fight/octagon"
 import FighterFighting from "../../fighter-fighting/fighter-fighting"
 import { fighterRetreatImplementation, maxNearEdgeDistance } from "../../fighter-fighting/fighter-retreat.i"
-import Proximity, { getDirectionOfPosition2FromPosition1, getFighterModelDimensions } from "../../fighter-fighting/proximity"
+import Proximity, { getDirectionOfPosition1ToPosition2, getFighterModelDimensions } from "../../fighter-fighting/proximity"
 
 const {point1, point2} = octagon.edges.right
 const yAverage = (point1.y + point2.y)/2
@@ -33,7 +33,7 @@ const xThreshold = xAverage - maxNearEdgeDistance - modelWidth * .5
 
 const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint('right', mockFighting.movement.coords)
 
-const directionOfEdge = getDirectionOfPosition2FromPosition1(mockFighting.movement.coords, edgeCoords)
+const directionOfEdge = getDirectionOfPosition1ToPosition2(mockFighting.movement.coords, edgeCoords)
 
 
 

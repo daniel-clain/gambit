@@ -16,7 +16,7 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
   )
 
   if (invalid)
-    return 0
+    return null
   const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
 
 

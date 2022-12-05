@@ -1,4 +1,4 @@
-import { getSmallestAngleBetween2Directions, toAngle, getDirectionOfPosition2FromPosition1, add2Angles, subtractAngle2FromAngle1, check } from "../../../helper-functions/helper-functions";
+import { getSmallestAngleBetween2Directions, toAngle, getDirectionOfPosition1ToPosition2, add2Angles, subtractAngle2FromAngle1, check } from "../../../helper-functions/helper-functions";
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right";
 import { Closeness } from "../../../types/fighter/closeness";
 import { Angle } from "../../../types/game/angle";
@@ -77,11 +77,11 @@ export function getRepositionMoveDirection(fighting: FighterFighting): number | 
     const {leftSpace, rightSpace} = getSideRepositionSpace(fighting)
     
 
-    const leftSideDirection = getDirectionOfPosition2FromPosition1(
+    const leftSideDirection = getDirectionOfPosition1ToPosition2(
       movement.coords, 
       octagon.getClosestCoordsOnAnEdgeFromAPoint('left', movement.coords)
     )
-    const rightSideDirection = getDirectionOfPosition2FromPosition1(
+    const rightSideDirection = getDirectionOfPosition1ToPosition2(
       movement.coords, 
       octagon.getClosestCoordsOnAnEdgeFromAPoint('right', movement.coords)
     )

@@ -29,15 +29,17 @@ import FighterFighting from "../fighter-fighting"
 
 export const getProbabilityToCheckFlank = (fighting: FighterFighting): number => {
 
+  const { proximity, logistics, timers, actions} = fighting
   const enemyBehind = fighting.logistics.rememberedEnemyBehind
 
-  const invalid: boolean = (enemyBehind === null)
+  const invalid: boolean = (
+    enemyBehind === null
+  )
   if (invalid) return 
 
 
   const { intelligence } = fighting.stats
 
-  const { proximity, logistics, timers} = fighting
 
 
   const enemyBehindCloseness = enemyBehind ? proximity.getEnemyCombatCloseness(enemyBehind) : undefined
@@ -51,9 +53,21 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
 
   const assumedNumberOfEnemiesBehind = enemiesStillFighting - enemiesInFront
 
+  const {decideActionProbability} = actions
+  const instanceLog = decideActionProbability.logInstance('check flank')
+  const log = (...args) => {
+    instanceLog(...args, 'probability', probability)
+  }
 
   let probability = 0
 
+  if(logistics.onARampage){
+    if(enemyInFront)
+      probability -= 6
+    else 
+      probability += 6
+      log('on a rampage, enemy in front: ', enemyInFront )
+  }
 
   if(enemyBehind === undefined){
 
@@ -74,6 +88,8 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
     else{
       probability += 6 + intelligence * 2
     }
+
+    log('done remember enemy behind, enemy in front: ', enemyInFront)
   }  
 
   else{
@@ -90,6 +106,8 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
     if(enemyBehindCloseness <= Closeness['nearby']){
       probability += 6
     }
+
+    log('enemy behind closeness: ', enemyBehindCloseness)
     
     if (enemyInFront) {
       if(inFrontCloseness == Closeness['striking range']){
@@ -106,6 +124,8 @@ export const getProbabilityToCheckFlank = (fighting: FighterFighting): number =>
     const exponent = memoryOfBehindElapsed/1000 * (.25 + intelligence * .005) - 0.2
     const pow = Math.pow(enemyBehindProbability, exponent)
     probability += pow
+
+    log('enemy behind, time:', memoryOfBehindElapsed)
 
   }
 

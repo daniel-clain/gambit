@@ -13,11 +13,11 @@ export const getProbabilityToCautiousRetreat = (fighting: FighterFighting, gener
   const enemySpeed = closestEnemy.fighting.stats.speed 
 
   const invalid: boolean = (
+    generalRetreatProbability == null ||
     enemyCloseness >= Closeness['nearby'] ||
     isEnemyFacingAway(closestEnemy, fighter) || 
     !logistics.isEnemyAttacking(closestEnemy) ||  
-    logistics.onARampage ||
-    !!proximity.againstEdge
+    logistics.onARampage
   )
 
 

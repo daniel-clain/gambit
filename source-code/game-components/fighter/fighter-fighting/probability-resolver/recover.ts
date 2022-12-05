@@ -5,7 +5,7 @@ import FighterFighting from "../fighter-fighting";
 
 export const getProbabilityToRecover = (fighting: FighterFighting): number => {
   const { intelligence } = fighting.stats
-  const { proximity, logistics, spirit, fighter, actions} = fighting
+  const { proximity, logistics, spirit, movement, energy, timers} = fighting
   const enemyInFront = logistics.closestEnemyInFront
 
   const enemyBehind = logistics.rememberedEnemyBehind
@@ -40,17 +40,24 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   let probability = 10
 
-  if (proximity.againstEdge){
-    probability += 6
-  }
+
+  if(enemyInFrontCloseness > Closeness['close'] && 
+  enemyBehindCloseness > Closeness['close']){
+        
+    if (proximity.againstEdge){
+      probability += 4
+    }
 
 
+    if (logistics.lowEnergy){
+      probability += 4
+
+      if(movement.moveAction == 'desperate retreat'){
+        probability += 4
+      }
+    }
+  }  
   
-
-  
-  if(logistics.trapped)
-    probability -= intelligence * 6
-
   if (logistics.justTookHit)
     probability += 20 - spirit * 2
   
@@ -72,6 +79,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
       else if(enemyInFrontCloseness == Closeness['striking range']){
         inFrontStrikingAndBehindFar()
       }
+
        
     }
 
@@ -90,7 +98,7 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
       }
       else if(enemyInFrontCloseness == Closeness['striking range']){
         inFrontStrikingAndBehindNear()
-      }     
+      }   
     }
 
     else if(enemyBehindCloseness == Closeness['close']){
@@ -147,6 +155,21 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     else if(enemyInFrontCloseness == Closeness['striking range']){
       inFrontStriking()
     }
+
+    if(enemyInFrontCloseness > Closeness['Close']){
+      
+      if (proximity.againstEdge){
+        probability += 4
+      }
+
+      if (logistics.lowEnergy){
+        probability += 4
+
+        if(movement.moveAction == 'desperate retreat'){
+          probability += 4
+        }
+      }
+    }
   }
   
 
@@ -198,38 +221,39 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   function inFrontFarAndBehindFar(){
     //console.log('inFrontFarAndBehindFar');
+    probability += (10-energy)
     if (lowStamina)
-      probability += 6 + intelligence * 2
+      probability += 6 + intelligence * 3
   
     if (lowSpirit)
-      probability += 6 + intelligence * 2
+      probability += 6 + intelligence * 3
 
     if (notFullStamina)
-      probability += intelligence * 2
+      probability += intelligence * 3
   
     if (notFullSpirit)
-      probability += intelligence * 2
+      probability += intelligence * 3
 
     if(hasRetreatOpportunityFromInFront)
-      probability += intelligence * 2
+      probability += intelligence * 3
     if(hasRetreatOpportunityFromBehind)
-      probability += intelligence * 2
+      probability += intelligence * 3
   }
 
 
   function inFrontNearAndBehindFar(){
     //console.log('inFrontNearAndBehindFar');
     if (lowStamina)
-      probability += 4 + intelligence
+      probability += 4 + intelligence * 2
   
     if (lowSpirit)
-      probability += 4 + intelligence
+      probability += 4 + intelligence * 2
 
     if (notFullStamina)
-      probability += intelligence
+      probability += intelligence * 2
   
     if (notFullSpirit)
-      probability += intelligence
+      probability += intelligence * 2
 
     if(hasRetreatOpportunityFromInFront)
       probability += 2 + intelligence * 2
@@ -238,17 +262,17 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
     if(inFrontOnRampage)
       probability -= intelligence * 2
     if(behindOnRampage)
-      probability -= intelligence
+      probability -= intelligence * 2
   }
 
 
   function inFrontCloseAndBehindFar(){
     //console.log('inFrontCloseAndBehindFar');
     if (lowStamina)
-      probability += 2 - intelligence * 2
+      probability += intelligence * 2
   
     if (lowSpirit)
-      probability += 2 - intelligence * 2
+      probability += intelligence * 2
       
     if (notFullStamina)
       probability += intelligence
@@ -442,21 +466,22 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   function inFrontFar(){
     //console.log('inFrontFar');
-    probability += 6 + intelligence * 2
+    probability += (10 - energy)
+    probability += 6 + intelligence * 3
     if (lowStamina)
-      probability += 6 + intelligence * 2
+      probability += 6 + intelligence * 3
 
     if (lowSpirit)
-      probability += 6 + intelligence * 2
+      probability += 6 + intelligence * 3
 
     if (notFullStamina)
-      probability += intelligence * 3
+      probability += intelligence * 4
 
     if (notFullSpirit)
-      probability += intelligence * 3
+      probability += intelligence * 4
 
     if(hasRetreatOpportunityFromInFront)
-      probability += intelligence * 2
+      probability += intelligence * 3
     
   }
   function inFrontNear(){
@@ -493,18 +518,19 @@ export const getProbabilityToRecover = (fighting: FighterFighting): number => {
 
   function behindFar(){
     //console.log('behindFar');
-    probability += 2 + intelligence * 2
+    probability += (10-energy)
+    probability += 2 + intelligence * 4
     if (lowStamina)
-      probability += 2 + intelligence * 2
+      probability += 2 + intelligence * 4
     if (lowSpirit)
-      probability += 2 + intelligence * 2
+      probability += 2 + intelligence * 4
 
     if(hasRetreatOpportunityFromBehind){
       if (notFullStamina)
-        probability += intelligence * 2
+        probability += intelligence * 3
   
       if (notFullSpirit)
-        probability += intelligence * 2
+        probability += intelligence * 3
     }
     
   }

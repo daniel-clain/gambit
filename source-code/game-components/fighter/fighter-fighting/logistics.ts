@@ -1,9 +1,9 @@
 import FighterFighting from "./fighter-fighting"
 
 import Fighter from "../fighter"
-import { MoveAction } from "../../../types/fighter/action-name"
+import { canDefendActions, MoveAction } from "../../../types/fighter/action-name"
 import { Closeness } from "../../../types/fighter/closeness"
-import { farRange, getDistanceOfEnemyStrikingCenter, isEnemyFacingAway, strikingRange } from "./proximity"
+import { farRange, getDistanceOfEnemyStrikingCenter, isEnemyFacingAway, isFacingAwayFromEnemy, strikingRange } from "./proximity"
 import { Flanked, PersistPastFlanker } from "../../../types/fighter/flanked"
 import { Angle } from "../../../types/game/angle"
 import { getRetreatDirection } from "./fighter-retreat"
@@ -20,8 +20,8 @@ export default class Logistics {
   justDodged: boolean
   justTookHit: boolean
   rememberedEnemyBehind: Fighter
-  persistPastFlanker: PersistPastFlanker
-  persistAlongEdgePastFlanker
+  persistDirection: Angle
+  trapped: boolean
 
 
   get hasFullEnergy(): boolean{
@@ -84,24 +84,17 @@ export default class Logistics {
     return inFrontThreat > behindThreat ? enemyInFront : enemyBehind
   }
 
-  get trapped(){
-    if(!this.flanked) return false
-    const retreatDirection = getRetreatDirection(this.fighting)
-    return !retreatDirection
-  }
-
-  set onARampage(value: boolean){
-    const {fighter} = this.fighting
-    fighter.state.onARampage = value
-  }
 
   get onARampage(): boolean{
-    const {fighter} = this.fighting
-    return fighter.state.onARampage
+    const {timers} = this.fighting    
+    return timers.get('on a rampage').active
   }
   
   get highEnergy(){
     return this.fighting.energy > 8
+  }
+  get lowEnergy(){
+    return this.fighting.energy <= 2
   }
 
   
@@ -166,6 +159,13 @@ export default class Logistics {
 
     return inverseExponentialDistancePercentage
   }
+
+  getHasDefendOpportunity(enemy: Fighter): boolean{
+    const {fighter, actions} = this.fighting
+    if(isFacingAwayFromEnemy(enemy, fighter)) 
+      return false
+    return !!canDefendActions.find(a => a == actions.currentInterruptibleAction)
+  }
   
 
   get closestEnemyInFront(){
@@ -180,11 +180,13 @@ export default class Logistics {
             if(loopFighterLeft < movement.coords.x){
               return loopFighter
             }
+            else return selectedFighter
           } 
           if(facingDirection == 'right'){
             if(loopFighterLeft > movement.coords.x){
               return loopFighter
             }
+            else return selectedFighter
           }
         }
         else {
@@ -207,7 +209,9 @@ export default class Logistics {
         
       }, null
     )
-
+    if(closestEnemy && closestEnemy.name == this.rememberedEnemyBehind?.name){
+      debugger
+    }
     return closestEnemy
   }
 

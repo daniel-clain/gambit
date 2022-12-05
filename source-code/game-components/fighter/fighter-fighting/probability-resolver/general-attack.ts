@@ -3,7 +3,7 @@ import FighterFighting from "../fighter-fighting";
 import { isEnemyFacingAway } from "../proximity";
 
 export const getProbabilityForGeneralAttack = (fighting: FighterFighting): number => {
-  const { proximity, logistics, fighter, movement, spirit, actions} = fighting
+  const { logistics, fighter, actions} = fighting
   const { intelligence, speed, aggression, strength } = fighting.stats
   const closestEnemy = logistics.closestRememberedEnemy
   
@@ -18,10 +18,16 @@ export const getProbabilityForGeneralAttack = (fighting: FighterFighting): numbe
 
   if(logistics.onARampage)
     probability += 10
+
+
+  if(closestEnemy.fighting.logistics.justDidAttack)
   
   
   if(closestEnemy.fighting.actions.currentInterruptibleAction == 'defend')
     probability -= intelligence * 2
+
+  if(logistics.lowEnergy)
+    probability -= 4
 
     
   log('closestEnemy defending', closestEnemy.fighting.actions.currentInterruptibleAction == 'defend')

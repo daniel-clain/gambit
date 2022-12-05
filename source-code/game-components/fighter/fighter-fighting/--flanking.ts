@@ -1,5 +1,5 @@
 import FighterFighting from "./fighter-fighting";
-import { getDirectionOfPosition2FromPosition1, getSmallestAngleBetween2Directions, getOppositeDirection } from "../../../helper-functions/helper-functions";
+import { getDirectionOfPosition1ToPosition2, getSmallestAngleBetween2Directions, getOppositeDirection } from "../../../helper-functions/helper-functions";
 import Fighter from "../fighter";
 import { octagon } from "../../fight/octagon";
 import { Angle } from "../../../types/game/angle";

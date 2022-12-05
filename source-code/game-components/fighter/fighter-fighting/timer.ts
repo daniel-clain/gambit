@@ -26,9 +26,11 @@ export class Timer{
 
   get active(){
     return (
-      this.timeElapsed &&
-      !this.maxDuration || 
-      this.timeElapsed < this.maxDuration
+      this.timeElapsed != undefined &&
+      (
+        !this.maxDuration || 
+        this.timeElapsed < this.maxDuration
+      )
     )
   }
 
@@ -40,7 +42,10 @@ export class Timer{
   }
 
   async start(){
-    this.rejectActiveTimer?.()
+    if(this.active){
+      this.rejectActiveTimer?.()
+    }
+    
     try{
       for(
         this._timeElapsed = 0; 

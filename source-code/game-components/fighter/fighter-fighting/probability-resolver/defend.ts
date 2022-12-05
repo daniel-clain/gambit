@@ -1,3 +1,4 @@
+import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway, isFacingAwayFromEnemy } from "../proximity"
 
@@ -5,13 +6,15 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
   const { proximity, logistics, fighter} = fighting
   const { intelligence, speed, strength, aggression } = fighting.stats
   const closestEnemy = logistics.closestRememberedEnemy
+  const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
 
   const enemyAction = closestEnemy.fighting.actions.currentInterruptibleAction
 
-  if (
+  const invalid: boolean = (
     isFacingAwayFromEnemy(closestEnemy, fighter) ||
     logistics.onARampage
   )
+  if (invalid)
     return 0
 
   let probability = 10
@@ -31,16 +34,20 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
   if (logistics.enemyIsOnARampage(closestEnemy))
     probability + intelligence * 6
 
-  if (closestEnemy.fighting.stats.speed > speed + 3){
-    probability += intelligence * 3
-    if(closestEnemy.fighting.logistics.onARampage)
-      probability += intelligence * 2
-  }
+
   
-  if (closestEnemy.fighting.stats.aggression > speed + 3){
-    probability += intelligence * 3
-    if(closestEnemy.fighting.logistics.onARampage)
+  if(closestEnemy.fighting.logistics.onARampage)
+  probability += intelligence * 2
+  
+  if (closestEnemy.fighting.stats.aggression > 5){
+    if(logistics.justBlocked || logistics.justDodged){
+      probability -= intelligence 
+      if(closestEnemy.fighting.logistics.lowEnergy){
+        probability -= intelligence * 2
+      }
+    } else {
       probability += intelligence * 2
+    }
 
   }
 
@@ -58,6 +65,12 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
       }
     }
     
+  }
+  else{
+    probability += intelligence
+    if (closestEnemy.fighting.stats.speed > speed + 3){
+      probability += intelligence * 2
+    }
   }
 
 

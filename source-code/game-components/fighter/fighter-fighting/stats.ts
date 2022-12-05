@@ -42,7 +42,8 @@ export default class FighterStats {
   }
 
   get aggression(){
-    const {sick, doping, onARampage, takingADive} = this.fighter.state
+    const {sick, doping, takingADive} = this.fighter.state
+    const {onARampage} = this.fighter.fighting.logistics
 
     if(!onARampage && takingADive) return 0
 
@@ -56,7 +57,8 @@ export default class FighterStats {
   }
 
   get speed(){
-    const {onARampage, sick, takingADive} = this.fighter.state
+    const {sick, takingADive} = this.fighter.state
+    const {onARampage} = this.fighter.fighting.logistics
     const speed = Math.round(
       2 + 
       (sick ? -5 : 0) +
@@ -73,9 +75,9 @@ export default class FighterStats {
     const {sick, injured} = this.fighter.state
     const maxStamina = Math.round(
       2 + 
-      this.strength*.8 + 
-      this.fitness*.5 + 
-      this.aggression*.2
+      this.baseStrength*.8 + 
+      this.baseFitness*.5 + 
+      this.baseAggression*.2
       - (sick || injured ? 2 : 0)
     )
 

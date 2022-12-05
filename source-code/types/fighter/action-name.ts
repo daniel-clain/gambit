@@ -6,8 +6,11 @@ export const attackResponseActions = ['block', 'dodge','take hit'] as const
 
 export type AttackResponseAction = typeof attackResponseActions[number]
 
+export const retreatActions = ['strategic retreat', 'desperate retreat', 'cautious retreat'] as const
 
-export const moveActions = ['strategic retreat', 'cautious retreat', 'desperate retreat', 'move to attack'] as const
+export type RetreatAction = typeof retreatActions[number]
+
+export const moveActions = [...retreatActions, 'move to attack'] as const
 
 export type MoveAction = typeof moveActions[number]
 
@@ -55,11 +58,14 @@ export type PostAttackMissAction = `post ${AttackAction} miss`
 
 */
 
+export const canDefendActions = ['move', 'recover', 'do nothing', 'defend'] as const
 
 
+
+export type CanDefendAction = typeof canDefendActions[number]
 
 export type InterruptibleActionName = 
-  'move' | 'recover' | 'do nothing' | 'defend' |
+  CanDefendAction |
   AttackResponseAction |
   WarmupAction |
   CooldownAction | 

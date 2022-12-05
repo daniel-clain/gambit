@@ -1,52 +1,63 @@
+import { moveActions, retreatActions } from "../../../types/fighter/action-name"
 import { Angle } from "../../../types/game/angle"
 import FighterFighting from "./fighter-fighting"
 import { fighterRetreatImplementation } from "./fighter-retreat.i"
 
 
-/* 
-  not yet included
-    - persist direction passed flanker
-      ~ without this, will move away from one toward the other, but once close enough, logic will reverse, and they will be stuck
-      ~ need to persist until passed flanker
-      ~ persisting will be be overruled by blocked logic
-      ~ once passed or not retreating, persist will be canceled
-    - reposition influenced by side that has least fighters on it
-      ~ intelligent should not try to manoeuver only to get trapped, smarter to fight
-*/
-
-
 export function getRetreatDirection(fighting: FighterFighting): Angle{
-  const {logistics, fighter} = fighting
+  const {logistics, timers, actions, fighter} = fighting
   const {flanked} = logistics
 
   const i = fighterRetreatImplementation(fighting).publicProperties
   const isAgainstEdge = i.getIsAgainstEdge()
 
+  if(timers.get('persist direction').active && moveActions.find(ma => ma == actions.currentMainAction)){
+    const {persistDirection} = logistics
+    const invalid = i.getIsDirectionIntoEdge(persistDirection)
+    if(invalid){
+      console.log('persist direction invalid');
+      timers.cancel('persist direction')
+    }
+    else{
+      return persistDirection
+    }
+  }
 
   let direction: Angle
   if(flanked){
 
 
      if(isAgainstEdge){
+      // difficult logic
+
       const directionAlongEdgePastFlanker = i.getDirectionAlongEdgePastFlanker()
 
       if(directionAlongEdgePastFlanker){
+        persistDirection(directionAlongEdgePastFlanker)
         direction = directionAlongEdgePastFlanker
       }
       else{
         const directionBetweenFlankers = i.getDirectionBetweenFlankers()
-        if(!!directionBetweenFlankers){
+        const [flanker1, flanker2] = flanked.flankers
+        const blocked = i.enemyBlockingDirection(flanker1, directionBetweenFlankers) || i.enemyBlockingDirection(flanker2, directionBetweenFlankers)
+        if(!blocked){
+          persistDirection(directionBetweenFlankers)
           direction = directionBetweenFlankers
         }
         else{
-          console.log('trapped')
+          handleTrapped()
+          return 
         }
 
       }
     }    
     else {        
       
+
+
       const directionFromFlanked = i.getDirectionFromFlanked()
+
+
       const nearEdgeInDirectionFromFlanked = i.getNearEdgeInDirection(directionFromFlanked)
 
       if(nearEdgeInDirectionFromFlanked){
@@ -60,14 +71,54 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
     } 
 
   }
- // not done
- // need getDirectionFromEnemyInfluencedByNearEdge
   else if(!flanked){
+    const directionAwayFromClosestEnemy = i.getDirectionAwayFromEnemy(logistics.closestRememberedEnemy)
+
     if(isAgainstEdge){
-      direction = i.getDirectionAlongEdgeAwayFromEnemy(logistics.closestRememberedEnemy)
+      // difficult logic
+      // needs to factor in if cornered
+      
+      if(i.getIsInCorner()){
+
+        const corneredDirectionAlongEdgeAwayFromEnemy = i.getCorneredDirectionAlongEdgeAwayFromEnemy(logistics.closestRememberedEnemy)
+
+        const blocked = i.enemyBlockingDirection(logistics.closestRememberedEnemy, corneredDirectionAlongEdgeAwayFromEnemy)
+
+        if(!blocked){          
+          persistDirection(corneredDirectionAlongEdgeAwayFromEnemy)
+          direction = corneredDirectionAlongEdgeAwayFromEnemy
+        }
+        else{
+          handleTrapped()
+          return 
+        }
+      }
+      else{
+
+        const directionAlongEdgeClosestToDirection = i.getDirectionAlongEdgeClosestToDirection(directionAwayFromClosestEnemy)
+        
+        const blocked = i.enemyBlockingDirection(logistics.closestRememberedEnemy, directionAlongEdgeClosestToDirection)
+        if(!blocked){
+          persistDirection(directionAlongEdgeClosestToDirection)
+          direction = directionAlongEdgeClosestToDirection
+        }
+        else{
+          const directionToCornerFurthestFromEnemy = i.getDirectionAlongEdgeToCornerFurthestFromEnemy()
+          
+          const blocked = i.enemyBlockingDirection(logistics.closestRememberedEnemy, directionToCornerFurthestFromEnemy)
+          
+          if(!blocked){
+            persistDirection(directionToCornerFurthestFromEnemy)
+            direction = directionToCornerFurthestFromEnemy
+          }
+          else{
+            handleTrapped()
+            return 
+          }
+        }
+      }
     }
     else{
-      const directionAwayFromClosestEnemy = i.getDirectionAwayFromEnemy(logistics.closestRememberedEnemy)
       const nearEdgeInDirectionFromClosestEnemy = i.getNearEdgeInDirection(directionAwayFromClosestEnemy)
       if(nearEdgeInDirectionFromClosestEnemy){
         direction = i.getDirectionInfluencedByNearEdge(directionAwayFromClosestEnemy, nearEdgeInDirectionFromClosestEnemy)
@@ -78,10 +129,37 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
     }
   }
   return direction
+
+
+
+  function persistDirection(direction: Angle){
+    timers.start('persist direction')
+    logistics.persistDirection = direction
+
+  }
+
+  function handleTrapped(){
+    console.log(`${fighter.name} trapped`);
+    logistics.trapped = true
+    timers.start('on a rampage')
+    actions.rejectCurrentAction()
+  }
 }
-       
+
        
 
+
+
+/* 
+  not yet included
+    - persist direction passed flanker
+      ~ without this, will move away from one toward the other, but once close enough, logic will reverse, and they will be stuck
+      ~ need to persist until passed flanker
+      ~ persisting will be be overruled by blocked logic
+      ~ once passed or not retreating, persist will be canceled
+    - reposition influenced by side that has least fighters on it
+      ~ intelligent should not try to manoeuver only to get trapped, smarter to fight
+*/
 
 
 

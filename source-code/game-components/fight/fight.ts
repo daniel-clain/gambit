@@ -55,6 +55,8 @@ export default class Fight {
   }
 
   async start(){
+    this.fighters.forEach(f => f.fighting.setup())
+
     console.log('fight started');  
     if(this.fighters.every(f => f.state.dead == true)){
       this.finishFight({draw: true})

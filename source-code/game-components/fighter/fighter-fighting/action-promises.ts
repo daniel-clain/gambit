@@ -69,7 +69,7 @@ export class ActionPromises{
       }catch(e: unknown){rej(e)}
     })
     .catch((interrupt?: Interrupt) => {
-      if(!interrupt){
+      if(!(interrupt?.name)){
         console.log(`no interrupt action (main)`);
         return
       }
@@ -107,11 +107,10 @@ export class ActionPromises{
           console.log(`--X ${name} finished (${fighter.name})`)
           return
         })
-        .catch((interrupt: Interrupt) => {
-          if(!interrupt){
+        .catch((interrupt?: Interrupt) => {
+          if(!(interrupt?.name)){
             console.log(`no interrupt action (interruptible)`);
-            debugger
-            return
+            throw 'no interrupt action'
           }
           console.log(`interruptible action ${name} interrupted by ${interrupt.name} (${fighter.name})`);
 

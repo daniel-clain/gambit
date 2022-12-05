@@ -1,7 +1,7 @@
 import FighterFighting from "./fighter-fighting";
 import DecideActionProbability from "./decide-action-probability";
 import Fighter from "../fighter";
-import { CombatAction, CooldownAction, InstantActionName, InterruptibleActionName, MainActionName, MiscAction, MoveAction } from "../../../types/fighter/action-name";
+import { CombatAction, combatActions, CooldownAction, InstantActionName, InterruptibleActionName, MainActionName, MiscAction, miscActions, MoveAction, moveActions, retreatActions } from "../../../types/fighter/action-name";
 import { OptionProbability, selectByProbability, wait } from "../../../helper-functions/helper-functions";
 import { ActionChain, ActionPromises, Interrupt, InterruptibleAction, MainAction } from "./action-promises";
 
@@ -28,7 +28,7 @@ export default class FighterActions {
 
   getActionProbabilities(){
 
-    const { proximity, combat, movement, fighter, logistics, stopFighting, knockedOut} = this.fighting
+    const { proximity, fighter, logistics, stopFighting, knockedOut} = this.fighting
     const {fight, hallucinating} = fighter.state  
     
     if(!proximity){
@@ -36,6 +36,7 @@ export default class FighterActions {
     }
 
     if(!fight || knockedOut || stopFighting){
+      debugger
       throw('should not be trying to decide action')
     }
     
@@ -45,10 +46,6 @@ export default class FighterActions {
 
     let enemyWithinStrikingRange = closestEnemy && proximity.enemyWithinStrikingRange(closestEnemy)
     
-
-    const combatActions: CombatAction[] = ['punch', 'critical strike', 'defend']
-    const moveActions: MoveAction[] = ['move to attack', 'strategic retreat', 'desperate retreat', 'cautious retreat', ]
-    const otherActions: MiscAction[] = ['check flank', 'recover', 'do nothing']
 
     const responseProbabilities: OptionProbability<MainActionName>[] = []
     
@@ -75,7 +72,7 @@ export default class FighterActions {
       )
 
     responseProbabilities.push(
-      ...otherActions.map(action =>   
+      ...miscActions.map(action =>   
         this.decideActionProbability.getProbabilityTo(action)
       )
     )
@@ -86,7 +83,7 @@ export default class FighterActions {
 
   decideAction(){  
     const responseProbabilities = this.getActionProbabilities()
-    const { combat, fighter, logistics} = this.fighting
+    const { combat, fighter, logistics, timers} = this.fighting
     const decidedAction = selectByProbability(responseProbabilities)   
 
 
@@ -99,11 +96,14 @@ export default class FighterActions {
     if(!decidedAction){
       console.log(`${fighter.name} had no decided action, wait 1/10 a sec then decide again`, responseProbabilities); 
       mainAction = this.doNothing()
+      this.currentMainAction = 'do nothing'
     }
     else {    
-      const decidedActionIsRetreat = ['strategic retreat', 'cautious retreat', 'desperate retreat'].find(x => x == decidedAction)
-      if(!decidedActionIsRetreat){
-        logistics.persistAlongEdgePastFlanker = undefined
+      
+      this.currentMainAction = decidedAction
+      const decidedActionIsMove = moveActions.find(x => x == decidedAction)
+      if(!decidedActionIsMove){
+        timers.cancel('persist direction')
       }
       console.log(`**O decided action ${decidedAction} started (${fighter.name})`)
 
@@ -127,6 +127,7 @@ export default class FighterActions {
             return this.doNothing()
         }
       })()
+      
     }
 
 
@@ -158,6 +159,12 @@ export default class FighterActions {
       instantAction({name: 'turn around', action: turnAround}),
       interruptibleAction({name: 'turn around cooldown', duration: 100})
     ]
+  }
+
+  
+  speedModifier(baseSpeed){
+    const {speed} = this.fighting.stats
+    return baseSpeed * (1-(speed*1.7/100))
   }
 
   
@@ -229,6 +236,8 @@ export default class FighterActions {
               this.fighting.spirit ++
             }
             this.fighting.energy += 3
+            
+            this.fighting.modelState = 'Idle'
             return Promise.resolve()
           }
         })

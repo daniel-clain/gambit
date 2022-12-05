@@ -40,14 +40,11 @@ const fighters = [
 
 
 
-
 export const fightUiService = {
-	
-	fight: <Fight | undefined> new Fight(shuffle(fighters), null!),
+	fight: undefined as Fight,
 	fightSubscription: <Subscription | undefined>undefined,
 	newFight(fightersList){
 		this.fightSubscription?.unsubscribe()
-		delete this.fight
 		const fighters = fightersList?.length ? 
 		fightersList.map(f => {
 			const newFighter = new Fighter(f.name)
@@ -60,7 +57,7 @@ export const fightUiService = {
 		fighters.forEach(f => f.reset())
 		this.fight = new Fight(fighters, null!)
 		
-		this.fightSubscription = (this.fight as Fight).fightUiDataSubject.subscribe(fightUiData => {
+		this.fightSubscription = this.fight.fightUiDataSubject.subscribe(fightUiData => {
 			runInAction(() => {
 				frontEndState.serverUIState = {
 					serverGameUIState: {

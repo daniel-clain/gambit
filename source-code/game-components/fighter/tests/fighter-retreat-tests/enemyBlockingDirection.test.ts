@@ -14,9 +14,9 @@ mockFighting.proximity = new Proximity(mockFighting)
 
 const {
   publicProperties: {
+    enemyBlockingDirection
   }, 
   privateProperties: {
-    enemyBlockingDirection
   }
 } = fighterRetreatImplementation(mockFighting)
 
@@ -34,9 +34,9 @@ mockFighting.proximity.getDirectionOfEnemyCenterPoint = jest.fn(
 describe('enemyBlockingDirection', () => {
 
   describe.each([
-    {distance: closeRange, maxDegrees: 135 },
-    {distance: nearbyRange, maxDegrees: 90 },
-    {distance: farRange, maxDegrees: 45 }      
+    {distance: closeRange, maxDegrees: 70 },
+    {distance: nearbyRange, maxDegrees: 50 },
+    {distance: farRange, maxDegrees: 30 }      
   ])
   (`when 
      - enemy distance $distance `,
