@@ -1,32 +1,19 @@
 
 
 Deal Breakers:
-  ☐ money buggy
-    - some times it seems fine, test large quantity of players or money to see if that is the cause
-    - fix falling money, high numbers should be money bags instead
- 
-  ☐ if game display is on, 
-    - cut the job seeker info
-    - by default all players fight views are turned off, and it only shows amount bet and fighter research stats
-    - the plyer can toggle to show regular fight view incase theyre remote
-    - when toggle fight view on, sound will be off by default, and you can toggle sound on (want to avoid multiple device playing fight sound when in the same place as the game display)
-  ☐ fix fighter selection, should be propper random
+  ☐ /game-setup.ts:215
+  ☐ too many new reports is a drag
+    - news report says multiple tiems if same target more than once
+  ☐ when running on server, seems to be slower, and looses syc with other clients
+    - can tell if problem is servre side or client side
+    - if difference isnt noticed when runnign local, must be server diff
+    - maybe server has too many actions to run, review code for ways to make less functions run unnecessarily
 
 
 Priority:
   ☐ deploy test fight to server instance
-  ☐ fighter move to attack, if targeting fighter who is fighting, and moves bettween the 2 fighters, then as he tries to position for striking range, he switches target to the other, does back and forth switching between targets, and spasticates
-    - if move to attack and flanked, reposition to other side of fighter
-  ☐ after intelligetn fighter repositions, tried to reengage on closest fighter, but if closest is enemy is not furthest on that side, then on approach triggers reposition again, back and forth
-    - reposition should have criticallity like flanking, if low critical, then intelligent fighter has small chance to reposition
-  ☐ lawyers counters other lawyer actions
-  ☐ do surveilance should report when no negative things found
-  ☐ fighters recontract is more based on that fighters wins, so the fighter gets expensive over time also based on promotion rating
   ☐ video for fail weath victory
   ☐ set up display for fight, news
-  ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
-  ☐ option to turn sound off if game display active
-    - fight view mute button
   ☐ on player disconnect pause all stage (fight), pause in fight is buggy
   ☐ Lawyers skill level doesnt matter too much, make it relevant
   ☐ end game video, arrows point to vid characters with managers name
@@ -34,10 +21,15 @@ Priority:
 QA:
   ☐ failed victory scenarios play out correctly
     - if opponensts have enought money/lawyers or thugs/hitmen
-  ☐ review attack-response-probability
+  ☐ end game scearios tested
+    - sinister fail/succeed, wealth fail/succeed, final tournament, no other players
+    - end screen should look good with correct data
+  ☐ lawyer guilty chance works correctly
+
 
 
 Secondary priority:  
+  ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type
   ☐ when chosing retreat from flankd, reposition retreat around edge, show symbol avove so you know what their direction is based on
   ☐ what functions are in proximity taht are only used by retreat
   ☐ take hit duration based on spirit
@@ -75,41 +67,23 @@ Secondary priority:
   ☐ loan shark removes broke players from the game
   ☐ main event fight, you can vote for 3 people to win
   ☐ evidence can be sold for bribing, you give that player evidence for money, if sold back to person who was culprit, then evidence is destroyed for money
+  ☐ values in game explanation should derive from the same values the abilities use, eg game config
 
 
-Game Info:
-  ☐ make an info object that is both the config for the game, and also the 'how to play manual'
-  ☐ Its important that players can get ansers to key questions without an instructor
-  ☐ talent scout is better for researching than manager
-  ☐ make clear why options are unavailable and how to make them available
-  ☐ explain victory options
-  ☐ explain why to have ur own fighter, make more money
-  ☐ doping, stength fitness return to normal, agression stays up
-  ☐ more info on diff between investigate manager, and surveillance on a manager
-  ☐ manager gives .5 in training, strength fitness 50/50, decay above 10
-  ☐ info icons for more details on what things do
-  ☐ make base mechanics clear. eg how offering contract can be outbit or rejected, loan shark, how assasings/ thugs have chance of success, how skill level works, brackets after a number mean rounds since info was learnt
-  ☐ explain spirit, rampage, recovery, aggression, strenght, fitness, and intellignce
-  ☐ explain multiple doping can lead to death
-  ☐ explain multiple guarding, skill level and probability
-  ☐ explain assasin probability
-  ☐ explain agent do survailance
-  ☐ explain agent investigate manager, show stats straight away
-  ☐ explain spirit and stamina mechanic
-  ☐ user manual to check mechanics (when being prosecuted bad employees dont act)
-  ☐ ability description says what ability does
-  ☐ explain stats go down over time
-  ☐ explain injured
-  ☐ more info about abilities, like what chance they have of success, and when it is actioned, if it can be done multiple times, 
 
 Not sure how to deal:
   ☐ must be a memory leak, starts at 780kb, goes to 23mb, after 55days
   ☐ rare bug: multiple instances or script causing things to happen multiple times or 
     - causes fast movement, mulitple news articles
+  ☐ money buggy
+    - some times it seems fine, test large quantity of players or money to see if that is the cause
+    - fix falling money, high numbers should be money bags instead
   
   
 
 ideas:  
+  ☐ make clear why options are unavailable and how to make them available
+  ☐ info icons for more details on what things do
   ☐ if loan overdue, and no fighters, then shark attack game over. if have fighters, if second time damage the stats, kill instead
   ☐ redo betting in a way that scales, and is based on ods
   ☐ trappend in the corner doesnt go rampage, different mode desperation (turn left and right blocking only counter attacking)
@@ -154,6 +128,9 @@ ideas:
 
 
 Big wins (to remember my achievements):
+  
+✔ option to turn sound off if game display active @done(22-12-18 00:37)
+  - fight view mute button
   ✔ timers, see if you can improve @done(22-11-09 10:51)
 ✔ when fighters trying to get direction of fight center, if too close, the number are reversed and it bugs @done(22-10-30 20:15)
   - detect if too close and handle differently

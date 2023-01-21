@@ -24,6 +24,12 @@ export default class Logistics {
   trapped: boolean
 
 
+  get timeSinceLastCombat(){
+    const {timers} = this.fighting
+    return timers.get('last combat action').timeElapsed
+  }
+
+
   get hasFullEnergy(): boolean{
     const {energy, stats} = this.fighting
     return energy == stats.maxEnergy

@@ -65,6 +65,7 @@ export class Game_Implementation{
   
         const fightersChanceToWin = randomFighters.map(fighter => {
           const {fitness, strength, aggression, intelligence} = fighter.fighting.stats
+          console.log('fitness, strength, aggression, intelligence :>> ', fitness, strength, aggression, intelligence);
           return {
             option: fighter,
             probability: Math.round(fitness + strength + (aggression / 2) + intelligence)
@@ -211,14 +212,14 @@ export class Game_Implementation{
     if(finalTournament){
       const {activeFight} = finalTournament
       const finalTournamentFight: FightUIState = {
-        ...activeFight.fightUiData, 
-        knownFighterStateData: manager && getFighterStateData(activeFight, manager)
+        ...activeFight?.fightUiData, 
+        knownFighterStateData: !activeFight ? [] : manager && getFighterStateData(activeFight, manager)
       }
       return finalTournamentFight
     }
-    const weekFight = {
+    const weekFight: FightUIState = {
       ...activeFight.fightUiData, 
-      knownFighterStates: manager && getFighterStateData(activeFight, manager)
+      knownFighterStateData: manager && getFighterStateData(activeFight, manager)
     }
     return weekFight
 

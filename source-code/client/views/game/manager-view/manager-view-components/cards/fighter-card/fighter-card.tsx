@@ -13,7 +13,6 @@ import { InfoBox } from '../../partials/info-box/info-box';
 import { frontEndState } from '../../../../../../front-end-state/front-end-state';
 import { observer } from 'mobx-react';
 import { getAbilitiesThatCanTargetThis } from '../../../../../../front-end-service/ability-service-client';
-import { toJS } from 'mobx';
 
 
 
@@ -27,17 +26,9 @@ export const FighterCard = observer(() => {
     }
   } = frontEndState
   
-  const {
-    enoughFightersForFinalTournament,
-    playerManagerUIState
-  } = serverGameUIState!
+  const {playerManagerUIState} = serverGameUIState!
 
-  const {
-    managerInfo: {knownFighters, fighters},
-    delayedExecutionAbilities,
-    jobSeekers,
-    week
-  } = playerManagerUIState!
+  const {managerInfo: {knownFighters, fighters}, jobSeekers} = playerManagerUIState!
 
   const fighterName = activeModal!.data as string
   const thisPlayersName = clientName
@@ -51,6 +42,9 @@ export const FighterCard = observer(() => {
   ]
 
   const abilitiesThatTargetFighter = getAbilitiesThatCanTargetThis(fighter)
+
+  const jobSeekerFighter = jobSeekers.find(j => j.name == fighterName)
+
   
 
   let infoBoxList: InfoBoxListItem[]

@@ -119,6 +119,9 @@ $preFightImagesFolder: '../../../images/pre-fight';
       &--manager-retired{
         background-image: url('#{$preFightImagesFolder}/broke.jpg');
       }
+      &--overdose{
+        background-image: url('#{$preFightImagesFolder}/drug-overdose.jpg');
+      }
     }
   }
 }

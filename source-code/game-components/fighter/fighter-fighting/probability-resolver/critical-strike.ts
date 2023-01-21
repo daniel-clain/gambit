@@ -10,6 +10,20 @@ export const getProbabilityToCriticalStrike = (fighting: FighterFighting, genera
 
   probability += generalAttackProbability
 
+  if(logistics.hasAttackOpportunity(closestEnemy)){
+    probability += 3 * intelligence
+    probability += aggression
+
+    if(closestEnemy.fighting.actions.currentInterruptibleAction == 'recover'){
+      probability += intelligence * 2
+      probability += aggression
+    }
+    if (isEnemyFacingAway(closestEnemy, fighter)){
+      probability += intelligence * 2
+      probability += aggression
+    }
+  }
+
   
   if (closestEnemy.fighting.actions.currentInterruptibleAction == 'recover'){
     probability += aggression

@@ -21,23 +21,34 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
 
   probability -= aggression * 3
 
+  if(logistics.justBlocked || logistics.justDodged){
+    probability -= intelligence * 2
+  }
+  else {
+    probability += intelligence * 5
+  }
+
+  if(logistics.justDidAttack || logistics.justTookHit){
+    probability += intelligence * 4
+  }
+
+
+  if(logistics.trapped){
+    probability += 4 + intelligence
+  }
 
   if (isEnemyFacingAway(closestEnemy, fighter))
     probability -= intelligence * 8
 
   if (logistics.isEnemyAttacking(closestEnemy))
-    probability += intelligence * 3
+    probability += intelligence * 4
 
   if (!logistics.hasFullStamina)
-    probability += intelligence * 3
+    probability += intelligence * 4
 
   if (logistics.enemyIsOnARampage(closestEnemy))
     probability + intelligence * 6
 
-
-  
-  if(closestEnemy.fighting.logistics.onARampage)
-  probability += intelligence * 2
   
   if (closestEnemy.fighting.stats.aggression > 5){
     if(logistics.justBlocked || logistics.justDodged){
@@ -46,7 +57,7 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
         probability -= intelligence * 2
       }
     } else {
-      probability += intelligence * 2
+      probability += intelligence * 4
     }
 
   }
@@ -67,9 +78,9 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
     
   }
   else{
-    probability += intelligence
+    probability += intelligence * 2
     if (closestEnemy.fighting.stats.speed > speed + 3){
-      probability += intelligence * 2
+      probability += intelligence * 3
     }
   }
 

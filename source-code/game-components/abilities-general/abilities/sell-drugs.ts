@@ -25,7 +25,10 @@ export const sellDrugsServer: ServerAbility = {
     }
 
 
-    const moneyFromDrugDealing =  50 * drugDealer.skillLevel + 200
+    const moneyFromDrugDealing =  (
+      (50 * drugDealer.skillLevel + 250)
+      - (50 * game.has.abilityProcessor.delayedExecutionAbilities.filter(a => a.name == 'Sell Drugs').length - 1)
+    )
 
     manager.has.money += moneyFromDrugDealing
 

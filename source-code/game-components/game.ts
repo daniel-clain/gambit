@@ -188,13 +188,14 @@ class GameFunctions{
   
   getGameUiState(manager?: Manager): ServerGameUIState{
     let {activeStage, preFightNewsStage, activeFight, managerOptionsStage: {timeLeft}, jobSeekers, weekNumber} = this.game.has.weekController
-    const {has:{fighters, managers}, state:{finalTournament}} = this.game
+    const {has:{fighters, managers, gameDisplays}, state:{finalTournament}} = this.game
     let {delayedExecutionAbilities} = this.game.has.abilityProcessor
 
     const serverGameUIState: ServerGameUIState = {
       disconnectedPlayerVotes: this.game.state.gameType == 'Websockets' ? this.game.has.connectionManager.disconnectedPlayerVotes : null,
       weekStage: activeStage?.name,
-      displayManagerUIState: {
+      hasGameDisplay: !!gameDisplays.length,
+      displayManagerUIState: manager ? null : {
         weekStage: activeStage.name,
         timeLeft,
         jobSeekers,
@@ -203,7 +204,7 @@ class GameFunctions{
           name: m.has.name, ready: m.state.readyForNextFight, image: m.has.image, bet: m.has.nextFightBet
         }))
       },
-      playerManagerUIState: {
+      playerManagerUIState: !manager ? null : {
         week: weekNumber,
         managerInfo: manager?.functions.getInfo(),
         managerOptionsTimeLeft: timeLeft,

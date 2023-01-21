@@ -141,7 +141,6 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
   function handleTrapped(){
     console.log(`${fighter.name} trapped`);
     logistics.trapped = true
-    timers.start('on a rampage')
     actions.rejectCurrentAction()
   }
 }

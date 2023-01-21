@@ -16,8 +16,7 @@ export const getProbabilityToCautiousRetreat = (fighting: FighterFighting, gener
     generalRetreatProbability == null ||
     enemyCloseness >= Closeness['nearby'] ||
     isEnemyFacingAway(closestEnemy, fighter) || 
-    !logistics.isEnemyAttacking(closestEnemy) ||  
-    logistics.onARampage
+    !logistics.isEnemyAttacking(closestEnemy)
   )
 
 

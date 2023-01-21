@@ -1,8 +1,10 @@
 
+import { randomNumber } from "../../../helper-functions/helper-functions"
 import { Employee } from "../../../interfaces/front-end-state-interface"
 import { Evidence } from "../../../types/game/evidence.type"
 import { Lawsuit, LawsuitAccount } from "../../../types/game/lawsuit.type"
 import { Game } from "../../game"
+import { Manager } from "../../manager"
 import { Ability, ServerAbility, AbilityData } from "../ability"
 
 export const prosecuteManager: Ability = {
@@ -130,31 +132,64 @@ export const prosecuteManagerServer: ServerAbility = {
       )}
     }
 
+    /* 
+      - for each account of each charge there is a random probability of success or fail
+      - opponents lawyer level will compare against your lawyer level to influence the probability
+      - opponents lawyers should have a chance to negate all charges if skill level is high enough
+    */
+
 
     function determineTheVerdict(): Verdict{
+      const yourLawyerLevel = getTotalLawyerSkill(prosecutingManager)
+      const opponentLawyerLevel = getTotalLawyerSkill(prosecutedManager)
 
       const verdict = lawsuit.accounts.reduce((verdict, account): Verdict => {
         console.log(account.name)
         switch(account.name){
           case 'administering performance enhancing drugs': {
-            verdict.weeksInJail += account.evidence.length * .3
-            verdict.fine += account.evidence.length * 600
+            account.evidence.forEach(e => {
+              const guilty = getGuiltyChance()
+              if(guilty){
+                verdict.weeksInJail += .3 
+                verdict.fine += 600
+              }
+            })
           } break
           case 'administering with intent to harm': {
-            verdict.weeksInJail += account.evidence.length * 0.4
-            verdict.fine += account.evidence.length *600
+            account.evidence.forEach(e => {
+              const guilty = getGuiltyChance()
+              if(guilty){
+                verdict.weeksInJail += account.evidence.length * 0.4
+                verdict.fine += account.evidence.length *600
+              }
+            })
           } break
           case 'solicitation to commit homicide': {
-            verdict.weeksInJail += account.evidence.length * 3
-            verdict.fine += account.evidence.length * 7000
+            account.evidence.forEach(e => {
+              const guilty = getGuiltyChance()
+              if(guilty){
+                verdict.weeksInJail += account.evidence.length * 3
+                verdict.fine += account.evidence.length * 7000
+              }
+            })
           } break
           case 'solicited assault': {
-            verdict.weeksInJail += account.evidence.length * .5
-            verdict.fine += account.evidence.length * 500
+            account.evidence.forEach(e => {
+              const guilty = getGuiltyChance()
+              if(guilty){
+                verdict.weeksInJail += account.evidence.length * .5
+                verdict.fine += account.evidence.length * 500
+              }
+            })
           } break
           case 'supplying illegal substances': {
-            verdict.weeksInJail += 1 + account.evidence.length * .6
-            verdict.fine += account.evidence.length * 2000
+            account.evidence.forEach(e => {
+              const guilty = getGuiltyChance()
+              if(guilty){
+                verdict.weeksInJail += 1 + account.evidence.length * .6
+                verdict.fine += account.evidence.length * 2000
+              }
+            })
           } break
         }
         return verdict
@@ -163,6 +198,22 @@ export const prosecuteManagerServer: ServerAbility = {
       return {
         ...verdict,
         weeksInJail: Math.round(verdict.weeksInJail)
+      }
+
+
+      function getTotalLawyerSkill(manager: Manager){
+        return manager.has.employees.filter(e => e.profession == 'Lawyer').reduce((totalSkill: number, {skillLevel}) => totalSkill + skillLevel, 0)
+      }
+
+      function getGuiltyChance(){
+
+        const guiltyChance = randomNumber({to: 100})
+        const guilty = guiltyChance < (
+          50 +
+          (yourLawyerLevel * 30)
+          - (opponentLawyerLevel * 25)
+        )
+        return guilty
       }
 
     }

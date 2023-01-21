@@ -87,13 +87,13 @@ export const postStartTestState = (game: Game) => {
   //testMainEvent()
   //testContractEnding()
   //quickSinisterVictory()
-  lotsOfMoney()
+  //lotsOfMoney()
   //testFighterJobSeeker()
   //managerHasFighters()
 
   //showPostGameStats()
 
-  //finalTournamentTest()
+  finalTournamentTest()
 
   //addPrivateAgentAndLawyer()
 
@@ -132,12 +132,13 @@ export const postStartTestState = (game: Game) => {
 
   function finalTournamentTest(){
     lotsOfMoney()
-    gameConfiguration.stageDurations.maxFightDuration = 1
-    gameConfiguration.stageDurations.extraTimePerFighter = 0 
+    //gameConfiguration.stageDurations.maxFightDuration = 1
+    //gameConfiguration.stageDurations.extraTimePerFighter = 0 
     game.has.weekController.weekNumber = 20
     const manager = game.has.managers[0]
     for(let i = 0; i < 8; i++){
       const fighter = game.has.fighters[i]      
+      fighter.state.activeContract = {weeklyCost: 0, weeksRemaining: 10}
       manager.has.fighters.push(fighter)
       fighter.state.manager = manager
     }

@@ -10,6 +10,7 @@ import { getSmallestAngleBetween2Directions, add2Angles, toAngle, directionWithi
 
 export const maxNearEdgeDistance = closeRange
 export const maxAgainstEdgeDistance = strikingRange
+export const maxCornerDistance = maxAgainstEdgeDistance*1.5
 
 export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   const {logistics, proximity, movement} = fighting
@@ -232,13 +233,13 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
           
           const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge2, movement.coords)
           const directionOfEdge =  getDirectionOfPosition1ToPosition2(movement.coords, edgeCoords)
-          return directionWithinDegreesOfDirection(direction, 180, directionOfEdge)
+          return directionWithinDegreesOfDirection(direction, 90, directionOfEdge)
         }
         if(edge2Directions.some(x => x == direction)){
           
           const edgeCoords = octagon.getClosestCoordsOnAnEdgeFromAPoint(edge1, movement.coords)
           const directionOfEdge =  getDirectionOfPosition1ToPosition2(movement.coords, edgeCoords)
-          return directionWithinDegreesOfDirection(direction, 180, directionOfEdge)
+          return directionWithinDegreesOfDirection(direction, 90, directionOfEdge)
         }
         return true
 
@@ -288,7 +289,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   
 
   function getIsInCorner(): boolean{
-    return !!(proximity.getEdges(maxAgainstEdgeDistance*1.5).length == 2)
+    return !!(proximity.getEdges(maxCornerDistance).length == 2)
   }
 
   
@@ -333,7 +334,7 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
 
 
   function getCornerEdges(): [Edge, Edge]{    
-    const [edge1, edge2] = proximity.getEdges(maxAgainstEdgeDistance).map(({edge}) => edge)
+    const [edge1, edge2] = proximity.getEdges(maxCornerDistance).map(({edge}) => edge)
 
     return edge1 && edge2 && [edge1, edge2]
   }

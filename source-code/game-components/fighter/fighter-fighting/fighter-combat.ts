@@ -130,7 +130,7 @@ export default class FighterCombat {
 
   private doAttack(attackAction: AttackAction): AttackResponseAction | 'miss'{
     const {proximity, fighter, timers, logistics, actions} = this.fighting
-    timers.start('had action recently')
+    timers.start('last combat action')
 
     const enemy = logistics.closestRememberedEnemy
 
@@ -223,7 +223,7 @@ export default class FighterCombat {
     const {proximity, timers, fighter, actions} = this.fighting
     const {strength} = enemy.fighting.stats
 
-    timers.start('had action recently')
+    timers.start('last combat action')
 
     if(proximity.isEnemyBehind(enemy)){
       //console.log(`behind attack by ${enemy.name} on ${fighter.name}, ${fighter.name} will remember that ${enemy.name} is behind him`);
@@ -284,8 +284,10 @@ export default class FighterCombat {
     const randomNum = randomNumber({to: 100})
 
     const goOnRampage = randomNum < (
-      stats.aggression * spirit - energy - stamina +
-      (enemy?.fighting.knockedOut ? 10 : 0)
+      stats.aggression * spirit
+      + (enemy?.fighting.knockedOut ? 10 : 0)
+      - (stats.maxEnergy - energy) 
+      - (stats.maxStamina - stamina)
     )
     if(goOnRampage){
       timers.start('on a rampage')

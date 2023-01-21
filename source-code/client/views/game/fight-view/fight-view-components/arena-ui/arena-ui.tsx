@@ -4,7 +4,7 @@ import { octagon } from '../../../../../../game-components/fight/octagon';
 import Coords from '../../../../../../interfaces/game/fighter/coords';
 import { FighterComponent } from '../fighter/fighter.component';
 
-export const ArenaUi = ({fighterFightStates}) => {
+export const ArenaUi = ({fighterFightStates, sound}) => {
 	const cornerPoints: Coords[] = Object.values(octagon.points)
 	const [arenaWidth, setArenaWidth] = useState<number>()
 	useLayoutEffect(() => {
@@ -37,7 +37,7 @@ export const ArenaUi = ({fighterFightStates}) => {
 			{arenaWidth ?
 				<div className="fighters">
 					{fighterFightStates?.map((fighter, i) => 
-						<FighterComponent key={i} fighterFightState={fighter} arenaWidth={arenaWidth}/>
+						<FighterComponent key={i} fighterFightState={fighter} arenaWidth={arenaWidth} sound={sound}/>
 					)}
 				</div>
 			:''}

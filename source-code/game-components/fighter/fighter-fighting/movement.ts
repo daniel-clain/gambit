@@ -108,6 +108,9 @@ export default class Movement{
         timers.start('persist direction')
         logistics.persistDirection = direction
       }
+      else{
+        return getDirectionOfEnemyStrikingCenter(closestRememberedEnemy, fighter)
+      }
     }
   }
   
@@ -127,7 +130,7 @@ export default class Movement{
       if(this.speedModifier == 'very fast')
         this.fighting.energy -= .1
       if(this.speedModifier == 'fast')
-        this.fighting.energy -= .2
+        this.fighting.energy -= .05
     }  
 
     const newMoveCoords: Coords = this.getNewMoveCoords(this.movingDirection, this.coords)
@@ -199,13 +202,13 @@ export default class Movement{
 
     if(this.fighting.energy > 0){
       if(this.speedModifier == 'very fast')
-        timeToMove2Pixels *= 0.5
+        timeToMove2Pixels *= 0.45
       if(this.speedModifier == 'fast')
-        timeToMove2Pixels *= .8
+        timeToMove2Pixels *= .95
     }
 
     if(this.speedModifier == 'slow') 
-      timeToMove2Pixels *=  1.15
+      timeToMove2Pixels *=  1.25
 
     if(timeToMove2Pixels < 10) timeToMove2Pixels = 10
 
@@ -217,7 +220,8 @@ export default class Movement{
     const movingLeftOrRight: LeftOrRight = this.movingDirection < 180 ? 'right' : 'left'
 
     if(this.moveAction == 'cautious retreat'){
-      if(movingLeftOrRight == facingDirection){
+      const isFacingAway = isFacingAwayFromEnemy(logistics.closestRememberedEnemy, fighter)
+      if(isFacingAway){
         return true
       }
     }

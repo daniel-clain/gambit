@@ -115,6 +115,7 @@ export default class FightDayStage implements IStage {
         
           if (managerWonBet) {
             winnings += betWinningsBase
+            winnings += bonusFromPublicityRating
             betWinnings =  Math.round(managersBetAmount * betAmountMultiplier)
             winnings += betWinnings
           }

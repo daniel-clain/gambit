@@ -11,6 +11,16 @@
       "args": [
         "${workspaceFolder}/server.ts"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "launch Run Server 2",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "run-server"
+      ]
     }
   ]
 }

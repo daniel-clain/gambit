@@ -25,6 +25,7 @@ import { frontEndState } from "../../../front-end-state/front-end-state"
 import { observer } from "mobx-react"
 import { showReport, showLoanShark, showKnownFighters, showOtherManagers, showWinOptions, showManager, showGameExplanation } from "../../../front-end-service/front-end-service"
 import { toJS } from "mobx"
+import { GameExplanationCard } from "./manager-view-components/cards/game-explanation/game-explanation"
 
 export const Manager_View = observer(() => {
 
@@ -90,6 +91,7 @@ export const Manager_View = observer(() => {
       case 'Ability': return <AbilityCard/>
       case 'Manager Report': return <ReportCard/>
       case 'Win Options': return <WinOptionsCard/>
+      case 'Game Explanation': return <GameExplanationCard/>
     }
   }
 })

@@ -44,7 +44,7 @@ export const assaultFighterServer: ServerAbility = {
     }
     else {
       const randomNum = randomNumber({to: 100})
-      if(randomNum < 85 + assaulter.skillLevel * 5)
+      if(randomNum < 75 + assaulter.skillLevel * 5)
         success = true
 
     }

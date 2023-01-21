@@ -1,16 +1,25 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FightReport } from '../../../../../../interfaces/front-end-state-interface';
 import { fightSound } from '../../../../../sound-effects/sound-effects';
 import { FightStartAnimation } from '../../fight-start-animation/fight-start-animation';
 
-interface Props { report: FightReport, timeRemaining: number, startCountdown: number, doStartAnimation: boolean }
+interface Props { 
+  report: FightReport, 
+  timeRemaining: number, 
+  startCountdown: number, 
+  doStartAnimation: boolean
+  hasGameDisplay: boolean
+  sound: boolean
+  setSound: (val: boolean) => void
+  isDisplay: boolean
+}
 
-export const OverlayMessaging = ({ report, timeRemaining, startCountdown, doStartAnimation }: Props) => {
+export const OverlayMessaging = ({ report, timeRemaining, startCountdown, doStartAnimation, hasGameDisplay, sound, setSound, isDisplay }: Props) => {
 
 
   useEffect(() => {
-    if(doStartAnimation){
+    if(doStartAnimation && sound){
       fightSound.play().catch(() => null)
     }
   },[doStartAnimation])
@@ -37,5 +46,14 @@ export const OverlayMessaging = ({ report, timeRemaining, startCountdown, doStar
         </div>
       <div className="turn-phone__image"></div>
     </div>
+    {hasGameDisplay && !isDisplay ?
+      <div 
+        className={`
+          sound-icon
+          sound-icon--${sound ? 'on' : 'off'}
+        `}
+        onClick={_ => setSound(!sound)}
+      ></div>
+    : ''}
   </>
 }

@@ -62,10 +62,10 @@ export default class FighterFighting {
     this.facingDirection = !!randomNumber({to: 1}) ? 'left' : 'right'
     const {fight, injured, sick} = this.fighter.state
 
-    this.stamina = (injured || sick) ? this.stats.maxStamina * 0.5 : this.stats.maxStamina
+    this.stamina = (injured || sick) ? this.stats.maxStamina * 0.8 : this.stats.maxStamina
     
-    this.spirit = (injured || sick) ? 1 : 3
-    this.energy = (injured || sick) ? this.stats.maxEnergy * 0.5 : this.stats.maxEnergy
+    this.spirit = (injured || sick) ? 2 : 3
+    this.energy = (injured || sick) ? this.stats.maxEnergy * 0.8 : this.stats.maxEnergy
     this.otherFightersInFight = fight.fighters
       .filter(fighter => fighter.name != this.fighter.name)
   }
@@ -73,13 +73,13 @@ export default class FighterFighting {
   start() {
     this.fightStarted = true
     this.energyRegenTimeout = setInterval(() => this.regenEnergy(), this.energyRegenInterval);
-    this.passiveRecoverTimeout = setInterval(() => this.regenEnergy(), this.passiveRecoverInterval);
+    this.passiveRecoverTimeout = setInterval(() => this.passiveRecover(), this.passiveRecoverInterval);
 
     if(gameConfiguration.freezeFight) return
     this.actions.decideAction()
   }
   stop() {
-    //console.log(`${this.fighter.name} stopped fighting`);
+    console.log(`${this.fighter.name} stopped fighting`);
     this.stopFighting = true
     clearTimeout(this.energyRegenTimeout)
     clearTimeout(this.passiveRecoverTimeout)
@@ -151,7 +151,7 @@ export default class FighterFighting {
   
 
   passiveRecover(){
-    if(!this.timers.get('had action recently')){
+    if(!this.timers.get('last combat action')){
       
       this.stamina += .25
       if(this.spirit < 3){
@@ -164,7 +164,7 @@ export default class FighterFighting {
   }
 
   regenEnergy(){
-    this.energy += .05 + this.stats.fitness * .01
+    this.energy += .1 + this.stats.fitness * .025 + (this.logistics.onARampage ? .5 : 0)
   }
   set energy(val: number){
     

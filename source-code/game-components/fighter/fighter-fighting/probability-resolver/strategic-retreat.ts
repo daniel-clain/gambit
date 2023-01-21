@@ -10,8 +10,7 @@ export function getProbabilityToStrategicRetreat(fighting: FighterFighting, gene
 
   const invalid: boolean = (
     generalRetreatProbability == null ||
-    logistics.onARampage ||
-    enemyCloseness <= Closeness['close'] ||
+    enemyCloseness == Closeness['striking range'] ||
     (!logistics.flanked && logistics.hasFullStamina)
   )
 
@@ -22,7 +21,6 @@ export function getProbabilityToStrategicRetreat(fighting: FighterFighting, gene
   
   const moveTimer = timers.get('move action')
   if(moveTimer.active && movement.moveAction == 'strategic retreat'){
-    moveTimer.timeElapsed
     probability += movement.getExponentialMoveFactor(500) 
   }
   

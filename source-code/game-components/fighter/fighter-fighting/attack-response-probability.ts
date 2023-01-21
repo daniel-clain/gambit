@@ -43,10 +43,10 @@ export default class AttackResponseProbability {
       probability -= 6
     }
     if(actions.currentInterruptibleAction == 'defend')
-      probability += 8
+      probability += 4 + intelligence
 
     if(actions.currentMainAction == 'cautious retreat')
-      probability += 4
+      probability += 2 + intelligence
 
 
     probability += speed * 3 - enemy.fighting.stats.speed * 3
@@ -61,12 +61,9 @@ export default class AttackResponseProbability {
     if(logistics.hasLowStamina)
       probability ++
 
-      if(fighter.state.hallucinating){
-        probability -= 6
-      }
       
     if(actions.currentInterruptibleAction == 'recover')
-    probability = probability * 0.3  + spirit * .4
+      probability = probability * 0.3  + spirit * .4
     
     if(probability < 0)
       probability = 0

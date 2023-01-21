@@ -4,7 +4,7 @@ import { TimerName } from "../../../types/fighter/timer-name";
 
 export default class FighterTimers {
   private timers: Timer[] = [
-    new Timer('had action recently', 5000),
+    new Timer('last combat action'),
     new Timer('on a rampage', 5000),
     new Timer('move action', 3000),
     new Timer('memory of enemy behind'),

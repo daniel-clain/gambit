@@ -48,7 +48,8 @@ export const PreFightNews_View = observer(() => {
       newsType == 'manager prosecuted' ? 'manager-prosecuted' :
       newsType == 'manager retired' ? 'manager-retired' :
       newsType == 'fight event next week' ? 'main-event' :
-    'guarded'
+      newsType == 'fighter died of overdose' ? 'overdose' :
+    ''
     )
   }
 })

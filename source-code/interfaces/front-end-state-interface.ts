@@ -88,6 +88,7 @@ export type VictoryData = {name: string, victoryType: VictoryType}
 export class ServerGameUIState{
   disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
   weekStage?: WeekStage
+  hasGameDisplay: boolean
   displayManagerUIState?: DisplayManagerUiData
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState

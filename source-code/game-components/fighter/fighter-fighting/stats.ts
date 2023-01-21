@@ -19,7 +19,7 @@ export default class FighterStats {
     const {sick, injured, doping} = this.fighter.state
     let x = this._baseFitness
     if(sick) x *= .4
-    if(injured) x *= .6
+    if(injured) x *= .4
     if(doping) x = x * 1.25 + 1   
     return Math.round(x)
   }
@@ -36,7 +36,7 @@ export default class FighterStats {
     const {sick, injured, doping} = this.fighter.state
     let x = this.baseStrength
     if(sick) x *= .4
-    if(injured) x *= .6
+    if(injured) x *= .4
     if(doping) x = x * 1.3 + 1    
     return Math.round(x)
   }
@@ -48,7 +48,6 @@ export default class FighterStats {
     if(!onARampage && takingADive) return 0
 
     let x = this.baseAggression
-    x -= (this.maxSpirit - this.fighter.fighting.spirit)
     if(doping) x += 3   
     if(onARampage) x *= 1.6
     if(sick) x *= .6
@@ -57,8 +56,9 @@ export default class FighterStats {
   }
 
   get speed(){
+    const {logistics, energy} = this.fighter.fighting
     const {sick, takingADive} = this.fighter.state
-    const {onARampage} = this.fighter.fighting.logistics
+    const {onARampage} = logistics
     const speed = Math.round(
       2 + 
       (sick ? -5 : 0) +
@@ -66,6 +66,7 @@ export default class FighterStats {
       -this.strength*.3 + 
       this.fitness*.9
     )
+    if(energy <= 1) return speed * .5
     if(!onARampage && takingADive) return speed * .5
     if(speed < 0) return 0
     return speed

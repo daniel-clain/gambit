@@ -30,7 +30,6 @@ export const getProbabilityToMoveToAttack = (fighting: FighterFighting, generalA
   
   const moveTimer = timers.get('move action')
   if(moveTimer.active && movement.moveAction == 'move to attack'){
-    moveTimer.timeElapsed
     probability += movement.getExponentialMoveFactor(500) 
   }
 

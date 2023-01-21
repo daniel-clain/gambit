@@ -48,11 +48,11 @@ export const poisonFighterServer: ServerAbility = {
     }
     if(success){
 
-      const r10 = randomNumber({to: 10})
+      const randomNum = randomNumber({to: 100})
 
       const severityLevel = 
-        r10 < 1 ? 'death' :
-        r10 < 4 ? 'hallucinate' :
+        randomNum < 10 ? 'death' :
+        randomNum < 40 ? 'hallucinate' :
         'sick'
 
         

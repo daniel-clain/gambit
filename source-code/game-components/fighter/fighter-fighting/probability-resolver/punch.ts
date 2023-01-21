@@ -1,7 +1,8 @@
 import FighterFighting from "../fighter-fighting";
+import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityToPunch = (fighting: FighterFighting, generalAttackProbability: number): number =>{
-  const { intelligence } = fighting.stats
+  const { intelligence, aggression } = fighting.stats
   const { logistics, proximity, fighter } = fighting
   const closestEnemy = logistics.closestRememberedEnemy
 
@@ -11,6 +12,19 @@ export const getProbabilityToPunch = (fighting: FighterFighting, generalAttackPr
 
   probability += generalAttackProbability
 
+  if(logistics.hasAttackOpportunity(closestEnemy)){
+    probability += 3 * intelligence
+    probability += aggression
+
+    if(closestEnemy.fighting.actions.currentInterruptibleAction == 'recover'){
+      probability += intelligence * 2
+      probability += aggression
+    }
+    if (isEnemyFacingAway(closestEnemy, fighter)){
+      probability += intelligence * 2
+      probability += aggression
+    }
+  }
   
   if(!logistics.enemyHasLowStamina(closestEnemy))
     probability += 5 + intelligence

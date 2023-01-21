@@ -28,16 +28,11 @@ export default class FighterActions {
 
   getActionProbabilities(){
 
-    const { proximity, fighter, logistics, stopFighting, knockedOut} = this.fighting
-    const {fight, hallucinating} = fighter.state  
+    const { proximity, fighter, logistics, stopFighting} = this.fighting
+    const {hallucinating} = fighter.state  
     
-    if(!proximity){
-      debugger
-    }
-
-    if(!fight || knockedOut || stopFighting){
-      debugger
-      throw('should not be trying to decide action')
+    if(stopFighting){
+      return
     }
     
     
@@ -83,6 +78,9 @@ export default class FighterActions {
 
   decideAction(){  
     const responseProbabilities = this.getActionProbabilities()
+    if(!responseProbabilities || !responseProbabilities.length){
+      debugger
+    }
     const { combat, fighter, logistics, timers} = this.fighting
     const decidedAction = selectByProbability(responseProbabilities)   
 

@@ -123,6 +123,11 @@ export const offerContractClient: ClientAbility = {
   ...offerContract,
   longDescription: `Offer a fighter or professional a contract to work for you, you earn more money when your fighter wins, and your employees can perform actions on your behalf. If you offer less than what they're asking for, theres a chance they will refuse. If another manager makes a better offer, they will take that offer instead`,
   isValidTarget(target: TargetTypes) {
+    if(target.characterType == 'Fighter'){
+      if(target.goalContract){
+        return true
+      }
+    }
     return target.characterType == 'Job Seeker'
   }
 }

@@ -34,7 +34,10 @@ export const Game_View = observer(() => {
   })
 
 
-  const {retired} = playerManagerUIState!.managerInfo
+  let fighterRetired
+  if(clientName != 'Game Display'){
+    fighterRetired = playerManagerUIState!.managerInfo.retired
+  }
 
   const getActiveView = () => {
     if(selectedVideo){
@@ -48,7 +51,7 @@ export const Game_View = observer(() => {
     }
     switch (weekStage) {
       case 'Manager Options': 
-        return (clientName == 'Game Display' || retired) ?
+        return (clientName == 'Game Display' || fighterRetired) ?
           <DisplayManagerOptionsUi/> :
           <Manager_View />
       case 'Pre Fight News': return <PreFightNews_View />

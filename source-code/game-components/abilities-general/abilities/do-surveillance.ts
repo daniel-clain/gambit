@@ -1,5 +1,5 @@
 
-import { randomNumberDigits } from "../../../helper-functions/helper-functions"
+import { randomNumber, randomNumberDigits } from "../../../helper-functions/helper-functions"
 import { IllegalActivityName } from "../../../types/game/evidence.type"
 import Fighter from "../../fighter/fighter"
 import { Game } from "../../game"
@@ -46,11 +46,19 @@ export const handleUnderSurveillance = ({surveilledManager, surveilledFighter, a
 
 
 
-
   const managerDoingSurveillance = game.has.managers.find(m => m.has.employees.find(e => e.name == privateAgentName))!
+
+  const agentDoingSurveillance = managerDoingSurveillance.has.employees.find(e => e.name == privateAgentName)
+
+
+  const randomNum = randomNumber({to: 100})
+  const chanceToDiscover = 70 + agentDoingSurveillance.skillLevel * 10
+
+  const willDiscover = chanceToDiscover > randomNum
+
   const illegalActivity = getIllegalActivityName(name)
 
-  if(surveilledManager){
+  if(surveilledManager && willDiscover){
     const evidenceDescription = `(Week ${weekNumber}) - ${surveilledManager.has.name} ${source!.characterType != 'Manager' ? `'s ${source!.characterType} ${source!.name}`: ''} was seen using ability ${name} ${target ? `targeting ${target.characterType} ${target.name}` : ''}`
   
     managerDoingSurveillance.has.evidence.push({id: Number(randomNumberDigits(8)), managerName: surveilledManager.has.name, abilityData, illegalActivity, evidenceDescription})
@@ -61,7 +69,7 @@ export const handleUnderSurveillance = ({surveilledManager, surveilledFighter, a
   }
 
 
-  if(surveilledFighter){
+  if(surveilledFighter && willDiscover){
     const {source, target} = abilityData
     const sourceManager = getAbilitySourceManager(source!, game)
 

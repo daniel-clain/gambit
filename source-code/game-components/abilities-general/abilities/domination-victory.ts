@@ -9,7 +9,7 @@ export const dominationVictory: Ability = {
   name: 'Domination Victory',
   cost: { money: 10000, actionPoints: 1 },
   executes: 'End Of Manager Options Stage',
-  canOnlyTargetSameTargetOnce: true,
+  canOnlyBeUsedOnce: true,
   notActiveUntilWeek: 20,
 }
 

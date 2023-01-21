@@ -6,12 +6,13 @@ import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): number => {
-  const { fighter, logistics, proximity, actions, movement, timers} = fighting
-  const { intelligence, speed, aggression } = fighting.stats
+  const { fighter, logistics, proximity, actions, spirit} = fighting
+  const { intelligence, speed, aggression, maxSpirit } = fighting.stats
   const closestEnemy = logistics.closestRememberedEnemy
 
 
   const invalid: boolean =  (
+    logistics.trapped ||
     logistics.onARampage
   )
 
@@ -31,15 +32,19 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
     
   probability -= aggression    
 
+
+  if(logistics.timeSinceLastCombat > 6000){
+    probability -= ((logistics.timeSinceLastCombat / 1000) * 10) - 6
+  }
   
   const otherFighters = logistics.otherFightersStillFighting.length
   if (otherFighters == 1){
-    probability -= (5 + intelligence)
+    probability -= 50
   }
   log('1 otherFighter', otherFighters == 1)
 
   if(logistics.isEnemyAttacking(closestEnemy)){
-    probability += intelligence * 4
+    probability += intelligence * 2
   }
   log('isEnemyAttacking', logistics.isEnemyAttacking(closestEnemy))
 
@@ -61,11 +66,10 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
 
 
     if(enemyCloseness == Closeness['striking range']){
-      probability += 5
       probability -= aggression * 2
       
       if(logistics.hasRetreatOpportunity(closestEnemy)){
-        probability += 4 + intelligence
+        probability +=  intelligence
         if (logistics.hasLowStamina) {
           probability += intelligence
           probability -= aggression
@@ -93,7 +97,6 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
       }
 
       if(logistics.hasRetreatOpportunity(closestEnemy)){
-        probability += 10 - aggression * 2
         probability += intelligence * 2
       }
       else {
@@ -129,8 +132,7 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
     log('not FullStamina', !logistics.hasFullStamina)
 
     if(!logistics.hasFullSpirit){
-      probability += intelligence
-      probability += 8 - aggression * 3
+      probability += maxSpirit - spirit
       log('not Full Spirit', !logistics.hasFullSpirit)
     }
     else{
@@ -169,9 +171,12 @@ export const getProbabilityForGeneralRetreat = (fighting: FighterFighting): numb
     log('isEnemyFacingAway', isEnemyFacingAway(closestEnemy, fighter))
   }
 
-  
-  if (logistics.flanked)
-    probability -= 4 + intelligence * logistics.getEnemyThreatPercentage(closestEnemy)
+    
+  if(logistics.flanked){
+    logistics.flanked.flankers.forEach(flanker => {
+      probability += intelligence * logistics.getEnemyThreatPercentage(flanker) * (logistics.isEnemyAttacking(flanker) ? 3 : 1)
+    })
+  }
 
 
   log('flanked', logistics.flanked)
