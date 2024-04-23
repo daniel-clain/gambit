@@ -18,7 +18,8 @@ import { useEffect } from 'react';
 export const Game_View = observer(() => {
   const {
     clientUIState: { clientPreGameUIState: {clientName}},
-    serverUIState: { serverGameUIState}
+    serverUIState: { serverGameUIState},
+    updateCount
   } = frontEndState
 
 
@@ -66,7 +67,6 @@ export const Game_View = observer(() => {
       {disconnectedPlayerVotes?.length > 0 ?
         <DisconnectedPlayerModal /> : ''
       }
-      
       {getActiveView()}
     </div>
   )

@@ -1,0 +1,16 @@
+fix gambit bugs
+====================
+* crash on poison fighter
+	- Cannot read properties of undefined (reading 'skillLevel')
+	- /poison-fighter.ts:45
+
+* if player dc while fight is in progress, game will not be transition from fight to manager options
+	- when player dc, fight should pause and not progress
+	- if player dc in post fight (get money) then double check its handled
+
+* 'investigate fighter' causes crash
+	-investigate-manager.ts:71
+          randomNumber = randomNumber({to: possibleOptions - updatedStats.length})
+* research fighter causes crash sometiems
+
+* tried to join a game they are already in

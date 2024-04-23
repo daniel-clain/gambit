@@ -1,13 +1,19 @@
 
 
 Deal Breakers:
-  ☐ /game-setup.ts:215
+  ☐ remove energy bar
+  ☐ iphone
+    - blue txt and border
+    - coins not hidden after fall
+    - unplayable, too slow
+      ~ must be too much too update each each websocket msg
   ☐ too many new reports is a drag
     - news report says multiple tiems if same target more than once
   ☐ when running on server, seems to be slower, and looses syc with other clients
     - can tell if problem is servre side or client side
     - if difference isnt noticed when runnign local, must be server diff
     - maybe server has too many actions to run, review code for ways to make less functions run unnecessarily
+    - test idea, make global server updates component that shows update count 
 
 
 Priority:
