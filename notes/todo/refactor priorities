@@ -1,0 +1,15 @@
+- server fight performance
+  - some players have lag and finish the fight later than others
+    ~ server dictates the time
+    ~ clients are sent smallest possible packets of data regularly
+    ~ if anyting causes the player to lag, they shouldnt play catchup and process all the updates between then and now, they should just jump to the latest update and forget what it missed
+    ~ every time fighters make a decision, make sure only necessary code runs, no more than it should have to
+    ~ does it make sense for the updates to be sent very often based on the refresh rate? or does it make sense to send the data only when updates occur. would it result in more or less code running? is a hybrid a good idea
+    ~ does it make sense to address issues that arent the main cause of the problems. surely after investigating, there will be specific problems that make the majority of performance issues, and other problems that make insignifficant difference
+
+* code restrctureing, separation of concerns
+
+  - is it possible to have a high level description of the app, and represent this in the repo architecture so that ideas are represented in high level modules, and the implementation is low in the nesting and is granular and only needed to be refereced for specific detail
+
+  * think about what tests are intuitive and logical, start there
+    - tdd and bdd

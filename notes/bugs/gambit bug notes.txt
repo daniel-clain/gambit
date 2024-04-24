@@ -14,3 +14,14 @@ fix gambit bugs
 * research fighter causes crash sometiems
 
 * tried to join a game they are already in
+
+
+fix gambit bugs
+====================
+* test fail victory
+
+
+
+ideas
+==========
+* stores games state, on crash, revert to state at beginning of round
