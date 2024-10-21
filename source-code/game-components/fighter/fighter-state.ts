@@ -1,12 +1,12 @@
+import { Employee } from "../../interfaces/front-end-state-interface"
+import {
+  ActiveContract,
+  GoalContract,
+} from "../../interfaces/game/contract.interface"
+import Fight from "../fight/fight"
+import { Manager } from "../manager"
 
-import { ActiveContract, GoalContract } from '../../interfaces/game/contract.interface';
-import Fight from "../fight/fight";
-import { Manager } from '../manager';
-import { Employee } from '../../interfaces/front-end-state-interface';
-
-
-
-export default class FighterState{
+export default class FighterState {
   doping: boolean = false
   injured: boolean = false
   hallucinating: boolean = false
@@ -16,20 +16,14 @@ export default class FighterState{
   activeContract?: ActiveContract
   goalContract?: GoalContract
   guards: Employee[] = []
-  underSurveillance?: {professional: string}
-  
+  underSurveillance?: { professional: string }
+
   trainingProgress = 0
   manager?: Manager
   fight?: Fight
-  
+
   publicityRating = 0
 
   numberOfFights: number = 0
   numberOfWins: number = 0
-
-
-
-
 }
-
-

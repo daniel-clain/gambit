@@ -1,0 +1,22 @@
+* understand existing way and how to translate it into new way
+  - existing way 
+    ~ sends updates every 60 milisecs
+    ~ fighters do their own thing based on current state
+    ~ actions like move, attack, rest take timeout
+
+  - updated way 
+    ~ entire fight sent in 1 batch
+    ~ no abilites take time, they only register time
+    ~ compares time stamps to know 
+
+
+
+* example to demonstrate the problem and solution
+  - problem is
+    ~ delayed effects should only effect state after simulated time has stepped to it
+    ~ when f3 takes action on f2, it should be based on state before f2 has state update resolved
+
+
+ * simulate fight has fighters
+  - fake time steps each loop,
+  - each loop it checks events list and executes any event that is due and effectst he global state   

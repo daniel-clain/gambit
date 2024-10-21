@@ -1,6 +1,8 @@
 
 
 Deal Breakers:
+  ☐ make sure view takes up 100% and doesnt need to scroll for address bar height
+  ☐ falling money bad react rendering performance, improve so not laggy
   ☐ remove energy bar
   ☐ iphone
     - blue txt and border

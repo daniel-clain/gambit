@@ -1,0 +1,105 @@
+To simulate actions in a turn-based or event-based manner where state changes occur "instantly" (i.e., without waiting for real-time delays), you'll need to decouple the *game logic* from the real-world time-based progression (timeouts, delays, etc.). Instead of relying on actual time delays for resolving actions, you simulate the events in sequence, updating the game state based on "future" decisions, but still keeping track of how events would play out over time.
+
+Here’s a breakdown of the process you need:
+
+### 1. **Key Principles to Change:**
+   - **Decouple Time from Game Logic**: Remove reliance on real-time timeouts. Instead, operate on simulated time or discrete steps.
+   - **Predictive State Updates**: Fighters should base their decisions on the current visible state, while the system can track *future* state changes due to actions.
+   - **Event Queue**: Use an event queue to hold future actions (like a kick that lands in 1 second), but allow other actions to be processed immediately. Fighters should still make decisions based on the state as it is *before* the future action resolves.
+
+### 2. **Immediate Simulated Execution Model:**
+   - When an action is decided, resolve the decision and update the *future state* without waiting.
+   - The fighter deciding an action should see the current state at the time of decision (not the future state), but the system will track pending actions and apply them as part of the state as they "resolve."
+
+### 3. **Event Queue for Simulated Time**
+   - **Add Events**: Whenever an action has a delayed effect (e.g., stamina loss after 1 second from a kick), you add an event to the queue with a timestamp of when it will resolve (in simulated time).
+   - **Process Events**: At any point, you can "fast-forward" through the queue, resolving any events that are ready to trigger (in simulated time). Fighters can decide based on the current state, but the event queue manages the eventual state change.
+
+### 4. **Fighter Action Decision Process:**
+   - **Step 1**: Each fighter makes decisions based on the current visible state.
+   - **Step 2**: As actions are executed, the event queue is updated with any delayed effects (e.g., kick damage).
+   - **Step 3**: The game loop processes actions instantly (in the sense that they are added to the event queue), but their effects may be delayed in simulated time.
+   - **Step 4**: Fighters making new decisions will only see the "pre-delayed" state (the state before future events resolve), ensuring that future events do not affect immediate decisions.
+
+### 5. **Algorithm for Simulating the Fight**
+   Here’s a basic algorithm outline for generating the entire fight without real-time delays:
+
+   #### 5.1 Initialization:
+   - Initialize the fighters and their initial states.
+   - Initialize the event queue for delayed actions (e.g., kicks that will reduce stamina after a time).
+   
+   #### 5.2 Main Simulation Loop:
+   ```typescript
+   let currentTime = 0; // Simulated time in milliseconds.
+   let eventQueue = []; // Stores future actions and their resolve times.
+
+   // Step 1: Fighters decide actions based on the current game state.
+   while (fightContinues) {
+       for (let fighter of fighters) {
+           if (fighter.isKnockedOut()) continue;
+
+           // Fighter decides the next action based on current state.
+           let action = fighter.decideAction(currentState);
+
+           // Immediately resolve the action and enqueue future state changes.
+           let actionResult = resolveAction(fighter, action, currentState);
+
+           // Add delayed effects to event queue (e.g., kick damage that applies after 1 second).
+           if (actionResult.delayedEffect) {
+               eventQueue.push({
+                   resolveTime: currentTime + actionResult.delayDuration, // e.g., 1000ms later
+                   effect: actionResult.delayedEffect
+               });
+           }
+
+           // Check if any fighter has been knocked out or the fight ends.
+           if (checkFightOver()) break;
+       }
+
+       // Step 2: Process any queued events whose time has arrived.
+       processEventQueue(eventQueue, currentTime);
+
+       // Step 3: Advance simulated time (this could be 1 step, or larger increments).
+       currentTime += timeStep;  // e.g., advance by 100ms in each loop.
+   }
+
+   function processEventQueue(queue, currentTime) {
+       // Process any events whose resolveTime is <= currentTime.
+       queue.forEach(event => {
+           if (event.resolveTime <= currentTime) {
+               applyEffect(event.effect, currentState);
+               // Remove resolved event from queue.
+               queue.splice(queue.indexOf(event), 1);
+           }
+       });
+   }
+
+   function resolveAction(fighter, action, state) {
+       // Resolve the immediate effect of the action (e.g., initiating a kick).
+       let immediateEffect = computeImmediateEffect(fighter, action, state);
+       
+       // Return both immediate and delayed effects (if any).
+       return {
+           immediateEffect: immediateEffect,
+           delayedEffect: delayedEffect,  // e.g., stamina loss after a kick.
+           delayDuration: 1000 // e.g., 1 second delay for kick resolution.
+       };
+   }
+   ```
+
+   #### 5.3 Key Elements:
+   - **Decide Action**: Each fighter’s decision happens based on the current state of the game (before any delayed effects resolve).
+   - **Resolve Action**: When an action is decided, it immediately updates the game state and may add future state changes (like stamina loss) to the event queue.
+   - **Event Queue Processing**: The event queue ensures that delayed effects are processed in the correct order and at the right time (in the simulated timeline).
+   - **Simulated Time**: The `currentTime` is only advanced in the loop, and timeStep can represent how fast the simulation moves.
+
+### 6. **Visualizing State Changes Without Waiting:**
+   - Fighters decide based on the **current visible state**, but delayed effects (like spirit loss or stamina reduction) are **pending in the event queue**. Fighters will "see" the pre-kick state until the event resolves.
+   - As each fighter finishes an action, the game processes the event queue and updates the state accordingly, fast-forwarding through the timeline without real-time waits.
+
+### 7. **Summary of Changes:**
+   - Replace timeouts with event-driven state updates.
+   - Maintain an event queue to track delayed effects that resolve over simulated time.
+   - Allow fighters to make decisions based on the current state at the time of decision, while tracking future effects in the queue.
+
+This system gives you the ability to simulate the fight in an instant without waiting for real-time timeouts but still respects the progression of actions and state changes over simulated time.
