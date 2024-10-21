@@ -13,12 +13,8 @@
     "jsx": "react",
     "skipLibCheck": true,
     "moduleResolution": "node",
-    "typeRoots": [ "./node_modules/@types" ]
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": [
-    "./source-code/"
-  ],
-  "exclude": [
-    "./source-code/**/--*"
-  ]
+  "include": ["./source-code/"],
+  "exclude": ["./source-code/**/--*", "./source-code/**/backup*"]
 }

@@ -1,4 +1,5 @@
-import { Subject } from "rxjs"
+import { Subject, Subscription } from "rxjs"
+import gameConfiguration from "../../game-settings/game-configuration"
 import {
   FightReport,
   FightUIState,
@@ -6,12 +7,6 @@ import {
 } from "../../interfaces/front-end-state-interface"
 import Coords from "../../interfaces/game/fighter/coords"
 import { Angle } from "../../types/game/angle"
-import {
-  DecidedAction,
-  FighterDelayedEffect,
-  FighterTimeStamps,
-  FightObject,
-} from "../../types/game/fight-object"
 import Fighter from "../fighter/fighter"
 import {
   add2Angles,
@@ -33,8 +28,6 @@ export default class Fight {
 
   unpauseSubject: Subject<void> = new Subject()
   paused = false
-
-  private fightObject: FightObject
 
   private timesUpTimer
   private timeRemainingInterval
@@ -58,6 +51,21 @@ export default class Fight {
     )
   }
 
+  watchForAWinner() {
+    const watchForWinnerSubscription: Subscription =
+      this.fightUiDataSubject.subscribe(() => {
+        const remainingFighters: Fighter[] =
+          this.getFightersThatArentKnockedOut()
+
+        if (remainingFighters.length == 1) {
+          watchForWinnerSubscription.unsubscribe()
+          const winner = remainingFighters[0]
+          console.log(`${winner.name} knockout victory`)
+          this.declareWinner(winner)
+        }
+      })
+  }
+
   async start() {
     this.fighters.forEach((f) => f.fighting.setup())
 
@@ -66,76 +74,19 @@ export default class Fight {
       this.finishFight({ draw: true })
     } else {
       this.placeFighters()
-      this.fightObject = this.buildFightObject()
-      this.sendUiStateUpdate.bind(this)
-      const fightDuration = this.getFightDuration()
-
+      await this.fightCountdown()
+      this.startFightUpdateLoop()
+      this.tellFightersToStartFighting()
+      this.watchForAWinner()
+      const fightDuration =
+        gameConfiguration.stageDurations.maxFightDuration +
+        this.fighters.length *
+          gameConfiguration.stageDurations.extraTimePerFighter
+      this.timeRemaining = fightDuration
+      this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
       this.timesUpTimer = setTimeout(() => this.timesUp(), fightDuration * 1000)
+      if (this.paused) this.pause()
     }
-  }
-
-  private buildFightObject(): FightObject {
-    return {
-      startTime: new Date(),
-      fighterTimeStamps: this.generateFight(),
-      paused: false,
-    }
-  }
-
-  private generateFight(): FighterTimeStamps[] {
-    const fighters = this.fighters
-
-    const fighterTimeStamps: FighterTimeStamps[] = []
-    const fighterDelayedEffects: FighterDelayedEffect[] = []
-
-    let timeStep = 0
-
-    return loopTimeStep()
-
-    function loopTimeStep() {
-      resolveExpiredActions()
-      inactiveFighersDecideAction()
-      const winner = checkIfWinner()
-
-      if (timeStep > 9999999999) {
-        console.log("break excess")
-        return fighterTimeStamps
-      }
-      if (winner) {
-        return fighterTimeStamps
-      } else {
-        timeStep += 1
-        loopTimeStep()
-      }
-    }
-
-    function resolveExpiredActions() {}
-
-    function inactiveFighersDecideAction() {
-      fighters.forEach((f) => {
-        if (!fighterDelayedEffects.some((e) => e.sourceFighterName == f.name)) {
-          const decidedAction: DecidedAction = f.fighting.actions.decideAction()
-
-          fighterDelayedEffects.push(fighterDelayedEffect)
-        }
-      })
-    }
-
-    function checkIfWinner() {
-      return fighters.reduce((fighters, fighter) => {
-        if (!fighter.fighting.knockedOut) {
-          fighters.push(fighter)
-        }
-        return fighters
-      }, [] as Fighter[])
-    }
-  }
-
-  private getFightDuration(): number {
-    return this.fightObject.fighterTimeStamps.reduce((biggestMilisecs, s) => {
-      const milisecs = this.fightObject.startTime.getTime() - s.time.getTime()
-      return milisecs > biggestMilisecs ? milisecs : biggestMilisecs
-    }, 0)
   }
 
   pause() {
@@ -165,6 +116,21 @@ export default class Fight {
         resolve()
         this.startFightUpdateLoop()
       })
+    })
+  }
+
+  private fightCountdown(): Promise<void> {
+    return new Promise((resolve) => {
+      this.startCountdown = gameConfiguration.stageDurations.startCountdown
+      this.sendUiStateUpdate()
+      const countdownInterval = setInterval(() => {
+        this.startCountdown--
+        this.sendUiStateUpdate()
+        if (this.startCountdown == 0) {
+          clearInterval(countdownInterval)
+          resolve()
+        }
+      }, 1000)
     })
   }
 
@@ -233,6 +199,10 @@ export default class Fight {
     }, 2000)
   }
 
+  private tellFightersToStartFighting() {
+    this.fighters.forEach((f) => f.startFighting())
+  }
+
   sendUiStateUpdate() {
     this.fightUiDataSubject.next(this.fightUiData)
   }
@@ -242,7 +212,9 @@ export default class Fight {
       startCountdown: this.startCountdown,
       timeRemaining: this.timeRemaining,
       report: this._report,
-      fightObject: this.fightObject,
+      fighterFightStates: this.fighters.map((fighter) =>
+        fighter.fighting.getState()
+      ),
       managersBets: this.managers
         ?.filter((m) => !m.state.retired)
         .map((manager: Manager): ManagersBet => {

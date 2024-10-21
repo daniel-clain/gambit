@@ -1,22 +1,10 @@
-* understand existing way and how to translate it into new way
-  - existing way 
-    ~ sends updates every 60 milisecs
-    ~ fighters do their own thing based on current state
-    ~ actions like move, attack, rest take timeout
-
-  - updated way 
-    ~ entire fight sent in 1 batch
-    ~ no abilites take time, they only register time
-    ~ compares time stamps to know 
-
-
-
-* example to demonstrate the problem and solution
-  - problem is
-    ~ delayed effects should only effect state after simulated time has stepped to it
-    ~ when f3 takes action on f2, it should be based on state before f2 has state update resolved
-
-
- * simulate fight has fighters
-  - fake time steps each loop,
-  - each loop it checks events list and executes any event that is due and effectst he global state   
+* clients receive fight object with time stamps that starts for all players at the same international time stamp, that is 3 seconds after it is send to all players
+* when the fight is started
+  - a loop is done incremented by 1 milisecond 
+  - each loop it checks for
+    ~ are there actions with duration finishing now, with an effect to trigger
+    ~ is the fighter busy, if not decide action based on current state
+* if a effect triggers it may interupt a fighter from its current action
+* 2 ques are created, one for resolving the timed actions, and another as a bulk package to send to the frontend
+* if a player disconnects from the game while the fight is underway, the fight pauses, and resumes for all players at the same time stamp
+* on the server side, when the fight is over, continues as normal with winner declared

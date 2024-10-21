@@ -3,14 +3,13 @@ import * as React from "react"
 import { useState } from "react"
 import { setNameAndTryToConnect } from "../../front-end-service/front-end-service"
 import { frontEndState } from "../../front-end-state/front-end-state"
-import { go } from "./test"
 
 export const Login_View = observer(() => {
   const { clientPreGameUIState, isConnectedToWebsocketServer } =
     frontEndState.clientUIState
   let [inputName, setInputName] = useState(clientPreGameUIState.clientName)
 
-  go()
+  //go()
 
   return (
     <div className="login-ui">

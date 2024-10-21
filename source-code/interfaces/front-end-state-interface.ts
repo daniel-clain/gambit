@@ -17,6 +17,7 @@ import FacingDirection from "../types/fighter/facing-direction"
 import FighterModelState from "../types/fighter/fighter-model-states"
 import { Skin } from "../types/fighter/skin"
 import { Angle } from "../types/game/angle"
+import { FightObject } from "../types/game/fight-object"
 import { ManagerImage } from "../types/game/manager-image"
 import { NewsItem } from "../types/game/news-item"
 import { Profession } from "../types/game/profession"
@@ -135,7 +136,7 @@ export interface FightUIState {
   timeRemaining: number
   report: FightReport
   managersBets: ManagersBet[]
-  fighterFightStates: FighterFightState[]
+  fightObject?: FightObject
   knownFighterStateData?: FighterStateData[]
 }
 export interface FightReport {
