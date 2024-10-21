@@ -11,7 +11,7 @@ export const setupTestState = (game: Game) => {
   //skipFight()
   //freezeOnFight()
   //longManagerOptions()
-  //setup1()
+  setup1()
   //testFighterStats()
   //managerHasLoan()
 
@@ -80,7 +80,7 @@ export const postStartTestState = (game: Game) => {
 
   //finalTournamentTest()
 
-  //addPrivateAgentAndLawyer()
+  addPrivateAgentAndLawyer()
 
   function addPrivateAgentAndLawyer() {
     game.has.managers[0].has.employees.push(new Employee("Private Agent", 3))
