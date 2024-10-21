@@ -27,6 +27,10 @@ QA:
   ☐ lawyer guilty chance works correctly
 
 
+  Stan:
+  - for prabaility decided action, use integers not percentage, copare all the 
+
+
 
 Secondary priority:  
   ☐ When a manager has a lawsuit targeting him, the chance of being guilty for each is increased by 2% per evidence of that type

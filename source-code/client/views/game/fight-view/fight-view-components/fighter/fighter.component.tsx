@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { useState } from 'react';
+import FighterFightState from '../../../../../../interfaces/front-end-state-interface';
 import FighterModelImage from '../../../../../../interfaces/game/fighter/fighter-model-image';
 import SoundTime from '../../../../../../interfaces/game/fighter/sound-time';
 import { defaultSkinModelImages } from '../../../../../images/fight-view/fighter/default-skin/default-skin-model-images';
 import { fastSkinModelImages } from '../../../../../images/fight-view/fighter/fast-skin/fast-skin-model-images';
 import { muscleSkinModelImages } from '../../../../../images/fight-view/fighter/muscle-skin/muscle-skin-model-images';
-import { punchSound, criticalStrikeSound, dodgeSound, blockSound } from '../../../../../sound-effects/sound-effects';
-import FighterFightState from '../../../../../../interfaces/front-end-state-interface';
-import './fighter.scss'
-import { defaultFighterImages, fastFighterImages, FighterImageObj, fightUiImages, muscleFighterImages } from '../../../../../images/images';
+import { defaultFighterImages, fastFighterImages, FighterImageObj, muscleFighterImages } from '../../../../../images/images';
+import { blockSound, criticalStrikeSound, dodgeSound, punchSound } from '../../../../../sound-effects/sound-effects';
+import './fighter.scss';
 
 export const FighterComponent = ({fighterFightState, arenaWidth, sound}: {fighterFightState: FighterFightState, arenaWidth: number, sound: boolean}) => {	
 
