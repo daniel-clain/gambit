@@ -1,7 +1,6 @@
-$image-folder: '../../../../../images';
+$image-folder: "../../../../../images";
 
-
-.managers-bets{
+.managers-bets {
   display: flex;
   justify-content: center;
   position: absolute;
@@ -11,24 +10,23 @@ $image-folder: '../../../../../images';
   background: linear-gradient(#c6c6a9cc, #776c8fcc);
   z-index: 20;
   overflow-x: auto;
-  transition: transform .2s;
+  transition: transform 0.2s;
   align-items: center;
   padding-top: 0%;
 
-  .has-winnings &{
+  .has-winnings & {
     height: 100%;
-    background: #232323aa;  
-    transform:translateY(0) !important;
+    background: #232323aa;
+    transform: translateY(0) !important;
     transition: all 1s;
     padding-top: 10%;
   }
-  
-  &.is-hidden{
-    transform: translateY(80%);
 
+  &.is-hidden {
+    transform: translateY(80%);
   }
 
-  .managers-bet{      
+  .managers-bet {
     font-size: 1.5rem;
     display: flex;
     margin-right: 30px;
@@ -39,41 +37,40 @@ $image-folder: '../../../../../images';
     background: white;
     position: relative;
 
-    &__manager{
-      
-      &:last-child{
+    &__manager {
+      &:last-child {
         margin-right: 0;
       }
-      &__name{
+      &__name {
         text-align: center;
+        font-size: 1rem;
       }
-      &__image{
+      &__image {
         width: 35px;
         height: 50px;
         background-size: cover;
         background-repeat: no-repeat;
         margin-bottom: 5px;
-        &--fat-man{
-          background-image: url('#{$image-folder}/icons/manager1.png');
+        &--fat-man {
+          background-image: url("#{$image-folder}/icons/manager1.png");
         }
-        &--moustache-man{
-          background-image: url('#{$image-folder}/icons/manager2.jpg');
+        &--moustache-man {
+          background-image: url("#{$image-folder}/icons/manager2.jpg");
         }
       }
     }
 
-
-    .fighter-bet-on{
+    .fighter-bet-on {
       margin-left: 20px;
       display: flex;
       flex-direction: column;
       position: relative;
       text-align: center;
       margin-right: 20px;
-      &:last-child{
+      &:last-child {
         margin-right: 0;
       }
-      &__name{      
+      &__name {
         font-size: 10px;
         padding-top: 3px;
         display: inline-block;
@@ -83,9 +80,9 @@ $image-folder: '../../../../../images';
         left: 0;
         right: 0;
       }
-      
-      &__image{
-        background-image: url('#{$image-folder}/global/fighter.png');     
+
+      &__image {
+        background-image: url("#{$image-folder}/global/fighter.png");
         width: 40px;
         height: 52px;
         margin: 0 auto 5px;

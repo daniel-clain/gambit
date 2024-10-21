@@ -1,5 +1,6 @@
 fix gambit bugs
 ====================
+* guard has no image
 * crash on poison fighter
 	- Cannot read properties of undefined (reading 'skillLevel')
 	- /poison-fighter.ts:45

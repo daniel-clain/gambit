@@ -1,0 +1,42 @@
+- how can i make it so players cant drop out when the game is playing
+
+  - if they change thier active app is that counted as a dropout
+  - if they refresh the app should it auto return them to the game or not (if so, should they be able to exit )
+
+- responsive scaling of the fight
+
+  - fight makes more sense in landscape, should i redo the layout for manager options to be more suited to landscape
+  - should different actions cost more action points
+    ~ should action points be based on how much time you have left
+
+- lots of players, lots of news, what if there are 10 news items
+
+* investigate manage shows stats of manager but its not that useful compared, surveilance is better
+
+* investigate when it reveals loan it says undefined, should say 'no loan or something
+
+* surveilance on a fighter seems not as good as on a manager
+
+* give an idea of total employable characters there are, and total fights, so you can get and idea of what total ratio you have encountered
+
+* employees should have multiple abilites, and they should take them a certain amount of time
+
+  - different ability cost
+  - different activation time
+  - deepre mechanic, once you sent you drug dealer, he goes for 2 days, and brings back more, but while hes gone, you cant use doping or poison
+  - secret agent can, in one turn, do research a figher or research a manager, and you can finish the turn while he doing surveilance
+  - its not well communicated if an employee atempts and fails
+  - mechanic for more money relative to how manny vs how many competitors you have, eg caps out at 3 drug dealers they have none is the most possible (4 doesnt give extra), if you have 4 and they have 1, you dont get the most, their 1 has a stronger influence, because the price is competitive
+  - training gives more value exponentially, relative to the trainer sill level, however training makes you have disadvantage on fight day, small chance of injured
+
+* give players an idea of the maths of how much they make, flat amount plus portion of winning, plus sponsor modifier
+
+* explain the effects of assault poison, hallucinate, dope, and beserk are
+
+* explain squat to recover health
+
+* does it make more or less sense to expose extra info, eg
+  - are they running away, are they repositioning, how much stamina do they have, how much energy do they have
+  - recovering as they move away
+  - there are currently things that are visually depicted
+    ~ rampage, spirit, recovering,

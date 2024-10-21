@@ -26,8 +26,6 @@ export const poisonFighterServer: ServerAbility = {
       (employee) => employee.name == abilityData.source!.name
     )!
 
-    console.log("poisoner", poisoner)
-
     if (sourceManager.state.underSurveillance) {
       handleUnderSurveillance({
         surveilledManager: sourceManager,

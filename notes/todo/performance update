@@ -1,0 +1,9 @@
+- the entire fight played out in an instant
+  - good because
+    ~ prefight stats more accurate
+    ~ clients only need to be sent one payload and play it out at the same time
+  - concerns
+    ~ what are the draw backs of this different approach, could it make the timining more inacurate, in theory if they all start at the same time and the devices do the timings the same, then they should all finish at the same time
+    ~ if it doesnt then what
+    ~ how does the backend know when the fight is finished
+    ~ what kind of code changes are required to enable this
