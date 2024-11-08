@@ -1,23 +1,37 @@
 import { AbilityData } from "../../game-components/abilities-general/ability"
-import { Bet } from "../../interfaces/game/bet"
 import { ClientNameAndID } from "../../game-host/game-host.types"
+import { Bet } from "../../interfaces/game/bet"
 
 export type FromClientToGame = {
-  toggleReady()
-  betOnFighter(bet: Bet)
-  borrowMoney(amount: number)
-  payBackMoney(amount: number)
-  abilityConfirmed(ability: AbilityData)
-  toggleDropPlayer({}: {
-    votingPlayer: ClientNameAndID,
-    disconnectedPlayer: ClientNameAndID,
-    vote: boolean
-  })
+  toggleReady: () => void
+  betOnFighter: (bet: Bet) => void
+  borrowMoney: (amount: number) => void
+  payBackMoney: (amount: number) => void
+  abilityConfirmed: (ability: AbilityData) => void
+  toggleDropPlayer: (dropPlayerObj: DropPlayerObj) => void
 }
 
-export type SetStateFunctionName = SetStatePreGameUIFunctionName | SetStateManagerUIFunctionName
+export type DropPlayerObj = {
+  votingPlayer: ClientNameAndID
+  disconnectedPlayer: ClientNameAndID
+  vote: boolean
+}
 
-export type SetStatePreGameUIFunctionName = 'setName'
+export type SetStateFunctionName =
+  | SetStatePreGameUIFunctionName
+  | SetStateManagerUIFunctionName
 
-export type SetStateManagerUIFunctionName = 
-'showFighter' | 'showEmployee' | 'showJobSeeker' | 'showAbility' | 'showManager' | 'showLoanShark' | 'showKnownFighters' | 'showOtherManagers' | 'closeModal' |  'showReport' | 'showWinOptions'
+export type SetStatePreGameUIFunctionName = "setName"
+
+export type SetStateManagerUIFunctionName =
+  | "showFighter"
+  | "showEmployee"
+  | "showJobSeeker"
+  | "showAbility"
+  | "showManager"
+  | "showLoanShark"
+  | "showKnownFighters"
+  | "showOtherManagers"
+  | "closeModal"
+  | "showReport"
+  | "showWinOptions"

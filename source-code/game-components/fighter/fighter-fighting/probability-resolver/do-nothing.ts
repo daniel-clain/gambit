@@ -1,35 +1,30 @@
-import FighterFighting from "../fighter-fighting";
+import { round } from "lodash"
+import FighterFighting from "../fighter-fighting"
 
-export const getProbabilityToDoNothing = (fighting: FighterFighting): number => {
+export const getProbabilityToDoNothing = (
+  fighting: FighterFighting
+): number => {
   const { logistics, actions, fighter } = fighting
   const { aggression, intelligence } = fighting.stats
-  const { takingADive, hallucinating} = fighter.state
+  const { takingADive, hallucinating } = fighter.state
 
-  if(
-    logistics.onARampage ||
-    actions.currentInterruptibleAction
-  )
-    return 0
+  if (logistics.onARampage) return 0
 
   let probability = 30
-  
-  
+
   probability -= aggression * 3
 
-  if(!logistics.onARampage && (takingADive)){
+  if (!logistics.onARampage && takingADive) {
     probability += 20
-  }else{
+  } else {
     probability -= intelligence * 3
-
   }
-  
-  if(hallucinating){
+
+  if (hallucinating) {
     probability += 20
-  } 
+  }
 
-  if (probability < 0)
-    probability = 0
+  if (probability < 0) probability = 0
 
-  return probability
-
+  return round(probability)
 }

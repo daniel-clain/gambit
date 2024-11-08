@@ -8,17 +8,18 @@ import {
 } from "../helper-functions/helper-functions"
 import {
   Employee,
-  FightUIState,
   GameFinishedData,
   Professional,
   SelectedVideo,
 } from "../interfaces/front-end-state-interface"
 import { Profession } from "../types/game/profession"
 import SkillLevel from "../types/game/skill-level.type"
+import { GameFightUIState } from "../types/game/ui-fighter-state"
 import Fight from "./fight/fight"
 import Fighter from "./fighter/fighter"
 import { Game } from "./game"
 import { Manager } from "./manager"
+import FightDayStage from "./week-controller/stages/fight-day-stage"
 
 export class Game_Implementation {
   shuffledNames: string[]
@@ -274,26 +275,30 @@ export class Game_Implementation {
     return { name, index }
   }
 
-  getFightUiState(manager?: Manager): FightUIState {
+  getFightUiState(manager?: Manager): GameFightUIState {
     const {
       has: {
-        weekController: { activeFight },
+        weekController: { activeFight, activeStage },
       },
       state: { finalTournament },
     } = this.game
 
     if (finalTournament) {
       const { activeFight } = finalTournament
-      const finalTournamentFight: FightUIState = {
-        ...activeFight?.fightUiData,
+      const finalTournamentFight: GameFightUIState = {
+        ...activeFight!.fightUiState,
+        managersBets: [],
         knownFighterStateData: !activeFight
           ? []
           : manager && getFighterStateData(activeFight, manager),
       }
       return finalTournamentFight
     }
-    const weekFight: FightUIState = {
-      ...activeFight.fightUiData,
+    const fightDay = activeStage as FightDayStage
+    const weekFight: GameFightUIState = {
+      ...activeFight.fightUiState,
+      managersBets: fightDay.managersBets,
+      managersWinnings: fightDay.managersWinnings,
       knownFighterStateData:
         manager && getFighterStateData(activeFight, manager),
     }

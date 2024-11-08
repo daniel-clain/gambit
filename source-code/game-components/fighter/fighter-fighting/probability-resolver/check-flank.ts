@@ -1,4 +1,4 @@
-
+import { round } from "lodash"
 import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
 
@@ -27,116 +27,97 @@ import FighterFighting from "../fighter-fighting"
 
 */
 
-export const getProbabilityToCheckFlank = (fighting: FighterFighting): number => {
-
-  const { proximity, logistics, timers, actions} = fighting
+export const getProbabilityToCheckFlank = (
+  fighting: FighterFighting
+): number => {
+  const { proximity, logistics, timers, actions } = fighting
   const enemyBehind = fighting.logistics.rememberedEnemyBehind
 
-  const invalid: boolean = (
-    enemyBehind === null
-  )
-  if (invalid) return 
-
+  const invalid: boolean = enemyBehind === null
+  if (invalid) return 1
 
   const { intelligence } = fighting.stats
 
-
-
-  const enemyBehindCloseness = enemyBehind ? proximity.getEnemyCombatCloseness(enemyBehind) : undefined
   const closestEnemy = logistics.closestRememberedEnemy
   const enemyInFront = logistics.closestEnemyInFront
-  
-  const inFrontCloseness = enemyInFront ? proximity.getEnemyCombatCloseness(enemyInFront) : undefined
+
+  const inFrontCloseness = enemyInFront
+    ? proximity.getEnemyCombatCloseness(enemyInFront)
+    : undefined
 
   const enemiesInFront: number = logistics.enemiesInFront.length
-  const enemiesStillFighting: number = logistics.otherFightersStillFighting.length
+  const enemiesStillFighting: number =
+    logistics.otherFightersStillFighting.length
 
   const assumedNumberOfEnemiesBehind = enemiesStillFighting - enemiesInFront
 
-  const {decideActionProbability} = actions
-  const instanceLog = decideActionProbability.logInstance('check flank')
-  const log = (...args) => {
-    instanceLog(...args, 'probability', probability)
+  const { decideActionProbability } = actions
+  const instanceLog = decideActionProbability.logInstance("check flank")
+  const log = (...args: any[]) => {
+    instanceLog(...args, "probability", probability)
   }
 
   let probability = 0
 
-  if(logistics.onARampage){
-    if(enemyInFront)
-      probability -= 6
-    else 
-      probability += 6
-      log('on a rampage, enemy in front: ', enemyInFront )
+  if (logistics.onARampage) {
+    if (enemyInFront) probability -= 6
+    else probability += 6
+    log("on a rampage, enemy in front: ", enemyInFront)
   }
 
-  if(enemyBehind === undefined){
-
-    if(assumedNumberOfEnemiesBehind == 0){
-      return
-    }
-    else if(enemyInFront) {
+  if (enemyBehind === undefined) {
+    if (assumedNumberOfEnemiesBehind == 0) {
+      return 1
+    } else if (enemyInFront) {
       probability += 4 + intelligence
-      if(inFrontCloseness == Closeness['striking range']){
-        if(!logistics.hasRetreatOpportunity(closestEnemy)){
+      if (inFrontCloseness == Closeness["striking range"]) {
+        if (closestEnemy && !logistics.hasRetreatOpportunity(closestEnemy)) {
           probability -= intelligence
         }
-      }
-      else {
+      } else {
         probability += intelligence
       }
-    }
-    else{
+    } else {
       probability += 6 + intelligence * 2
     }
 
-    log('done remember enemy behind, enemy in front: ', enemyInFront)
-  }  
-
-  else{
-    const memoryOfBehindElapsed = timers.get('memory of enemy behind')?.timeElapsed
+    log("done remember enemy behind, enemy in front: ", enemyInFront)
+  } else {
+    const enemyBehindCloseness = proximity.getEnemyCombatCloseness(enemyBehind!)
+    const memoryOfBehindElapsed = timers.get("memory of enemy behind")
+      .elapsedTime!
 
     let enemyBehindProbability = 6 + intelligence
-    
-    if(
-      logistics.isEnemyAttacking(enemyBehind) ||
+
+    if (
+      (enemyBehind && logistics.isEnemyAttacking(enemyBehind)) ||
       assumedNumberOfEnemiesBehind == 1
-    )
+    ) {
       enemyBehindProbability += intelligence
 
-    if(enemyBehindCloseness <= Closeness['nearby']){
-      probability += 6
+      if (enemyBehindCloseness <= Closeness["nearby"]) {
+        probability += 6
+      }
+
+      log("enemy behind closeness: ", enemyBehindCloseness)
     }
 
-    log('enemy behind closeness: ', enemyBehindCloseness)
-    
     if (enemyInFront) {
-      if(inFrontCloseness == Closeness['striking range']){
-        if(!logistics.hasRetreatOpportunity(closestEnemy))
+      if (inFrontCloseness == Closeness["striking range"]) {
+        if (!logistics.hasRetreatOpportunity(closestEnemy!))
           enemyBehindProbability -= intelligence
-      }
-      else
-        probability += intelligence
-    } 
-    else
-      enemyBehindProbability += intelligence * 2
-        
+      } else probability += intelligence
+    } else enemyBehindProbability += intelligence * 2
 
-    const exponent = memoryOfBehindElapsed/1000 * (.25 + intelligence * .005) - 0.2
+    const exponent =
+      (memoryOfBehindElapsed / 1000) * (0.25 + intelligence * 0.005) - 0.2
     const pow = Math.pow(enemyBehindProbability, exponent)
     probability += pow
 
-    log('enemy behind, time:', memoryOfBehindElapsed)
-
+    log("enemy behind, time:", memoryOfBehindElapsed)
   }
 
-  
+  if (probability < 0) probability = 0
 
-
-  
-
-
-  if (probability < 0)
-    probability = 0
-
-  return probability
+  return round(probability)
 }

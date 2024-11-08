@@ -1,0 +1,7 @@
+☐ post attack is always miss because it doesnt see the result stored by the do attack 
+☐ stam and energy passive regen
+☐ effect of low energy
+☐ defend should consider how far they are away
+☐ ive remove effect sick has on speed, make sure sick hallucinating and injured do something, with visual states so its obvious
+☐ make sure all time stepactions are being played
+☐ make sure actions are properly interupted, i have an account of a post critical strike miss at the same time as a taking a hit, and post kick miss wasnt interupted, so it did knockout then kick cooldown model

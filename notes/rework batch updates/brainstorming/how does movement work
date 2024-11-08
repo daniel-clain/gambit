@@ -1,0 +1,52 @@
+- move time step is consistant, move distance is relative to speed
+  - problem with this idea is moving too far in 1 hit and going overbounds without being checked
+- BE needs move steps to be small for timing and distance precision, FE needs steps to be large for performance
+  - FE can achieve smooth movement by animaiton library and requestAnimationFrame
+  - when movment is added as schedule time stamps, batches of movement are grouped
+
+when even rounding, micro steps should be grouped to batch steps
+eg [
+{time: 0, coords: {x: 20, y: 100}},
+{time: 20, coords: {x: 22, y: 100}},
+{time: 40, coords: {x: 24, y: 100}},
+{time: 60, coords: {x: 26, y: 100}},
+{time: 80, coords: {x: 28, y: 100}},
+{time: 100, coords: {x: 30, y: 100}},
+{time: 120, coords: {x: 32, y: 100}},
+{time: 140, coords: {x: 34, y: 100}},
+{time: 160, coords: {x: 36, y: 100}},
+{time: 180, coords: {x: 38, y: 100}},
+{time: 200, coords: {x: 40, y: 100}},
+]
+
+should be batched as
+[
+{time: 0, coords: {x: 20, y: 100}},
+{time: 100, coords: {x: 30, y: 100}},
+{time: 200, coords: {x: 40, y: 100}},
+]
+
+when uneven rounding, micro steps should distribute the excess to the middle batch groups, not the start or end
+
+eg [
+{time: 0, coords: {x: 20, y: 100}},
+{time: 20, coords: {x: 22, y: 100}},
+{time: 40, coords: {x: 24, y: 100}},
+{time: 60, coords: {x: 26, y: 100}},
+{time: 80, coords: {x: 28, y: 100}},
+{time: 100, coords: {x: 30, y: 100}},
+{time: 120, coords: {x: 32, y: 100}},
+{time: 140, coords: {x: 34, y: 100}},
+{time: 160, coords: {x: 36, y: 100}},
+{time: 180, coords: {x: 38, y: 100}},
+{time: 200, coords: {x: 40, y: 100}},
+{time: 220, coords: {x: 42, y: 100}},
+{time: 240, coords: {x: 44, y: 100}},
+]
+
+should be batched as
+[
+{time: 0, coords: {x: 20, y: 100}},
+{time: 120, coords: {x: 32, y: 100}},
+{time: 240, coords: {x: 44, y: 100}},
+]

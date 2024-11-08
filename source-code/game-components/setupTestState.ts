@@ -35,7 +35,6 @@ export const setupTestState = (game: Game) => {
   }
   function freezeOnFight() {
     gameConfiguration.stageDurations.maxFightDuration = 9999
-    gameConfiguration.freezeFight = true
   }
   function longManagerOptions() {
     gameConfiguration.stageDurations.managerOptions = 6000
@@ -143,7 +142,7 @@ export const postStartTestState = (game: Game) => {
       }
       f.state.sick = true
       f.state.publicityRating = 10
-      f.state.fight = game.has.weekController.activeFight
+      f.fighting.fight = game.has.weekController.activeFight
     })
   }
 

@@ -1,288 +1,408 @@
+import { addSeconds } from "date-fns"
 import { Subject } from "rxjs"
-import {
-  FightReport,
-  FightUIState,
-  ManagersBet,
-} from "../../interfaces/front-end-state-interface"
+import gameConfiguration from "../../game-settings/game-configuration"
 import Coords from "../../interfaces/game/fighter/coords"
+import { ActionName } from "../../types/fighter/action-name"
+import { Sound } from "../../types/fighter/sound"
 import { Angle } from "../../types/game/angle"
 import {
-  DecidedAction,
-  FighterDelayedEffect,
-  FighterTimeStamps,
-  FightObject,
-} from "../../types/game/fight-object"
+  FighterAction,
+  FighterSchedule,
+  FighterUiTimeStamp,
+  FightQueueAction,
+  FightUIState,
+  Result,
+} from "../../types/game/ui-fighter-state"
 import Fighter from "../fighter/fighter"
 import {
   add2Angles,
   getPointGivenDistanceAndDirectionFromOtherPoint,
   toAngle,
 } from "../fighter/fighter-fighting/proximity"
-import { Manager } from "../manager"
 import { octagon } from "./octagon"
 
 export default class Fight {
-  private fightUpdateLoop
+  timeRemaining: number | null = null
 
-  private _report: FightReport = null
-  timeRemaining: number = null
-  private startCountdown: number = null
-
-  fightFinishedSubject: Subject<FightReport> = new Subject()
   fightUiDataSubject: Subject<FightUIState> = new Subject()
+  fightFinishedSubject: Subject<void> = new Subject()
 
   unpauseSubject: Subject<void> = new Subject()
   paused = false
 
-  private fightObject: FightObject
+  fightActionsQueue: FightQueueAction[] = []
+  fightGenTimeStep = 0
+  private finalTimeStep: number
+  private fightTimeStep = 0
+  private fightTimer: NodeJS.Timeout
+  fightGenTimeStepSubject: Subject<number> = new Subject()
+  maxFightDuration: number
+  private fightersSchedule: FighterSchedule[] = []
+  result: Result
 
-  private timesUpTimer
-  private timeRemainingInterval
+  startTime: string
+  lastTimeStep: number
 
   constructor(
     public fighters: Fighter[],
-    public managers: Manager[],
+    public isMainEvent?: boolean,
     public isFinalTournament?: boolean
   ) {
-    fighters.forEach((fighter) => fighter.getPutInFight(this))
+    fighters.forEach((fighter) => (fighter.fighting.fight = this))
   }
 
   doTeardown() {
-    this.fighters.forEach((f) => (f.state.fight = undefined))
+    this.fighters.forEach((f) => f.fighting.reset())
     this.fightUiDataSubject.complete()
-  }
-
-  getOtherFightersInFight(thisFighter: Fighter) {
-    return this.fighters.filter(
-      (fighter: Fighter) => fighter.name != thisFighter.name
-    )
+    this.fightFinishedSubject.complete()
   }
 
   async start() {
-    this.fighters.forEach((f) => f.fighting.setup())
+    this.setup()
+    this.startTime = addSeconds(new Date(), 3).toISOString()
+    await this.generateFight()
 
+    this.sendUiStateUpdate()
+    this.startFightTimer()
+  }
+
+  setup() {
+    const thisFight = this
+    this.fighters.forEach((f) => f.fighting.setup())
     console.log("fight started")
     if (this.fighters.every((f) => f.state.dead == true)) {
-      this.finishFight({ draw: true })
+      this.result = "draw"
+      this.sendUiStateUpdate()
     } else {
-      this.placeFighters()
-      this.fightObject = this.buildFightObject()
-      this.sendUiStateUpdate.bind(this)
-      const fightDuration = this.getFightDuration()
+      placeFighters()
 
-      this.timesUpTimer = setTimeout(() => this.timesUp(), fightDuration * 1000)
+      this.maxFightDuration = this.isMainEvent
+        ? gameConfiguration.stageDurations.maxFightDurationMainEvent
+        : gameConfiguration.stageDurations.maxFightDuration
+    }
+
+    function placeFighters() {
+      const angleBetweenEachFighter = 360 / thisFight.fighters.length
+      const distanceFromCenter = 150
+      const centerPoint: Coords = {
+        x: (octagon.edges.right.point1.x - octagon.edges.left.point1.x) / 2,
+        y: (octagon.edges.top.point1.y - octagon.edges.bottom.point1.y) / 2,
+      }
+
+      thisFight.fighters.forEach((fighter: Fighter, index) => {
+        let angle: Angle = add2Angles(
+          90 as Angle,
+          toAngle(angleBetweenEachFighter * index)
+        )
+        fighter.fighting.movement.coords =
+          getPointGivenDistanceAndDirectionFromOtherPoint(
+            centerPoint,
+            distanceFromCenter,
+            angle
+          )
+      })
     }
   }
 
-  private buildFightObject(): FightObject {
-    return {
-      startTime: new Date(),
-      fighterTimeStamps: this.generateFight(),
-      paused: false,
-    }
+  private startFightTimer() {
+    this.fightTimer = setInterval(() => {
+      this.fightTimeStep += 10
+      if (this.fightTimeStep >= this.finalTimeStep) {
+        this.fightTimerExpired()
+      }
+    }, 10)
   }
 
-  private generateFight(): FighterTimeStamps[] {
-    const fighters = this.fighters
+  private fightTimerExpired() {
+    clearInterval(this.fightTimer)
+    this.fightFinishedSubject.next()
+  }
 
-    const fighterTimeStamps: FighterTimeStamps[] = []
-    const fighterDelayedEffects: FighterDelayedEffect[] = []
+  private async generateFight() {
+    console.log("generate fight")
+    const thisFight = this
 
-    let timeStep = 0
+    await loopTimeStep()
 
-    return loopTimeStep()
+    function loopTimeStep(): Promise<void> {
+      if (timeIsUp()) {
+        return Promise.resolve()
+      }
 
-    function loopTimeStep() {
       resolveExpiredActions()
-      inactiveFighersDecideAction()
-      const winner = checkIfWinner()
 
-      if (timeStep > 9999999999) {
-        console.log("break excess")
-        return fighterTimeStamps
+      if (checkForWinner()) {
+        return Promise.resolve()
       }
-      if (winner) {
-        return fighterTimeStamps
-      } else {
-        timeStep += 1
-        loopTimeStep()
-      }
+
+      thisFight.fightGenTimeStepSubject.next(thisFight.fightGenTimeStep)
+      inactiveFighersDecideAction()
+
+      thisFight.fightGenTimeStep += 1
+      return Promise.resolve().then(loopTimeStep)
     }
 
-    function resolveExpiredActions() {}
+    function timeIsUp() {
+      if (thisFight.fightGenTimeStep > thisFight.maxFightDuration * 1000) {
+        handleTimesUp()
+        return true
+      }
+      return false
+    }
+
+    function resolveExpiredActions() {
+      const actionsToResolve = thisFight.fightActionsQueue.reduce<
+        FightQueueAction[]
+      >((actionsToResolve, action) => {
+        const { resolveTime, sourceFighter, actionName } = action
+        if (resolveTime > thisFight.fightGenTimeStep) return actionsToResolve
+
+        const existingActionIndex = actionsToResolve.findIndex(
+          (a) => a.sourceFighter.name === sourceFighter.name
+        )
+        const isAttackResponseAction = ["block", "dodge", "take hit"].includes(
+          actionName
+        )
+
+        if (existingActionIndex === -1) {
+          // No existing action for this fighter, add this action
+          actionsToResolve.push(action)
+        } else {
+          const existingAction = actionsToResolve[existingActionIndex]
+          const existingIsAttackResponseAction = [
+            "block",
+            "dodge",
+            "take hit",
+          ].includes(existingAction.actionName)
+
+          if (existingIsAttackResponseAction && isAttackResponseAction) {
+            console.error(
+              "fighter has multiple attack response actions resolving at the same time",
+              existingAction,
+              action
+            )
+          } else if (
+            !existingIsAttackResponseAction &&
+            !isAttackResponseAction
+          ) {
+            console.error(
+              "fighter has multiple actions resolving at the same time and neither are attack response actions",
+              existingAction,
+              action
+            )
+          } else if (
+            !existingIsAttackResponseAction &&
+            isAttackResponseAction
+          ) {
+            // Replace non-response action with the attack response action
+            actionsToResolve[existingActionIndex] = action
+          }
+          // If existing is an attack response and current is not, we keep the existing action
+        }
+        return actionsToResolve
+      }, [])
+
+      actionsToResolve.forEach((action) => {
+        console.log(
+          `resolving ${action.actionName} with resolve time ${action.resolveTime} at gen step ${thisFight.fightGenTimeStep} for ${action.sourceFighter.name}`
+        )
+        action.onResolve?.()
+      })
+
+      thisFight.fightActionsQueue = thisFight.fightActionsQueue.filter(
+        (effect) => effect.resolveTime > thisFight.fightGenTimeStep
+      )
+    }
+
+    function checkForWinner(): boolean {
+      const [winner, ...otherFighters] = getFightersThatArentKnockedOut()
+      if (!otherFighters.length) {
+        handleWinner(winner)
+        return true
+      }
+      return false
+    }
 
     function inactiveFighersDecideAction() {
-      fighters.forEach((f) => {
-        if (!fighterDelayedEffects.some((e) => e.sourceFighterName == f.name)) {
-          const decidedAction: DecidedAction = f.fighting.actions.decideAction()
-
-          fighterDelayedEffects.push(fighterDelayedEffect)
+      thisFight.fighters.forEach((f) => {
+        if (
+          !thisFight.fightActionsQueue.some(
+            (e) => e.sourceFighter.name == f.name
+          ) &&
+          !f.fighting.knockedOut
+        ) {
+          f.fighting.actions.decideAction()
         }
       })
     }
+    function handleWinner(winner: Fighter) {
+      console.log(`${winner.name} wins`)
+      winner.fighting.modelState = "Victory"
+      thisFight.addTimeStampToFighter(winner, "victory")
+      thisFight.result = { winner }
+      thisFight.lastTimeStep = getLastActionTimeStep()
+      function getLastActionTimeStep() {
+        return thisFight.fightActionsQueue.reduce((finalTimeStep, action) => {
+          return action.resolveTime > finalTimeStep
+            ? action.resolveTime
+            : finalTimeStep
+        }, 0)
+      }
+    }
 
-    function checkIfWinner() {
-      return fighters.reduce((fighters, fighter) => {
-        if (!fighter.fighting.knockedOut) {
-          fighters.push(fighter)
-        }
-        return fighters
-      }, [] as Fighter[])
+    function handleTimesUp() {
+      console.log("fight timeout")
+      thisFight.lastTimeStep = thisFight.maxFightDuration * 1000
+      const remainingFighters = getFightersThatArentKnockedOut()
+      remainingFighters.forEach((f) => f.fighting.timers.cancelAllTimers)
+      if (thisFight.isFinalTournament) {
+        const winner = getFighterWithTheMostStaminaLeft()
+
+        handleWinner(winner)
+      } else {
+        thisFight.result = "draw"
+        setIdlePoseForRemainingFighters()
+        console.log(
+          `The fight was a draw between ${remainingFighters.map((f, i) =>
+            i == 0 ? f.name : " and " + f.name
+          )}`
+        )
+      }
+
+      function setIdlePoseForRemainingFighters() {
+        remainingFighters.forEach((fighter) => {
+          fighter.fighting.modelState = "Idle"
+          thisFight.addTimeStampToFighter(fighter, "do nothing")
+        })
+      }
+
+      function getFighterWithTheMostStaminaLeft() {
+        return remainingFighters.reduce(
+          (fighterWithMostStaminaLeft, fighter) => {
+            if (!fighterWithMostStaminaLeft) return fighter
+            if (
+              fighter.fighting.stamina >
+              fighterWithMostStaminaLeft.fighting.stamina
+            )
+              return fighter
+            else return fighterWithMostStaminaLeft
+          },
+          {} as Fighter
+        )
+      }
+    }
+
+    function getFightersThatArentKnockedOut() {
+      return thisFight.fighters.filter(
+        (fighter) => !fighter.fighting.knockedOut
+      )
     }
   }
 
-  private getFightDuration(): number {
-    return this.fightObject.fighterTimeStamps.reduce((biggestMilisecs, s) => {
-      const milisecs = this.fightObject.startTime.getTime() - s.time.getTime()
-      return milisecs > biggestMilisecs ? milisecs : biggestMilisecs
-    }, 0)
+  addActionToQueue(action: FighterAction, sourceFighter: Fighter) {
+    const { modelState, duration, ...rest } = action
+
+    if (modelState) {
+      sourceFighter.fighting.modelState = modelState
+    }
+    const fightQueueAction: FightQueueAction = {
+      ...rest,
+      resolveTime: this.fightGenTimeStep + duration,
+      sourceFighter,
+    }
+
+    console.log(
+      `addActionToQueue ${sourceFighter.name} ${fightQueueAction.actionName} resolve at ${fightQueueAction.resolveTime}`
+    )
+    console.log(
+      `add ${fightQueueAction.sourceFighter.name} ${fightQueueAction.actionName} ${fightQueueAction.resolveTime}`,
+      this.fightGenTimeStep
+    )
+    this.fightActionsQueue.push(fightQueueAction)
+
+    this.addTimeStampToFighter(
+      sourceFighter,
+      action.actionName,
+      action.soundMade
+    )
+  }
+
+  private addTimeStampToFighter(
+    sourceFighter: Fighter,
+    actionName: ActionName,
+    soundMade?: Sound
+  ) {
+    const {
+      name,
+      fighting: {
+        facingDirection,
+        movement: { coords },
+        logistics: { onARampage, highEnergy, lowEnergy },
+        spirit,
+        modelState,
+      },
+      skin,
+    } = sourceFighter
+
+    const uiTimeStamp: FighterUiTimeStamp = {
+      startTimeStep: this.fightGenTimeStep,
+      actionName,
+      soundMade,
+      uiFighterState: {
+        energyState: highEnergy ? "high" : lowEnergy ? "low" : undefined,
+        facingDirection,
+        coords,
+        modelState,
+        onARampage,
+        skin,
+        spirit,
+      },
+    }
+
+    this.fightersSchedule
+      .find((f) => f.fighterName == name)
+      ?.fighterTimeStamps.push(uiTimeStamp) ||
+      this.fightersSchedule.push({
+        fighterName: name,
+        fighterTimeStamps: [uiTimeStamp],
+      })
+  }
+
+  removeFightersActions(fighter: Fighter) {
+    this.fightActionsQueue = this.fightActionsQueue.filter((a) => {
+      if (a.sourceFighter.name == fighter.name) {
+        console.log(`${fighter.name} ${a.actionName} was interupted`)
+      } else return true
+    })
   }
 
   pause() {
-    clearInterval(this.timeRemainingInterval)
-    clearTimeout(this.timesUpTimer)
-    clearTimeout(this.fightUpdateLoop)
-
+    console.log("pause")
+    clearInterval(this.fightTimer)
     this.paused = true
-  }
-
-  unpause() {
-    if (this.timeRemaining > 0) {
-      this.timeRemainingInterval = setInterval(() => this.timeRemaining--, 1000)
-      this.timesUpTimer = setTimeout(
-        () => this.timesUp(),
-        this.timeRemaining * 1000
-      )
-    }
-    this.paused = false
-    this.unpauseSubject.next()
-  }
-
-  waitForUnpause(): Promise<void> {
-    return new Promise((resolve) => {
-      const subscription = this.unpauseSubject.subscribe(() => {
-        subscription.unsubscribe()
-        resolve()
-        this.startFightUpdateLoop()
-      })
-    })
-  }
-
-  startFightUpdateLoop() {
-    this.fightUpdateLoop = setInterval(this.sendUiStateUpdate.bind(this), 60)
-  }
-
-  set report(value: FightReport) {
-    this._report = value
     this.sendUiStateUpdate()
   }
 
-  timesUp() {
-    console.log("fight timeout")
-    const remainingFighters = this.getFightersThatArentKnockedOut()
-    let fightReport: FightReport
-    if (this.isFinalTournament) {
-      const fighterWithMostStaminaLeft = remainingFighters.reduce(
-        (winner, fighter) => {
-          if (!winner) return fighter
-          if (fighter.fighting.stamina > winner.fighting.stamina) return fighter
-          else return winner
-        },
-        null as Fighter
-      )
-
-      this.declareWinner(fighterWithMostStaminaLeft)
-      return
-    } else {
-      fightReport = {
-        draw: true,
-      }
-      console.log(
-        `The fight was a draw between ${remainingFighters.map((f, i) =>
-          i == 0 ? f.name : " and " + f.name
-        )}`
-      )
-    }
-    this.finishFight(fightReport)
-  }
-
-  declareWinner(winningFighter: Fighter) {
-    winningFighter.state.numberOfWins++
-    console.log(`congratulations to ${winningFighter.name}, he is the winner!`)
-    const fightReport: FightReport = {
-      winner: winningFighter.getInfo(),
-      draw: false,
-    }
-    this.finishFight(fightReport)
-  }
-
-  private finishFight(fightReport) {
-    this.report = fightReport
-    this.timeRemaining = 0
-    clearTimeout(this.timesUpTimer)
-    clearInterval(this.timeRemainingInterval)
-
-    this.fighters.forEach((f) => {
-      f.stopFighting()
-      f.state.numberOfFights++
-    })
-
-    setTimeout(() => {
-      clearInterval(this.fightUpdateLoop)
-      this.fightFinishedSubject.next(fightReport)
-    }, 2000)
+  unpause() {
+    this.startFightTimer()
+    this.paused = false
+    this.sendUiStateUpdate()
   }
 
   sendUiStateUpdate() {
-    this.fightUiDataSubject.next(this.fightUiData)
-  }
-
-  get fightUiData(): FightUIState {
-    return {
-      startCountdown: this.startCountdown,
-      timeRemaining: this.timeRemaining,
-      report: this._report,
-      fightObject: this.fightObject,
-      managersBets: this.managers
-        ?.filter((m) => !m.state.retired)
-        .map((manager: Manager): ManagersBet => {
-          return {
-            name: manager.has.name,
-            image: manager.has.image,
-            bet: manager.has.nextFightBet,
-          }
-        }),
+    console.log("sendUiStateUpdate")
+    const fightUiState: FightUIState = {
+      maxFightDuration: this.maxFightDuration,
+      startTime: this.startTime,
+      fightTimeStep: this.fightTimeStep,
+      fightersSchedule: this.fightersSchedule,
+      lastTimeStep: this.lastTimeStep,
+      paused: this.paused,
+      result:
+        this.result == "draw"
+          ? "draw"
+          : { winner: this.result.winner.getInfo() },
     }
-  }
-
-  private getFightersThatArentKnockedOut() {
-    return this.fighters.reduce((fighters, fighter) => {
-      if (!fighter.fighting.knockedOut) {
-        fighters.push(fighter)
-      }
-      return fighters
-    }, [] as Fighter[])
-  }
-
-  private placeFighters() {
-    const angleBetweenEachFighter = 360 / this.fighters.length
-    const distanceFromCenter = 150
-    const centerPoint: Coords = {
-      x: (octagon.edges.right.point1.x - octagon.edges.left.point1.x) / 2,
-      y: (octagon.edges.top.point1.y - octagon.edges.bottom.point1.y) / 2,
-    }
-
-    this.fighters.forEach((fighter: Fighter, index) => {
-      let angle: Angle = add2Angles(
-        90 as Angle,
-        toAngle(angleBetweenEachFighter * index)
-      )
-      fighter.fighting.movement.coords =
-        getPointGivenDistanceAndDirectionFromOtherPoint(
-          centerPoint,
-          distanceFromCenter,
-          angle
-        )
-    })
+    this.fightUiDataSubject.next(fightUiState)
   }
 }

@@ -1,1 +1,1 @@
-export type Sound = 'Punch' | 'Critical Strike' | 'Dodge' | 'Block'
+export type Sound = "punch" | "kick" | "dodge" | "block"

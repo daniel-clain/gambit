@@ -1,0 +1,18 @@
+- on unpause, the action que needs to keep playing out from where it left off
+
+- each client has an array of fighter position and model changes at different time snapshots. each client is responsible for changing the state at the appropriate time. however once the game pauses, the clients should be told to stop
+
+- the time stamp should be set relative to the client elapsed time relative to the start time
+
+- when the game gets paused, the servers fight timer should be paused, and the amout of time passed since the original start time should be recorded
+
+- for each of the clients to have the right time, the server should pass them 2 things, the start date time, and the time step since the start time
+
+- the dateTime sent to each cliend is so they resume the timer at the same time, but the unfolding of events is relative to the step number thats passed. at the beginning of the fight the step num is 0. the server and clients should all start there timer at the at the same time cos of the date and avoid no sync cos of lag, then when the server pauses, the server time step is the source of truth and stops incrementing and sends a message to all clients that the game is paused and stop looping. when the game is resumed, the unpause dateTime is sent, along with the servers source of truth of what the time step value was when the game was paused
+
+- after the entire fight is generated, the total time steps is calculated
+
+- the fight doesnt end until the server time reaches the total time step count
+
+- when an action is added
+  - the ui updates gets a time stamp update and the game generation gets a action in progress, when a fighter attacks another, the attacked fighters action is interupted, their existing action in progress is removed from the list, and a new action is added

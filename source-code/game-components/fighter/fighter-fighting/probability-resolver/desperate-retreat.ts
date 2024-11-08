@@ -1,5 +1,6 @@
-import { Closeness } from "../../../../types/fighter/closeness";
-import FighterFighting from "../fighter-fighting";
+import { round } from "lodash"
+import { Closeness } from "../../../../types/fighter/closeness"
+import FighterFighting from "../fighter-fighting"
 
 /* 
   once starts, should continue until specific things influence it
@@ -11,51 +12,51 @@ import FighterFighting from "../fighter-fighting";
     - becareful of loop, if the desperate 
 */
 
-export function getProbabilityToDesperateRetreat(fighting: FighterFighting, generalRetreatProbability: number){
+export function getProbabilityToDesperateRetreat(
+  fighting: FighterFighting,
+  generalRetreatProbability: number
+) {
   const { intelligence } = fighting.stats
   const { logistics, proximity, timers, spirit, movement } = fighting
   const enemy = logistics.closestRememberedEnemy
+  if (!enemy) return 0
   const enemyCloseness = proximity.getEnemyCombatCloseness(enemy)
 
-  const invalid: boolean = (
+  const invalid: boolean =
     generalRetreatProbability == null ||
-    enemyCloseness >= Closeness['nearby'] ||
+    enemyCloseness >= Closeness["nearby"] ||
     logistics.lowEnergy ||
     spirit >= 2
-  )
 
-  if (invalid) return
+  if (invalid) return 0
 
   let probability = generalRetreatProbability
 
-  const moveTimer = timers.get('move action')
-  
-  if(moveTimer.active && movement.moveAction == 'desperate retreat'){
-    probability += movement.getExponentialMoveFactor(500) 
+  if (
+    timers.isActive("move action") &&
+    movement.moveAction == "desperate retreat"
+  ) {
+    probability += movement.getExponentialMoveFactor(500)
   }
 
-  probability += 60 - (spirit * 20)
+  probability += 60 - spirit * 20
 
+  if (logistics.hasLowStamina) probability += 6 + intelligence * 4
 
-  if(logistics.hasLowStamina)
-    probability += 6 + intelligence * 4
-
-  if(enemyCloseness == Closeness['striking range']){
-    if(logistics.hasRetreatOpportunity(enemy)){
+  if (enemyCloseness == Closeness["striking range"]) {
+    if (logistics.hasRetreatOpportunity(enemy)) {
       probability += intelligence
-    }
-    else{
+    } else {
       probability -= intelligence * 4
     }
   }
-  if(enemyCloseness == Closeness['close']){
-    if(logistics.hasRetreatOpportunity(enemy)){
+  if (enemyCloseness == Closeness["close"]) {
+    if (logistics.hasRetreatOpportunity(enemy)) {
       probability += intelligence * 4
     }
   }
 
-  if (probability < 0)
-    probability = 0
+  if (probability < 0) probability = 0
 
-  return probability
+  return round(probability)
 }

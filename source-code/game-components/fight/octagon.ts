@@ -78,13 +78,13 @@ function isPointOutsideOfEdge(edgeName: Edge, point: Coords): boolean {
   }
 }
 
-function getSlopeBetween2Points(point1, point2) {
+function getSlopeBetween2Points(point1: Coords, point2: Coords) {
   const rise = point1.y - point2.y
   const run = point1.x - point2.x
   return rise / run
 }
 
-function getYInterceptOnSlope(slope, pointOnSlope) {
+function getYInterceptOnSlope(slope: number, pointOnSlope: Coords) {
   const { x, y } = pointOnSlope
   const m = slope
   return y - m * x
@@ -108,14 +108,14 @@ function getDirectionToClosestEdge(point: Coords): Angle {
 }
 
 function getClosestEdge(point: Coords): Edge {
-  let closestEdge: { edgeName: Edge; distance: number }
+  let closestEdge: undefined | { edgeName: Edge; distance: number }
   for (let edgeKey in edges) {
     const edgeName = edgeKey as Edge
     const distance = getDistanceFromEdge(edgeName, point)
     if (!closestEdge || distance < closestEdge.distance)
       closestEdge = { edgeName, distance }
   }
-  return closestEdge.edgeName
+  return closestEdge!.edgeName
 }
 
 function getDistanceOfClosestEdge(point: Coords): number {

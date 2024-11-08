@@ -1,11 +1,13 @@
-
-import { Cost } from "../../interfaces/game/cost";
-import { ExecutesWhenOptions } from "../../types/game/executes-when-options";
-import { Game } from "../game";
-import { Employee, FighterInfo, JobSeeker } from "../../interfaces/front-end-state-interface";
-import { ManagerInfo, KnownManager } from "../manager";
-import { Evidence } from "../../types/game/evidence.type";
-
+import {
+  Employee,
+  FighterInfo,
+  JobSeeker,
+} from "../../interfaces/front-end-state-interface"
+import { Cost } from "../../interfaces/game/cost"
+import { Evidence } from "../../types/game/evidence.type"
+import { ExecutesWhenOptions } from "../../types/game/executes-when-options"
+import { Game } from "../game"
+import { KnownManager, ManagerInfo } from "../manager"
 
 export type Ability = {
   name: AbilityName
@@ -18,11 +20,12 @@ export type Ability = {
   notActiveUntilWeek?: number
 }
 
-
-
-
 export interface ServerAbility extends Ability {
-  execute(abilityData: AbilityData, game: Game, executes?: ExecutesWhenOptions): void
+  execute(
+    abilityData: AbilityData,
+    game: Game,
+    executes?: ExecutesWhenOptions
+  ): void
   onSelected?(abilityData: AbilityData, game: Game): void
 }
 
@@ -31,17 +34,15 @@ export interface ClientAbility extends Ability {
   isValidTarget?(target: TargetTypes): boolean
 }
 
-
 export type TargetTypes = FighterInfo | KnownManager | JobSeeker
 export type SourceTypes = ManagerInfo | Employee
 
-
 export type ListOption = TargetTypes | SourceTypes
 
-export interface AbilityData{
+export interface AbilityData {
   name: AbilityName
   target: TargetTypes | undefined
-  source: SourceTypes | undefined
+  source: SourceTypes
   additionalData?: any
 }
 
@@ -50,23 +51,23 @@ export type DataEvidence = {
   evidence: Evidence
 }
 
-export type AbilityName = 
-'Research Fighter' |
-'Train Fighter' |
-'Assault Fighter' |
-'Guard Fighter' |
-'Poison Fighter' |
-'Do Surveillance' |
-'Dope Fighter' |
-'Prosecute Manager' |
-'Offer Contract' |
-'Sell Drugs' |
-'Murder Fighter' |
-'Promote Fighter' |
-'Prepare For Prosecution' |
-'Investigate Manager' |
-'Domination Victory' |
-'Wealth Victory' |
-'Sinister Victory' |
-'Take A Dive' |
-'Give Up'
+export type AbilityName =
+  | "Research Fighter"
+  | "Train Fighter"
+  | "Assault Fighter"
+  | "Guard Fighter"
+  | "Poison Fighter"
+  | "Do Surveillance"
+  | "Dope Fighter"
+  | "Prosecute Manager"
+  | "Offer Contract"
+  | "Sell Drugs"
+  | "Murder Fighter"
+  | "Promote Fighter"
+  | "Prepare For Prosecution"
+  | "Investigate Manager"
+  | "Domination Victory"
+  | "Wealth Victory"
+  | "Sinister Victory"
+  | "Take A Dive"
+  | "Give Up"

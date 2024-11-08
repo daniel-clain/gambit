@@ -1,11 +1,10 @@
-import { DisconnectedPlayerVote } from "../../interfaces/front-end-state-interface";
-import { ClientNameAndID } from "../../game-host/game-host.types";
+import { ClientNameAndID } from "../../game-host/game-host.types"
+import { DisconnectedPlayerVote } from "../../interfaces/front-end-state-interface"
 
-
-export interface GameInfo{
+export interface GameInfo {
   id: string
   players: ClientNameAndID[]
-  gameDisplays: ClientNameAndID[]
+  gameDisplays?: ClientNameAndID[]
   paused: boolean
   week: number
   disconnectedPlayerVotes: DisconnectedPlayerVote[]

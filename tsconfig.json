@@ -4,17 +4,22 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictPropertyInitialization": false,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "isolatedModules": true,
+    "allowJs": true,
     "module": "CommonJS",
     "target": "es6",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["./source-code/"],
-  "exclude": ["./source-code/**/--*", "./source-code/**/backup*"]
+  "exclude": [
+    "./source-code/**/--*",
+    "./source-code/**/backup*",
+    "./source-code/**/--*"
+  ]
 }

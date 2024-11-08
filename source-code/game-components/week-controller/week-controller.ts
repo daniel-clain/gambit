@@ -36,7 +36,7 @@ export class WeekController {
     this.fightDayStage = new FightDayStage(this.game)
   }
 
-  startWeek(number) {
+  startWeek(number: number) {
     let { abilityProcessor } = this.game.has
     this.setUpWeek(number)
       .then(() => this.doStage(this.managerOptionsStage))
@@ -81,7 +81,7 @@ export class WeekController {
     this.game.functions.triggerUIUpdate()
   }
 
-  private setUpWeek(number) {
+  private setUpWeek(number: number) {
     this.weekNumber = number
     setupNewWeek(this.game)
     return Promise.resolve()
@@ -119,8 +119,8 @@ export class WeekController {
       return
     }
     const videoDuration = this.videos.find((v) => {
-      return v.name == state.isShowingVideo.name
-    }).videos[state.isShowingVideo.index].duration
+      return v.name == state.isShowingVideo!.name
+    })!.videos[state.isShowingVideo.index].duration
 
     await wait(videoDuration * 1000)
     state.isShowingVideo = undefined
@@ -143,7 +143,7 @@ export class WeekController {
       number: this.weekNumber,
       stage: this.activeStage.name,
       jobSeekers: this.jobSeekers,
-      managerOptionsTimeLeft: this.managerOptionsStage.timeLeft,
+      managerOptionsTimeLeft: this.managerOptionsStage.timeLeft!,
       activeFight: this.activeFight,
     }
   }

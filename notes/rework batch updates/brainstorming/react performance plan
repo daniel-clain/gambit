@@ -1,0 +1,3 @@
+- request animation frame
+- useMemo, useCallback
+- break components appart so that timestep updates are only causeing minimal things to reprocess

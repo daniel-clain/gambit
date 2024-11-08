@@ -11,6 +11,8 @@
     "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test"
   },
   "dependencies": {
+    "@types/lodash": "^4.17.12",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "lodash": "^4.17.21",
@@ -35,7 +37,7 @@
     "@types/express": "^4.17.14",
     "@types/jest": "^29.2.4",
     "@types/node": "^18.8.2",
-    "@types/react": "^18.0.26",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.0.9",
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^1.4.36",

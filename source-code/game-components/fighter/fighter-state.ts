@@ -3,7 +3,6 @@ import {
   ActiveContract,
   GoalContract,
 } from "../../interfaces/game/contract.interface"
-import Fight from "../fight/fight"
 import { Manager } from "../manager"
 
 export default class FighterState {
@@ -18,9 +17,8 @@ export default class FighterState {
   guards: Employee[] = []
   underSurveillance?: { professional: string }
 
-  trainingProgress = 0
+  trainingProgress: number = 0
   manager?: Manager
-  fight?: Fight
 
   publicityRating = 0
 

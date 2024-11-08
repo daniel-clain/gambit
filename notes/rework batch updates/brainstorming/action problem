@@ -1,0 +1,9 @@
+- currently things knocked out is being set as an action even though its not, just to get the model of the fighter sent in the timestamp chain,
+
+- the current idea is
+  - when generating the fight, the fighter cant start its next action until it current action is duration is resolved
+  - if a fighter is attacked, its current action is removed and a response action in added
+  - the fight schedule and the fight action que is different in the way that
+    ~ the action que is for generating the fight and the schedule if for running the fight on the frontend
+    ~ the fronend sechedule stamp holds that fighter state as long as its time stamp is the active one based on the current fight step
+    ~ the action que can have a chain of actions, if the current one is interupted, then all subsequent actions are also dropped

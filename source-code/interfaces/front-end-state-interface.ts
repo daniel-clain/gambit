@@ -8,27 +8,16 @@ import { getProfessionalsAbilities } from "../game-components/professionals"
 import { MatchupInfo } from "../game-components/week-controller/final-tournament/final-tournament"
 import { ClientNameAndID, GameBeingCreated } from "../game-host/game-host.types"
 import { randomNumberDigits } from "../helper-functions/helper-functions"
-import {
-  InterruptibleActionName,
-  MainActionName,
-} from "../types/fighter/action-name"
-import { DirectionBasedOn } from "../types/fighter/direction-based-on"
-import FacingDirection from "../types/fighter/facing-direction"
-import FighterModelState from "../types/fighter/fighter-model-states"
-import { Skin } from "../types/fighter/skin"
-import { Angle } from "../types/game/angle"
-import { FightObject } from "../types/game/fight-object"
 import { ManagerImage } from "../types/game/manager-image"
 import { NewsItem } from "../types/game/news-item"
 import { Profession } from "../types/game/profession"
 import SkillLevel from "../types/game/skill-level.type"
+import { GameFightUIState } from "../types/game/ui-fighter-state"
 import { VictoryType } from "../types/game/victory-type"
 import { WeekStage } from "../types/game/week-stage.type"
 import ChatMessage from "./chat-message.interface"
 import { Bet } from "./game/bet"
 import { ActiveContract, GoalContract } from "./game/contract.interface"
-import Coords from "./game/fighter/coords"
-import SoundTime from "./game/fighter/sound-time"
 import { GameInfo } from "./game/game-info"
 import { PostFightReportItem } from "./game/post-fight-report-item"
 
@@ -96,15 +85,15 @@ export class ClientManagerUIState {
 export type VictoryData = { name: string; victoryType: VictoryType }
 
 export class ServerGameUIState {
-  disconnectedPlayerVotes: DisconnectedPlayerVote[] = []
+  disconnectedPlayerVotes: DisconnectedPlayerVote[] | null
   weekStage?: WeekStage
   hasGameDisplay: boolean
   displayManagerUIState?: DisplayManagerUiData
   playerManagerUIState?: ManagerUIState
   preFightNewsUIState: PreFightNewsUIState
-  fightUIState: FightUIState
-  selectedVideo: SelectedVideo
-  finalTournamentBoard: FinalTournamentBoard
+  gameFightUIState: GameFightUIState
+  selectedVideo?: SelectedVideo
+  finalTournamentBoard?: FinalTournamentBoard
   enoughFightersForFinalTournament: boolean
   gameFinishedData?: GameFinishedData
 }
@@ -130,27 +119,17 @@ export class FinalTournamentBoard {
   semiFinals: MatchupInfo[]
   quarterFinals: MatchupInfo[]
 }
+/**
+ * @prop startTime ISO date string
+ */
 
-export interface FightUIState {
-  startCountdown: number
-  timeRemaining: number
-  report: FightReport
-  managersBets: ManagersBet[]
-  fightObject?: FightObject
-  knownFighterStateData?: FighterStateData[]
-}
-export interface FightReport {
-  draw?: boolean
-  winner?: FighterInfo
-  managerWinnings?: ManagerWinnings[]
-}
 export type ManagerWinnings = {
   managerName: string
   winnings: number
 }
 export interface ManagersBet {
   name: string
-  bet: Bet
+  bet?: Bet
   image: string
 }
 export interface FighterStateData {
@@ -166,23 +145,6 @@ export interface FighterStateData {
   aggression?: KnownFighterStat
   numberOfFights?: KnownFighterStat
   numberOfWins?: KnownFighterStat
-}
-
-export default interface FighterFightState {
-  name: string
-  coords: Coords
-  facingDirection: FacingDirection
-  modelState: FighterModelState
-  soundsMade: SoundTime[]
-  onRampage: boolean
-  skin: Skin
-  strikingCenters: { front: Coords; back: Coords }
-  spirit: number
-  energy: number
-  currentMainAction: MainActionName
-  currentInterruptibleAction: InterruptibleActionName
-  direction: Angle
-  directionBasedOn: DirectionBasedOn
 }
 
 export interface DisconnectedPlayerVote {
@@ -207,7 +169,7 @@ export interface ManagerDisplayInfo {
   name: string
   ready: boolean
   image: ManagerImage
-  bet: Bet
+  bet?: Bet
 }
 
 export interface DisplayManagerUiData {
@@ -244,7 +206,7 @@ export interface JobSeeker {
   profession?: Profession
   skillLevel?: SkillLevel
   abilities?: AbilityName[]
-  goalContract: GoalContract
+  goalContract?: GoalContract
 }
 
 export class Employee extends Professional {
@@ -272,18 +234,27 @@ export type StatsObj = {
   [Property in keyof FighterInfo]?: KnownFighterStat
 }
 
+export type FighterStatKey =
+  | "strength"
+  | "fitness"
+  | "intelligence"
+  | "aggression"
+  | "numberOfFights"
+  | "numberOfWins"
+  | "manager"
+
 export interface FighterInfo {
   name: string
   characterType: "Fighter"
-  strength: KnownFighterStat
-  fitness: KnownFighterStat
-  intelligence: KnownFighterStat
-  aggression: KnownFighterStat
-  numberOfFights: KnownFighterStat
-  numberOfWins: KnownFighterStat
-  manager: KnownFighterStat
-  activeContract: ActiveContract
-  goalContract: GoalContract
+  strength?: KnownFighterStat
+  fitness?: KnownFighterStat
+  intelligence?: KnownFighterStat
+  aggression?: KnownFighterStat
+  numberOfFights?: KnownFighterStat
+  numberOfWins?: KnownFighterStat
+  manager?: KnownFighterStat
+  activeContract?: ActiveContract
+  goalContract?: GoalContract
 }
 
 export interface ManagerUIState {

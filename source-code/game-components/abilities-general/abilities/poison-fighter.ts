@@ -16,8 +16,8 @@ export const poisonFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game) {
     const { source, target } = abilityData
     const fighter = game.has.fighters.find(
-      (fighter) => fighter.name == target.name
-    )
+      (fighter) => fighter.name == target!.name
+    )!
     const { weekNumber } = game.has.weekController
 
     const sourceManager = getAbilitySourceManager(source, game)
@@ -108,13 +108,19 @@ export const poisonFighterServer: ServerAbility = {
       sourceManager.functions.addToLog({
         type: "employee outcome",
         weekNumber,
-        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${target.name} because he was guarded by thugs`,
+        message: `${poisoner.profession} ${
+          poisoner.name
+        } failed to poison target fighter ${
+          target!.name
+        } because he was guarded by thugs`,
       })
     } else
       sourceManager.functions.addToLog({
         type: "employee outcome",
         weekNumber,
-        message: `${poisoner.profession} ${poisoner.name} failed to poison target fighter ${target.name}`,
+        message: `${poisoner.profession} ${
+          poisoner.name
+        } failed to poison target fighter ${target!.name}`,
       })
   },
   ...poisonFighter,

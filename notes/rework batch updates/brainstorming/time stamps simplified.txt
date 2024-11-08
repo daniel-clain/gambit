@@ -1,6 +1,24 @@
-* hardest part is making game state resolve after certain time
+* fight loop keeps looping until
+  - time step reaches max fight duration
+  - 1 fighter is not knocked out
+
+* each loop, increment 1 step, representing 1 millisecond, checks fighter action que, any action with a resolve time that has passed gets resolved
+
+* any fighter without an action in the action que runs the decide action function
 
 
-* clarify
-  - frontend only needs what location and state at what time
-  - decisions need to be based on the state
+
+
+
+
+still to figure out
+=======================
+* as the fight is generated, fighter actions are removed, but they can be interupted, removing the action from the list, it no longer does its resolve effect or next action
+  - however, the fighter still needs to change its model to show that it was in the process of performing that action
+    ~ so when the action is added to the 'in-progress' list, the full fight ui payload needs a time stamp of changing the fighter model when the action begins. the interupting action should give them a differen fighter model to replace the interupted action with the new action that represents being interupted
+
+* movement
+  - movement is different because it loops, so if the fighter decides to attack or run away, the action will be to move tiny distance relative to speed every 60 miliseconds
+    ~ but because its broken down into many mini actions, the algorithm keeps having the action end and then redecidign the next action, and the code is designed to have a really high probability of continuing to their last action, however they can act quite randomly when they do this
+      * this is correct tho because as they move, the context around them changes, and they cant ignore it, they have to adapt
+      

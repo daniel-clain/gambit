@@ -1,0 +1,16 @@
+$image-folder: "../../../images";
+$fightUi: "#{$image-folder}/fight-view";
+
+.game-fight-ui {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  object-fit: cover;
+  overflow: hidden;
+
+  .has-winnings & {
+    top: 15vh;
+    transition: top 2s;
+  }
+}

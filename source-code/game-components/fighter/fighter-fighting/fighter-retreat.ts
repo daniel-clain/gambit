@@ -1,153 +1,157 @@
-import { moveActions, retreatActions } from "../../../types/fighter/action-name"
+import { moveActions } from "../../../types/fighter/action-name"
 import { Angle } from "../../../types/game/angle"
 import FighterFighting from "./fighter-fighting"
 import { fighterRetreatImplementation } from "./fighter-retreat.i"
 
-
-export function getRetreatDirection(fighting: FighterFighting): Angle{
-  const {logistics, timers, actions, fighter} = fighting
-  const {flanked} = logistics
+export function getRetreatDirection(
+  fighting: FighterFighting
+): Angle | undefined {
+  const { logistics, timers, actions, fighter, movement } = fighting
+  const { flanked } = logistics
 
   const i = fighterRetreatImplementation(fighting).publicProperties
   const isAgainstEdge = i.getIsAgainstEdge()
 
-  if(timers.get('persist direction').active && moveActions.find(ma => ma == actions.currentMainAction)){
-    const {persistDirection} = logistics
+  if (
+    timers.isActive("persist direction") &&
+    moveActions.find((ma) => ma == movement.moveAction)
+  ) {
+    const { persistDirection } = logistics
     const invalid = i.getIsDirectionIntoEdge(persistDirection)
-    if(invalid){
-      console.log('persist direction invalid');
-      timers.cancel('persist direction')
-    }
-    else{
+    if (invalid) {
+      console.log("persist direction invalid")
+      timers.cancel("persist direction")
+    } else {
       return persistDirection
     }
   }
 
-  let direction: Angle
-  if(flanked){
-
-
-     if(isAgainstEdge){
+  let direction: Angle | undefined
+  if (flanked) {
+    if (isAgainstEdge) {
       // difficult logic
 
       const directionAlongEdgePastFlanker = i.getDirectionAlongEdgePastFlanker()
 
-      if(directionAlongEdgePastFlanker){
+      if (directionAlongEdgePastFlanker) {
         persistDirection(directionAlongEdgePastFlanker)
         direction = directionAlongEdgePastFlanker
-      }
-      else{
+      } else {
         const directionBetweenFlankers = i.getDirectionBetweenFlankers()
         const [flanker1, flanker2] = flanked.flankers
-        const blocked = i.enemyBlockingDirection(flanker1, directionBetweenFlankers) || i.enemyBlockingDirection(flanker2, directionBetweenFlankers)
-        if(!blocked){
+        const blocked =
+          i.enemyBlockingDirection(flanker1, directionBetweenFlankers) ||
+          i.enemyBlockingDirection(flanker2, directionBetweenFlankers)
+        if (!blocked) {
           persistDirection(directionBetweenFlankers)
           direction = directionBetweenFlankers
-        }
-        else{
+        } else {
           handleTrapped()
-          return 
+          return
         }
-
       }
-    }    
-    else {        
-      
-
-
+    } else {
       const directionFromFlanked = i.getDirectionFromFlanked()
 
+      const nearEdgeInDirectionFromFlanked =
+        i.getNearEdgeInDirection(directionFromFlanked)
 
-      const nearEdgeInDirectionFromFlanked = i.getNearEdgeInDirection(directionFromFlanked)
-
-      if(nearEdgeInDirectionFromFlanked){
-        const directionFromFlankedInfluencedByNearEdge = i.getDirectionInfluencedByNearEdge(directionFromFlanked, nearEdgeInDirectionFromFlanked)
+      if (nearEdgeInDirectionFromFlanked) {
+        const directionFromFlankedInfluencedByNearEdge =
+          i.getDirectionInfluencedByNearEdge(
+            directionFromFlanked,
+            nearEdgeInDirectionFromFlanked
+          )
 
         direction = directionFromFlankedInfluencedByNearEdge
-      }
-      else {
+      } else {
         direction = directionFromFlanked
-      }      
-    } 
-
-  }
-  else if(!flanked){
-    const directionAwayFromClosestEnemy = i.getDirectionAwayFromEnemy(logistics.closestRememberedEnemy)
-
-    if(isAgainstEdge){
-      // difficult logic
-      // needs to factor in if cornered
-      
-      if(i.getIsInCorner()){
-
-        const corneredDirectionAlongEdgeAwayFromEnemy = i.getCorneredDirectionAlongEdgeAwayFromEnemy(logistics.closestRememberedEnemy)
-
-        const blocked = i.enemyBlockingDirection(logistics.closestRememberedEnemy, corneredDirectionAlongEdgeAwayFromEnemy)
-
-        if(!blocked){          
-          persistDirection(corneredDirectionAlongEdgeAwayFromEnemy)
-          direction = corneredDirectionAlongEdgeAwayFromEnemy
-        }
-        else{
-          handleTrapped()
-          return 
-        }
-      }
-      else{
-
-        const directionAlongEdgeClosestToDirection = i.getDirectionAlongEdgeClosestToDirection(directionAwayFromClosestEnemy)
-        
-        const blocked = i.enemyBlockingDirection(logistics.closestRememberedEnemy, directionAlongEdgeClosestToDirection)
-        if(!blocked){
-          persistDirection(directionAlongEdgeClosestToDirection)
-          direction = directionAlongEdgeClosestToDirection
-        }
-        else{
-          const directionToCornerFurthestFromEnemy = i.getDirectionAlongEdgeToCornerFurthestFromEnemy()
-          
-          const blocked = i.enemyBlockingDirection(logistics.closestRememberedEnemy, directionToCornerFurthestFromEnemy)
-          
-          if(!blocked){
-            persistDirection(directionToCornerFurthestFromEnemy)
-            direction = directionToCornerFurthestFromEnemy
-          }
-          else{
-            handleTrapped()
-            return 
-          }
-        }
       }
     }
-    else{
-      const nearEdgeInDirectionFromClosestEnemy = i.getNearEdgeInDirection(directionAwayFromClosestEnemy)
-      if(nearEdgeInDirectionFromClosestEnemy){
-        direction = i.getDirectionInfluencedByNearEdge(directionAwayFromClosestEnemy, nearEdgeInDirectionFromClosestEnemy)
+  } else if (!flanked) {
+    const directionAwayFromClosestEnemy = i.getDirectionAwayFromEnemy(
+      logistics.closestRememberedEnemy!
+    )
+
+    if (isAgainstEdge) {
+      // difficult logic
+      // needs to factor in if cornered
+
+      if (i.getIsInCorner()) {
+        const corneredDirectionAlongEdgeAwayFromEnemy =
+          i.getCorneredDirectionAlongEdgeAwayFromEnemy(
+            logistics.closestRememberedEnemy!
+          )
+
+        const blocked = i.enemyBlockingDirection(
+          logistics.closestRememberedEnemy!,
+          corneredDirectionAlongEdgeAwayFromEnemy
+        )
+
+        if (!blocked) {
+          persistDirection(corneredDirectionAlongEdgeAwayFromEnemy)
+          direction = corneredDirectionAlongEdgeAwayFromEnemy
+        } else {
+          handleTrapped()
+          return
+        }
+      } else {
+        const directionAlongEdgeClosestToDirection =
+          i.getDirectionAlongEdgeClosestToDirection(
+            directionAwayFromClosestEnemy
+          )
+
+        const blocked = i.enemyBlockingDirection(
+          logistics.closestRememberedEnemy!,
+          directionAlongEdgeClosestToDirection
+        )
+        if (!blocked) {
+          persistDirection(directionAlongEdgeClosestToDirection)
+          direction = directionAlongEdgeClosestToDirection
+        } else {
+          const directionToCornerFurthestFromEnemy =
+            i.getDirectionAlongEdgeToCornerFurthestFromEnemy()
+
+          const blocked = i.enemyBlockingDirection(
+            logistics.closestRememberedEnemy!,
+            directionToCornerFurthestFromEnemy
+          )
+
+          if (!blocked) {
+            persistDirection(directionToCornerFurthestFromEnemy)
+            direction = directionToCornerFurthestFromEnemy
+          } else {
+            handleTrapped()
+            return
+          }
+        }
       }
-      else {
+    } else {
+      const nearEdgeInDirectionFromClosestEnemy = i.getNearEdgeInDirection(
+        directionAwayFromClosestEnemy
+      )
+      if (nearEdgeInDirectionFromClosestEnemy) {
+        direction = i.getDirectionInfluencedByNearEdge(
+          directionAwayFromClosestEnemy,
+          nearEdgeInDirectionFromClosestEnemy
+        )
+      } else {
         direction = directionAwayFromClosestEnemy
       }
     }
   }
   return direction
 
-
-
-  function persistDirection(direction: Angle){
-    timers.start('persist direction')
+  function persistDirection(direction: Angle) {
+    timers.start("persist direction")
     logistics.persistDirection = direction
-
   }
 
-  function handleTrapped(){
-    console.log(`${fighter.name} trapped`);
+  function handleTrapped() {
+    console.log(`${fighter.name} trapped`)
     logistics.trapped = true
-    actions.rejectCurrentAction()
   }
 }
-
-       
-
-
 
 /* 
   not yet included
@@ -159,12 +163,6 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
     - reposition influenced by side that has least fighters on it
       ~ intelligent should not try to manoeuver only to get trapped, smarter to fight
 */
-
-
-
-
-
-
 
 /* 
   * try to not be flanked
@@ -209,7 +207,6 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
   - if both fighter are too close to retreat around edge or between, fighter is trapped and can no long do retreat action
 */
 
-
 /* 
     - direction cant be toward corner furthest from enemy, a lot of the time that corner means direction is toward enemy
     - direction along edge should be based on
@@ -217,4 +214,3 @@ export function getRetreatDirection(fighting: FighterFighting): Angle{
       ~ how close to edge
     - once in corner, pick edge furthest from enemy, then go toward opposite corner to where he is now
 */
-

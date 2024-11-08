@@ -1,0 +1,20 @@
+react ui:
+  ✔ a fighter should never have 2 actions that resolve at the same time @done(24-11-08 14:37)
+    - only logical case is an action added as a result of an attack, the non attack should be filtered out. any other should be flagged as an error
+  ☐ sounds should never be missed
+  ☐ fighter component should 
+    - not loop through entire list of actions each time
+    - should not rerender on each time step
+    - should 
+  ☐ fight component should only rerender on new fight prop sent
+    - overlay handles time left
+    - each fighter handles its action steps independently
+  ☐ when updated fight obj sent to front end
+    - rerun fight component properly, consider:
+      - pause, use memo callback, restart relative to start time
+
+game:
+  ☐ must face an opponent to attack them
+  ☐ make sure code to reposition away from flank is in effect
+    - dont walk between 2 to attack, go around behind one of them
+  ☐ 

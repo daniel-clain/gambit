@@ -1,0 +1,8 @@
+- actions are a messy thought that needs refining
+- problematic things
+  - punch, kick, knocked out dont have duration
+  - chaining actions is a bit confusing
+  - the responsiblity of an action is spread out
+    ~ sound, name, modle, effect, chaining, duration, resolveStep,
+  - tried to simplify made it more confusing, by putting name duration and action, the idea was a general function would determine the model and sound, but it isnt less code, and it is more confusing
+  - fighter fighing is like a fighter specific place to handle the action before more general fight, however doing things before sening it to fight, the next action doesnt get a chance to have thos same things done

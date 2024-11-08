@@ -1,7 +1,6 @@
 import { randomNumber } from "../../helper-functions/helper-functions"
 import { FighterInfo } from "../../interfaces/front-end-state-interface"
 import { Skin } from "../../types/fighter/skin"
-import Fight from "../fight/fight"
 import FighterFighting from "./fighter-fighting/fighter-fighting"
 import FighterStats from "./fighter-fighting/stats"
 import FighterState from "./fighter-state"
@@ -79,21 +78,5 @@ export default class Fighter {
         aggression: { weeksSinceUpdated: 0, lastKnownValue: baseAggression },
       }
     }
-  }
-
-  startFighting() {
-    this.fighting.start()
-  }
-
-  stopFighting() {
-    this.fighting.stop()
-  }
-
-  reset() {
-    this.fighting.reset()
-  }
-
-  getPutInFight(fight: Fight) {
-    this.state.fight = fight
   }
 }

@@ -1,0 +1,44 @@
+- fight should be clean and not hacky for both modes
+
+- fight test should have ( that game version doesnt)
+
+  - default list of fighters that can be included/excluded from the ui
+  - ui should allow for new fighters to be created that are included/excluded
+  - ui should allow to select any fighter in the list and change their name and stats
+    ~ including poisoned/assaulted/halucination/
+
+- both should have
+
+  - new fight created with
+    ~ list of fighters
+    ~ duration
+    ~ draw or strongest fighter wins
+  - fight pause/unpause
+
+- game version should have (that fight test doesnt)
+
+  - manager bets
+
+- same but different
+  - fighter info panel
+    ~ fight test should have all info
+    ~ game version should have manager info
+
+# todo
+
+- take 'fight report' out of fight, concept of report is not needed, game mode should use winner or draw to determine bet results
+
+# susinct fight test logic
+
+{
+on start click, start a fight with fighters from config list
+}
+
+# both ui
+
+- arena should show before fight is generated
+- when fight is generated/paused/unpaused, fight view should get a prop update
+  - logic should
+    ~ see the future start time and wait for time until rouded whole seconds and then start a loop that runs every second that decrements start countdown to 0
+    ~ when the start time is 0, the start animation should play, and the time step loop should start
+    ~ the time step loop should run every

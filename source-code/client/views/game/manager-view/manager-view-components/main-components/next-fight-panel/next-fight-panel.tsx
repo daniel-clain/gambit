@@ -1,5 +1,4 @@
 import { observer } from "mobx-react"
-import * as React from "react"
 import { showFighter } from "../../../../../../front-end-service/front-end-service"
 import { frontEndState } from "../../../../../../front-end-state/front-end-state"
 import { BetBox } from "./bet-box/bet-box"
@@ -44,7 +43,7 @@ export const NextFightPanel = observer(() => {
     </div>
   )
 
-  function isYourFighter(fighterName): boolean {
+  function isYourFighter(fighterName: string): boolean {
     return fighters.some((fighter) => fighter.name == fighterName)
   }
 })

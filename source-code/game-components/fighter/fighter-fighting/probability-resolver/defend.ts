@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway, isFacingAwayFromEnemy } from "../proximity"
 
@@ -5,9 +6,10 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
   const { proximity, logistics, fighter } = fighting
   const { intelligence, speed, strength, aggression } = fighting.stats
   const closestEnemy = logistics.closestRememberedEnemy
+  if (!closestEnemy) return 0
   const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
 
-  const enemyAction = closestEnemy.fighting.actions.currentInterruptibleAction
+  const enemyAction = closestEnemy.fighting.getCurrentAction()
 
   const invalid: boolean =
     isFacingAwayFromEnemy(closestEnemy, fighter) || logistics.onARampage
@@ -82,5 +84,5 @@ export const getProbabilityToDefend = (fighting: FighterFighting): number => {
 
   if (probability < 0) probability = 0
 
-  return probability
+  return round(probability)
 }

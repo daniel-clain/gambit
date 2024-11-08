@@ -1,7 +1,5 @@
-import {
-  randomNumber,
-  toWrittenList,
-} from "../../../helper-functions/helper-functions"
+import { random } from "lodash"
+import { toWrittenList } from "../../../helper-functions/helper-functions"
 import { Game } from "../../game"
 import { KnownManager, KnownManagerStat, Manager } from "../../manager"
 import { Ability, AbilityData, ServerAbility } from "../ability"
@@ -15,9 +13,11 @@ export const investigateManager: Ability = {
 }
 
 type KnownStatsItem = {
-  key: string
+  key: KnownStatKey
   value: KnownManagerStat
 }
+
+type KnownStatKey = "money" | "employees" | "fighters" | "loan" | "evidence"
 
 export const investigateManagerServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game) {
@@ -41,7 +41,8 @@ export const investigateManagerServer: ServerAbility = {
     const discoveredStats: KnownStatsItem[] = getRandomStatsFromManager()
 
     discoveredStats.forEach((stat) => {
-      knownManager[stat.key] = {
+      const key = stat.key as KnownStatKey
+      knownManager[key] = {
         lastKnownValue: stat.value,
         weeksSinceUpdated: 0,
       } as KnownManagerStat
@@ -73,7 +74,6 @@ export const investigateManagerServer: ServerAbility = {
         let possibleOptions = 5
         let knownStats = getKnownStats()
         possibleOptions = possibleOptions - knownStats.length
-        let randNum
 
         for (
           ;
@@ -81,7 +81,6 @@ export const investigateManagerServer: ServerAbility = {
           updatedStats.length < possibleOptions;
 
         ) {
-          randNum = randomNumber({ to: possibleOptions - updatedStats.length })
           const stat = getStat()
           if (!stat) {
             console.error("Error: stat not found", updatedStats, knownStats)
@@ -93,19 +92,21 @@ export const investigateManagerServer: ServerAbility = {
         //implementation
 
         function getStat(): KnownStatsItem {
-          let count = 0
-          return (Object.keys(knownManager) as (keyof KnownManager)[])
+          const learnableStats = (Object.keys(knownManager) as KnownStatKey[])
             .filter((key) => !invalidKeys.includes(key))
             .filter((key) => !knownStats.includes(key))
             .filter((key) => !updatedStats.some((stat) => stat.key == key))
-            .reduce((chosenStat: KnownStatsItem, stat): KnownStatsItem => {
-              if (chosenStat) return chosenStat
-              if (count < randNum) return count++ && null
-              return {
-                key: stat,
-                value: targetManager.has[stat],
-              }
-            }, null)
+
+          const randomStatIndex = random(learnableStats.length - 1)
+          const statKey = learnableStats[randomStatIndex]
+          const x = targetManager.has[statKey]
+          return {
+            key: statKey,
+            value: {
+              lastKnownValue: x,
+              weeksSinceUpdated: 0,
+            },
+          }
         }
 
         function getKnownStats(): string[] {

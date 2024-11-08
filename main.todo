@@ -1,4 +1,13 @@
-
+New:
+  ☐ visually show if fighter is under influence of low energy
+    - eg, attack cooldown longer if low energy
+  ☐ redo fighter timers,
+    - needs concept of timer for thing like (last combat action, on a rampage, move action, memory of enemy behind)
+    - have an object for for timers that works with the fight time step where it resolves when the step gets to it
+  ☐ move speed relative to cautious retreat and desperate retreat
+    - unused movement func moveSpeed()
+  ☐ show low energy state
+  ☐ show if affected by poison, hallucination, assaulted
 
 Deal Breakers:
   ☐ make sure view takes up 100% and doesnt need to scroll for address bar height

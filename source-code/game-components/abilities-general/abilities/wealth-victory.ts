@@ -1,70 +1,69 @@
 import { Game } from "../../game"
-import { Ability, ServerAbility, AbilityData } from "../ability"
-
+import { Ability, AbilityData, ServerAbility } from "../ability"
 
 export const wealthVictory: Ability = {
   disabled: false,
-  name: 'Wealth Victory',
+  name: "Wealth Victory",
   cost: { money: 10000, actionPoints: 1 },
-  executes: 'End Of Manager Options Stage',
+  executes: "End Of Manager Options Stage",
   notActiveUntilWeek: 20,
-  canOnlyBeUsedOnce: true
-
+  canOnlyBeUsedOnce: true,
 }
 
 export const wealthVictoryServer: ServerAbility = {
-  execute(abilityData: AbilityData, game: Game){
-    const manager = game.has.managers.find(manager => manager.has.name == abilityData.source.name)
+  execute(abilityData: AbilityData, game: Game) {
+    const manager = game.has.managers.find(
+      (manager) => manager.has.name == abilityData.source.name
+    )!
 
-    const otherManagers = game.has.managers
-    .filter(m => m.has.name != manager.has.name)
-    
-    console.log(`${manager.has.name} has attempted a wealth victory`);
+    const otherManagers = game.has.managers.filter(
+      (m) => m.has.name != manager.has.name
+    )
 
-    if(
+    console.log(`${manager.has.name} has attempted a wealth victory`)
+
+    if (
       manager.has.money >= averageOfOtherPlayersMoney() / 2 &&
-      thisManagersLawyers() >= averageOfOtherPlayersLawyers() /2
-    ){
+      thisManagersLawyers() >= averageOfOtherPlayersLawyers() / 2
+    ) {
       thisMangerHasWealthVictory()
     } else {
       thisManagerFailsWealthVictory()
     }
 
     // Implementation
-    
 
-    function averageOfOtherPlayersMoney(): number{
+    function averageOfOtherPlayersMoney(): number {
       return otherManagers.reduce((total, m) => total + m.has.money, 0)
     }
-    function averageOfOtherPlayersLawyers(): number{
+    function averageOfOtherPlayersLawyers(): number {
       return otherManagers.reduce((total, m) => {
-        return total + m.has.employees.filter(e => e.profession == 'Lawyer').length
+        return (
+          total + m.has.employees.filter((e) => e.profession == "Lawyer").length
+        )
       }, 0)
     }
 
-    function thisManagersLawyers(){
-      return manager.has.employees.filter(e => e.profession == 'Lawyer').length
+    function thisManagersLawyers() {
+      return manager.has.employees.filter((e) => e.profession == "Lawyer")
+        .length
     }
 
-    function thisMangerHasWealthVictory(){
+    function thisMangerHasWealthVictory() {
       game.state.playerHasVictory = {
         name: manager.has.name,
-        victoryType: 'Wealth Victory'
+        victoryType: "Wealth Victory",
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()
-
     }
 
-    function thisManagerFailsWealthVictory(){
+    function thisManagerFailsWealthVictory() {
       game.state.playerHasFailedVictory = {
         name: manager.has.name,
-        victoryType: 'Wealth Victory'
+        victoryType: "Wealth Victory",
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()
-
     }
-
-    
   },
-  ...wealthVictory
+  ...wealthVictory,
 }

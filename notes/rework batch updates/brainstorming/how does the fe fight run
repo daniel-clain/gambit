@@ -1,0 +1,3 @@
+- when fight day starts on the server, the fe doesnt get an update until the BE has generated and sent it to all clients
+- frontend needs to trigger start and loop through the steps in order to do the countdown and movement
+- fight holds time step state, and when its updated, the fighters object is updated

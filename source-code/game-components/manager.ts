@@ -1,39 +1,47 @@
+import gameConfiguration from "../game-settings/game-configuration"
+import { randomNumber } from "../helper-functions/helper-functions"
+import {
+  Employee,
+  FighterInfo,
+  FighterStateData,
+  Loan,
+} from "../interfaces/front-end-state-interface"
+import { Bet } from "../interfaces/game/bet"
+import { PostFightReportItem } from "../interfaces/game/post-fight-report-item"
+import { ActivityLogItem } from "../types/game/activity-log-item"
+import { Evidence } from "../types/game/evidence.type"
+import { Lawsuit } from "../types/game/lawsuit.type"
+import { ManagerImage } from "../types/game/manager-image"
+import { AbilityName } from "./abilities-general/ability"
+import Fighter from "./fighter/fighter"
+import { Game } from "./game"
 
-
-import {Bet} from '../interfaces/game/bet';
-import Fighter from "./fighter/fighter";
-import gameConfiguration from '../game-settings/game-configuration';
-import { AbilityName } from './abilities-general/ability';
-import { ActivityLogItem } from '../types/game/activity-log-item';
-import { ManagerImage } from '../types/game/manager-image';
-import { PostFightReportItem } from '../interfaces/game/post-fight-report-item';
-import { Game } from './game';
-import { FighterInfo, Loan, Employee, FighterStateData } from '../interfaces/front-end-state-interface';
-import { Evidence } from '../types/game/evidence.type';
-import { Lawsuit } from '../types/game/lawsuit.type';
-import { randomNumber } from '../helper-functions/helper-functions';
-
-
-
-export interface KnownManagerStat{  
-  lastKnownValue: any,
+export interface KnownManagerStat {
+  lastKnownValue: any
   weeksSinceUpdated: number
 }
 
-export interface KnownManager{
+export type ManagerStatKey =
+  | "money"
+  | "employees"
+  | "fighters"
+  | "loan"
+  | "evidence"
+
+export interface KnownManager {
   name: string
-  characterType: 'Known Manager'
+  characterType: "Known Manager"
   image: ManagerImage
-  money: KnownManagerStat
-  employees: KnownManagerStat
-  fighters: KnownManagerStat
-  loan: KnownManagerStat
-  evidence: KnownManagerStat
+  money?: KnownManagerStat
+  employees?: KnownManagerStat
+  fighters?: KnownManagerStat
+  loan?: KnownManagerStat
+  evidence?: KnownManagerStat
 }
 
-export interface ManagerInfo{
+export interface ManagerInfo {
   name: string
-  characterType: 'Manager'
+  characterType: "Manager"
   money: number
   abilities: AbilityName[]
   actionPoints: number
@@ -50,52 +58,67 @@ export interface ManagerInfo{
   retired: boolean
 }
 
-export class ManagerState{
+export class ManagerState {
   readyForNextFight: boolean = false
-  underSurveillance?: {professional: string}
+  underSurveillance?: { professional: string }
   beingProsecuted: boolean = false
   retired: boolean
-  inJail: {
-    weeksTotal: number,
-    weeksRemaining: number,
-    lawsuit: Lawsuit
-  }
+  inJail:
+    | undefined
+    | {
+        weeksTotal: number
+        weeksRemaining: number
+        lawsuit: Lawsuit
+      }
 }
 
-class ManagerHas{
+class ManagerHas {
   logColorNumber: number
-  constructor(public name: string){
+  constructor(public name: string) {
     this.logColorNumber = 0
   }
   money = gameConfiguration.manager.startingMoney
   actionPoints = gameConfiguration.manager.actionPoints
   fighters: Fighter[] = []
   employees: Employee[] = []
-  loan: Loan
-  image: ManagerImage = randomNumber({to: 1}) ? 'Fat Man' : 'Moustache Man'
+  loan?: Loan
+  image: ManagerImage = randomNumber({ to: 1 }) ? "Fat Man" : "Moustache Man"
   nextFightBet?: Bet
   otherManagers: KnownManager[] = []
   knownFighters: FighterInfo[] = []
   activityLogs: ActivityLogItem[] = []
-  abilities: AbilityName[] = ['Dope Fighter', 'Train Fighter', 'Research Fighter', 'Offer Contract', 'Domination Victory', 'Sinister Victory', 'Wealth Victory', 'Take A Dive', 'Give Up']
+  abilities: AbilityName[] = [
+    "Dope Fighter",
+    "Train Fighter",
+    "Research Fighter",
+    "Offer Contract",
+    "Domination Victory",
+    "Sinister Victory",
+    "Wealth Victory",
+    "Take A Dive",
+    "Give Up",
+  ]
   postFightReportItems: PostFightReportItem[] = []
   evidence: Evidence[] = []
-
-  
 }
 
-
-class ManagerFunctions{
+class ManagerFunctions {
   logCount = 0
 
-  constructor(private manager: Manager, private game: Game){}
+  constructor(private manager: Manager, private game: Game) {}
 
-  addToLog(activityLogItem: Omit<ActivityLogItem, 'id'>): void{
-    this.logCount ++
-    const {has} = this.manager
-    has.logColorNumber >= 345 ? has.logColorNumber = 0 : has.logColorNumber += 10
-    this.manager.has.activityLogs.unshift({...activityLogItem, color1: `hsl(${has.logColorNumber}deg 50% 50%)`, color2: `hsl(${has.logColorNumber - 10}deg 50% 50%)`, id: this.logCount})
-    
+  addToLog(activityLogItem: Omit<ActivityLogItem, "id">): void {
+    this.logCount++
+    const { has } = this.manager
+    has.logColorNumber >= 345
+      ? (has.logColorNumber = 0)
+      : (has.logColorNumber += 10)
+    this.manager.has.activityLogs.unshift({
+      ...activityLogItem,
+      color1: `hsl(${has.logColorNumber}deg 50% 50%)`,
+      color2: `hsl(${has.logColorNumber - 10}deg 50% 50%)`,
+      id: this.logCount,
+    })
   }
 
   toggleReady = () => {
@@ -105,97 +128,107 @@ class ManagerFunctions{
   }
 
   betOnFighter = (bet: Bet) => {
-    
-    bet && this.addToLog({
-      weekNumber: this.game.has.weekController.weekNumber,
-      message: `Made a ${bet.size} bet on ${bet.fighterName}`})
+    bet &&
+      this.addToLog({
+        weekNumber: this.game.has.weekController.weekNumber,
+        message: `Made a ${bet.size} bet on ${bet.fighterName}`,
+      })
     this.manager.has.nextFightBet = bet
   }
 
-  getInfo(): ManagerInfo{
+  getInfo(): ManagerInfo {
     return {
-      characterType: 'Manager',
+      characterType: "Manager",
       ...this.manager.state,
       ...this.manager.has,
-      otherManagers: this.manager.has.otherManagers?.filter(om => {
-        const m = this.game.has.managers.find(m => m.has.name == om.name)
+      otherManagers: this.manager.has.otherManagers?.filter((om) => {
+        const m = this.game.has.managers.find((m) => m.has.name == om.name)
         return m && !m.state.retired
       }),
-      fighters: this.manager.has.fighters.map(f => f.getInfo())
+      fighters: this.manager.has.fighters.map((f) => f.getInfo()),
     }
   }
-  paybackMoney = (amount: number) =>  {
+  paybackMoney = (amount: number) => {
     this.addToLog({
       weekNumber: this.game.has.weekController.weekNumber,
-      message: `Paid back ${amount} to the Loan Shark`})
-    const {has} = this.manager
+      message: `Paid back ${amount} to the Loan Shark`,
+    })
+    const { has } = this.manager
     has.money -= amount
-    has.loan = {
-      ...has.loan, 
-      debt: has.loan.debt -= amount,
-      amountPaidBackThisWeek: has.loan.amountPaidBackThisWeek += amount
-    }
+    has.loan = !has.loan
+      ? undefined
+      : {
+          ...has.loan,
+          debt: (has.loan.debt -= amount),
+          amountPaidBackThisWeek: (has.loan.amountPaidBackThisWeek += amount),
+        }
   }
 
   borrowMoney = (amount: number) => {
     this.addToLog({
       weekNumber: this.game.has.weekController.weekNumber,
-      message: `Borrowed ${amount} from the Loan Shark`})
-    const {has} = this.manager
+      message: `Borrowed ${amount} from the Loan Shark`,
+    })
+    const { has } = this.manager
     has.money += amount
-    if(!has.loan){
+    if (!has.loan) {
       has.loan = {
         isNew: true,
         debt: amount,
         amountPaidBackThisWeek: 0,
-        weeksOverdue: 0
+        weeksOverdue: 0,
       }
     } else {
       has.loan = {
-        ...has.loan, 
-        debt: has.loan.debt += amount,
-        amountPaidBackThisWeek: has.loan.amountPaidBackThisWeek -= amount
+        ...has.loan,
+        debt: (has.loan.debt += amount),
+        amountPaidBackThisWeek: (has.loan.amountPaidBackThisWeek -= amount),
       }
     }
   }
 
   getFighterStateData(fighters: Fighter[]): FighterStateData[] {
-    
-    return fighters.map(fighter => {
-      const {sick, injured, doping, hallucinating, takingADive} = fighter.state
+    return fighters.map((fighter) => {
+      const { sick, injured, doping, hallucinating, takingADive } =
+        fighter.state
       const foundFighter = [
         ...this.manager.has.knownFighters,
-        ...this.manager.has.fighters.map(f => f.getInfo()),
-      ].find(kf => kf.name == fighter.name)
-      if(foundFighter){
-        const {activeContract, goalContract, name, ...knownFighterStats} = foundFighter
+        ...this.manager.has.fighters.map((f) => f.getInfo()),
+      ].find((kf) => kf.name == fighter.name)
+      if (foundFighter) {
+        const { activeContract, goalContract, name, ...knownFighterStats } =
+          foundFighter
 
-        return {name, sick, hallucinating, injured, doping, takingADive, ...knownFighterStats}
+        return {
+          name,
+          sick,
+          hallucinating,
+          injured,
+          doping,
+          takingADive,
+          ...knownFighterStats,
+        }
       }
       const unknownFighter: FighterStateData = {
-        name: fighter.name, 
-        sick, injured, hallucinating, doping, takingADive, 
+        name: fighter.name,
+        sick,
+        injured,
+        hallucinating,
+        doping,
+        takingADive,
       }
       return unknownFighter
     })
   }
-
-  
 }
 
-export class Manager{
+export class Manager {
   has: ManagerHas
   state = new ManagerState()
   functions: ManagerFunctions
 
-  constructor(name: string, public game: Game){
+  constructor(name: string, public game: Game) {
     this.has = new ManagerHas(name)
     this.functions = new ManagerFunctions(this, game)
   }
-
-
-   
-  
-  
-
 }

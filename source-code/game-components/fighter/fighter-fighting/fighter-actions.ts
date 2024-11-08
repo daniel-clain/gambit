@@ -4,30 +4,21 @@ import {
 } from "../../../helper-functions/helper-functions"
 import {
   combatActions,
-  InterruptibleActionName,
-  MainActionName,
+  DecideActionName,
   miscActions,
-  MoveAction,
   moveActions,
 } from "../../../types/fighter/action-name"
-import { DecidedAction } from "../../../types/game/fight-object"
+import { FighterAction } from "../../../types/game/ui-fighter-state"
 import Fighter from "../fighter"
-import {
-  ActionChain,
-  ActionPromises,
-  Interrupt,
-  MainAction,
-} from "./action-promises"
 import DecideActionProbability from "./decide-action-probability"
 import FighterFighting from "./fighter-fighting"
 
 export default class FighterActions {
   decideActionProbability: DecideActionProbability
-  decidedActionLog: [MainActionName, OptionProbability<MainActionName>[]][] = []
-  currentMainAction: MainActionName
-  currentInterruptibleAction: InterruptibleActionName
-  actionPromises: ActionPromises
-  rejectCurrentAction: (interrupt?: Interrupt) => void
+  decidedActionLog: [
+    DecideActionName,
+    OptionProbability<DecideActionName>[]
+  ][] = []
   nextDecisionFactors = {
     justBlocked: false,
     justDodged: false,
@@ -38,23 +29,18 @@ export default class FighterActions {
 
   constructor(public fighting: FighterFighting) {
     this.decideActionProbability = new DecideActionProbability(fighting)
-    this.actionPromises = new ActionPromises(fighting)
   }
 
   getActionProbabilities() {
     const { proximity, fighter, logistics, stopFighting } = this.fighting
     const { hallucinating } = fighter.state
 
-    if (stopFighting) {
-      return
-    }
-
-    let closestEnemy: Fighter = logistics.closestRememberedEnemy
+    let closestEnemy: Fighter | undefined = logistics.closestRememberedEnemy
 
     let enemyWithinStrikingRange =
       closestEnemy && proximity.enemyWithinStrikingRange(closestEnemy)
 
-    const responseProbabilities: OptionProbability<MainActionName>[] = []
+    const responseProbabilities: OptionProbability<DecideActionName>[] = []
 
     const includeCombatActions =
       enemyWithinStrikingRange || (hallucinating && closestEnemy)
@@ -87,47 +73,43 @@ export default class FighterActions {
     return responseProbabilities
   }
 
-  decideAction(): DecidedAction {
+  decideAction() {
     const responseProbabilities = this.getActionProbabilities()
     if (!responseProbabilities || !responseProbabilities.length) {
+      console.log("should have action probabilites")
       debugger
     }
-    const { combat, fighter, logistics, timers } = this.fighting
+    const { combat, fighter, movement, timers } = this.fighting
+    console.log(`${fighter.name} responseProbabilities`, responseProbabilities)
     const decidedAction = selectByProbability(responseProbabilities)
 
     this.decidedActionLog.unshift([decidedAction, responseProbabilities])
-
-    let mainAction: DecidedAction
 
     if (!decidedAction) {
       console.log(
         `${fighter.name} had no decided action, wait 1/10 a sec then decide again`,
         responseProbabilities
       )
-      mainAction = this.doNothing()
-      this.currentMainAction = "do nothing"
+      this.doNothing()
     } else {
-      this.currentMainAction = decidedAction
       const decidedActionIsMove = moveActions.find((x) => x == decidedAction)
       if (!decidedActionIsMove) {
         timers.cancel("persist direction")
       }
-      console.log(
-        `**O decided action ${decidedAction} started (${fighter.name})`
-      )
-
-      mainAction = (() => {
+      console.log(`${fighter.name} decidedAction is ${decidedAction}`)
+      ;(() => {
         switch (decidedAction) {
           case "punch":
-          case "critical strike":
-            return combat.attack(decidedAction)
+            return combat.punch()
+          case "kick":
+            return combat.kick()
           case "defend":
             return combat.startDefending()
           case "move to attack":
           case "cautious retreat":
           case "strategic retreat":
           case "desperate retreat":
-            return this.move(decidedAction)
+            return movement.move(decidedAction)
           case "recover":
             return this.recover()
           case "check flank":
@@ -137,152 +119,59 @@ export default class FighterActions {
         }
       })()
     }
-
-    /* mainAction.promise
-      .then(() => {
-        console.log(
-          `**X decided action ${decidedAction} finished (${fighter.name})`
-        )
-
-        if (logistics.allOtherFightersAreKnockedOut) {
-          this.fighting.modelState = "Victory"
-        } else if (fighter.fighting.knockedOut) {
-          this.fighting.modelState = "Knocked Out"
-        } else {
-          this.decideAction()
-        }
-      })
-      .catch((reason) => {
-        console.log("******* action catch should not be called ", reason)
-      }) */
-    return mainAction
   }
 
-  get turnAroundActionChain(): ActionChain {
-    const { interruptibleAction, instantAction } = this.actionPromises
-    const { turnAround } = this.fighting.movement
-    return [
-      interruptibleAction({ name: "turn around warmup", duration: 100 }),
-      instantAction({ name: "turn around", action: turnAround }),
-      interruptibleAction({ name: "turn around cooldown", duration: 100 }),
-    ]
-  }
+  turnAround(onResolve?: () => void): FighterAction {
+    const { fighting } = this
+    const { facingDirection } = fighting
+    return {
+      actionName: "turn around warmup",
+      duration: 100,
+      onResolve: () => {
+        fighting.facingDirection = facingDirection == "left" ? "right" : "left"
 
-  speedModifier(baseSpeed) {
-    const { speed } = this.fighting.stats
-    return baseSpeed * (1 - (speed * 1.7) / 100)
-  }
-
-  checkFlank(): MainAction {
-    const { mainAction } = this.actionPromises
-    return mainAction({
-      name: "check flank",
-      actionChain: this.turnAroundActionChain,
-    })
-  }
-
-  move(name: MoveAction): DecidedAction {
-    const { mainAction, interruptibleAction, instantAction } =
-      this.actionPromises
-    const { movement, timers, fighter } = this.fighting
-
-    if (!timers.get("move action")) {
-      timers.start("move action")
-    }
-
-    const moveAction = interruptibleAction({
-      name: "move",
-      model: name == "cautious retreat" ? "Defending" : "Walking",
-      duration: 1000,
-    })
-
-    const mainMoveAction = mainAction({
-      name,
-      actionChain: [
-        ...(movement.shouldTurnAround ? this.turnAroundActionChain : []),
-        moveAction,
-      ],
-    })
-
-    mainMoveAction.promise.then(() => {
-      console.log("move action then stop move loop")
-    })
-
-    movement.startMoveLoop(name)
-    const delayedEffect: DecidedAction = {
-      actionName: "move",
-      sourceFighterName: fighter.name,
-      duration: 0,
-      effectOnComplete: (sourceFighter) => {
-        sourceFighter.fighting.movement.stopMoveLoop("move action finished")
+        fighting.addFighterAction({
+          actionName: "turn around cooldown",
+          duration: 100,
+          onResolve,
+        })
       },
     }
-
-    return delayedEffect
   }
 
-  recover(): DecidedAction {
-    const { mainAction, interruptibleAction, instantAction } =
-      this.actionPromises
+  checkFlank() {
+    this.fighting.addFighterAction(this.turnAround())
+  }
+
+  recover() {
     const { fighter, stats } = this.fighting
     const { sick, injured } = fighter.state
     const duration =
       2500 - stats.fitness * 150 + (((sick || injured) && 1000) || 0)
 
-    const delayedEffect: DecidedAction = {
+    this.fighting.addFighterAction({
       actionName: "recover",
-      sourceFighterName: fighter.name,
+      modelState: "Recovering",
       duration,
-      effectOnComplete: (sourceFighter) => {
-        sourceFighter.fighting.stamina++
-        if (sourceFighter.fighting.spirit < 3) {
-          sourceFighter.fighting.spirit++
+      onResolve: () => {
+        this.fighting.stamina++
+        if (this.fighting.spirit < 3) {
+          this.fighting.spirit++
         }
-        sourceFighter.fighting.energy += 3
+        this.fighting.energy += 3
       },
-    }
-
-    const x = mainAction({
-      name: "recover",
-      actionChain: [
-        interruptibleAction({
-          name: "recover",
-          duration,
-          model: "Recovering",
-        }),
-        instantAction({
-          name: "recover",
-          action: () => {
-            this.fighting.stamina++
-            if (this.fighting.spirit < 3) {
-              this.fighting.spirit++
-            }
-            this.fighting.energy += 3
-
-            this.fighting.modelState = "Idle"
-            return Promise.resolve()
-          },
-        }),
-      ],
     })
-
-    return delayedEffect
   }
 
-  doNothing(): DecidedAction {
-    const { mainAction, interruptibleAction } = this.actionPromises
+  doNothing() {
     const { hallucinating } = this.fighting.fighter.state
-    const { fighter } = this.fighting
 
     const duration = 1000 + (hallucinating ? 1000 : 0)
 
-    const delayedEffect: DecidedAction = {
+    this.fighting.addFighterAction({
       actionName: "do nothing",
-      sourceFighterName: fighter.name,
+      modelState: "Idle",
       duration,
-      effectOnComplete: (sourceFighter) => {},
-    }
-
-    return delayedEffect
+    })
   }
 }

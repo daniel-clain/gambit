@@ -14,7 +14,7 @@ import { AbilityProcessor } from "./abilities-general/ability-processor"
 import ConnectionManager from "./connection-manager"
 import Fighter from "./fighter/fighter"
 import { Game_Implementation } from "./game-setup"
-import { Manager } from "./manager"
+import { KnownManager, Manager } from "./manager"
 import { Player } from "./player"
 import {
   postStartTestState,
@@ -51,16 +51,18 @@ export class GameState {
     name: string
     victoryType: VictoryType
   }
-  playerHasFailedVictory: {
+  playerHasFailedVictory: null | {
     name: string
     victoryType: VictoryType
   }
-  finalTournament: FinalTournament
+  finalTournament: FinalTournament | null
 
-  isShowingVideo: {
-    name: VideoName
-    index: number
-  }
+  isShowingVideo:
+    | undefined
+    | {
+        name: VideoName
+        index: number
+      }
 
   gameIsFinished: boolean
 
@@ -78,7 +80,7 @@ class GameHas {
   connectionManager: ConnectionManager
   abilityProcessor: AbilityProcessor
 
-  constructor(public gameDisplays: ConnectedClient[], private game: Game) {
+  constructor(private game: Game, public gameDisplays?: ConnectedClient[]) {
     if (this.game.state.gameType == "Websockets") {
       this.connectionManager = new ConnectionManager(this.game)
     }
@@ -137,7 +139,7 @@ class GameFunctions {
     this.i
       .getAllConnectedGameDisplays()
       ?.forEach((gameDisplay) =>
-        gameDisplay.socket.emit(
+        gameDisplay.socket!.emit(
           "To Client From Server - Game Ui",
           this.getGameUiState()
         )
@@ -162,7 +164,7 @@ class GameFunctions {
     return {
       id: has.id,
       players: has.players.map((p) => ({ name: p.name, id: p.id })),
-      gameDisplays: has.gameDisplays.map((d) => ({ name: d.name, id: d.id })),
+      gameDisplays: has.gameDisplays?.map((d) => ({ name: d.name, id: d.id })),
       paused: state.paused,
       week: has.weekController.weekNumber,
       disconnectedPlayerVotes: has.connectionManager.disconnectedPlayerVotes,
@@ -190,12 +192,12 @@ class GameFunctions {
           ? this.game.has.connectionManager.disconnectedPlayerVotes
           : null,
       weekStage: activeStage?.name,
-      hasGameDisplay: !!gameDisplays.length,
+      hasGameDisplay: !!gameDisplays?.length,
       displayManagerUIState: manager
-        ? null
+        ? undefined
         : {
             weekStage: activeStage.name,
-            timeLeft,
+            timeLeft: timeLeft!,
             jobSeekers,
             nextFightFighters: activeFight?.fighters.map(
               (fighter) => fighter.name
@@ -210,7 +212,7 @@ class GameFunctions {
               })),
           },
       playerManagerUIState: !manager
-        ? null
+        ? undefined
         : {
             week: weekNumber,
             managerInfo: manager?.functions.getInfo(),
@@ -240,8 +242,9 @@ class GameFunctions {
         newsItem: preFightNewsStage.activeNewsItem,
       },
       fightUIState: this.i.getFightUiState(manager),
-      gameFinishedData:
-        this.game.state.gameIsFinished && this.i.getGameFinishedData(),
+      gameFinishedData: this.game.state.gameIsFinished
+        ? this.i.getGameFinishedData()
+        : undefined,
     }
     return serverGameUIState
   }
@@ -262,7 +265,7 @@ export class Game {
     testSetupBeginning()
     this.state = new GameState(gameType)
     this.functions = new GameFunctions(this, this.i, gameHost)
-    this.has = new GameHas(gameDisplays, this)
+    this.has = new GameHas(this, gameDisplays)
     this.has.abilityProcessor = new AbilityProcessor(this)
     this.has.weekController = new WeekController(this)
 
@@ -277,23 +280,26 @@ export class Game {
       const manager = new Manager(player.name, this)
       this.has.managers.push(manager)
       this.has.players.push(
-        new Player(player.name, player.id, player.socket, manager, this)
+        new Player(player.name, player.id, player.socket!, manager, this)
       )
     })
 
     this.has.managers.forEach((manager) => {
       manager.has.otherManagers = this.has.managers
         .filter((m) => m.has.name != manager.has.name && !manager.state.retired)
-        .map((m) => ({
-          name: m.has.name,
-          characterType: "Known Manager",
-          image: m.has.image,
-          money: null,
-          loan: null,
-          fighters: null,
-          employees: null,
-          evidence: null,
-        }))
+        .map((m) => {
+          const knownManager: KnownManager = {
+            name: m.has.name,
+            characterType: "Known Manager",
+            image: m.has.image,
+            money: undefined,
+            loan: undefined,
+            fighters: undefined,
+            employees: undefined,
+            evidence: undefined,
+          }
+          return knownManager
+        })
     })
   }
 }

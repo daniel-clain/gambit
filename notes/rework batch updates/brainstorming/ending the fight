@@ -1,0 +1,36 @@
+- if times up
+
+* server
+  ~ fighters stop fighting and go to idle pose
+
+* in FE, time remaining countdown is max duration - timestep. problem is timestep keeps incrementing after last step.
+
+* currently, fight ends, timer keeps running, neither fighter knocked out or victory
+* only 1 update needs to be sent to all clients on fight day, because there are no user inputs
+* the only time updates need to be sent is when the game is paused from a player dropout
+
+  - a player dropping should be detected by websockets, run a severside function, update the state of the fight to put it in pause state, send the update state to the clients
+  - an unpause triggered by a player reconnecting or being dropped. this should again update the state of the fight to be unpaused, however the fight should resume for all players at the same time step so a restart datetime should be send so that all clients should resume at the same time, and then the fight should continue from the step it was up to
+
+* when the last attack lands, and the 2nd last fighter has his stamina set to lower than 0 and the fighter is considered knocked out, the fight is considered over.
+
+  - however time is still needed for
+    ~ winner victory pose, victory money to fall
+
+* questions
+
+  - should the timing of this be managed as fight steps
+    ~ a: no, it should be set time based on whats in the fight object
+  - should the frontend do its own timing
+    ~ a: yes
+
+  - what happens if a player is disconnected during post fight stage
+
+* truths
+
+  - the next manager phase should be set for all clients by the backend pushing a state update that changes FE state to manager phase
+  - after each fight concludes, time should only run for money making if at least 1 player made money, else it should be shortened
+
+  # todo
+
+  - fight gen loops until max fight duration or winner, and records final step number

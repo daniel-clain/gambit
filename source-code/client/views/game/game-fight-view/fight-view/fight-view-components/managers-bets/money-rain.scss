@@ -1,0 +1,32 @@
+$image-folder: "../../../../../../images";
+@keyframes flip {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(180deg);
+  }
+}
+
+.money-container {
+  position: absolute;
+  bottom: 100%;
+  height: 20vh;
+  left: 0;
+  right: 0;
+  z-index: -1;
+
+  .coin {
+    position: absolute;
+    background-image: url("#{$image-folder}/fight-view/coin.png");
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background-size: contain;
+    animation: flip 0.3s linear infinite forwards;
+    &--falling {
+      top: 110%;
+      transition: top 1s;
+    }
+  }
+}
