@@ -58,10 +58,16 @@ jobs:
             # Ensure that the NVM environment is loaded
             export NVM_DIR=\$HOME/.nvm;
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
-            
+
+            # Verify nvm, node, and npm
+            echo 'NVM_DIR: \$NVM_DIR';
+            nvm --version;
+            node -v;
+            npm -v;
+
             # Ensure the correct node version is used
             nvm use 16;
-            
+
             # Install dependencies
             cd ${{ secrets.SERVER_APP_DIR }};
             npm ci --production;
