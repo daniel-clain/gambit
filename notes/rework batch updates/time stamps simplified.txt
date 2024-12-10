@@ -1,0 +1,6 @@
+* hardest part is making game state resolve after certain time
+
+
+* clarify
+  - frontend only needs what location and state at what time
+  - decisions need to be based on the state

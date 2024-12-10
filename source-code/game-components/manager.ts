@@ -117,7 +117,10 @@ class ManagerFunctions{
       characterType: 'Manager',
       ...this.manager.state,
       ...this.manager.has,
-      otherManagers: this.manager.has.otherManagers?.filter(om => !this.game.has.managers.find(m => m.has.name == om.name)!.state.retired),
+      otherManagers: this.manager.has.otherManagers?.filter(om => {
+        const m = this.game.has.managers.find(m => m.has.name == om.name)
+        return m && !m.state.retired
+      }),
       fighters: this.manager.has.fighters.map(f => f.getInfo())
     }
   }

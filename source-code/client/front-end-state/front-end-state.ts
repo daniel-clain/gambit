@@ -7,6 +7,7 @@ export const frontEndState: FrontEndState = observable(getInitialState())
 
 export function getInitialState(): FrontEndState{
   return {
+    updateCount: 0,
     serverUIState: {
       serverPreGameUIState: undefined,
       serverGameUIState: undefined

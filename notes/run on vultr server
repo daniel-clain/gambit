@@ -1,0 +1,4 @@
+ssh root@207.148.80.187
+nvm use 16.4
+yarn add -g ts-node
+pm2 start npm --name "gambit" -- run run-server-prod

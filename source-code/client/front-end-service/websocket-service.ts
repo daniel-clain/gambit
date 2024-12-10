@@ -109,6 +109,7 @@ export const websocketService = {
       (serverGameUIState: ServerGameUIState) => {
         runInAction(() => {
           frontEndState.serverUIState.serverGameUIState = serverGameUIState
+          frontEndState.updateCount++
           frontEndState.clientUIState.clientPreGameUIState.hasGameData = true
         })
       }
