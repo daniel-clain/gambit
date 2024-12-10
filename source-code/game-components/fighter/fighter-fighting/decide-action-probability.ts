@@ -3,12 +3,12 @@ import { DecideActionName } from "../../../types/fighter/action-name"
 import FighterFighting from "./fighter-fighting"
 import { getProbabilityToCautiousRetreat } from "./probability-resolver/cautious-retreat"
 import { getProbabilityToCheckFlank } from "./probability-resolver/check-flank"
-import { getProbabilityToCriticalStrike } from "./probability-resolver/critical-strike"
 import { getProbabilityToDefend } from "./probability-resolver/defend"
 import { getProbabilityToDesperateRetreat } from "./probability-resolver/desperate-retreat"
 import { getProbabilityToDoNothing } from "./probability-resolver/do-nothing"
 import { getProbabilityForGeneralAttack } from "./probability-resolver/general-attack"
 import { getProbabilityForGeneralRetreat } from "./probability-resolver/general-retreat"
+import { getProbabilityToKick } from "./probability-resolver/kick"
 import { getProbabilityToMoveToAttack } from "./probability-resolver/move-to-attack"
 import { getProbabilityToPunch } from "./probability-resolver/punch"
 import { getProbabilityToRecover } from "./probability-resolver/recover"
@@ -17,8 +17,8 @@ import { getProbabilityToStrategicRetreat } from "./probability-resolver/strateg
 export default class DecideActionProbability {
   includeLogs = true
   logs: any = []
-  generalAttackProbability: number
-  generalRetreatProbability: number
+  generalAttackProbability: number | null
+  generalRetreatProbability: number | null
 
   constructor(public fighting: FighterFighting) {}
 
@@ -37,7 +37,7 @@ export default class DecideActionProbability {
       case "kick":
         return {
           option: action,
-          probability: getProbabilityToCriticalStrike(
+          probability: getProbabilityToKick(
             this.fighting,
             this.generalAttackProbability
           ),

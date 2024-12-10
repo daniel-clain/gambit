@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import { Game } from "../../game"
 import { Ability, AbilityData, ServerAbility } from "../ability"
 import { handleUnderSurveillance } from "./do-surveillance"
@@ -38,7 +39,7 @@ export const sellDrugsServer: ServerAbility = {
         ).length -
         1)
 
-    manager.has.money += moneyFromDrugDealing
+    manager.has.money += round(moneyFromDrugDealing)
 
     manager.functions.addToLog({
       weekNumber,

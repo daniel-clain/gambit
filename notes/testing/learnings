@@ -1,0 +1,5 @@
+- i see the need for
+  - unit tests
+    ~ you can manually test things when you create them but, lets say you dont, to have the automated test run and pass, give you an extra layer of reassurance that the code does what its says it does
+    ~ to make a good test, makes you reconsider how to design your modules, so that you can really test each unit in isolation, rather than want a bananna, but need the grorilla holding it and the whole jungle its in
+  - automated tests

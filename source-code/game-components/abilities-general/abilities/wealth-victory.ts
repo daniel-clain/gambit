@@ -1,3 +1,4 @@
+import { Employee } from "../../../interfaces/front-end-state-interface"
 import { Game } from "../../game"
 import { Ability, AbilityData, ServerAbility } from "../ability"
 
@@ -6,7 +7,7 @@ export const wealthVictory: Ability = {
   name: "Wealth Victory",
   cost: { money: 10000, actionPoints: 1 },
   executes: "End Of Manager Options Stage",
-  notActiveUntilWeek: 20,
+  notActiveUntilWeek: 15,
   canOnlyBeUsedOnce: true,
 }
 
@@ -22,36 +23,44 @@ export const wealthVictoryServer: ServerAbility = {
 
     console.log(`${manager.has.name} has attempted a wealth victory`)
 
-    if (
-      manager.has.money >= averageOfOtherPlayersMoney() / 2 &&
-      thisManagersLawyers() >= averageOfOtherPlayersLawyers() / 2
-    ) {
-      thisMangerHasWealthVictory()
-    } else {
+    const managersLawyersTotalSkill = getTotalLawyersSkill(
+      manager.has.employees
+    )
+    console.log("managersLawyersTotalSkill", managersLawyersTotalSkill)
+    console.log("manager.has.money", manager.has.money)
+
+    const anotherManagerIsStronger = otherManagers.some((m) => {
+      const loopsLawyersTotalSkill = getTotalLawyersSkill(m.has.employees)
+      console.log("loopsLawyersTotalSkill", loopsLawyersTotalSkill)
+      const loopsMoney = m.has.money
+      console.log("loopsMoney", loopsMoney)
+      const hasMoreLawyerPowerAndMoney =
+        loopsLawyersTotalSkill >= managersLawyersTotalSkill &&
+        loopsMoney > manager.has.money
+      console.log("hasMoreLawyerPowerAndMoney", hasMoreLawyerPowerAndMoney)
+      return hasMoreLawyerPowerAndMoney
+    })
+    if (anotherManagerIsStronger) {
+      console.log(`${manager.has.name} has FAILED wealth victory`)
       thisManagerFailsWealthVictory()
+    } else {
+      console.log(`${manager.has.name} has wealth victory`)
+      thisMangerHasWealthVictory()
     }
 
-    // Implementation
-
-    function averageOfOtherPlayersMoney(): number {
-      return otherManagers.reduce((total, m) => total + m.has.money, 0)
-    }
-    function averageOfOtherPlayersLawyers(): number {
-      return otherManagers.reduce((total, m) => {
-        return (
-          total + m.has.employees.filter((e) => e.profession == "Lawyer").length
-        )
+    function getTotalLawyersSkill(employees: Employee[]): number {
+      return employees.reduce((totalLawyersSkill, employee) => {
+        if (employee.profession == "Lawyer") {
+          return totalLawyersSkill + employee.skillLevel
+        } else {
+          return totalLawyersSkill
+        }
       }, 0)
-    }
-
-    function thisManagersLawyers() {
-      return manager.has.employees.filter((e) => e.profession == "Lawyer")
-        .length
     }
 
     function thisMangerHasWealthVictory() {
       game.state.playerHasVictory = {
-        name: manager.has.name,
+        sourceManager: manager.functions.getInfo(),
         victoryType: "Wealth Victory",
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()
@@ -59,7 +68,7 @@ export const wealthVictoryServer: ServerAbility = {
 
     function thisManagerFailsWealthVictory() {
       game.state.playerHasFailedVictory = {
-        name: manager.has.name,
+        sourceManager: manager.functions.getInfo(),
         victoryType: "Wealth Victory",
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()

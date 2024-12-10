@@ -16,20 +16,20 @@ import FighterFighting from "./fighter-fighting"
 export default class Proximity {
   constructor(public fighting: FighterFighting) {}
 
-  get againstEdge(): EdgeDistance {
+  get againstEdge(): EdgeDistance | undefined {
     return this.getClosestEdge(10)
   }
 
-  getClosestEdge(withinDistance?: number): EdgeDistance {
+  getClosestEdge(withinDistance?: number): EdgeDistance | undefined {
     return this.edgeDistances
       .filter(({ distance }) =>
         withinDistance ? distance < withinDistance : true
       )
-      .reduce<EdgeDistance>((nearestEdge, edgeDistance) => {
+      .reduce<EdgeDistance | undefined>((nearestEdge, edgeDistance) => {
         if (!nearestEdge || edgeDistance.distance < nearestEdge.distance)
           return edgeDistance
         else return nearestEdge
-      }, {} as EdgeDistance)
+      }, undefined)
   }
 
   getEdges(withinDistance?: number): EdgeDistance[] {

@@ -9,29 +9,27 @@ type BaseStats = Pick<
   "baseAggression" | "baseFitness" | "baseIntelligence" | "baseStrength"
 >
 const fighters = [
+  /*new Fighter("Superman"),
+  new Fighter("Daniel"),
+  new Fighter("Hyper"),
+  new Fighter("Crafty"),
+  new Fighter("Dave"),
+  */ new Fighter("Bob"),
+  new Fighter("Fred"),
+  new Fighter("Jeff"),
+  new Fighter("Kevin"),
+  new Fighter("Joe"),
+  new Fighter("Steve"),
   /*
-	
-	new Fighter('Superman'),
-	new Fighter('Daniel'),
-	new Fighter('Hyper'),
-	new Fighter('Crafty'),
-	new Fighter('Dave'),
-	new Fighter('Bob'),
-	new Fighter('Fred'),
-	new Fighter('Jeff'),
-	new Fighter('Kevin'),
-	new Fighter('Joe'),
-	new Fighter('Steve'),*/
-  new Fighter("Stupid"),
+  new Fighter("Passive"),
+  new Fighter("Stupid"),*/
+  /*new Fighter("Aggressive"),
   new Fighter("Intelligent"),
 
   new Fighter("Average"),
-  new Fighter("Passive"),
-
   new Fighter("Fit"),
   new Fighter("Strong"),
-  new Fighter("Aggressive"),
-  /**/
+  */
 ]
 
 export const fightUiService = {
@@ -51,6 +49,16 @@ const s = (f: Fighter, u: Partial<BaseStats>) =>
 
 //set base stats
 fighters.forEach((fighter) => {
+  if (fighter.name == "Bob") {
+    f(fighter.name).state.hallucinating = true
+  }
+  if (fighter.name == "Kevin") {
+    f(fighter.name).state.injured = true
+  }
+
+  if (fighter.name == "Joe") {
+    f(fighter.name).state.sick = true
+  }
   s(f(fighter.name), {
     baseStrength: 2,
     baseFitness: 2,

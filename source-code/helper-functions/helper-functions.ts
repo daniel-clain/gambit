@@ -5,6 +5,14 @@
  * @returns
  */
 
+import { round } from "lodash"
+import {
+  FighterInfo,
+  KnownFighterInfo,
+  KnownFighterStat,
+  StatName,
+} from "../interfaces/front-end-state-interface"
+
 export type OptionProbability<T> = {
   option: T
   probability: number
@@ -12,7 +20,7 @@ export type OptionProbability<T> = {
 
 export function selectByProbability<T>(
   optionProbabilities: OptionProbability<T>[]
-): T {
+): T | undefined {
   const filteredOptionProbabilities = optionProbabilities.filter(
     (x) => x.probability
   )
@@ -21,7 +29,13 @@ export function selectByProbability<T>(
       totalProbability + (probability || 0),
     0
   )
-  const randomProbability = randomNumber({ from: 1, to: totalProbability })
+  if (totalProbability < 1) {
+    return undefined
+  }
+  const randomProbability = round(
+    randomNumber({ from: 1, to: totalProbability }),
+    2
+  )
   let probabilityCount = 0
 
   const randomOption = filteredOptionProbabilities.find(({ probability }) => {
@@ -33,6 +47,9 @@ export function selectByProbability<T>(
     else probabilityCount += probability
   })!
 
+  if (!randomOption) {
+    debugger
+  }
   return randomOption.option
 }
 
@@ -62,7 +79,7 @@ export function toCamelCase(string: string): string {
 
 export function randomNumber({ from, to }: { from?: number; to: number }) {
   from = from || 0
-  return Math.round(Math.random() * (to - from) + from)
+  return Math.random() * (to - from) + from
 }
 
 export function toWrittenList(array: string[]): string {
@@ -133,4 +150,28 @@ export const wait = (milliseconds: number): Promise<void> =>
 
 export function twoDec(num: number) {
   return Math.round(num * 100) / 100
+}
+
+export function convertFighterInfoToKnownFighterInfo(
+  fighter: FighterInfo
+): KnownFighterInfo {
+  const { stats, name, goalContract, characterType } = fighter
+  const statsNames = Object.keys(stats) as StatName[]
+
+  const converted = statsNames.reduce((converted, statName) => {
+    const obj: KnownFighterStat = {
+      lastKnownValue: stats[statName],
+      weeksSinceUpdated: 0,
+    }
+
+    return { ...converted, [statName]: obj }
+  }, {} as Record<StatName, KnownFighterStat>)
+
+  const knownFighterInfo: KnownFighterInfo = {
+    name,
+    stats: converted,
+    goalContract,
+    characterType,
+  }
+  return knownFighterInfo
 }

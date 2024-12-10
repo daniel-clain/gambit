@@ -1,6 +1,6 @@
 import { useState } from "react"
-import "./fighter-states.scss"
 import { FighterStateData } from "../../../../../../../interfaces/front-end-state-interface"
+import "./fighter-states.scss"
 
 export interface FighterStatesProps {
   fighterStates: FighterStateData[]
@@ -39,7 +39,7 @@ export const FighterStates = ({ fighterStates }: FighterStatesProps) => {
                     Aggression:
                   </span>
                   {fighter.aggression
-                    ? fighter.aggression.lastKnownValue
+                    ? fighter.aggression?.lastKnownValue
                     : "unknown"}
                 </div>
                 <div className="fighter-state__stats__fighter-stat fighter-state__stats__intelligence">

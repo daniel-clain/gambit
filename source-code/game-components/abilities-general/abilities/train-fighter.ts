@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import { randomNumber } from "../../../helper-functions/helper-functions"
 import Fighter from "../../fighter/fighter"
 import { Game } from "../../game"
@@ -44,7 +45,7 @@ export const trainFighterServer: ServerAbility = {
         newsItemAdded = true
       }
 
-      const randomNum = randomNumber({ to: 1 })
+      const randomNum = round(randomNumber({ to: 1 }))
       if (randomNum === 0) {
         fighter.fighting.stats.baseStrength++
         sourceManager.functions.addToLog({

@@ -1,11 +1,13 @@
+import { Employee } from "../../../interfaces/front-end-state-interface"
 import { Game } from "../../game"
+import { Manager } from "../../manager"
 import { Ability, AbilityData, ServerAbility } from "../ability"
 
 export const sinisterVictory: Ability = {
   name: "Sinister Victory",
-  cost: { money: 10000, actionPoints: 1 },
+  cost: { money: 5000, actionPoints: 1 },
   executes: "End Of Manager Options Stage",
-  notActiveUntilWeek: 20,
+  notActiveUntilWeek: 15,
   canOnlyBeUsedOnce: true,
 }
 
@@ -17,18 +19,24 @@ export const sinisterVictoryServer: ServerAbility = {
 
     console.log(`${manager.has.name} has attempted a sinister victory`)
 
+    const thisManagersTotalThugAndHitmanSkill =
+      getManagersTotalThugAndHitmanSkill(manager)
+
+    const averageOfOtherManagersTotalThugAndHitmanSkill =
+      getAverageOfOtherManagersTotalThugAndHitmanSkill()
+
     console.log(
-      "thisManagersThugAndHitmanStrength() :>> ",
-      thisManagersThugAndHitmanStrength()
+      "thisManagersTotalThugAndHitmanSkill",
+      thisManagersTotalThugAndHitmanSkill
     )
     console.log(
-      "averageOfOtherPlayersThugAndHitmanStrength() / 2 :>> ",
-      averageOfOtherPlayersThugAndHitmanStrength() / 2
+      "averageOfOtherManagersTotalThugAndHitmanSkill",
+      averageOfOtherManagersTotalThugAndHitmanSkill
     )
 
     if (
-      thisManagersThugAndHitmanStrength() >
-      averageOfOtherPlayersThugAndHitmanStrength() / 2
+      thisManagersTotalThugAndHitmanSkill >
+      averageOfOtherManagersTotalThugAndHitmanSkill
     ) {
       thisMangerHasSinisterVictory()
     } else {
@@ -37,34 +45,42 @@ export const sinisterVictoryServer: ServerAbility = {
 
     // Implementation
 
-    function thisManagersThugAndHitmanStrength(): number {
-      const thugCount = manager.has.employees.filter(
-        (e) => e.profession == "Thug"
-      ).length
-      const hitmanCount = manager.has.employees.filter(
-        (e) => e.profession == "Hitman"
-      ).length
-      return thugCount + hitmanCount * 2
+    function getAverageOfOtherManagersTotalThugAndHitmanSkill(): number {
+      const otherManagers = game.has.managers.filter(
+        (m) =>
+          m.has.name != manager.has.name && !m.state.retired && !m.state.inJail
+      )
+      const otherManagerThugAndHitmanSkill = otherManagers.reduce(
+        (total, m) => {
+          const loopManagerThugAndHitmanSkill =
+            getManagersTotalThugAndHitmanSkill(m)
+          return total + loopManagerThugAndHitmanSkill
+        },
+        0
+      )
+
+      if (!otherManagerThugAndHitmanSkill) return 0
+      return otherManagerThugAndHitmanSkill / otherManagers.length
     }
 
-    function averageOfOtherPlayersThugAndHitmanStrength(): number {
-      const otherManagers = game.has.managers.filter(
-        (m) => m.has.name != manager.has.name
+    function getManagersTotalThugAndHitmanSkill(manager: Manager) {
+      return manager.has.employees?.reduce(
+        (totalSkill: number, e: Employee) => {
+          if (e.profession == "Thug") {
+            return totalSkill + e.skillLevel
+          }
+          if (e.profession == "Hitman") {
+            return totalSkill + e.skillLevel * 2
+          }
+          return totalSkill
+        },
+        0
       )
-      const totalThugHitmanStrength = otherManagers.reduce((total, m) => {
-        const thugCount =
-          m.has.employees?.filter((e) => e.profession == "Thug").length || 0
-        const hitmanCount =
-          m.has.employees?.filter((e) => e.profession == "Hitman").length || 0
-        return total + thugCount + hitmanCount * 2
-      }, 0)
-      if (!totalThugHitmanStrength) return 0
-      return totalThugHitmanStrength / otherManagers.length
     }
 
     function thisMangerHasSinisterVictory() {
       game.state.playerHasVictory = {
-        name: manager.has.name,
+        sourceManager: manager.functions.getInfo(),
         victoryType: "Sinister Victory",
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()
@@ -72,7 +88,7 @@ export const sinisterVictoryServer: ServerAbility = {
 
     function thisManagerFailsSinisterVictory() {
       game.state.playerHasFailedVictory = {
-        name: manager.has.name,
+        sourceManager: manager.functions.getInfo(),
         victoryType: "Sinister Victory",
       }
       game.state.isShowingVideo = game.i.getSelectedVideo()

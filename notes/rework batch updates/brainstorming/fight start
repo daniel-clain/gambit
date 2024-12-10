@@ -1,0 +1,7 @@
+- coundown
+
+  - not 1 second intervals, get the modulus remainder for the first time out, then do 1 second each time after that until 0, all clients should start at the same universal time
+
+- paused
+  - when the game is paused, time sych should stop counting, and work through schedule should be off
+  - when unpaused a new start time 3 second in advance should be present for coundown and sync start

@@ -1,10 +1,14 @@
+import { round } from "lodash"
 import gameConfiguration from "../game-settings/game-configuration"
 import { randomNumber } from "../helper-functions/helper-functions"
 import {
   Employee,
   FighterInfo,
   FighterStateData,
+  KnownFighterInfo,
+  KnownFighterStat,
   Loan,
+  StatName,
 } from "../interfaces/front-end-state-interface"
 import { Bet } from "../interfaces/game/bet"
 import { PostFightReportItem } from "../interfaces/game/post-fight-report-item"
@@ -18,35 +22,47 @@ import { Game } from "./game"
 
 export interface KnownManagerStat {
   lastKnownValue: any
-  weeksSinceUpdated: number
+  weeksSinceUpdated: any
 }
 
-export type ManagerStatKey =
-  | "money"
-  | "employees"
-  | "fighters"
-  | "loan"
-  | "evidence"
+export type ManagerKnowableStatKey = keyof Pick<
+  Manager["has"],
+  "money" | "employees" | "fighters" | "loan" | "evidence" | "activityLogs"
+>
 
-export interface KnownManager {
-  name: string
+const z: ManagerKnowableStatKey = "activityLogs"
+
+export interface KnownManager
+  extends IsCharacter,
+    Pick<Manager["has"], "name" | "image">,
+    Partial<
+      Record<
+        keyof Pick<Manager["has"], ManagerKnowableStatKey>,
+        KnownManagerStat
+      >
+    > {
   characterType: "Known Manager"
-  image: ManagerImage
-  money?: KnownManagerStat
-  employees?: KnownManagerStat
-  fighters?: KnownManagerStat
-  loan?: KnownManagerStat
-  evidence?: KnownManagerStat
 }
 
-export interface ManagerInfo {
+const x: KnownManager = {
+  name: "fred",
+  image: "Fat Man",
+  characterType: "Known Manager",
+  activityLogs: { weeksSinceUpdated: 0, lastKnownValue: [] },
+}
+
+type CharacterType = "Manager" | "Known Manager"
+export interface IsCharacter {
+  characterType: CharacterType
+}
+export interface ManagerInfo extends IsCharacter {
   name: string
   characterType: "Manager"
   money: number
   abilities: AbilityName[]
   actionPoints: number
   fighters: FighterInfo[]
-  knownFighters: FighterInfo[]
+  knownFighters: KnownFighterInfo[]
   loan?: Loan
   nextFightBet?: Bet
   employees: Employee[]
@@ -82,10 +98,12 @@ class ManagerHas {
   fighters: Fighter[] = []
   employees: Employee[] = []
   loan?: Loan
-  image: ManagerImage = randomNumber({ to: 1 }) ? "Fat Man" : "Moustache Man"
+  image: ManagerImage = round(randomNumber({ to: 1 }))
+    ? "Fat Man"
+    : "Moustache Man"
   nextFightBet?: Bet
   otherManagers: KnownManager[] = []
-  knownFighters: FighterInfo[] = []
+  knownFighters: KnownFighterInfo[] = []
   activityLogs: ActivityLogItem[] = []
   abilities: AbilityName[] = [
     "Dope Fighter",
@@ -187,27 +205,72 @@ class ManagerFunctions {
     }
   }
 
-  getFighterStateData(fighters: Fighter[]): FighterStateData[] {
+  getKnownFigherInfoForFighters(fighters: Fighter[]): FighterStateData[] {
     return fighters.map((fighter) => {
       const { sick, injured, doping, hallucinating, takingADive } =
         fighter.state
+
+      const fightersAsKnownFighters: KnownFighterInfo[] =
+        this.manager.has.fighters.map((f): KnownFighterInfo => {
+          const { stats, ...rest } = f.getInfo()
+
+          const convertedStats = {} as Record<StatName, KnownFighterStat>
+
+          for (let key in stats) {
+            const statName = key as StatName
+
+            if (statName == "manager") {
+            }
+
+            const stat: KnownFighterStat = {
+              lastKnownValue: stats[statName],
+              weeksSinceUpdated: 0,
+            }
+            convertedStats[statName] = stat
+          }
+
+          const knownFighterInfo: KnownFighterInfo = {
+            ...rest,
+            stats: convertedStats,
+          }
+
+          return knownFighterInfo
+        })
+
       const foundFighter = [
         ...this.manager.has.knownFighters,
-        ...this.manager.has.fighters.map((f) => f.getInfo()),
+        ...fightersAsKnownFighters,
       ].find((kf) => kf.name == fighter.name)
-      if (foundFighter) {
-        const { activeContract, goalContract, name, ...knownFighterStats } =
-          foundFighter
 
-        return {
+      if (foundFighter) {
+        const {
+          name,
+          stats: {
+            intelligence,
+            fitness,
+            aggression,
+            numberOfFights,
+            numberOfWins,
+            strength,
+          },
+        } = foundFighter
+
+        const knownFighter: FighterStateData = {
           name,
           sick,
           hallucinating,
           injured,
           doping,
           takingADive,
-          ...knownFighterStats,
+          intelligence,
+          fitness,
+          aggression,
+          numberOfFights,
+          numberOfWins,
+          strength,
         }
+
+        return knownFighter
       }
       const unknownFighter: FighterStateData = {
         name: fighter.name,

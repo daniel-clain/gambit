@@ -1,137 +1,138 @@
+import { runInAction } from "mobx"
+import { AbilityData } from "../../game-components/abilities-general/ability"
+import {
+  CardName,
+  Employee,
+  JobSeeker,
+} from "../../interfaces/front-end-state-interface"
+import { ActivityLogItem } from "../../types/game/activity-log-item"
+import { frontEndState } from "../front-end-state/front-end-state"
+import { websocketService } from "./websocket-service"
 
-import { websocketService } from './websocket-service'
-import { CardName, Employee, JobSeeker, Modal } from '../../interfaces/front-end-state-interface'
-import { ActivityLogItem } from '../../types/game/activity-log-item';
-import { runInAction } from 'mobx';
-import { frontEndState } from '../front-end-state/front-end-state';
-import { KnownManager } from '../../game-components/manager';
-import { AbilityData } from '../../game-components/abilities-general/ability';
+type ConnectionType = "Local" | "Websockets"
 
-type ConnectionType = 'Local' | 'Websockets'
+export const connectionType: ConnectionType = "Websockets"
 
-
-export const connectionType: ConnectionType = 'Websockets'
-
-export function initialSetup(){
-
+export function initialSetup() {
   websocketService.init()
 
-  let clientId = localStorage.getItem('clientId')
-  if(!clientId){    
+  let clientId = localStorage.getItem("clientId")
+  if (!clientId) {
     clientId = new Date().getTime().toString()
-    localStorage.setItem('clientId', clientId)
+    localStorage.setItem("clientId", clientId)
   }
 
   runInAction(() => {
     frontEndState.clientUIState.clientPreGameUIState.clientId = clientId!
   })
 
-  let clientName = localStorage.getItem('clientName')
-  if(clientName){
+  let clientName = localStorage.getItem("clientName")
+  if (clientName) {
     setName(clientName)
   }
-
-
 }
 
-function setName(name: string){
+function setName(name: string) {
   runInAction(() => {
     frontEndState.clientUIState.clientPreGameUIState.clientName = name
   })
 }
 
-export const setNameAndTryToConnect = name => {
-  if(name){
-    localStorage.setItem('clientName', name)
+export const setNameAndTryToConnect = (name: string | undefined) => {
+  if (name) {
+    localStorage.setItem("clientName", name)
     setName(name)
     connectToGameHost()
   }
 }
 
-function setActiveModal(name?: CardName, data?: unknown){
-  const modalObj = name && {name, data}
-  const {clientManagerUIState} = frontEndState.clientUIState.clientGameUIState
+function setActiveModal(name?: CardName, data?: unknown) {
+  const modalObj = name && { name, data }
+  const { clientManagerUIState } = frontEndState.clientUIState.clientGameUIState
   runInAction(() => {
     clientManagerUIState.activeModal = modalObj
   })
 }
 
-export function showLoanShark(){
-  setActiveModal('Loan Shark', )
+export function showLoanShark() {
+  setActiveModal("Loan Shark")
 }
-export function showKnownFighters(){
-  setActiveModal('Known Fighters')
+export function showKnownFighters() {
+  setActiveModal("Known Fighters")
 }
-export function showManager(managerName: string){
-  setActiveModal('Manager', managerName)
+export function showManager(managerName: string) {
+  setActiveModal("Manager", managerName)
 }
-export function showEmployee(employee: Employee){
-  setActiveModal('Employee', employee)
+export function showEmployee(employee: Employee) {
+  setActiveModal("Employee", employee)
 }
 
-export function showOtherManagers(){
-  setActiveModal('Known Managers')
+export function showOtherManagers() {
+  setActiveModal("Known Managers")
 }
-export function showReport(){
-  setActiveModal('Manager Report')
+export function showReport() {
+  setActiveModal("Manager Report")
 }
-export function showWinOptions(){
-  setActiveModal('Win Options')
+export function showWinOptions() {
+  setActiveModal("Win Options")
 }
-export function showGameExplanation(){
-  setActiveModal('Game Explanation')
+export function showGameExplanation() {
+  setActiveModal("Game Explanation")
 }
-export function closeModal(){
+export function closeModal() {
   setActiveModal()
 }
-export function showFighter(fighterName: string){
-  setActiveModal('Fighter', fighterName)
+export function showFighter(fighterName: string) {
+  setActiveModal("Fighter", fighterName)
 }
-export function showJobSeeker(jobSeeker: JobSeeker){
-  setActiveModal('Job Seeker', jobSeeker)
+export function showJobSeeker(jobSeeker: JobSeeker) {
+  setActiveModal("Job Seeker", jobSeeker)
 }
-export function showAbility(abilityData: AbilityData){
-  setActiveModal('Ability', abilityData)
+export function showAbility(abilityData: AbilityData) {
+  setActiveModal("Ability", abilityData)
 }
-
-
-
 
 export function connectToGameHost() {
-  const {clientName, clientId} = frontEndState.clientUIState.clientPreGameUIState
-  clientName ? websocketService.sendUpdate.connectToHost({name: clientName, id: clientId}) : alert('You must submit a name')
+  const { clientName, clientId } =
+    frontEndState.clientUIState.clientPreGameUIState
+  clientName
+    ? websocketService.sendUpdate.connectToHost({
+        name: clientName,
+        id: clientId!,
+      })
+    : alert("You must submit a name")
 }
 
-export function getSortedActivityLogs(): ActivityLogItem[]{
-  const {activityLogs} = frontEndState.serverUIState.serverGameUIState!.playerManagerUIState!.managerInfo
-  
+export function getSortedActivityLogs(): ActivityLogItem[] {
+  const { activityLogs } =
+    frontEndState.serverUIState.serverGameUIState!.playerManagerUIState!
+      .managerInfo
 
   const sortedLogs = activityLogs.sort((a, b) => b.weekNumber - a.weekNumber)
   return sortedLogs
 }
 
-export function returnToLobby(){
-  runInAction(() => 
-    frontEndState.clientUIState.clientPreGameUIState.hasGameData = false
+export function returnToLobby() {
+  runInAction(
+    () => (frontEndState.clientUIState.clientPreGameUIState.hasGameData = false)
   )
 }
-export function resetClient(){
-
+export function resetClient() {
   runInAction(() => {
     frontEndState.clientUIState.clientPreGameUIState.hasGameData = false
     frontEndState.serverUIState = {
       serverPreGameUIState: undefined,
-      serverGameUIState: undefined
+      serverGameUIState: undefined,
     }
   })
 }
 
-export function backButtonClicked(){
-  localStorage.removeItem('clientName')
-  localStorage.removeItem('clientId')
-  const {clientId,clientName} = frontEndState.clientUIState.clientPreGameUIState
-  websocketService.sendUpdate.reset({name: clientName, id: clientId})
-  
+export function backButtonClicked() {
+  localStorage.removeItem("clientName")
+  localStorage.removeItem("clientId")
+  const { clientId, clientName } =
+    frontEndState.clientUIState.clientPreGameUIState
+  websocketService.sendUpdate.reset({ name: clientName, id: clientId })
 
   runInAction(() => {
     frontEndState.clientUIState.isConnectedToGameHost = false

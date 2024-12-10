@@ -1,3 +1,21 @@
 - request animation frame
 - useMemo, useCallback
 - break components appart so that timestep updates are only causeing minimal things to reprocess
+
+* if the browser is refreshed while a fight is running
+
+  - it should not do a countdown for that player,
+  - it should see that start time was in the past, it should calculate how many milliseconds have passed since the start time, it should set the time sync value as that time and play as normal
+  - when the component resumes, it should be server time step plus miliseconds since start time
+
+* most important thing related to timing is
+
+  - each client should have their fight syncronised
+  - shouldnt use polling cos bad for performance and acuracy
+  - fight should start and end at same time for all players
+  - event based could put the time out for each player, so some strategy is needed to make sure they finish at the same time
+  - pause and refresh scenarios need to be considered
+
+* strategy is
+  - fight is responsible for setting the state for each fighter, fighters dont manage time
+  - when a fighter event finishes, the timers arent based on the last event, theyre based on time since start

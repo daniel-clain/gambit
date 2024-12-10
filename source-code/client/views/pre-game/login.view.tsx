@@ -1,5 +1,4 @@
 import { observer } from "mobx-react"
-import * as React from "react"
 import { useState } from "react"
 import { setNameAndTryToConnect } from "../../front-end-service/front-end-service"
 import { frontEndState } from "../../front-end-state/front-end-state"
@@ -46,8 +45,29 @@ export const Login_View = observer(() => {
       ) : (
         <div className="not-connected-to-websockets-message">
           Not connected to websocket server
+          <button onClick={handleRestart}>Restart Server</button>
         </div>
       )}
     </div>
   )
+
+  async function handleRestart() {
+    try {
+      const response = await fetch("http://localhost:9999/restart-server", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to restart server")
+      }
+
+      const result = await response.json()
+      alert("Server restarted successfully")
+    } catch (error: any) {
+      alert("Error: " + error.message)
+    }
+  }
 })

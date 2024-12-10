@@ -1,20 +1,17 @@
-import * as React from "react"
+import { PropsWithChildren } from "react"
 import { closeModal } from "../../../../../../front-end-service/front-end-service"
-import './modal.scss'
+import "./modal.scss"
 
-
-
-export const Modal = ((props) =>  {  
+type Props = {
+  onClose?: () => void
+}
+export const Modal = (props: PropsWithChildren<Props>) => {
   return (
-    <div className='modal-container'>
-      <div className='modal-blackout' onClick={
-        () => closeModal()
-      }></div>
-      <div className='modal'>
-        <div className='modal__content'>
-          {props.children}
-        </div>
-      </div>   
-    </div>   
+    <div className="modal-container">
+      <div className="modal-blackout" onClick={() => closeModal()}></div>
+      <div className="modal">
+        <div className="modal__content">{props.children}</div>
+      </div>
+    </div>
   )
-})
+}

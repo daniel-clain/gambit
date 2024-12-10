@@ -23,6 +23,7 @@ import { trainFighterServer } from "./abilities/train-fighter"
 import { wealthVictoryServer } from "./abilities/wealth-victory"
 import { AbilityData, ServerAbility } from "./ability"
 
+import { round } from "lodash"
 import { randomNumber } from "../../helper-functions/helper-functions"
 import { giveUpServer } from "./abilities/give-up"
 import { getAbilitySourceManager } from "./ability-service-server"
@@ -185,6 +186,7 @@ export class AbilityProcessor {
     const ability: ServerAbility = this.abilities.find(
       (ability) => ability.name == abilityData.name
     )!
+    console.log("ability", ability)
     this.subtractCost(ability, abilityData)
     const { weekNumber } = this.game.has.weekController
 
@@ -254,7 +256,9 @@ export class AbilityProcessor {
       if (numberOfTiedInstances == 1)
         selectedSourceName = bestOfferInstances[0].source.name
       else {
-        const randomSelection = randomNumber({ to: numberOfTiedInstances - 1 })
+        const randomSelection = round(
+          randomNumber({ to: numberOfTiedInstances - 1 })
+        )
         selectedSourceName = bestOfferInstances[randomSelection].source.name
       }
       offerContractTarget.instances.forEach((offerContractInstance) => {
@@ -302,7 +306,7 @@ export class AbilityProcessor {
             (fighter) => fighter.name == target!.name
           )!.state.goalContract!
 
-        const randomThreshold = (randomNumber({ to: 5 }) + 5) / 10
+        const randomThreshold = round(randomNumber({ to: 5 }) + 5) / 10
         if (
           goalContract &&
           contractOffer.weeklyCost < goalContract.weeklyCost * randomThreshold

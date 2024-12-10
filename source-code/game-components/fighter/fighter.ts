@@ -1,8 +1,8 @@
+import { round } from "lodash"
 import { randomNumber } from "../../helper-functions/helper-functions"
 import { FighterInfo } from "../../interfaces/front-end-state-interface"
 import { Skin } from "../../types/fighter/skin"
 import FighterFighting from "./fighter-fighting/fighter-fighting"
-import FighterStats from "./fighter-fighting/stats"
 import FighterState from "./fighter-state"
 
 export default class Fighter {
@@ -12,6 +12,8 @@ export default class Fighter {
 
   constructor(public name: string) {
     this.fighting = new FighterFighting(this)
+
+    console.log("stam", this.fighting.stamina)
 
     this.determineSkin()
   }
@@ -33,12 +35,14 @@ export default class Fighter {
 
     const halfOfMainStats = Math.round(mainStatsCombined * 0.5)
 
-    const randomRange = randomNumber({ to: halfOfMainStats }) + halfOfMainStats
+    const randomRange = round(
+      randomNumber({ to: halfOfMainStats }) + halfOfMainStats
+    )
 
     const weeklyCost = randomRange
 
     this.state.goalContract = {
-      numberOfWeeks: randomNumber({ to: 1 }) ? 5 : 6,
+      numberOfWeeks: round(randomNumber({ to: 1 })) ? 5 : 6,
       weeklyCost,
     }
   }
@@ -50,33 +54,26 @@ export default class Fighter {
       activeContract,
       goalContract,
       manager,
+      publicityRating,
     } = this.state
+    const { baseStrength, baseFitness, baseIntelligence, baseAggression } =
+      this.fighting.stats
+
     return {
       name: this.name,
       characterType: "Fighter",
-      ...getStats(this.fighting.stats),
-      numberOfFights: { weeksSinceUpdated: 0, lastKnownValue: numberOfFights },
-      numberOfWins: { weeksSinceUpdated: 0, lastKnownValue: numberOfWins },
-      manager: { weeksSinceUpdated: 0, lastKnownValue: manager?.has.name },
+      stats: {
+        strength: baseStrength,
+        fitness: baseFitness,
+        intelligence: baseIntelligence,
+        aggression: baseAggression,
+        numberOfFights,
+        numberOfWins,
+        manager: manager?.has.name ?? null,
+        publicityRating,
+      },
       activeContract,
       goalContract,
-    }
-
-    function getStats({
-      baseStrength,
-      baseFitness,
-      baseIntelligence,
-      baseAggression,
-    }: FighterStats) {
-      return {
-        strength: { weeksSinceUpdated: 0, lastKnownValue: baseStrength },
-        fitness: { weeksSinceUpdated: 0, lastKnownValue: baseFitness },
-        intelligence: {
-          weeksSinceUpdated: 0,
-          lastKnownValue: baseIntelligence,
-        },
-        aggression: { weeksSinceUpdated: 0, lastKnownValue: baseAggression },
-      }
     }
   }
 }

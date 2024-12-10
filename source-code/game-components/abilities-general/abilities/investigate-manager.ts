@@ -1,7 +1,13 @@
 import { random } from "lodash"
 import { toWrittenList } from "../../../helper-functions/helper-functions"
+import { ActivityLogItem } from "../../../types/game/activity-log-item"
 import { Game } from "../../game"
-import { KnownManager, KnownManagerStat, Manager } from "../../manager"
+import {
+  KnownManager,
+  KnownManagerStat,
+  Manager,
+  ManagerKnowableStatKey,
+} from "../../manager"
 import { Ability, AbilityData, ServerAbility } from "../ability"
 import { getAbilitySourceManager } from "../ability-service-server"
 
@@ -13,11 +19,9 @@ export const investigateManager: Ability = {
 }
 
 type KnownStatsItem = {
-  key: KnownStatKey
+  key: ManagerKnowableStatKey
   value: KnownManagerStat
 }
-
-type KnownStatKey = "money" | "employees" | "fighters" | "loan" | "evidence"
 
 export const investigateManagerServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game) {
@@ -37,16 +41,18 @@ export const investigateManagerServer: ServerAbility = {
     const knownManager: KnownManager = sourceManager.has.otherManagers.find(
       (m) => m.name == target!.name
     )!
-
     const discoveredStats: KnownStatsItem[] = getRandomStatsFromManager()
-
+    console.log("discoveredStats", discoveredStats)
     discoveredStats.forEach((stat) => {
-      const key = stat.key as KnownStatKey
+      const key = stat.key as ManagerKnowableStatKey
+
+      console.log("key", key)
       knownManager[key] = {
-        lastKnownValue: stat.value,
+        lastKnownValue: stat.value.lastKnownValue,
         weeksSinceUpdated: 0,
       } as KnownManagerStat
     })
+    console.log("discoveredStats", discoveredStats)
 
     sourceManager.functions.addToLog({
       weekNumber,
@@ -60,11 +66,14 @@ export const investigateManagerServer: ServerAbility = {
     //implementation
 
     function getRandomStatsFromManager(): any {
-      const invalidKeys = [
-        "name",
-        "image",
-        "characterType",
-      ] as (keyof KnownManager)[]
+      const validKeys: ManagerKnowableStatKey[] = [
+        "money",
+        "employees",
+        "fighters",
+        "loan",
+        "evidence",
+        "activityLogs",
+      ]
       let numberOfStats = privateAgent.skillLevel
 
       return getUpdatedStats()
@@ -92,31 +101,42 @@ export const investigateManagerServer: ServerAbility = {
         //implementation
 
         function getStat(): KnownStatsItem {
-          const learnableStats = (Object.keys(knownManager) as KnownStatKey[])
-            .filter((key) => !invalidKeys.includes(key))
+          const x = targetManager.has
+          const targetManagerKeys = Object.keys(targetManager.has) as Array<
+            keyof Manager["has"]
+          >
+          console.log("knownManagerKeys", targetManagerKeys)
+          const learnableStats = targetManagerKeys
+            .filter((key) => validKeys.includes(key as any))
             .filter((key) => !knownStats.includes(key))
             .filter((key) => !updatedStats.some((stat) => stat.key == key))
+          console.log("learnableStats", learnableStats)
 
           const randomStatIndex = random(learnableStats.length - 1)
-          const statKey = learnableStats[randomStatIndex]
-          const x = targetManager.has[statKey]
+          const statKey = learnableStats[
+            randomStatIndex
+          ] as ManagerKnowableStatKey
+          let statValue = targetManager.has[statKey]
+          if (statKey == "activityLogs") {
+            statValue = (statValue as ActivityLogItem[])
+              .filter((l) => l.type != "new week")
+              .slice(0, 5)
+          }
+          console.log("statKey", statKey, statValue)
           return {
             key: statKey,
             value: {
-              lastKnownValue: x,
+              lastKnownValue: statValue,
               weeksSinceUpdated: 0,
             },
           }
         }
 
         function getKnownStats(): string[] {
-          return (
-            Object.keys(knownManager) as (keyof Omit<
-              KnownManager,
-              "name" | "image" | "characterType"
-            >)[]
-          )
-            .filter((key) => !invalidKeys.includes(key))
+          const knownManagerKeys = Object.keys(knownManager)
+          console.log("knownManagerKeys", knownManagerKeys)
+          return (knownManagerKeys as ManagerKnowableStatKey[])
+            .filter((key) => validKeys.includes(key))
             .filter((key) => knownManager[key]?.weeksSinceUpdated == 0)
         }
       }

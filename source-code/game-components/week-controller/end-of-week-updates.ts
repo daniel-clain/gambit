@@ -1,11 +1,15 @@
+import { round } from "lodash"
 import gameConfiguration from "../../game-settings/game-configuration"
-import { randomNumber } from "../../helper-functions/helper-functions"
+import {
+  convertFighterInfoToKnownFighterInfo,
+  randomNumber,
+} from "../../helper-functions/helper-functions"
 import {
   Employee,
-  FighterInfo,
-  FighterStatKey,
+  KnownFighterInfo,
   KnownFighterStat,
   Professional,
+  StatName,
 } from "../../interfaces/front-end-state-interface"
 import Fighter from "../fighter/fighter"
 import { Game } from "../game"
@@ -13,7 +17,7 @@ import {
   KnownManager,
   KnownManagerStat,
   Manager,
-  ManagerStatKey,
+  ManagerKnowableStatKey,
 } from "../manager"
 
 export function doEndOfWeekUpdates(game: Game) {
@@ -99,13 +103,16 @@ export function doEndOfWeekUpdates(game: Game) {
     fighters.forEach((fighter) => {
       let { stats } = fighter.fighting
 
-      if (stats.fitness > 8 && randomNumber({ from: 1, to: 3 }) == 3)
+      if (stats.fitness > 8 && round(randomNumber({ from: 1, to: 3 })) == 3)
         stats.baseFitness = reduceStat(stats.baseFitness)
 
-      if (stats.strength > 8 && randomNumber({ from: 1, to: 3 }) == 3)
+      if (stats.strength > 8 && round(randomNumber({ from: 1, to: 3 })) == 3)
         stats.baseStrength = reduceStat(stats.baseStrength)
 
-      if (stats.baseAggression > 8 && randomNumber({ from: 1, to: 3 }) == 3)
+      if (
+        stats.baseAggression > 8 &&
+        round(randomNumber({ from: 1, to: 3 })) == 3
+      )
         stats.baseAggression = reduceStat(stats.baseAggression)
     })
 
@@ -140,7 +147,9 @@ export function doEndOfWeekUpdates(game: Game) {
     expiredFighters?.forEach((expiredFighter) => {
       expiredFighter.state.manager = undefined
       expiredFighter.state.goalContract = undefined
-      manager.has.knownFighters.push(expiredFighter.getInfo())
+      manager.has.knownFighters.push(
+        convertFighterInfoToKnownFighterInfo(expiredFighter.getInfo())
+      )
     })
   }
 
@@ -190,14 +199,12 @@ export function doEndOfWeekUpdates(game: Game) {
     })
   }
 
-  function fighterStatsWeeksKnown(knownFighters: FighterInfo[]) {
+  function fighterStatsWeeksKnown(knownFighters: KnownFighterInfo[]) {
     knownFighters.forEach((knownFighter) => {
-      ;(Object.keys(knownFighter) as FighterStatKey[]).forEach(
-        incrementStatWeeks
-      )
+      ;(Object.keys(knownFighter) as StatName[]).forEach(incrementStatWeeks)
 
-      function incrementStatWeeks(key: FighterStatKey) {
-        let knownFighterProperty: KnownFighterStat = knownFighter[key]!
+      function incrementStatWeeks(key: StatName) {
+        let knownFighterProperty: KnownFighterStat = knownFighter.stats[key]!
 
         knownFighterProperty?.lastKnownValue &&
           knownFighterProperty.weeksSinceUpdated++
@@ -206,11 +213,11 @@ export function doEndOfWeekUpdates(game: Game) {
   }
   function managerStatsWeeksKnown(knownManagers: KnownManager[]) {
     knownManagers.forEach((knownManager) => {
-      ;(Object.keys(knownManager) as ManagerStatKey[]).forEach(
+      ;(Object.keys(knownManager) as ManagerKnowableStatKey[]).forEach(
         incrementStatWeeks
       )
 
-      function incrementStatWeeks(key: ManagerStatKey) {
+      function incrementStatWeeks(key: ManagerKnowableStatKey) {
         let stat: KnownManagerStat = knownManager[key]!
         stat?.lastKnownValue && stat.weeksSinceUpdated++
       }
@@ -287,7 +294,7 @@ export function doEndOfWeekUpdates(game: Game) {
 
       const randomFighter =
         manager.has.fighters[
-          randomNumber({ to: manager.has.fighters.length - 1 })
+          round(randomNumber({ to: manager.has.fighters.length - 1 }))
         ]
 
       let randomStat:
@@ -306,7 +313,7 @@ export function doEndOfWeekUpdates(game: Game) {
           "baseFitness",
           "baseIntelligence",
         ] as const
-        randomStat = stats[randomNumber({ to: 3 })]
+        randomStat = stats[round(randomNumber({ to: 3 }))]
         failSafeTries++
         if (failSafeTries == 10) return
       }

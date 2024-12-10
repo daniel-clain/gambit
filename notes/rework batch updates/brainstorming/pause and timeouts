@@ -1,0 +1,14 @@
+- problem, when a fighter component is built, it gets an update to servertimestep and fightisrunning at the same time which runs both use effect blocks, its not obvious which runs first
+
+- create timeouts should be their start time after server start time
+
+- on unpause, set start time to 3 secs before future date, fight time hook should see start time in futuer and do 3 sec coundown
+
+- it seems there should never be a scenario where fight reloads where start time isnt reset in the future
+  - a browser refresh should trigger a disconnect then reconnect, which should trigger a pause unpause, and unpause should set the start time 3 secs in the future
+
+# restarting fight
+
+- in fight test, if the new fight button is clicked
+  - the fighter components dont update because they dont see any change
+    ~ its only looking for the fight is running dependency which doesnt change, because it should be stopped by the date becomming in the future

@@ -1,0 +1,6 @@
+# what it cant be
+
+- time updates on an interval and each fighter watches to see what is current state
+  - because the timing will be off
+    ~ quick things will be skipped
+    ~ they will react to things before they happen

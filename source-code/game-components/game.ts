@@ -1,15 +1,18 @@
-import { VideoName } from "../client/videos/videos"
 import { GameHost } from "../game-host/game-host"
 import { ConnectedClient } from "../game-host/game-host.types"
 import gameConfiguration from "../game-settings/game-configuration"
 import { randomNumberDigits } from "../helper-functions/helper-functions"
 import {
   Professional,
+  SelectedVideo,
   ServerGameUIState,
 } from "../interfaces/front-end-state-interface"
 import { GameInfo } from "../interfaces/game/game-info"
 import { GameType } from "../types/game/game-type"
-import { VictoryType } from "../types/game/victory-type"
+import {
+  PlayerHasFailedVictory,
+  PlayerHasVictory,
+} from "../types/game/victory-and-loss"
 import { AbilityProcessor } from "./abilities-general/ability-processor"
 import ConnectionManager from "./connection-manager"
 import Fighter from "./fighter/fighter"
@@ -47,22 +50,11 @@ import { WeekController } from "./week-controller/week-controller"
 
 export class GameState {
   paused: boolean
-  playerHasVictory: {
-    name: string
-    victoryType: VictoryType
-  }
-  playerHasFailedVictory: null | {
-    name: string
-    victoryType: VictoryType
-  }
+  playerHasVictory: PlayerHasVictory | null
+  playerHasFailedVictory: PlayerHasFailedVictory | null
   finalTournament: FinalTournament | null
 
-  isShowingVideo:
-    | undefined
-    | {
-        name: VideoName
-        index: number
-      }
+  isShowingVideo?: SelectedVideo
 
   gameIsFinished: boolean
 
@@ -193,23 +185,21 @@ class GameFunctions {
           : null,
       weekStage: activeStage?.name,
       hasGameDisplay: !!gameDisplays?.length,
-      displayManagerUIState: manager
+      displayManagerUiData: manager
         ? undefined
         : {
-            weekStage: activeStage.name,
             timeLeft: timeLeft!,
             jobSeekers,
             nextFightFighters: activeFight?.fighters.map(
               (fighter) => fighter.name
             ),
-            managersDisplayInfo: this.game.has.managers
-              .filter((m) => !m.state.retired)
-              .map((m) => ({
-                name: m.has.name,
-                ready: m.state.readyForNextFight,
-                image: m.has.image,
-                bet: m.has.nextFightBet,
-              })),
+            managersDisplayInfo: this.game.has.managers.map((m) => ({
+              name: m.has.name,
+              ready: m.state.readyForNextFight,
+              image: m.has.image,
+              bet: m.has.nextFightBet,
+              retired: m.state.retired,
+            })),
           },
       playerManagerUIState: !manager
         ? undefined
@@ -237,11 +227,17 @@ class GameFunctions {
       selectedVideo: this.game.state.isShowingVideo,
       enoughFightersForFinalTournament:
         fighters.filter((f) => f.state.manager).length >= 8,
-      finalTournamentBoard: finalTournament?.finalTournamentBoard,
+
+      finalTournamentState: !finalTournament
+        ? undefined
+        : {
+            finalTournamentBoard: finalTournament.finalTournamentBoard,
+            fightUiState: finalTournament.activeFight?.fightUiState,
+          },
       preFightNewsUIState: {
         newsItem: preFightNewsStage.activeNewsItem,
       },
-      fightUIState: this.i.getFightUiState(manager),
+      fightDayState: this.i.getFightUiState(manager),
       gameFinishedData: this.game.state.gameIsFinished
         ? this.i.getGameFinishedData()
         : undefined,
@@ -286,7 +282,7 @@ export class Game {
 
     this.has.managers.forEach((manager) => {
       manager.has.otherManagers = this.has.managers
-        .filter((m) => m.has.name != manager.has.name && !manager.state.retired)
+        .filter((m) => m.has.name != manager.has.name)
         .map((m) => {
           const knownManager: KnownManager = {
             name: m.has.name,

@@ -4,45 +4,27 @@ import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityToPunch = (
   fighting: FighterFighting,
-  generalAttackProbability: number
+  generalAttackProbability: number | null
 ): number => {
-  const { intelligence, aggression } = fighting.stats
-  const { logistics, proximity, fighter } = fighting
+  const { intelligence } = fighting.stats
+  const { logistics, fighter } = fighting
   const closestEnemy = logistics.closestRememberedEnemy
-  if (!closestEnemy) return 0
-  const enemyAction = closestEnemy.fighting.getCurrentAction()
-
-  if (fighter.state.hallucinating) return 1
+  if (!closestEnemy || generalAttackProbability === null) return 0
 
   let probability = 20
-
   probability += generalAttackProbability
 
   if (logistics.hasAttackOpportunity(closestEnemy)) {
-    probability += 3 * intelligence
-    probability += aggression
-
-    if (enemyAction == "recover") {
-      probability += intelligence * 2
-      probability += aggression
+    if (!logistics.enemyHasLowStamina(closestEnemy)) {
+      probability += intelligence * 4
     }
-    if (isEnemyFacingAway(closestEnemy, fighter)) {
-      probability += intelligence * 2
-      probability += aggression
+
+    if (!isEnemyFacingAway(closestEnemy, fighter)) {
+      probability += intelligence * 4
     }
-  }
-
-  if (!logistics.enemyHasLowStamina(closestEnemy))
-    probability += 5 + intelligence
-
-  if (
-    fighter.state.hallucinating &&
-    !proximity.enemyWithinStrikingRange(closestEnemy)
-  ) {
-    probability *= 0.1
   }
 
   if (probability < 0) probability = 0
 
-  return round(probability)
+  return round(probability, 2)
 }

@@ -1,0 +1,7 @@
+* the logic is too complex, it could be a lot simpler
+* waht are the factors relevant to attack
+  - proximity, agression, rampage, existing move action, intelligence, just took a hit, enemy just did an attack, just dodged or blocked, trapped, flanked, energy level, enemy overall stats, current stamina or spirit, enemy stamina or spirit or energy
+
+* some are specifically related to melee range or not
+
+* intelligent needs to be distinguished from not intelligent

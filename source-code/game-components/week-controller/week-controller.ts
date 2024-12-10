@@ -38,12 +38,16 @@ export class WeekController {
 
   startWeek(number: number) {
     let { abilityProcessor } = this.game.has
+    let { state } = this.game
     this.setUpWeek(number)
       .then(() => this.doStage(this.managerOptionsStage))
       .then(() =>
         abilityProcessor.executeAbilities("End Of Manager Options Stage")
       )
-      .then(() => this.showVideo())
+      .then(() => {
+        console.log("isShowingVideo", state.isShowingVideo)
+        if (state.isShowingVideo) return this.showVideo()
+      })
       .then(() => this.checkFinalTournament())
       .then(() => {
         const { state } = this.game
@@ -51,14 +55,14 @@ export class WeekController {
           this.onPlayerVictory()
         } else {
           state.playerHasFailedVictory = null
-          this.doStage(this.preFightNewsStage)
+          return this.doStage(this.preFightNewsStage)
             .then(() => this.checkDefaultWinner())
             .then(() => {
               const { state } = this.game
               if (state.playerHasVictory) {
                 this.onPlayerVictory()
               } else {
-                this.doStage(this.fightDayStage)
+                return this.doStage(this.fightDayStage)
                   .then(() => abilityProcessor.executeAbilities("End Of Week"))
                   .then(() => doEndOfWeekUpdates(this.game))
                   .then(() => this.startWeek(++this.weekNumber))
@@ -102,7 +106,7 @@ export class WeekController {
     if (nonRetiredPlayers.length == 1 && managers.length > 1) {
       const defaultWinner = nonRetiredPlayers[0]
       this.game.state.playerHasVictory = {
-        name: defaultWinner.has.name,
+        sourceManager: defaultWinner.functions.getInfo(),
         victoryType: "Default Victory",
       }
       this.game.state.isShowingVideo = this.game.i.getSelectedVideo()
@@ -118,12 +122,17 @@ export class WeekController {
     if (!state.isShowingVideo) {
       return
     }
-    const videoDuration = this.videos.find((v) => {
+    const videoObj = this.videos.find((v) => {
       return v.name == state.isShowingVideo!.name
-    })!.videos[state.isShowingVideo.index].duration
+    })!
 
-    await wait(videoDuration * 1000)
+    const video = videoObj.videos[state.isShowingVideo.index]
+
+    console.log(`waiting for ${videoObj.name}, ${video.duration} secs`)
+
+    await wait(video.duration * 1000)
     state.isShowingVideo = undefined
+    return
   }
 
   async checkFinalTournament(): Promise<void> {

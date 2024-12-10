@@ -46,7 +46,7 @@ export class GameHost_Implementation {
         (g) => g.creator.id == client.id
       )
     ) {
-      throw "shouldnt be able to create game if already in one"
+      console.error("--shouldnt be able to create game if already in one")
     }
     return true
   }

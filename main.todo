@@ -1,13 +1,6 @@
 New:
-  ☐ visually show if fighter is under influence of low energy
-    - eg, attack cooldown longer if low energy
-  ☐ redo fighter timers,
-    - needs concept of timer for thing like (last combat action, on a rampage, move action, memory of enemy behind)
-    - have an object for for timers that works with the fight time step where it resolves when the step gets to it
-  ☐ move speed relative to cautious retreat and desperate retreat
-    - unused movement func moveSpeed()
-  ☐ show low energy state
-  ☐ show if affected by poison, hallucination, assaulted
+  ☐ money fall blocks winner name,
+    - doesnt reset
 
 Deal Breakers:
   ☐ make sure view takes up 100% and doesnt need to scroll for address bar height
@@ -18,8 +11,6 @@ Deal Breakers:
     - coins not hidden after fall
     - unplayable, too slow
       ~ must be too much too update each each websocket msg
-  ☐ too many new reports is a drag
-    - news report says multiple tiems if same target more than once
   ☐ when running on server, seems to be slower, and looses syc with other clients
     - can tell if problem is servre side or client side
     - if difference isnt noticed when runnign local, must be server diff

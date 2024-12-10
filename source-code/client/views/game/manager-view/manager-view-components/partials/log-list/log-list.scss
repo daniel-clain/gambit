@@ -1,14 +1,17 @@
-
-.list{
-  &__row{
-
-    &--critical{
+.list {
+  &__row {
+    &--critical {
       background-color: #ffdede;
       color: #ce0000;
     }
     &--new-week {
       border-bottom: 2px black solid;
-      background: rgba(0,0,0,0.1);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    &__message {
+      white-space: pre-wrap;
+      flex: 1;
     }
   }
 }

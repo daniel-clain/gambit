@@ -4,16 +4,17 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev-testing-grounds": "parcel serve source-code/client/different-build-modes/testing-grounds/index.html --dist-dir host-packages/testing-grounds",
-    "dev": "parcel watch source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game --no-content-hash",
+    "dev": "rimraf host-packages/main-game && parcel watch source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game --no-content-hash",
     "prod": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod --no-content-hash",
     "run-server": "cross-env NODE_ENV=development nodemon -q server.ts",
     "run-server-prod": "cross-env NODE_ENV=production nodemon -q server.ts",
     "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test"
   },
   "dependencies": {
+    "@google-cloud/text-to-speech": "^5.6.0",
     "@types/lodash": "^4.17.12",
     "date-fns": "^4.1.0",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.4.7",
     "express": "^4.18.1",
     "lodash": "^4.17.21",
     "mobx": "^6.6.2",
@@ -46,6 +47,8 @@
     "jest": "^29.3.1",
     "process": "^0.11.10",
     "random": "^5.1.1",
-    "ts-node": "^10.9.2"
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
   }
 }

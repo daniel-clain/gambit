@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import { VideoName } from "../client/videos/videos"
 import gameConfiguration from "../game-settings/game-configuration"
 import {
@@ -14,8 +15,7 @@ import {
 } from "../interfaces/front-end-state-interface"
 import { Profession } from "../types/game/profession"
 import SkillLevel from "../types/game/skill-level.type"
-import { GameFightUIState } from "../types/game/ui-fighter-state"
-import Fight from "./fight/fight"
+import { FightDayState } from "../types/game/ui-fighter-state"
 import Fighter from "./fighter/fighter"
 import { Game } from "./game"
 import { Manager } from "./manager"
@@ -43,16 +43,24 @@ export class Game_Implementation {
     const newFighters: Fighter[] = []
     for (; newFighters.length < baseFightersCount; ) {
       const newFighter = new Fighter(this.shuffledNames.pop()!)
-      newFighter.fighting.stats.baseStrength = randomNumber({ from: 1, to: 4 })
-      newFighter.fighting.stats.baseFitness = randomNumber({ from: 1, to: 4 })
-      newFighter.fighting.stats.baseAggression = randomNumber({
-        from: 1,
-        to: 5,
-      })
-      newFighter.fighting.stats.baseIntelligence = randomNumber({
-        from: 1,
-        to: 10,
-      })
+      newFighter.fighting.stats.baseStrength = round(
+        randomNumber({ from: 1, to: 4 })
+      )
+      newFighter.fighting.stats.baseFitness = round(
+        randomNumber({ from: 1, to: 4 })
+      )
+      newFighter.fighting.stats.baseAggression = round(
+        randomNumber({
+          from: 1,
+          to: 5,
+        })
+      )
+      newFighter.fighting.stats.baseIntelligence = round(
+        randomNumber({
+          from: 1,
+          to: 10,
+        })
+      )
 
       newFighter.fighting.reset()
       newFighters.push(newFighter)
@@ -66,16 +74,20 @@ export class Game_Implementation {
       const numberOfFights = newFighters.length * 5
 
       for (let fight = 0; fight < numberOfFights; fight++) {
-        const randomNumberOfFightersInTheFight = randomNumber({
-          from: 2,
-          to: 4,
-        })
+        const randomNumberOfFightersInTheFight = round(
+          randomNumber({
+            from: 2,
+            to: 4,
+          })
+        )
 
         let randomFighters: Fighter[] = []
-        for (; randomFighters.length != randomNumberOfFightersInTheFight; ) {
-          const randomFighterIndex = randomNumber({
-            to: newFighters.length - 1,
-          })
+        for (; randomFighters.length < randomNumberOfFightersInTheFight; ) {
+          const randomFighterIndex = round(
+            randomNumber({
+              to: newFighters.length - 1,
+            })
+          )
           const randomFighter = newFighters[randomFighterIndex]
           const fighterAlreadyInList = randomFighters.some(
             (fighter) => fighter.name == randomFighter.name
@@ -137,7 +149,7 @@ export class Game_Implementation {
             () =>
               new Professional(
                 profession,
-                <SkillLevel>randomNumber({ from: 1, to: 3 }),
+                <SkillLevel>round(randomNumber({ from: 1, to: 3 })),
                 this.shuffledNames.pop()
               )
           ),
@@ -178,14 +190,14 @@ export class Game_Implementation {
             gameConfiguration.professionalTypeProbability[profession]
               .probability,
         }))
-        return selectByProbability(professionProbabilities)
+        return selectByProbability(professionProbabilities)!
       }
     }
 
     function createProfessional(profession: Profession) {
       return new Professional(
         profession,
-        <SkillLevel>randomNumber({ from: 1, to: 3 }),
+        <SkillLevel>round(randomNumber({ from: 1, to: 3 })),
         shuffledNames.pop()
       )
     }
@@ -247,75 +259,64 @@ export class Game_Implementation {
 
   getSelectedVideo(): SelectedVideo {
     const { playerHasVictory, playerHasFailedVictory } = this.game.state
-    const name: VideoName = (() => {
-      if (playerHasVictory) {
-        switch (playerHasVictory.victoryType) {
-          case "Sinister Victory":
-            return "Sinister Victory"
-          case "Wealth Victory":
-            return "Wealth Victory"
-          case "Domination Victory":
-            return "Domination Victory"
-          case "Default Victory":
-            return "Default Victory"
-        }
-      }
-      if (playerHasFailedVictory) {
-        switch (playerHasFailedVictory.victoryType) {
-          case "Sinister Victory":
-            return "Sinister Victory Fail"
-          case "Wealth Victory":
-            return "Wealth Victory Fail"
-        }
-      }
-    })()!
-    const videos = gameConfiguration.videos.find((v) => v.name == name)!.videos
-    const index = randomNumber({ to: videos.length - 1 })
+    const videoName: VideoName = playerHasVictory
+      ? playerHasVictory.victoryType
+      : (() => {
+          const t = playerHasFailedVictory?.victoryType
+          const vidName =
+            t == "Sinister Victory"
+              ? "Sinister Victory Fail"
+              : t == "Wealth Victory"
+              ? "Wealth Victory Fail"
+              : undefined
+          if (!vidName) {
+            throw `could not find  video name for fail ${playerHasFailedVictory?.victoryType}`
+          }
+          return vidName
+        })()
 
-    return { name, index }
+    console.log("name", name)
+    const videos = gameConfiguration.videos.find(
+      (v) => v.name == videoName
+    )!.videos
+    const index = round(randomNumber({ to: videos.length - 1 }))
+    const selectedVideo = {
+      name: videoName,
+      index,
+      sourceManager: playerHasVictory
+        ? playerHasVictory!.sourceManager
+        : playerHasFailedVictory!.sourceManager,
+    }
+    console.log("selectedVideo", selectedVideo)
+    return selectedVideo
   }
 
-  getFightUiState(manager?: Manager): GameFightUIState {
+  getFightUiState(manager?: Manager): FightDayState {
     const {
       has: {
         weekController: { activeFight, activeStage },
       },
-      state: { finalTournament },
     } = this.game
 
-    if (finalTournament) {
-      const { activeFight } = finalTournament
-      const finalTournamentFight: GameFightUIState = {
-        ...activeFight!.fightUiState,
-        managersBets: [],
-        knownFighterStateData: !activeFight
-          ? []
-          : manager && getFighterStateData(activeFight, manager),
-      }
-      return finalTournamentFight
-    }
     const fightDay = activeStage as FightDayStage
-    const weekFight: GameFightUIState = {
-      ...activeFight.fightUiState,
+    const weekFight: FightDayState = {
+      fightUiState: activeFight.fightUiState,
       managersBets: fightDay.managersBets,
       managersWinnings: fightDay.managersWinnings,
       knownFighterStateData:
-        manager && getFighterStateData(activeFight, manager),
+        manager &&
+        manager.functions.getKnownFigherInfoForFighters(activeFight.fighters),
     }
     return weekFight
-
-    function getFighterStateData(fight: Fight, manager: Manager) {
-      return manager.functions.getFighterStateData(fight.fighters)
-    }
   }
 
   getGameFinishedData(): GameFinishedData {
     const { state, has } = this.game
     const winner = {
-      name: state.playerHasVictory.name,
-      victoryType: state.playerHasVictory.victoryType,
+      name: state.playerHasVictory!.sourceManager.name,
+      victoryType: state.playerHasVictory!.victoryType,
       image: has.managers.find(
-        (m) => m.has.name == state.playerHasVictory.name
+        (m) => m.has.name == state.playerHasVictory!.sourceManager.name
       )!.has.image,
     }
     const players = has.managers.map((m) => {

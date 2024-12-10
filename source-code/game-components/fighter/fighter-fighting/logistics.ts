@@ -1,6 +1,9 @@
 import FighterFighting from "./fighter-fighting"
 
-import { canDefendActions } from "../../../types/fighter/action-name"
+import {
+  AfflictionActions,
+  canDefendActions,
+} from "../../../types/fighter/action-name"
 import { Closeness } from "../../../types/fighter/closeness"
 import { Flanked } from "../../../types/fighter/flanked"
 import { Angle } from "../../../types/game/angle"
@@ -19,10 +22,8 @@ export default class Logistics {
 
   hadActionRecently: boolean
   justTurnedAround: boolean
-  justDidAttack: boolean
   justBlocked: boolean
   justDodged: boolean
-  justTookHit: boolean
   rememberedEnemyBehind: Fighter | undefined | null
   persistDirection: Angle
   trapped: boolean
@@ -67,6 +68,21 @@ export default class Logistics {
       return
 
     return { flankers: [this.closestEnemyInFront, this.rememberedEnemyBehind] }
+  }
+  get currentAffliction(): AfflictionActions | undefined {
+    const { timers } = this.fighting
+    return timers.get("hallucinations").active
+      ? "hallucinations"
+      : this.fighting.getCurrentAction() == "flinch"
+      ? "flinch"
+      : this.fighting.getCurrentAction() == "be sick"
+      ? "be sick"
+      : undefined
+  }
+
+  get isHallucinating() {
+    const { timers } = this.fighting
+    return timers.isActive("hallucinations")
   }
 
   get highestThreatEnemy(): Fighter | undefined {
@@ -277,6 +293,11 @@ export default class Logistics {
     )
   }
 
+  get wasJustSick() {
+    const { timers } = this.fighting
+    return timers.get("was just sick").active
+  }
+
   isFacingEnemy(enemy: Fighter) {
     const { facingDirection, proximity } = this.fighting
     return proximity.enemyIsOnThe(facingDirection, enemy)
@@ -323,9 +344,17 @@ export default class Logistics {
     )
   }
 
+  get justTookHit() {
+    return this.fighting.timers.isActive("just took hit")
+  }
+  get justLandedAttack() {
+    return this.fighting.timers.isActive("just landed attack")
+  }
+
   enemyJustAttacked(enemy: Fighter) {
     if (!enemy) return
-    return enemy.fighting.logistics.justDidAttack
+    const enemyAction = enemy.fighting.getCurrentAction()
+    return enemyAction == "punch cooldown" || enemyAction == "kick cooldown"
   }
 
   hasAttackOpportunity(enemy: Fighter) {
@@ -338,7 +367,8 @@ export default class Logistics {
       this.enemyJustAttacked(enemy) ||
       enemyAction == "take hit" ||
       enemyAction == "recover" ||
-      enemyAction == "do nothing"
+      enemyAction == "do nothing" ||
+      enemyAction == "kick cooldown"
     )
   }
 }

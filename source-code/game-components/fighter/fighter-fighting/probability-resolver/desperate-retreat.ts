@@ -1,4 +1,5 @@
 import { round } from "lodash"
+import gameConfiguration from "../../../../game-settings/game-configuration"
 import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
 
@@ -14,49 +15,67 @@ import FighterFighting from "../fighter-fighting"
 
 export function getProbabilityToDesperateRetreat(
   fighting: FighterFighting,
-  generalRetreatProbability: number
+  generalRetreatProbability: number | null
 ) {
-  const { intelligence } = fighting.stats
-  const { logistics, proximity, timers, spirit, movement } = fighting
+  const { intelligence, aggression } = fighting.stats
+  const { logistics, proximity, timers, spirit, movement, stats } = fighting
+  const { increasedProbabilityToDesperateRetreat } =
+    gameConfiguration.afflictions.hallucinating
   const enemy = logistics.closestRememberedEnemy
-  if (!enemy) return 0
+  if (!enemy || generalRetreatProbability === null) return 0
   const enemyCloseness = proximity.getEnemyCombatCloseness(enemy)
 
   const invalid: boolean =
-    generalRetreatProbability == null ||
-    enemyCloseness >= Closeness["nearby"] ||
-    logistics.lowEnergy ||
-    spirit >= 2
+    generalRetreatProbability == null || logistics.lowEnergy
 
   if (invalid) return 0
 
   let probability = generalRetreatProbability
 
+  if (logistics.enemyIsOnARampage(enemy)) {
+    probability += (stats.maxSpirit - spirit) * 10
+  }
+  if (logistics.isHallucinating) {
+    probability += increasedProbabilityToDesperateRetreat
+  }
+
   if (
     timers.isActive("move action") &&
     movement.moveAction == "desperate retreat"
   ) {
-    probability += movement.getExponentialMoveFactor(500)
+    probability += movement.getExponentialMoveFactor(2000)
   }
 
   probability += 60 - spirit * 20
 
-  if (logistics.hasLowStamina) probability += 6 + intelligence * 4
+  probability -= aggression * 2
 
-  if (enemyCloseness == Closeness["striking range"]) {
-    if (logistics.hasRetreatOpportunity(enemy)) {
-      probability += intelligence
-    } else {
-      probability -= intelligence * 4
-    }
+  if (logistics.highEnergy) {
+    probability += 6
   }
-  if (enemyCloseness == Closeness["close"]) {
-    if (logistics.hasRetreatOpportunity(enemy)) {
+
+  if (logistics.hasLowStamina) {
+    probability += 6 + intelligence * 4
+
+    if (logistics.highEnergy) {
       probability += intelligence * 4
+    }
+
+    if (enemyCloseness == Closeness["striking range"]) {
+      if (logistics.hasRetreatOpportunity(enemy)) {
+        probability += intelligence * 4
+      } else {
+        probability -= intelligence * 4
+      }
+    }
+    if (enemyCloseness == Closeness["close"]) {
+      if (logistics.hasRetreatOpportunity(enemy)) {
+        probability += intelligence * 4
+      }
     }
   }
 
   if (probability < 0) probability = 0
 
-  return round(probability)
+  return round(probability, 2)
 }

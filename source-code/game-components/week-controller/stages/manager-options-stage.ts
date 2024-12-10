@@ -1,4 +1,3 @@
-import { Subject } from "rxjs"
 import gameConfiguration from "../../../game-settings/game-configuration"
 import { check } from "../../../helper-functions/helper-functions"
 import IStage from "../../../interfaces/game/stage"
@@ -8,14 +7,12 @@ import { Manager } from "../../manager"
 
 export default class ManagerOptionsStage implements IStage {
   name: WeekStage = "Manager Options"
-  uIUpdateSubject: Subject<void> = new Subject()
   private endStage: (value: void | PromiseLike<void>) => void
   timeLeft: number | undefined
   private timeLeftInterval: NodeJS.Timer
   private timesUpTimer: NodeJS.Timer
   private baseDuration: number
   paused: boolean
-  private updateCount = 0
 
   constructor(private game: Game) {
     this.baseDuration = gameConfiguration.stageDurations.managerOptions
@@ -57,7 +54,6 @@ export default class ManagerOptionsStage implements IStage {
     return setInterval(() => {
       this.timeLeft!--
       this.game.has.weekController.triggerUIUpdate()
-      this.updateCount++
       if (
         this.timeLeft == 0 ||
         this.game.has.managers

@@ -1,0 +1,25 @@
+- chance to show the impact of being afflicted
+- they hve to be interesting, and not the same
+
+- effect of each
+
+  - hallucinations
+
+    - intelligence -= 50%
+    - 10% chance to stop to punch at anything
+    - damage += 10%
+    - energy recovery += 50%
+    - chance to desperate retreat += 50%
+    - chance to rampage += 50%
+
+  - injured
+    - start and max stamina reduced by 2
+    - damage taken += 50%
+    - have to do nothing from wincing in pain
+    - +50% chance to rampage
+  - sick
+    - agression to 1 -= 50%
+    - start and max stamina reduced by 2
+    - damage dealt -50%
+    - have to stop to sick
+    - energy regen rate - 50%

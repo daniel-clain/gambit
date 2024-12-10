@@ -188,9 +188,15 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
   }
 
   function getDirectionAlongEdgeClosestToDirection(direction: Angle): Angle {
-    const { edge } = proximity.getClosestEdge(maxAgainstEdgeDistance)
+    const closestEdge = proximity.getClosestEdge(maxAgainstEdgeDistance)
 
-    const [edgeDirection1, edgeDirection2] = getDirectionsAlongEdge(edge)
+    if (!closestEdge) {
+      throw "cant retreat along edge because not close enough"
+    }
+
+    const [edgeDirection1, edgeDirection2] = getDirectionsAlongEdge(
+      closestEdge.edge
+    )
 
     const point1AngleDiff = getSmallestAngleBetween2Directions(
       edgeDirection1,
@@ -250,8 +256,11 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
       )
       return directionAlongEdge
     } else {
-      const { edge } = proximity.getClosestEdge(maxAgainstEdgeDistance)
-      const { point1, point2 } = octagon.edges[edge]
+      const closestEdge = proximity.getClosestEdge(maxAgainstEdgeDistance)
+      if (!closestEdge) {
+        throw "cant retreat along edge because not close enough"
+      }
+      const { point1, point2 } = octagon.edges[closestEdge.edge]
       /* no good */
       const point1Direction = getDirectionOfPosition1ToPosition2(point2, point1)
       const point2Direction = getDirectionOfPosition1ToPosition2(point1, point2)
@@ -314,8 +323,11 @@ export const fighterRetreatImplementation = (fighting: FighterFighting) => {
         }
         return true
       } else {
-        const { edge } = proximity.getClosestEdge(maxAgainstEdgeDistance)
-        const directions = getDirectionsAlongEdge(edge)
+        const closestEdge = proximity.getClosestEdge(maxAgainstEdgeDistance)
+        if (!closestEdge) {
+          throw "cant retreat along edge because not close enough"
+        }
+        const directions = getDirectionsAlongEdge(closestEdge.edge)
         if (!directions.some((x) => x == direction)) {
           return true
         }

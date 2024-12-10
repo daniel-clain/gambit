@@ -1,52 +1,58 @@
-@import '../../../manager-view-style/manager-view-variables';
-.info-box{
+@import "../../../manager-view-style/manager-view-variables";
+.info-box {
   box-sizing: border-box;
   border-radius: 5px 5px 20px 20px;
   box-shadow: 1px 1px 3px 0px grey;
   overflow: hidden;
   background-color: $blue-light;
   margin-bottom: 10px;
-  
-  &__heading{
+
+  &__heading {
     background-color: #2f5d8e;
-    color: white;  
+    color: white;
     font-size: 1.1rem;
     padding: 5px 10px;
   }
-  &__content{
+  &__content {
+    > .info {
+      white-space: pre-wrap;
+    }
+
     padding: 10px;
     > * {
       margin-bottom: 10px;
-      &:last-child{
+      &:last-child {
         margin-bottom: 0;
       }
     }
-    .list{
-      &__row{
+    .list {
+      &__row {
         display: flex;
       }
-      &__label{        
+      &__label {
         text-align: right;
         margin-right: 8px;
       }
-      &__value{
+      &__value {
         flex: 1;
       }
     }
 
-    .grid{
+    .grid {
       line-height: 1.6rem;
       display: grid;
       grid-template-columns: auto 1fr;
 
-      &__label{        
+      &__label {
         text-align: right;
         margin-right: 8px;
       }
-
+      &__value {
+        white-space: pre-wrap;
+      }
     }
 
-    ul{
+    ul {
       margin: 0;
       padding-left: 1.5rem;
     }

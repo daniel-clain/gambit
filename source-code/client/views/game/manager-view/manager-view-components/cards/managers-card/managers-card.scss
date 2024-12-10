@@ -1,19 +1,16 @@
-$image-folder: '../../../../../../images';
-.manager-card{
-
-  .card__two-columns{
-    margin-bottom: 20px;
-  }
-  
-  &__image{
-    width: 150px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    &--fat-man{
-      background-image: url('#{$image-folder}/icons/manager1.png');
-    }
-    &--moustache-man{
-      background-image: url('#{$image-folder}/icons/manager2.jpg');
+$image-folder: "../../../../../../images";
+.managers-card {
+  .manager {
+    &__image {
+      width: 20px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      &--fat-man {
+        background-image: url("#{$image-folder}/icons/manager1.png");
+      }
+      &--moustache-man {
+        background-image: url("#{$image-folder}/icons/manager2.jpg");
+      }
     }
   }
 }

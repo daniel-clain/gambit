@@ -1,6 +1,7 @@
 import express, { RequestHandler } from "express"
 import { GameHost } from "./source-code/game-host/game-host"
 
+import { exec } from "child_process"
 import * as http from "http"
 import { Server } from "socket.io"
 
@@ -14,6 +15,9 @@ const environment = process.env.NODE_ENV
 console.log(environment)
 
 let webSocketServer
+
+let gameHost: GameHost
+
 let mainGameRequestHandler: RequestHandler
 
 if (environment == "development") {
@@ -26,9 +30,25 @@ if (environment == "development") {
   mainGameRequestHandler = express.static("host-packages/main-game-prod")
 }
 
-new GameHost(webSocketServer)
-
 webSocketServer.listen(httpServer)
+
+gameHost = new GameHost(webSocketServer)
+
+app.post("/restart-server", (req, res) => {
+  // Run the script to restart the server (PM2 or any script you prefer)
+  exec("pm2 restart gambit", (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Error restarting server: ${error.message}`)
+      return res.status(500).send("Error restarting server")
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`)
+      return res.status(500).send("Error restarting server")
+    }
+    console.log(`stdout: ${stdout}`)
+    res.status(200).send("Server restarted successfully")
+  })
+})
 
 app.use(mainGameRequestHandler)
 

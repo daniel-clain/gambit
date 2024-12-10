@@ -1,0 +1,13 @@
+$image-folder: "../../../../../../images";
+.manager-card {
+  &__image {
+    background-size: contain;
+    background-repeat: no-repeat;
+    &--fat-man {
+      background-image: url("#{$image-folder}/icons/manager1.png");
+    }
+    &--moustache-man {
+      background-image: url("#{$image-folder}/icons/manager2.jpg");
+    }
+  }
+}

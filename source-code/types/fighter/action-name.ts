@@ -12,6 +12,14 @@ export const retreatActions = [
   "cautious retreat",
 ] as const
 
+export const afflictionActions = [
+  "be sick",
+  "flinch",
+  "hallucinations",
+] as const
+
+export type AfflictionActions = (typeof afflictionActions)[number]
+
 export type RetreatAction = (typeof retreatActions)[number]
 
 export const moveActions = [...retreatActions, "move to attack"] as const
@@ -27,7 +35,11 @@ export const miscActions = ["check flank", "recover", "do nothing"] as const
 export type MiscAction = (typeof miscActions)[number]
 
 // only used for debugging by setting logs
-export type DecideActionName = MoveAction | CombatAction | MiscAction
+export type DecideActionName =
+  | MoveAction
+  | CombatAction
+  | MiscAction
+  | AfflictionActions
 
 export type WarmupAction = `${"turn around" | AttackAction} warmup`
 
@@ -66,9 +78,8 @@ export type ActionName =
   | CooldownAction
   | PostAttackHitAction
   | PostAttackMissAction
-  | AttackAction
+  | CombatAction
+  | MiscAction
+  | AfflictionActions
   | "knocked out"
   | "victory"
-  | "recover"
-  | "do nothing"
-  | "defend"

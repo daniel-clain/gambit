@@ -1,0 +1,97 @@
+$image-folder: "../../../../../../../images";
+
+.fighter {
+  .debug-container {
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    height: 100%;
+
+    &__above {
+      bottom: 100% + 20;
+      width: 140px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  &__action {
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    text-align: center;
+    font-size: 12px;
+  }
+  &__energy-bar {
+    //display: none;
+    height: 4px;
+    width: 50px;
+    border: solid 1px;
+    &__inner {
+      height: 100%;
+      background-color: rgb(157, 191, 255);
+    }
+  }
+  &__marker {
+    position: absolute;
+    width: 15px;
+    height: 17px;
+    background-image: url("#{$image-folder}/icons/exclamations.png");
+    left: -25px;
+
+    &--flanked {
+      //display: none;
+      filter: hue-rotate(0deg);
+    }
+    &--away {
+      //display: none;
+      filter: hue-rotate(260deg);
+    }
+    &--reposition {
+      //display: none;
+      filter: hue-rotate(160deg);
+    }
+    &--between {
+      //display: none;
+      filter: hue-rotate(220deg);
+    }
+    &--around {
+      //display: none;
+      filter: hue-rotate(320deg);
+    }
+  }
+
+  &__direction {
+    position: absolute;
+    width: 11px;
+    height: 55px;
+    background-image: url("#{$image-folder}/fight-view/direction.png");
+    background-size: cover;
+    transform-origin: bottom;
+    bottom: 0;
+    left: 50%;
+  }
+  &__image {
+    visibility: hidden;
+    position: absolute;
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  &__meter-bar {
+    margin: auto;
+    height: 4px;
+    width: 50px;
+    border: solid 1px;
+    &__inner-bar {
+      height: 4px;
+      .is-stamina-bar & {
+        background-color: #69da69;
+      }
+      .is-energy-bar & {
+        background-color: #68acf3;
+      }
+    }
+  }
+}

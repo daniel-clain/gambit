@@ -64,33 +64,25 @@ export const prosecuteManagerServer: ServerAbility = {
     }
 
     function updateManagerLogs() {
-      const logMessage = `
-        You have been found guilty on accounts of:
-        ${lawsuit.accounts.reduce(
-          (x, a, i) => (x += `\n -${a.name}(${a.evidence.length})`),
-          ""
-        )}
+      const logMessage = `You have been found guilty on accounts of: ${lawsuit.accounts.reduce(
+        (x, a, i) => (x += `\n\t -${a.name}(${a.evidence.length})`),
+        ""
+      )}
 
-        . You have been sentenced to ${
-          verdict.weeksInJail
-        } weeks in jail with a fine of $${
+You have been sentenced to ${
+        verdict.weeksInJail
+      } weeks in jail with a fine of $${
         verdict.fine
       }. While in jail, your manager has 0 action points.
 
-        ${
-          lostEmployees?.length
-            ? `The following employees have left you: 
-            ${lostEmployees.reduce(
-              (string, e) =>
-                (string += `
-              \n - ${e.name} (${e.profession})
-            `),
-              ""
-            )}
-          `
-            : ""
-        }
-      `
+${
+  lostEmployees?.length
+    ? `The following employees have left you:${lostEmployees.reduce(
+        (string, e) => (string += `\n\t - ${e.name} (${e.profession})`),
+        ""
+      )}`
+    : ""
+}`
 
       prosecutedManager.functions.addToLog({
         weekNumber,

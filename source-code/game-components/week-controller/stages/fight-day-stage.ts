@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import gameConfiguration from "../../../game-settings/game-configuration"
 import {
   ManagersBet,
@@ -5,6 +6,7 @@ import {
 } from "../../../interfaces/front-end-state-interface"
 import { Bet } from "../../../interfaces/game/bet"
 import IStage from "../../../interfaces/game/stage"
+import { FightDayState } from "../../../types/game/ui-fighter-state"
 import { WeekStage } from "../../../types/game/week-stage.type"
 import Fighter from "../../fighter/fighter"
 import { Game } from "../../game"
@@ -13,8 +15,10 @@ import { Manager } from "../../manager"
 export default class FightDayStage implements IStage {
   name: WeekStage = "Fight Day"
   endStage: (value: void | PromiseLike<void>) => void
-  managersWinnings: ManagerWinnings[]
+  managersWinnings: ManagerWinnings[] | undefined
   managersBets: ManagersBet[]
+
+  gameFightUiState: FightDayState
 
   constructor(private game: Game) {}
 
@@ -42,6 +46,7 @@ export default class FightDayStage implements IStage {
       })
 
       activeFight.fightFinishedSubject.subscribe(() => {
+        console.log("fightFinishedSubject  time is up")
         this.onFightFinished()
       })
 
@@ -55,10 +60,8 @@ export default class FightDayStage implements IStage {
     activeFight.fighters.forEach((f) => {
       f.state.numberOfFights++
     })
-    if (activeFight.result == "draw") {
-    } else if (activeFight.result?.winner) {
-      const { winner } = activeFight.result
-      winner.state.numberOfWins++
+    if (activeFight.result && activeFight.result != "draw") {
+      activeFight.result.winner.state.numberOfWins++
     }
 
     this.processManagerBets()
@@ -68,9 +71,12 @@ export default class FightDayStage implements IStage {
     const playersHadWinnings = this.managersWinnings?.some(
       (m) => m.winnings > 0
     )
+    this.managersWinnings = undefined
     const duration = playersHadWinnings
       ? gameConfiguration.stageDurations.showWinningsDuration
-      : 1
+      : 2
+
+    console.log("duration", duration)
     setTimeout(() => this.endStage(), duration * 1000)
   }
 
@@ -125,76 +131,71 @@ export default class FightDayStage implements IStage {
             type: "betting",
           })
         }
-      } else if (activeFight.result?.winner) {
+      } else if (activeFight.result.winner) {
         const { winner } = activeFight.result
         const {
-          playersFighterMultiplier,
           playersFighterWinBase,
+          betPercentageIncreased,
           betWinningsBase,
-          betAmountMultiplier,
+          numFightersPercentMultiplier,
           totalPublicityMultiplier,
+          mainEventMultiplier,
         } = gameConfiguration.fightWinnings
 
         const managerWonBet = winner.name == managersBet?.fighterName
-        const bonusFromPublicityRating =
-          this.game.has.weekController.activeFight.fighters.reduce(
-            (totalPublicityRating, fighter) =>
-              (totalPublicityRating += fighter.state.publicityRating),
-            0
-          ) * totalPublicityMultiplier
-
-        if (managersBet) {
-          if (managerWonBet) {
-            winnings += betWinningsBase
-            winnings += bonusFromPublicityRating
-            betWinnings = Math.round(managersBetAmount! * betAmountMultiplier)
-            winnings += betWinnings
-          }
-        }
 
         const managersFighter = manager.has.fighters.find(
           (f: Fighter) => f.name == winner.name
         )
 
-        if (managersFighter) {
-          winnings += playersFighterWinBase
-          playersFighterWinnings = Math.round(
-            winnings *
-              managersFighter.state.publicityRating *
-              playersFighterMultiplier
-          )
+        const isMainEvent = this.game.has.weekController.thisWeekIsEvent
 
-          winnings += playersFighterWinnings
-        }
+        const bonusFromPublicityRating =
+          activeFight.fighters.reduce(
+            (totalPublicityRating, fighter) =>
+              (totalPublicityRating += fighter.state.publicityRating),
+            0
+          ) * totalPublicityMultiplier
 
-        if (this.game.has.weekController.thisWeekIsEvent) {
-          winnings *= 3
+        if (managersBetAmount) {
+          if (managerWonBet) {
+            const multiplierBasedOnFighters =
+              1 +
+              (numFightersPercentMultiplier / 100) * activeFight.fighters.length
+
+            winnings += Math.round(
+              betWinningsBase +
+                bonusFromPublicityRating +
+                managersBetAmount * (1 + betPercentageIncreased / 100) +
+                (!managersFighter
+                  ? 0
+                  : playersFighterWinBase *
+                    managersFighter.state.publicityRating) *
+                  multiplierBasedOnFighters *
+                  (isMainEvent ? mainEventMultiplier : 1)
+            )
+          }
         }
 
         // manager logs
         if (managerWonBet) {
           manager.functions.addToLog({
             weekNumber,
-            message: `
-          ${managersBet.fighterName} has won the fight! Your ${
+            message: `${managersBet.fighterName} has won the fight! Your ${
               managersBet.size
-            } bet on ${managersBet.fighterName} has won you $${winnings}. 
-          ${
-            playersFighterWinnings || bonusFromPublicityRating
-              ? "Including: "
-              : ""
-          }
-          ${
-            playersFighterWinnings
-              ? `$${playersFighterWinnings} sponsored fighter bonus.`
-              : ""
-          }
-          ${
-            bonusFromPublicityRating
-              ? `$${bonusFromPublicityRating} fight publicity bonus.`
-              : ""
-          }
-        `,
+            } bet on ${managersBet.fighterName} has won you $${winnings}. ${
+              playersFighterWinnings || bonusFromPublicityRating
+                ? "Including: "
+                : ""
+            }${
+              playersFighterWinnings
+                ? `$${playersFighterWinnings} sponsored fighter bonus.`
+                : ""
+            }${
+              bonusFromPublicityRating
+                ? `$${bonusFromPublicityRating} fight publicity bonus.`
+                : ""
+            }`,
             type: "betting",
           })
         }
@@ -231,7 +232,7 @@ export default class FightDayStage implements IStage {
           })
         }
 
-        manager.has.money += winnings
+        manager.has.money += round(winnings)
       }
 
       return {

@@ -1,4 +1,5 @@
-import { addSeconds } from "date-fns"
+import { addSeconds, differenceInMilliseconds } from "date-fns"
+import { round } from "lodash"
 import { Subject } from "rxjs"
 import gameConfiguration from "../../game-settings/game-configuration"
 import Coords from "../../interfaces/game/fighter/coords"
@@ -6,11 +7,12 @@ import { ActionName } from "../../types/fighter/action-name"
 import { Sound } from "../../types/fighter/sound"
 import { Angle } from "../../types/game/angle"
 import {
+  CommentarySchedule,
   FighterAction,
   FighterSchedule,
   FighterUiTimeStamp,
   FightQueueAction,
-  FightUIState,
+  FightUiState,
   Result,
 } from "../../types/game/ui-fighter-state"
 import Fighter from "../fighter/fighter"
@@ -24,7 +26,7 @@ import { octagon } from "./octagon"
 export default class Fight {
   timeRemaining: number | null = null
 
-  fightUiDataSubject: Subject<FightUIState> = new Subject()
+  fightUiDataSubject: Subject<FightUiState> = new Subject()
   fightFinishedSubject: Subject<void> = new Subject()
 
   unpauseSubject: Subject<void> = new Subject()
@@ -32,13 +34,15 @@ export default class Fight {
 
   fightActionsQueue: FightQueueAction[] = []
   fightGenTimeStep = 0
-  private finalTimeStep: number
   private fightTimeStep = 0
   private fightTimer: NodeJS.Timeout
+  private countdownTime: number | undefined
   fightGenTimeStepSubject: Subject<number> = new Subject()
   maxFightDuration: number
   private fightersSchedule: FighterSchedule[] = []
+  private commentarySchedule: CommentarySchedule[] = []
   result: Result
+  fightUiState: FightUiState
 
   startTime: string
   lastTimeStep: number
@@ -52,27 +56,34 @@ export default class Fight {
   }
 
   doTeardown() {
+    console.log("fight instance teardown")
+    clearInterval(this.fightTimer)
+    this.paused = false
     this.fighters.forEach((f) => f.fighting.reset())
     this.fightUiDataSubject.complete()
     this.fightFinishedSubject.complete()
   }
 
   async start() {
-    this.setup()
-    this.startTime = addSeconds(new Date(), 3).toISOString()
+    try {
+      this.setup()
+    } catch {
+      return
+    }
     await this.generateFight()
 
-    this.sendUiStateUpdate()
     this.startFightTimer()
+    this.sendUiStateUpdate()
   }
 
-  setup() {
+  private setup() {
     const thisFight = this
     this.fighters.forEach((f) => f.fighting.setup())
     console.log("fight started")
     if (this.fighters.every((f) => f.state.dead == true)) {
       this.result = "draw"
       this.sendUiStateUpdate()
+      throw "all players are dead"
     } else {
       placeFighters()
 
@@ -104,18 +115,58 @@ export default class Fight {
     }
   }
 
-  private startFightTimer() {
+  private async startFightTimer() {
+    //this is to track the fight time serverside, purely relative to pause/unpause
+    this.startTime = addSeconds(new Date(), 3).toISOString()
+    await this.doCountdown()
+    console.log("this.lastTimeStep", this.lastTimeStep)
     this.fightTimer = setInterval(() => {
-      this.fightTimeStep += 10
-      if (this.fightTimeStep >= this.finalTimeStep) {
-        this.fightTimerExpired()
+      // fight timer increment must be small so that when paused the time is acurate
+      this.fightTimeStep += 1000
+
+      if (this.fightTimeStep % 1000 === 0) {
+        console.log("fight time step", this.fightTimeStep / 1000)
       }
-    }, 10)
+      if (this.fightTimeStep >= this.lastTimeStep) {
+        this.fightTimeIsUp()
+      }
+    }, 1000)
   }
 
-  private fightTimerExpired() {
-    clearInterval(this.fightTimer)
+  private fightTimeIsUp() {
+    console.log("fight time is up")
     this.fightFinishedSubject.next()
+    clearInterval(this.fightTimer)
+  }
+
+  doCountdown(): Promise<void> {
+    const thisFight = this
+    return new Promise((resolve) => {
+      const initialTimeUntilStart = getTimeUntilStart()
+      const remainderTime = initialTimeUntilStart % 1000
+      this.countdownTime = round(initialTimeUntilStart / 1000)
+      console.log("remainderTime", remainderTime)
+      this.fightTimer = setTimeout(() => {
+        this.countdownTime = round(getTimeUntilStart() / 1000)
+
+        this.fightTimer = setInterval(() => {
+          console.log("this.countdownTime", this.countdownTime)
+          if (this.countdownTime == 0) {
+            clearInterval(this.fightTimer)
+            thisFight.countdownTime = undefined
+            resolve()
+          } else {
+            this.countdownTime = round(getTimeUntilStart() / 1000)
+          }
+        }, 1000)
+      }, remainderTime)
+      function getTimeUntilStart() {
+        return differenceInMilliseconds(
+          new Date(thisFight.startTime),
+          new Date()
+        )
+      }
+    })
   }
 
   private async generateFight() {
@@ -125,24 +176,33 @@ export default class Fight {
     await loopTimeStep()
 
     function loopTimeStep(): Promise<void> {
-      if (timeIsUp()) {
-        return Promise.resolve()
+      thisFight.fightGenTimeStepSubject.next(thisFight.fightGenTimeStep)
+
+      if (!thisFight.result) {
+        checkTimeIsUp()
+        checkForWinner()
       }
 
       resolveExpiredActions()
 
-      if (checkForWinner()) {
-        return Promise.resolve()
+      /* 
+        - if the fight has a result and its resolved all the actions in the queue, then the fight has finished generating and can start.
+        - 
+      */
+      if (thisFight.result) {
+        if (!thisFight.fightActionsQueue.length) {
+          thisFight.lastTimeStep = getLastActionTimeStep()
+
+          return Promise.resolve()
+        }
+      } else {
+        inactiveFighersDecideAction()
       }
-
-      thisFight.fightGenTimeStepSubject.next(thisFight.fightGenTimeStep)
-      inactiveFighersDecideAction()
-
       thisFight.fightGenTimeStep += 1
       return Promise.resolve().then(loopTimeStep)
     }
 
-    function timeIsUp() {
+    function checkTimeIsUp() {
       if (thisFight.fightGenTimeStep > thisFight.maxFightDuration * 1000) {
         handleTimesUp()
         return true
@@ -203,9 +263,9 @@ export default class Fight {
       }, [])
 
       actionsToResolve.forEach((action) => {
-        console.log(
-          `resolving ${action.actionName} with resolve time ${action.resolveTime} at gen step ${thisFight.fightGenTimeStep} for ${action.sourceFighter.name}`
-        )
+        /* console.log(
+          ` ${action.sourceFighter.name} resolving ${action.actionName} at ${action.resolveTime}`
+        ) */
         action.onResolve?.()
       })
 
@@ -225,35 +285,51 @@ export default class Fight {
 
     function inactiveFighersDecideAction() {
       thisFight.fighters.forEach((f) => {
-        if (
-          !thisFight.fightActionsQueue.some(
-            (e) => e.sourceFighter.name == f.name
-          ) &&
-          !f.fighting.knockedOut
-        ) {
-          f.fighting.actions.decideAction()
-        }
+        if (f.fighting.knockedOut) return
+
+        const hasActionInQueue = thisFight.fightActionsQueue.some(
+          (e) => e.sourceFighter.name == f.name
+        )
+
+        if (hasActionInQueue) return
+
+        f.fighting.actions.decideAction()
       })
     }
     function handleWinner(winner: Fighter) {
       console.log(`${winner.name} wins`)
-      winner.fighting.modelState = "Victory"
-      thisFight.addTimeStampToFighter(winner, "victory")
+      thisFight.addActionToQueue(
+        {
+          actionName: "do nothing",
+          modelState: "Idle",
+          duration: 1000,
+          onResolve: () => {
+            winner.fighting.fighterActionInterupted()
+            thisFight.addActionToQueue(
+              {
+                actionName: "victory",
+                modelState: "Victory",
+                commentary: `${winner.name} wins!`,
+                duration: 0,
+              },
+              winner
+            )
+          },
+        },
+        winner
+      )
       thisFight.result = { winner }
-      thisFight.lastTimeStep = getLastActionTimeStep()
-      function getLastActionTimeStep() {
-        return thisFight.fightActionsQueue.reduce((finalTimeStep, action) => {
-          return action.resolveTime > finalTimeStep
-            ? action.resolveTime
-            : finalTimeStep
-        }, 0)
-      }
+
+      console.log("this.lastTimeStep", thisFight.lastTimeStep)
     }
 
     function handleTimesUp() {
       console.log("fight timeout")
-      thisFight.lastTimeStep = thisFight.maxFightDuration * 1000
       const remainingFighters = getFightersThatArentKnockedOut()
+      console.log(
+        "remainingFighters",
+        remainingFighters.map((f) => f.name)
+      )
       remainingFighters.forEach((f) => f.fighting.timers.cancelAllTimers)
       if (thisFight.isFinalTournament) {
         const winner = getFighterWithTheMostStaminaLeft()
@@ -271,8 +347,14 @@ export default class Fight {
 
       function setIdlePoseForRemainingFighters() {
         remainingFighters.forEach((fighter) => {
-          fighter.fighting.modelState = "Idle"
-          thisFight.addTimeStampToFighter(fighter, "do nothing")
+          thisFight.addActionToQueue(
+            {
+              actionName: "do nothing",
+              modelState: "Idle",
+              duration: 0,
+            },
+            fighter
+          )
         })
       }
 
@@ -287,9 +369,20 @@ export default class Fight {
               return fighter
             else return fighterWithMostStaminaLeft
           },
-          {} as Fighter
-        )
+          null as Fighter | null
+        )!
       }
+    }
+    function getLastActionTimeStep() {
+      return thisFight.fightersSchedule.reduce(
+        (lastTimeStep, { fighterTimeStamps }) => {
+          const fighterLastTimeStep = Math.max(
+            ...fighterTimeStamps.map(({ startTimeStep }) => startTimeStep)
+          )
+          return Math.max(lastTimeStep, fighterLastTimeStep)
+        },
+        0
+      )
     }
 
     function getFightersThatArentKnockedOut() {
@@ -311,13 +404,10 @@ export default class Fight {
       sourceFighter,
     }
 
-    console.log(
-      `addActionToQueue ${sourceFighter.name} ${fightQueueAction.actionName} resolve at ${fightQueueAction.resolveTime}`
-    )
-    console.log(
+    /* console.log(
       `add ${fightQueueAction.sourceFighter.name} ${fightQueueAction.actionName} ${fightQueueAction.resolveTime}`,
       this.fightGenTimeStep
-    )
+    ) */
     this.fightActionsQueue.push(fightQueueAction)
 
     this.addTimeStampToFighter(
@@ -325,8 +415,17 @@ export default class Fight {
       action.actionName,
       action.soundMade
     )
+    if (action.commentary) {
+      this.addComentaryTimeStamp(action.commentary)
+    }
   }
 
+  addComentaryTimeStamp(commentary: string) {
+    this.commentarySchedule.push({
+      commentary,
+      startTimeStep: this.fightGenTimeStep,
+    })
+  }
   private addTimeStampToFighter(
     sourceFighter: Fighter,
     actionName: ActionName,
@@ -335,11 +434,21 @@ export default class Fight {
     const {
       name,
       fighting: {
+        afflictions,
+        stamina,
+        energy,
         facingDirection,
-        movement: { coords },
-        logistics: { onARampage, highEnergy, lowEnergy },
+        movement: { coords, movingDirection },
+        logistics: {
+          onARampage,
+          highEnergy,
+          lowEnergy,
+          flanked,
+          currentAffliction,
+        },
         spirit,
         modelState,
+        stats: { maxEnergy, maxStamina },
       },
       skin,
     } = sourceFighter
@@ -356,6 +465,15 @@ export default class Fight {
         onARampage,
         skin,
         spirit,
+        affliction: currentAffliction,
+        debuggingState: {
+          stamina,
+          maxStamina,
+          energy,
+          maxEnergy,
+          movingDirection,
+          flanked: !!flanked,
+        },
       },
     }
 
@@ -391,11 +509,13 @@ export default class Fight {
 
   sendUiStateUpdate() {
     console.log("sendUiStateUpdate")
-    const fightUiState: FightUIState = {
+    console.log("this.startTime", this.startTime)
+    this.fightUiState = {
       maxFightDuration: this.maxFightDuration,
       startTime: this.startTime,
       fightTimeStep: this.fightTimeStep,
       fightersSchedule: this.fightersSchedule,
+      commentarySchedule: this.commentarySchedule,
       lastTimeStep: this.lastTimeStep,
       paused: this.paused,
       result:
@@ -403,6 +523,7 @@ export default class Fight {
           ? "draw"
           : { winner: this.result.winner.getInfo() },
     }
-    this.fightUiDataSubject.next(fightUiState)
+
+    this.fightUiDataSubject.next(this.fightUiState)
   }
 }

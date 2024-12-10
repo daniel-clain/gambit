@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import gameConfiguration from "../../game-settings/game-configuration"
 import {
   OptionProbability,
@@ -76,21 +77,13 @@ export function setupNewWeek(game: Game) {
     )
 
     weekFightersAndJobSeekerFighters.forEach((weekFighter) => {
-      if (managerDoesNotOwnWeekFighter() && managerDoesNotKnowWeekFighter())
+      if (managerDoesNotOwnWeekFighter() && managerDoesNotKnowWeekFighter()) {
+        const { stats, ...rest } = weekFighter
         manager.has.knownFighters.push({
-          name: weekFighter.name,
-          characterType: "Fighter",
-          goalContract: weekFighter.goalContract,
-          strength: undefined,
-          fitness: undefined,
-          intelligence: undefined,
-          aggression: undefined,
-          manager: undefined,
-          numberOfFights: undefined,
-          numberOfWins: undefined,
-          activeContract: undefined,
+          ...rest,
+          stats: {},
         })
-      else {
+      } else {
         manager.has.knownFighters = manager.has.knownFighters.map(
           (knownFighter) => {
             const fighterJobSeeker = weekController.jobSeekers.find(
@@ -142,49 +135,49 @@ export function setupNewWeek(game: Game) {
         switch (professional.profession) {
           case "Drug Dealer":
             goalContract = {
-              numberOfWeeks: 2 + randomNumber({ from: 1, to: 4 }),
+              numberOfWeeks: 2 + round(randomNumber({ from: 1, to: 4 })),
               weeklyCost: 20 * professional.skillLevel,
             }
             break
           case "Hitman":
             goalContract = {
-              numberOfWeeks: 1 + randomNumber({ from: 1, to: 2 }),
+              numberOfWeeks: 1 + round(randomNumber({ from: 1, to: 2 })),
               weeklyCost: 30 * professional.skillLevel,
             }
             break
           case "Private Agent":
             goalContract = {
-              numberOfWeeks: 2 + randomNumber({ from: 1, to: 3 }),
+              numberOfWeeks: 2 + round(randomNumber({ from: 1, to: 3 })),
               weeklyCost: 20 * professional.skillLevel,
             }
             break
           case "Lawyer":
             goalContract = {
-              numberOfWeeks: 1 + randomNumber({ from: 1, to: 2 }),
+              numberOfWeeks: 1 + round(randomNumber({ from: 1, to: 2 })),
               weeklyCost: 20 * professional.skillLevel,
             }
             break
           case "Promoter":
             goalContract = {
-              numberOfWeeks: 2 + randomNumber({ from: 1, to: 4 }),
+              numberOfWeeks: 2 + round(randomNumber({ from: 1, to: 4 })),
               weeklyCost: 10 * professional.skillLevel,
             }
             break
           case "Talent Scout":
             goalContract = {
-              numberOfWeeks: 1 + randomNumber({ from: 1, to: 6 }),
+              numberOfWeeks: 1 + round(randomNumber({ from: 1, to: 6 })),
               weeklyCost: 5 * professional.skillLevel,
             }
             break
           case "Thug":
             goalContract = {
-              numberOfWeeks: 5 + randomNumber({ from: 1, to: 4 }),
+              numberOfWeeks: 5 + round(randomNumber({ from: 1, to: 4 })),
               weeklyCost: 10,
             }
             break
           case "Trainer":
             goalContract = {
-              numberOfWeeks: 6 + randomNumber({ from: 1, to: 5 }),
+              numberOfWeeks: 6 + round(randomNumber({ from: 1, to: 5 })),
               weeklyCost: 5 * professional.skillLevel,
             }
             break
@@ -254,7 +247,7 @@ export function setupNewWeek(game: Game) {
           option: fighter,
           probability: 1 + fighter.state.publicityRating,
         }))
-      randomFighters.push(selectByProbability(fightersRandomChance))
+      randomFighters.push(selectByProbability(fightersRandomChance)!)
     }
 
     weekController.activeFight = new Fight(

@@ -1,4 +1,4 @@
-import { VideoName } from "../client/videos/videos"
+import { VideoData } from "../client/videos/videos"
 
 const gameConfiguration = {
   startingWeekNumber: 1,
@@ -8,6 +8,30 @@ const gameConfiguration = {
   numberOfProfessionalJobSeekersPerWeek: 3,
   numberOfFighterJobSeekersPerWeek: 2,
   tryToWinAvailableFromWeek: 20,
+  afflictions: {
+    injured: {
+      startStaminaPercentReduction: 50,
+      strengthAndFitnessPercentReduction: 40,
+      extraDamagePercentTaken: 20,
+      chanceToFlinchAfterAttackingOrBeingAttacked: 40,
+      increasedChanceToRampageAfterAttack: 20,
+    },
+    hallucinating: {
+      chanceToHaveHallucinations: 10,
+      fasterSpeedPercentOnRampage: 20,
+      extraChanceToRampage: 10,
+      intelligencePercentReduction: 50,
+      increasedProbabilityToDesperateRetreat: 40,
+    },
+    sick: {
+      chanceToBeSick: 10,
+      strengthAndFitnessPercentReduction: 20,
+      agressionPercentageReduced: 60,
+      startAndMaxSpiritReduced: 2,
+      energyRegenReductionPercentage: 50,
+      damageDealtReduction: 20,
+    },
+  },
   listOfNames: [
     "Daniel",
     "Tom",
@@ -115,10 +139,11 @@ const gameConfiguration = {
   },
   fightWinnings: {
     betWinningsBase: 150,
-    betAmountMultiplier: 2,
+    numFightersPercentMultiplier: 20,
+    betPercentageIncreased: 20,
     playersFighterWinBase: 100,
-    playersFighterMultiplier: 0.2,
     totalPublicityMultiplier: 10,
+    mainEventMultiplier: 2,
   },
   loanSharkSettings: {
     minimumAmountToPayBackEachWeek: 50,
@@ -182,10 +207,10 @@ const gameConfiguration = {
   },
   fightersAfterWeeks: [
     { week: 0, fighters: 2 },
-    { week: 6, fighters: 3 },
-    { week: 14, fighters: 4 },
+    { week: 5, fighters: 3 },
+    { week: 10, fighters: 4 },
   ],
-  videos: <{ name: VideoName; videos: { duration: number }[] }[]>[
+  videos: <VideoData[]>[
     {
       name: "Final Tournament",
       videos: [
@@ -214,7 +239,7 @@ const gameConfiguration = {
       name: "Wealth Victory Fail",
       videos: [
         {
-          duration: 50,
+          duration: 31,
         },
       ],
     },

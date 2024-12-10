@@ -1,3 +1,4 @@
+import { round } from "lodash"
 import {
   randomNumber,
   randomNumberDigits,
@@ -67,7 +68,7 @@ export const handleUnderSurveillance = ({
     (e) => e.name == privateAgentName
   )!
 
-  const randomNum = randomNumber({ to: 100 })
+  const randomNum = round(randomNumber({ to: 100 }))
   const chanceToDiscover = 70 + agentDoingSurveillance.skillLevel * 10
 
   const willDiscover = chanceToDiscover > randomNum

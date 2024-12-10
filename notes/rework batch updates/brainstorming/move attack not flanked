@@ -1,0 +1,27 @@
+- if move to attack, and flanked, dont move to nearest position for enemyWithinStrikingRange
+- as they approach, flanking value with get larger and drive them away, they need to move to get out of flanked first
+- to get in position, the closest fight they wanna move to attack, move to the right or left until you pass them
+
+* only intelligent fighters should do it
+* when trying to ge them to do a dumb move problem is:
+  - as they move to closest enemy fighter for striking position, they inadertedly get closer to another fighter, and they become the new closest fighter, so they go the other way, and get into a triangle when they are paralyzed on 1 spot
+  - change the logic deciding to attack,
+  - aggressive fighter should be more direct and risky, a more intelligent fighter should reposition
+  - when decided to move to attack, persist that target based on agression and on a rampage
+  - when moving toward a target, if another target becomes closer, the decided probability should be based on
+    ~ separating targeted for attack from closest, when targeting for attack, should ignore closest, unless they are targeting them for an attack
+    ~ if they are being targeted, more chance to retreat from flanked,
+    ~ used the flanked severity data,
+
+when deciding probability, there are now 2 things to consider, closest and targeted.
+
+- the targeted for attack fighter, should have all the movement direction relative to him
+- should general attack probability be influenced by targeted or closest
+
+  - the more you focus on them, the less you care about closest
+
+- scenario, 2 guys have their back to eachother, and you want to kick one of them in the back by going between
+  - the flank severity rating should be very low, but still there to acknowledge situation,
+  - need 2 different attack move actions, the strategic one and the agressive one
+  - targeted needs to end at the right time
+    ~ if attacked, if someone else is a threat, if do a non attack action

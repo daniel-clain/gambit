@@ -1,26 +1,24 @@
-@use '../../../../../styles/variables' as *;
+@use "../../../../../styles/variables" as *;
 
-.card{  
-  &__two-columns{
+.card {
+  &__two-columns {
     display: flex;
     width: 100%;
-    &__left{
+    &__left {
       display: inline-block;
       margin-right: 4%;
       width: 25%;
+      overflow: auto;
     }
-    &__right{
-      flex: 1
+    &__right {
+      flex: 1;
+      overflow: auto;
     }
   }
 
-  &__options{
+  &__options {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-
-
   }
-
-
 }

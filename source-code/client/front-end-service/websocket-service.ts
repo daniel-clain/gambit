@@ -28,7 +28,7 @@ const clientToHostFunctions = {
   reJoin: (gameId: number) => socket.emit("reJoin", gameId),
   submitGlobalChat: (message: string) =>
     socket.emit("submitGlobalChat", message),
-  reset: ({ name, id }: ClientNameAndID) => {
+  reset: ({ name, id }: Partial<ClientNameAndID>) => {
     socket.emit("reset", { name, id })
   },
 }
@@ -123,8 +123,8 @@ export const websocketService = {
       "To Client From Server - Game Ui",
       (serverGameUIState: ServerGameUIState) => {
         runInAction(() => {
+          //console.log("serverGameUIState", serverGameUIState)
           frontEndState.serverUIState.serverGameUIState = serverGameUIState
-          frontEndState.updateCount++
           frontEndState.clientUIState.clientPreGameUIState.hasGameData = true
         })
       }

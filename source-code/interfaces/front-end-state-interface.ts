@@ -12,7 +12,8 @@ import { ManagerImage } from "../types/game/manager-image"
 import { NewsItem } from "../types/game/news-item"
 import { Profession } from "../types/game/profession"
 import SkillLevel from "../types/game/skill-level.type"
-import { GameFightUIState } from "../types/game/ui-fighter-state"
+import { FightDayState, FightUiState } from "../types/game/ui-fighter-state"
+import { PlayerInfo, Winner } from "../types/game/victory-and-loss"
 import { VictoryType } from "../types/game/victory-type"
 import { WeekStage } from "../types/game/week-stage.type"
 import ChatMessage from "./chat-message.interface"
@@ -24,7 +25,6 @@ import { PostFightReportItem } from "./game/post-fight-report-item"
 export interface FrontEndState {
   serverUIState: ServerUIState
   clientUIState: ClientUIState
-  updateCount: number
 }
 
 export class ServerUIState {
@@ -32,6 +32,19 @@ export class ServerUIState {
   serverPreGameUIState?: ServerPreGameUIState
 }
 
+export class ServerGameUIState {
+  disconnectedPlayerVotes: DisconnectedPlayerVote[] | null
+  weekStage?: WeekStage
+  hasGameDisplay: boolean
+  displayManagerUiData?: DisplayManagerUiData
+  playerManagerUIState?: ManagerUIState
+  preFightNewsUIState: PreFightNewsUIState
+  fightDayState?: FightDayState
+  finalTournamentState?: TournamentState
+  selectedVideo?: SelectedVideo
+  enoughFightersForFinalTournament: boolean
+  gameFinishedData?: GameFinishedData
+}
 export interface ServerPreGameUIState {
   connectedClients: ClientNameAndID[]
   gamesBeingCreated: GameBeingCreated[]
@@ -84,33 +97,20 @@ export class ClientManagerUIState {
 
 export type VictoryData = { name: string; victoryType: VictoryType }
 
-export class ServerGameUIState {
-  disconnectedPlayerVotes: DisconnectedPlayerVote[] | null
-  weekStage?: WeekStage
-  hasGameDisplay: boolean
-  displayManagerUIState?: DisplayManagerUiData
-  playerManagerUIState?: ManagerUIState
-  preFightNewsUIState: PreFightNewsUIState
-  gameFightUIState: GameFightUIState
-  selectedVideo?: SelectedVideo
-  finalTournamentBoard?: FinalTournamentBoard
-  enoughFightersForFinalTournament: boolean
-  gameFinishedData?: GameFinishedData
+export type TournamentState = {
+  finalTournamentBoard: FinalTournamentBoard
+  fightUiState?: FightUiState
 }
 
 export type SelectedVideo = {
+  sourceManager: ManagerInfo
   name: VideoName
   index: number
 }
 
 export type GameFinishedData = {
-  winner: { name: string; victoryType: VictoryType }
-  players: {
-    name: string
-    money: number
-    managerImage: ManagerImage
-    fighters: FighterInfo[]
-  }[]
+  winner: Winner
+  players: PlayerInfo[]
 }
 
 export class FinalTournamentBoard {
@@ -165,21 +165,6 @@ export interface PostFightReportData {
   notifications: PostFightReportItem[]
 }
 
-export interface ManagerDisplayInfo {
-  name: string
-  ready: boolean
-  image: ManagerImage
-  bet?: Bet
-}
-
-export interface DisplayManagerUiData {
-  weekStage: WeekStage
-  timeLeft: number
-  managersDisplayInfo: ManagerDisplayInfo[]
-  nextFightFighters: string[]
-  jobSeekers: JobSeeker[]
-}
-
 export interface Loan {
   debt: number
   weeksOverdue: number
@@ -225,16 +210,12 @@ export class Employee extends Professional {
   }
 }
 
-export interface KnownFighterStat {
-  lastKnownValue: any
+export type KnownFighterStat = {
+  lastKnownValue: string | number | null
   weeksSinceUpdated: number
 }
 
-export type StatsObj = {
-  [Property in keyof FighterInfo]?: KnownFighterStat
-}
-
-export type FighterStatKey =
+export type StatName =
   | "strength"
   | "fitness"
   | "intelligence"
@@ -242,19 +223,22 @@ export type FighterStatKey =
   | "numberOfFights"
   | "numberOfWins"
   | "manager"
+  | "publicityRating"
 
-export interface FighterInfo {
+export type KnownFighterInfo = Omit<FighterInfo, "stats"> & {
+  stats: Partial<Record<StatName, KnownFighterStat>>
+}
+
+export type FighterStatsInfo = Record<Exclude<StatName, "manager">, number> & {
+  manager: string | null
+}
+
+export type FighterInfo = {
   name: string
   characterType: "Fighter"
-  strength?: KnownFighterStat
-  fitness?: KnownFighterStat
-  intelligence?: KnownFighterStat
-  aggression?: KnownFighterStat
-  numberOfFights?: KnownFighterStat
-  numberOfWins?: KnownFighterStat
-  manager?: KnownFighterStat
   activeContract?: ActiveContract
   goalContract?: GoalContract
+  stats: FighterStatsInfo
 }
 
 export interface ManagerUIState {
@@ -269,4 +253,16 @@ export interface ManagerUIState {
     ready: boolean
   }[]
   thisManagerReady: boolean
+}
+
+export interface DisplayManagerUiData {
+  timeLeft: number
+  managersDisplayInfo: ManagerDisplayInfo[]
+  nextFightFighters: string[]
+  jobSeekers: JobSeeker[]
+}
+export interface ManagerDisplayInfo {
+  name: string
+  ready: boolean
+  image: ManagerImage
 }

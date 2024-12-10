@@ -1,9 +1,10 @@
 import { observer } from "mobx-react"
 import { useEffect } from "react"
+import { ManagerDisplayInfo } from "../../../interfaces/front-end-state-interface"
 import { frontEndState } from "../../front-end-state/front-end-state"
 import { DisconnectedPlayerModal } from "./disconnected-player-modal/disconnected-player-modal"
-import { Fight_View } from "./fight-view/fight.view"
 import { FinalTournament_View } from "./final-tournament/final-tournament.view"
+import { GameFight_View } from "./game-fight-view/game-fight.view"
 import { DisplayManagerOptionsUi } from "./manager-view/display-manager-options-ui/display-manager-options-ui"
 import { Manager_View } from "./manager-view/manager.view"
 import { PostGame_View } from "./post-game/post-game.view"
@@ -16,18 +17,21 @@ export const Game_View = observer(() => {
       clientPreGameUIState: { clientName },
     },
     serverUIState: { serverGameUIState },
-    updateCount,
   } = frontEndState
 
   const {
+    displayManagerUiData,
     disconnectedPlayerVotes,
     weekStage,
-    finalTournamentBoard,
+
     selectedVideo,
     gameFinishedData,
     playerManagerUIState,
-    fightUIState,
+    fightDayState,
+    finalTournamentState,
   } = serverGameUIState!
+
+  const isDisplay = clientName == "Game Display"
 
   useEffect(() => {
     window.onbeforeunload = function () {
@@ -42,10 +46,10 @@ export const Game_View = observer(() => {
 
   const getActiveView = () => {
     if (selectedVideo) {
-      return <ShowVideo_View />
+      return <ShowVideo_View {...{ selectedVideo }} />
     }
-    if (finalTournamentBoard) {
-      return <FinalTournament_View />
+    if (finalTournamentState) {
+      return <FinalTournament_View {...{ finalTournamentState, isDisplay }} />
     }
     if (gameFinishedData) {
       return <PostGame_View />
@@ -53,14 +57,25 @@ export const Game_View = observer(() => {
     switch (weekStage) {
       case "Manager Options":
         return clientName == "Game Display" || fighterRetired ? (
-          <DisplayManagerOptionsUi />
+          fighterRetired ? (
+            <DisplayManagerOptionsUi
+              {...{
+                timeLeft: playerManagerUIState!.managerOptionsTimeLeft!,
+                jobSeekers: playerManagerUIState!.jobSeekers,
+                nextFightFighters: playerManagerUIState!.nextFightFighters,
+                managersDisplayInfo: getRetiredManagerDisplayInfo(),
+              }}
+            />
+          ) : (
+            <DisplayManagerOptionsUi {...displayManagerUiData!} />
+          )
         ) : (
           <Manager_View />
         )
       case "Pre Fight News":
         return <PreFightNews_View />
       case "Fight Day":
-        return <Fight_View />
+        return <GameFight_View />
       default:
         return <div>no week stage, something went wrong</div>
     }
@@ -76,4 +91,21 @@ export const Game_View = observer(() => {
       {getActiveView()}
     </div>
   )
+
+  function getRetiredManagerDisplayInfo(): ManagerDisplayInfo[] {
+    const {
+      managerInfo: { otherManagers },
+      otherPlayersReady,
+    } = playerManagerUIState!
+    return [
+      ...[],
+      ...otherManagers.map((manager): ManagerDisplayInfo => {
+        return {
+          name: manager.name,
+          image: manager.image,
+          ready: otherPlayersReady.find((p) => p.name == manager.name)!.ready,
+        }
+      }),
+    ]
+  }
 })

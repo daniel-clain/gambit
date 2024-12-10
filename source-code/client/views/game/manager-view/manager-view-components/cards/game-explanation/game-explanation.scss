@@ -1,46 +1,46 @@
-.card__two-columns{
+.card__two-columns {
   max-height: 500px;
 }
 
-.card__two-columns__left.categories{
+.card__two-columns__left.categories {
   display: flex;
   flex-direction: column;
   gap: 2px;
   overflow: auto;
 
-  .category{
-    font-size: .8rem;
-    &--selected{
+  .category {
+    font-size: 0.8rem;
+    &--selected {
       color: white;
       background-color: rgb(120, 148, 226);
-
     }
   }
-
 }
 
-.category{
+.category {
   color: black;
   background-color: rgb(217, 225, 248);
   border: black 1px solid;
   border-radius: 4px;
   padding: 2px 4px;
-
 }
 
-.info-items{
+.info-items {
   display: flex;
   flex-direction: column;
   gap: 8px;
   overflow: auto;
 }
-.info-item{
-  &__categories{
+.info-item {
+  &__categories {
     display: flex;
     gap: 3px;
     flex-wrap: wrap;
   }
-  &__category{
-    font-size: .65rem;
+  &__category {
+    font-size: 0.65rem;
+  }
+  &__description {
+    white-space: pre-wrap;
   }
 }

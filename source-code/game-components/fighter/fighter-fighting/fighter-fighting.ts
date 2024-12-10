@@ -1,4 +1,6 @@
+import { round } from "lodash"
 import { Subscription } from "rxjs"
+import gameConfiguration from "../../../game-settings/game-configuration"
 import { randomNumber } from "../../../helper-functions/helper-functions"
 import { ActionName } from "../../../types/fighter/action-name"
 import FacingDirection from "../../../types/fighter/facing-direction"
@@ -7,6 +9,7 @@ import { FighterAction } from "../../../types/game/ui-fighter-state"
 import Fight from "../../fight/fight"
 import Fighter from "../fighter"
 import FighterActions from "./fighter-actions"
+import FighterAfflictions from "./fighter-afflictions"
 import FighterCombat from "./fighter-combat"
 import FighterTimers from "./fighter-timers"
 import Logistics from "./logistics"
@@ -24,7 +27,7 @@ export default class FighterFighting {
   fight: Fight
 
   knockedOut: boolean = false
-  enemyTargetedForAttack: Fighter
+  enemyTargetedForAttack: Fighter | null
 
   fightStarted: boolean
   stopFighting: boolean
@@ -41,6 +44,7 @@ export default class FighterFighting {
   timers: FighterTimers
   logistics: Logistics
   combat: FighterCombat
+  afflictions: FighterAfflictions
 
   private timeStepSubscription: Subscription
 
@@ -52,22 +56,27 @@ export default class FighterFighting {
     this.proximity = new Proximity(this)
     this.actions = new FighterActions(this)
     this.combat = new FighterCombat(this)
+    this.afflictions = new FighterAfflictions(this)
   }
 
   setup() {
     console.log("fighting setup")
     this.fightStarted = false
     this.modelState = "Idle"
-    this._facingDirection = !!randomNumber({ to: 1 }) ? "left" : "right"
+    this._facingDirection = !!round(randomNumber({ to: 1 })) ? "left" : "right"
     const { injured, sick } = this.fighter.state
+    const {
+      injured: { startStaminaPercentReduction },
+      sick: { startAndMaxSpiritReduced },
+    } = gameConfiguration.afflictions
 
-    this.stamina =
-      injured || sick ? this.stats.maxStamina * 0.8 : this.stats.maxStamina
+    this.stamina = injured
+      ? (this.stats.maxStamina * startStaminaPercentReduction) / 100
+      : this.stats.maxStamina
 
-    this.spirit = injured || sick ? 2 : 3
+    this.spirit = sick ? 3 - startAndMaxSpiritReduced : 3
 
-    this.energy =
-      injured || sick ? this.stats.maxEnergy * 0.3 : this.stats.maxEnergy
+    this.energy = sick ? this.stats.maxEnergy * 0.3 : this.stats.maxEnergy
 
     this.otherFightersInFight = this.fight!.fighters.filter(
       (fighter) => fighter.name != this.fighter.name
@@ -142,15 +151,26 @@ export default class FighterFighting {
         this.spirit -= 1
       }
     }
+    const { sick } = this.fighter.state
+    const {
+      sick: { energyRegenReductionPercentage },
+    } = gameConfiguration.afflictions
 
-    this.energy +=
-      0.1 + this.stats.fitness * 0.1 + (this.logistics.onARampage ? 0.5 : 0)
+    const energyAmount =
+      0.2 +
+      this.stats.fitness * 0.2 +
+      this.stats.aggression * 0.1 +
+      (this.logistics.onARampage ? 0.5 : 0)
+
+    this.energy += sick
+      ? energyAmount * (1 - energyRegenReductionPercentage / 100)
+      : energyAmount
   }
 
   set energy(val: number) {
     if (val < 0) this._energy = 0
     else if (val > this.stats.maxEnergy) this._energy = this.stats.maxEnergy
-    else this._energy = val
+    else this._energy = round(val, 2)
   }
 
   get energy() {
@@ -160,7 +180,7 @@ export default class FighterFighting {
   set spirit(val: number) {
     if (val < 0) this._spirit = 0
     else if (val > this.stats.maxSpirit) this._spirit = this.stats.maxSpirit
-    else this._spirit = val
+    else round((this._spirit = val))
   }
 
   get spirit() {
@@ -170,7 +190,7 @@ export default class FighterFighting {
   set stamina(val: number) {
     if (val < 0) this._stamina = 0
     else if (val > this.stats.maxStamina) this._stamina = this.stats.maxStamina
-    else this._stamina = val
+    else this._stamina = round(val, 2)
   }
 
   get stamina() {
@@ -178,8 +198,20 @@ export default class FighterFighting {
   }
 
   speedModifier(baseSpeed: number) {
+    const { logistics } = this
     const { speed } = this.stats
-    return baseSpeed * (1 - speed / 100)
+    const { fasterSpeedPercentOnRampage } =
+      gameConfiguration.afflictions.hallucinating
+    return (
+      baseSpeed *
+      1.5 *
+      (logistics.onARampage ? 0.8 : 1) *
+      (logistics.lowEnergy && !logistics.onARampage ? 1.3 : 1) *
+      (logistics.onARampage && logistics.isHallucinating
+        ? 1 - fasterSpeedPercentOnRampage / 100
+        : 1) *
+      (1 - (speed * 1.4) / 100)
+    )
   }
 
   addFighterAction(action: FighterAction) {

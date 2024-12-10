@@ -1,8 +1,9 @@
-import { randomNumber } from "../../../helper-functions/helper-functions"
+import { shuffle } from "../../../helper-functions/helper-functions"
 import {
   FighterInfo,
-  FighterStatKey,
+  KnownFighterInfo,
   KnownFighterStat,
+  StatName,
 } from "../../../interfaces/front-end-state-interface"
 import { Game } from "../../game"
 import { Ability, AbilityData, ServerAbility } from "../ability"
@@ -17,107 +18,69 @@ export const researchFighter: Ability = {
 export const researchFighterServer: ServerAbility = {
   execute(abilityData: AbilityData, game: Game) {
     const { source, target } = abilityData
-
+    const targetName = abilityData.target!.name
     const sourceManager = getAbilitySourceManager(source!, game)
-    const existingFighter: FighterInfo = sourceManager.has.knownFighters.find(
-      (fighter) => fighter.name == abilityData.target!.name
-    )!
-    const fighter = game.has.fighters
-      .find((fighter) => fighter.name == abilityData.target!.name)!
+    const researchedKnownFighter: KnownFighterInfo =
+      sourceManager.has.knownFighters.find(
+        (fighter) => fighter.name == targetName
+      )!
+    const researchedFighterInfo: FighterInfo = game.has.fighters
+      .find((fighter) => fighter.name == targetName)!
       .getInfo()
 
     const numberOfStats =
-      source.characterType == "Manager"
+      source!.characterType == "Manager"
         ? 4
-        : source.profession == "Talent Scout"
-        ? 2 + source.skillLevel
-        : source.profession == "Private Agent"
-        ? 5 + source.skillLevel
+        : source!.profession == "Talent Scout"
+        ? 2 + source!.skillLevel
+        : source!.profession == "Private Agent"
+        ? 5 + source!.skillLevel
         : 4
 
-    const researchedStats = getRandomStatsFromFighter()
+    const randomStats = getRandomStatsFromFighter()
 
-    for (let key in researchedStats) {
-      const statKey = key as FighterStatKey
-      if (invalidKey(statKey)) continue
-      console.log(key)
-      existingFighter[statKey] = researchedStats[statKey]!
-    }
+    updateOrAddStats()
 
-    console.log(
-      `${source.characterType} ${
-        source.name
-      } used research fighter and found out the following stats about ${
-        target!.name
-      }`,
-      researchedStats
-    )
+    function getRandomStatsFromFighter(): Partial<
+      Record<StatName, KnownFighterStat>
+    > {
+      /* 
+        - if researched used multiple times, dont included the stats already learned int he ramdom list 
+        - if options is less than or requal num to learned, then learn all of them
 
-    /* functions */
-    type StatsObj = {
-      [Property in keyof FighterInfo]?: KnownFighterStat
-    }
+      */
 
-    function getRandomStatsFromFighter(): StatsObj {
-      const returnStatsObj: Partial<Record<FighterStatKey, KnownFighterStat>> =
-        {}
-      const knownStatsKeys = Object.keys(fighter) as FighterStatKey[]
-      console.log("knownStatsKeys :>> ", knownStatsKeys)
+      const statsNames = Object.keys(researchedFighterInfo.stats) as StatName[]
 
-      for (let loops = 0; continueCondition(loops); loops++) {
-        const randomKey = knownStatsKeys[
-          randomNumber({ to: knownStatsKeys.length - 1 })
-        ] as FighterStatKey
-        console.log("randomKey :>> ", randomKey)
-        if (invalidKey(randomKey)) continue
+      const researchableStats = statsNames.filter((statName: StatName) => {
+        const statObj: undefined | KnownFighterStat =
+          researchedKnownFighter.stats[statName]
+        console.log(statName, statObj)
+        return !statObj || statObj.weeksSinceUpdated !== 0
+      })
 
-        const alreadyHasThatStat = !!returnStatsObj[randomKey]
-
-        const alreadyDiscoveredThatStatThisTurn =
-          existingFighter[randomKey]?.weeksSinceUpdated === 0
-
-        console.log("alreadyHasThatStat :>> ", alreadyHasThatStat)
-        console.log(
-          "alreadyDiscoveredThatStatThisTurn :>> ",
-          alreadyDiscoveredThatStatThisTurn
-        )
-        if (!alreadyHasThatStat && !alreadyDiscoveredThatStatThisTurn) {
-          const stat = fighter[randomKey]!.lastKnownValue
-
-          console.log("adding stat", randomKey, stat)
-
-          returnStatsObj[randomKey] = {
-            lastKnownValue: stat,
+      const researchedStats = shuffle(researchableStats)
+        .slice(0, numberOfStats)
+        .reduce((researchedStats, statName) => {
+          const researchedStat: KnownFighterStat = {
+            lastKnownValue: researchedFighterInfo.stats[statName],
             weeksSinceUpdated: 0,
           }
-        }
-      }
-      return returnStatsObj
-      function continueCondition(loops: number) {
-        console.log("loops :>> ", loops)
-        const currentStatsCount = Object.keys(returnStatsObj).length
-        console.log("currentStatsCount :>> ", currentStatsCount)
-        console.log("numberOfStats :>> ", numberOfStats)
-        console.log("knownStatsKeys.length :>> ", knownStatsKeys.length)
-        const continueLoop =
-          currentStatsCount < numberOfStats &&
-          currentStatsCount < knownStatsKeys.length &&
-          loops < 20
-        console.log("continueLoop :>> ", continueLoop)
-        return continueLoop
-      }
+
+          return { ...researchedStats, [statName]: researchedStat }
+        }, {} as Partial<Record<StatName, KnownFighterStat>>)
+
+      console.log("researchedStats", researchedStats)
+
+      return researchedStats
     }
 
-    function invalidKey(key: keyof FighterInfo) {
-      return ![
-        "strength",
-        "fitness",
-        "intelligence",
-        "aggression",
-        "numberOfFights",
-        "numberOfWins",
-        "manager",
-      ].includes(key)
+    function updateOrAddStats() {
+      researchedKnownFighter.stats = {
+        ...researchedKnownFighter.stats,
+        ...randomStats,
+      }
+      console.log("researchedKnownFighter", researchedKnownFighter.stats)
     }
   },
   ...researchFighter,

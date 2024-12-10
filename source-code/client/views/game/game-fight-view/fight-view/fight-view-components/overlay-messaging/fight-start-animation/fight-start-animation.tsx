@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { wait } from "../../../../../../../../helper-functions/helper-functions"
+import { fightSound } from "../../../../../../../sound-effects/sound-effects"
 
 type FightExplosionAnimationStages =
   | "start"
@@ -9,8 +10,10 @@ type FightExplosionAnimationStages =
 
 export const FightStartAnimation = ({
   doStartAnimation,
+  soundOn,
 }: {
   doStartAnimation: boolean
+  soundOn: boolean
 }) => {
   const doFightExplosionAnimation = async () => {
     setFightExplosionAnimationStage("start")
@@ -23,6 +26,9 @@ export const FightStartAnimation = ({
   }
 
   useEffect(() => {
+    if (soundOn) {
+      fightSound.play().catch(() => null)
+    }
     doFightExplosionAnimation()
   }, [doStartAnimation])
 

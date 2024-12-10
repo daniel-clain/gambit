@@ -1,8 +1,10 @@
+import gameConfiguration from "../../../game-settings/game-configuration"
 import {
   OptionProbability,
   selectByProbability,
 } from "../../../helper-functions/helper-functions"
 import {
+  ActionName,
   combatActions,
   DecideActionName,
   miscActions,
@@ -12,6 +14,7 @@ import { FighterAction } from "../../../types/game/ui-fighter-state"
 import Fighter from "../fighter"
 import DecideActionProbability from "./decide-action-probability"
 import FighterFighting from "./fighter-fighting"
+import { getRetreatDirection } from "./fighter-retreat"
 
 export default class FighterActions {
   decideActionProbability: DecideActionProbability
@@ -32,8 +35,7 @@ export default class FighterActions {
   }
 
   getActionProbabilities() {
-    const { proximity, fighter, logistics, stopFighting } = this.fighting
-    const { hallucinating } = fighter.state
+    const { proximity, fighter, logistics, timers } = this.fighting
 
     let closestEnemy: Fighter | undefined = logistics.closestRememberedEnemy
 
@@ -43,9 +45,17 @@ export default class FighterActions {
     const responseProbabilities: OptionProbability<DecideActionName>[] = []
 
     const includeCombatActions =
-      enemyWithinStrikingRange || (hallucinating && closestEnemy)
+      enemyWithinStrikingRange || logistics.isHallucinating
 
     const includeMoveActions = !!closestEnemy
+
+    /* test retreat logic before calcutale probabilities */
+    logistics.trapped = false
+    if (closestEnemy) {
+      try {
+        getRetreatDirection(this.fighting)
+      } catch {}
+    }
 
     if (includeCombatActions || includeMoveActions) {
       this.decideActionProbability.setGeneralAttackAndRetreatProbabilities()
@@ -53,9 +63,16 @@ export default class FighterActions {
 
     if (includeCombatActions)
       responseProbabilities.push(
-        ...combatActions.map((action) =>
-          this.decideActionProbability.getProbabilityTo(action)
-        )
+        ...combatActions
+          .map((action) =>
+            this.decideActionProbability.getProbabilityTo(action)
+          )
+          .map((option) => ({
+            ...option,
+            probability: logistics.isHallucinating
+              ? option.probability * 0.1
+              : option.probability,
+          }))
       )
 
     if (includeMoveActions)
@@ -76,27 +93,45 @@ export default class FighterActions {
   decideAction() {
     const responseProbabilities = this.getActionProbabilities()
     if (!responseProbabilities || !responseProbabilities.length) {
-      console.log("should have action probabilites")
+      console.error("should have action probabilites")
       debugger
     }
-    const { combat, fighter, movement, timers } = this.fighting
-    console.log(`${fighter.name} responseProbabilities`, responseProbabilities)
+    const { combat, fighter, movement, timers, logistics, afflictions } =
+      this.fighting
+    //console.log(`${fighter.name} responseProbabilities`, responseProbabilities)
+
+    this.addAfflictionProbabilities(responseProbabilities)
+
     const decidedAction = selectByProbability(responseProbabilities)
 
-    this.decidedActionLog.unshift([decidedAction, responseProbabilities])
-
     if (!decidedAction) {
-      console.log(
+      console.error(
         `${fighter.name} had no decided action, wait 1/10 a sec then decide again`,
-        responseProbabilities
+        responseProbabilities,
+        this.fighting
       )
       this.doNothing()
     } else {
+      this.decidedActionLog.unshift([decidedAction, responseProbabilities])
       const decidedActionIsMove = moveActions.find((x) => x == decidedAction)
       if (!decidedActionIsMove) {
+        timers.cancel("move action")
         timers.cancel("persist direction")
       }
-      console.log(`${fighter.name} decidedAction is ${decidedAction}`)
+      //console.log(`${fighter.name} decidedAction is ${decidedAction}`)
+
+      if (
+        (["punch", "kick", "move to attack"] as ActionName[]).includes(
+          decidedAction
+        )
+      ) {
+        this.fighting.enemyTargetedForAttack = logistics.closestRememberedEnemy!
+        timers.start("targeted for attack")
+      } else {
+        this.fighting.enemyTargetedForAttack = null
+        timers.cancel("targeted for attack")
+      }
+
       ;(() => {
         switch (decidedAction) {
           case "punch":
@@ -114,6 +149,14 @@ export default class FighterActions {
             return this.recover()
           case "check flank":
             return this.checkFlank()
+          case "be sick":
+            return afflictions.beSick()
+
+          case "flinch":
+            return afflictions.flinch()
+
+          case "hallucinations":
+            return afflictions.hallucinations()
           case "do nothing":
             return this.doNothing()
         }
@@ -140,38 +183,90 @@ export default class FighterActions {
   }
 
   checkFlank() {
-    this.fighting.addFighterAction(this.turnAround())
+    this.fighting.addFighterAction({
+      actionName: "check flank",
+      duration: 0,
+      onResolve: () => this.fighting.addFighterAction(this.turnAround()),
+    })
   }
 
   recover() {
-    const { fighter, stats } = this.fighting
-    const { sick, injured } = fighter.state
-    const duration =
-      2500 - stats.fitness * 150 + (((sick || injured) && 1000) || 0)
+    const { fighter, stats, timers } = this.fighting
+    const duration = 2500 - stats.fitness * 150
 
     this.fighting.addFighterAction({
       actionName: "recover",
       modelState: "Recovering",
       duration,
       onResolve: () => {
-        this.fighting.stamina++
+        this.fighting.stamina += 1 + (1 * stats.fitness) / 10
         if (this.fighting.spirit < 3) {
           this.fighting.spirit++
         }
         this.fighting.energy += 3
+        timers.start("just recovered")
       },
     })
   }
 
   doNothing() {
-    const { hallucinating } = this.fighting.fighter.state
-
-    const duration = 1000 + (hallucinating ? 1000 : 0)
-
     this.fighting.addFighterAction({
       actionName: "do nothing",
       modelState: "Idle",
-      duration,
+      duration: 1000,
     })
+  }
+
+  addAfflictionProbabilities(
+    responseProbabilities: OptionProbability<DecideActionName>[]
+  ) {
+    const { proximity, fighter, logistics, timers } = this.fighting
+    const { hallucinating, sick, injured } = fighter.state
+
+    const {
+      injured: { chanceToFlinchAfterAttackingOrBeingAttacked: flinchChance },
+      hallucinating: { chanceToHaveHallucinations: hallucinationsChance },
+      sick: { chanceToBeSick },
+    } = gameConfiguration.afflictions
+
+    const currentTotal = responseProbabilities.reduce(
+      (sum, option) => sum + option.probability,
+      0
+    )
+
+    if (injured && !logistics.onARampage) {
+      if (
+        logistics.justTookHit ||
+        logistics.justLandedAttack ||
+        logistics.justBlocked
+      ) {
+        const flinchProbability =
+          (flinchChance / 100) * (currentTotal / (1 - flinchChance / 100))
+        console.log("flinch probability ", flinchProbability)
+        responseProbabilities.push({
+          option: "flinch",
+          probability: flinchProbability,
+        })
+      }
+    }
+    if (hallucinating && !logistics.isHallucinating) {
+      const hallucinationsProbability =
+        (hallucinationsChance / 100) *
+        (currentTotal / (1 - hallucinationsChance / 100))
+
+      responseProbabilities.push({
+        option: "hallucinations",
+        probability: hallucinationsProbability,
+      })
+    }
+    if (sick && !logistics.wasJustSick) {
+      const beSickProbability =
+        (chanceToBeSick / 100) * (currentTotal / (1 - chanceToBeSick / 100))
+
+      responseProbabilities.push({
+        option: "be sick",
+        probability: beSickProbability,
+      })
+    }
   }
 }

@@ -1,9 +1,12 @@
+import { round } from "lodash"
 import Coords from "../../../interfaces/game/fighter/coords"
 import { LeftOrRight } from "../../../interfaces/game/fighter/left-or-right"
 import { MoveAction } from "../../../types/fighter/action-name"
+import { edgeNames } from "../../../types/fighter/edge"
 import { Angle } from "../../../types/game/angle"
 import { toPercent } from "../../../types/game/percent"
 import { FighterAction } from "../../../types/game/ui-fighter-state"
+import { octagon } from "../../fight/octagon"
 import Fighter from "../fighter"
 import FighterFighting from "./fighter-fighting"
 import { getRetreatDirection } from "./fighter-retreat"
@@ -11,6 +14,7 @@ import { fighterRetreatImplementation } from "./fighter-retreat.i"
 import {
   getDirectionOfEnemyStrikingCenter,
   getDistanceOfEnemyStrikingCenter,
+  getFighterBasePointFromEdge,
   isFacingAwayFromEnemy,
 } from "./proximity"
 
@@ -31,25 +35,27 @@ export default class Movement {
     const thisMovement = this
     try {
       this.setupMoveAction(moveActionName)
-    } catch {
-      console.log("catch move action return")
+    } catch (e) {
+      console.error("catch move action return", e)
       return
     }
 
     const moveAction: FighterAction = {
       actionName: moveActionName,
-      modelState: "Walking",
-      duration: 100,
+      modelState:
+        moveActionName == "cautious retreat" ? "Defending" : "Walking",
+      duration: 20,
       onResolve: () => {
-        const oldX = thisMovement.coords.x
+        //const oldX = thisMovement.coords.x
         thisMovement.moveABit()
-        console.log(
+        /* console.log(
           `after ${thisMovement.fighting.fighter.name} ${thisMovement.moveAction}, x changed from ${oldX} to ${thisMovement.coords.x}`
-        )
+        ) */
       },
     }
 
     if (this.shouldTurnAround) {
+      console.log(`xx ${fighting.fighter.name} turn before ${this.moveAction}`)
       fighting.addFighterAction(
         actions.turnAround(() => fighting.addFighterAction(moveAction))
       )
@@ -64,10 +70,12 @@ export default class Movement {
 
     if (
       this.moveAction == "move to attack" &&
-      proximity.enemyWithinStrikingRange(enemyTargetedForAttack)
+      proximity.enemyWithinStrikingRange(enemyTargetedForAttack!)
     ) {
-      console.log(
-        `${fighter.name} move to attack invalid because ${enemyTargetedForAttack.name} is close enough to strike`
+      console.error(
+        `${fighter.name} move to attack invalid because ${
+          enemyTargetedForAttack!.name
+        } is close enough to strike`
       )
     }
 
@@ -77,17 +85,12 @@ export default class Movement {
 
     this.setMoveDirection(moveActionName)
 
-    logistics.trapped = false
     this.moveAction = moveActionName
-    if (moveActionName == "move to attack") {
-      this.fighting.enemyTargetedForAttack =
-        this.fighting.logistics.closestRememberedEnemy!
-    }
     this.setSpeedModifier()
 
     if (this.fighting.energy > 0) {
-      if (this.speedModifierType == "very fast") this.fighting.energy -= 0.1
-      if (this.speedModifierType == "fast") this.fighting.energy -= 0.05
+      if (this.speedModifierType == "very fast") this.fighting.energy -= 0.3
+      if (this.speedModifierType == "fast") this.fighting.energy -= 0.1
     }
   }
 
@@ -108,22 +111,40 @@ export default class Movement {
     const { fighter, logistics, timers, proximity } = this.fighting
     const { closestRememberedEnemy, flanked } = logistics
 
-    if (
-      timers.isActive("persist direction") &&
-      this.moveAction == "move to attack"
-    ) {
-      const { persistDirection } = logistics
-      return persistDirection
-    }
-
     return getDirectionOfEnemyStrikingCenter(closestRememberedEnemy!, fighter)
   }
 
   setMoveDirection(moveAction: MoveAction) {
     this.moveAction = moveAction
+    const { logistics, proximity, fighter, timers, enemyTargetedForAttack } =
+      this.fighting
+    const { flanked, closestRememberedEnemy } = logistics
 
     if (this.moveAction == "move to attack") {
-      this.movingDirection = this.getAttackDirection()
+      if (flanked && !proximity.againstEdge) {
+        if (logistics.persistDirection) {
+          console.log(
+            `${fighter.name} persists attack direction ${logistics.persistDirection}`
+          )
+          this.movingDirection = logistics.persistDirection
+          return
+        }
+        this.movingDirection = proximity.enemyIsOnThe(
+          "left",
+          enemyTargetedForAttack!
+        )
+          ? 270
+          : 90
+        console.log(
+          fighter.name,
+          "persists attack around flank",
+          this.movingDirection
+        )
+        timers.start("persist direction")
+        logistics.persistDirection = this.movingDirection
+      } else {
+        this.movingDirection = this.getAttackDirection()
+      }
     } else {
       const retreatDirection: Angle | undefined = getRetreatDirection(
         this.fighting
@@ -131,16 +152,17 @@ export default class Movement {
       if (retreatDirection) {
         this.movingDirection = retreatDirection
       } else {
-        console.log("get retreate direction failed")
+        console.error("get retreate direction failed")
       }
     }
   }
 
   moveABit() {
     const newMoveCoords: Coords = this.calculateNewCoords()
-
     const oldCoords = this.coords
-    this.coords = newMoveCoords
+    if (!this.isMoveOutsideOfBounds(newMoveCoords)) {
+      this.coords = newMoveCoords
+    }
     this.handlePassedEnemy(oldCoords)
   }
 
@@ -153,16 +175,36 @@ export default class Movement {
     } = this
     const trigonometricAngle = 90 - movingDirection
     const directionRadians = (Math.PI / 180) * trigonometricAngle
-    const deltaX = moveSpeed * Math.cos(directionRadians)
-    const deltaY = moveSpeed * Math.sin(directionRadians)
-    console.log(
-      `${fighter.name} moveDirection ${movingDirection}, current x ${coords.x}, x change ${deltaX}`
-    )
+    const deltaX = moveSpeed * 0.5 * Math.cos(directionRadians)
+    const deltaY = moveSpeed * 0.5 * Math.sin(directionRadians)
 
     return {
-      x: coords.x + deltaX,
-      y: coords.y + deltaY,
+      x: round(coords.x + deltaX, 2),
+      y: round(coords.y + deltaY, 2),
     }
+  }
+
+  private isMoveOutsideOfBounds(newMoveCoords: Coords): boolean {
+    const newMoveDiff = {
+      x: newMoveCoords.x - this.coords.x,
+      y: newMoveCoords.y - this.coords.y,
+    }
+    return edgeNames.some((edge) => {
+      const fighterBasePoint = getFighterBasePointFromEdge(edge, this.fighting)
+      const newBasePoint = {
+        x: fighterBasePoint.x + newMoveDiff.x,
+        y: fighterBasePoint.y + newMoveDiff.y,
+      }
+      const pointOutsideOfEdge: boolean = octagon.isPointOutsideOfEdge(
+        edge,
+        newBasePoint
+      )
+      if (pointOutsideOfEdge) {
+        console.error(
+          `${this.fighting.fighter.name} has new move point ${newMoveCoords.x} ${newMoveCoords.y} that is out out of bounds on edge ${edge}`
+        )
+      }
+    })
   }
 
   private setSpeedModifier() {
@@ -175,22 +217,22 @@ export default class Movement {
   }
 
   get moveSpeed(): number {
-    const { stats } = this.fighting
+    const { stats, logistics } = this.fighting
     const { speed } = stats
 
-    let moveSpeed = speed
+    let moveSpeed = speed * 0.6
 
-    if (this.fighting.energy > 0) {
+    if (this.fighting.energy > 0 || logistics.onARampage) {
       if (this.speedModifierType == "very fast") {
-        moveSpeed = speed * 1.5
+        moveSpeed = speed * 1.3
       }
       if (this.speedModifierType == "fast") {
-        moveSpeed = speed * 1.1
+        moveSpeed = speed * 0.7
       }
     }
 
     if (this.speedModifierType == "slow") {
-      moveSpeed = speed * 0.7
+      moveSpeed = speed * 0.5
     }
 
     return moveSpeed

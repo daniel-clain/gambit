@@ -3,25 +3,33 @@ import FighterFighting from "../fighter-fighting"
 
 export const getProbabilityForGeneralAttack = (
   fighting: FighterFighting
-): number => {
+): number | null => {
   const { logistics, movement, actions, stamina, proximity, spirit, timers } =
     fighting
   const { intelligence, speed, aggression, strength, maxStamina, maxSpirit } =
     fighting.stats
-  const closestEnemy = logistics.closestRememberedEnemy
-  if (!closestEnemy) return 0
-  const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
-  const enemyAction = closestEnemy.fighting.getCurrentAction()
+  const targetedEnemy =
+    fighting.enemyTargetedForAttack ?? logistics.closestRememberedEnemy
+  if (!targetedEnemy) return null
+  const enemyCloseness = proximity.getEnemyCombatCloseness(targetedEnemy)
+  const enemyAction = targetedEnemy.fighting.getCurrentAction()
 
-  let probability = 20
+  let probability = 10
   const instanceLog =
     actions.decideActionProbability.logInstance("general attack")
   const log = (...args: any[]) => {
     instanceLog(...args, "probability", probability)
   }
 
-  probability += aggression * 4
+  probability += aggression * 6
+  probability += spirit * 4
 
+  if (!!fighting.enemyTargetedForAttack) {
+    probability = +10 + aggression * 2
+    if (logistics.onARampage) {
+      probability += 10
+    }
+  }
   if (logistics.onARampage) {
     probability += 10
   } else {
@@ -33,20 +41,23 @@ export const getProbabilityForGeneralAttack = (
     }
     if (enemyCloseness == Closeness["striking range"]) {
       if (logistics.justTookHit) {
-        probability -= intelligence * 2
         probability += aggression * 2
       }
-      if (logistics.justDidAttack) {
-        probability -= intelligence * 2
-        probability += aggression * 2
-      }
-
       if (enemyAction == "defend") probability -= intelligence * 6
 
       log("closestEnemy defending", enemyAction == "defend")
 
-      if (closestEnemy.fighting.logistics.justDidAttack) {
-        probability += intelligence * 4
+      if (logistics.hasAttackOpportunity(targetedEnemy)) {
+        if (logistics.highEnergy) {
+          probability += aggression * 2
+          if (logistics.hasLowStamina) {
+            probability -= intelligence * 4
+          } else {
+            probability += intelligence * 4
+          }
+        }
+      } else {
+        probability -= intelligence * 4
       }
 
       if (logistics.justBlocked || logistics.justDodged) {
@@ -55,7 +66,6 @@ export const getProbabilityForGeneralAttack = (
       }
     }
   }
-  Array()
 
   if (logistics.timeSinceLastCombat > 5000) {
     probability += (logistics.timeSinceLastCombat / 1000) * 10 - 5
@@ -63,10 +73,14 @@ export const getProbabilityForGeneralAttack = (
   log("timeSinceLastCombat", logistics.timeSinceLastCombat)
 
   if (logistics.trapped) {
-    probability += 12 + aggression * 2
+    probability += 20 + aggression * 2
+  } else {
+    probability -= (maxStamina - stamina) * 0.5 * intelligence * 4
+
+    if (logistics.hasLowStamina) probability -= intelligence * 4
   }
 
-  if (logistics.lowEnergy) probability -= 4 + intelligence
+  if (logistics.lowEnergy) probability -= intelligence * 4
 
   if (logistics.flanked) {
     logistics.flanked.flankers.forEach((flanker) => {
@@ -76,52 +90,45 @@ export const getProbabilityForGeneralAttack = (
         (logistics.isEnemyAttacking(flanker) ? 3 : 1)
     })
   } else if (!logistics.flanked) {
-    if (closestEnemy.fighting.stats.speed > speed) probability -= intelligence
+    if (targetedEnemy.fighting.stats.speed > speed)
+      probability -= intelligence * 2
     else {
-      probability += 6 + intelligence
-      probability += aggression
+      probability += intelligence * 2
     }
-    log("closestEnemy speed bigger", closestEnemy.fighting.stats.speed > speed)
+    log("closestEnemy speed bigger", targetedEnemy.fighting.stats.speed > speed)
 
-    if (closestEnemy.fighting.stats.strength > strength)
-      probability -= intelligence
-    else {
-      probability += 6 + intelligence
-      probability += aggression
-    }
+    if (targetedEnemy.fighting.stats.strength > strength)
+      probability -= (maxSpirit - spirit) * 4
     log(
       "closestEnemy strength bigger",
-      closestEnemy.fighting.stats.strength > strength
+      targetedEnemy.fighting.stats.strength > strength
     )
   }
 
-  probability -= (maxStamina - stamina) * 0.5 * intelligence
-  probability -= (maxSpirit - spirit) * 0.5 * intelligence
-
-  if (logistics.hasLowStamina) probability -= 2 + intelligence * 4
-
   log("hasLowStamina", logistics.hasLowStamina)
 
-  if (logistics.hasLowSpirit) probability -= 2 + intelligence * 3
+  if (logistics.hasLowSpirit) {
+    probability -= 10
+  }
 
   log("hasLowSpirit", logistics.hasLowSpirit)
 
-  if (logistics.enemyHasLowStamina(closestEnemy)) {
-    probability += 2 + intelligence * 2
+  if (logistics.enemyHasLowStamina(targetedEnemy)) {
+    probability += intelligence * 2
     probability += aggression * 2
   }
-  log("enemyHasLowStamina", logistics.enemyHasLowStamina(closestEnemy))
+  log("enemyHasLowStamina", logistics.enemyHasLowStamina(targetedEnemy))
 
-  if (logistics.enemyHasLowSpirit(closestEnemy)) {
+  if (logistics.enemyHasLowSpirit(targetedEnemy)) {
     probability += 2 + intelligence
     probability += aggression * 2
   }
-  log("enemyHasLowSpirit", logistics.enemyHasLowSpirit(closestEnemy))
+  log("enemyHasLowSpirit", logistics.enemyHasLowSpirit(targetedEnemy))
 
   if (!logistics.hadActionRecently) probability += 5 + aggression * 2
 
   if (logistics.hasFullStamina) {
-    probability += 4 + intelligence * 2
+    probability += 10
     probability += aggression
   }
   log("hasFullStamina", logistics.hasFullStamina)

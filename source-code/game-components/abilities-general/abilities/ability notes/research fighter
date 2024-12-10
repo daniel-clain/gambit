@@ -1,0 +1,9 @@
+logic for learning random points
+===================================
+- pick x stats you havent learned today yet
+~ if x > remaining stats, learn all remaining stats and exit, dont try to keep looking for stats that arent there
+
+
+
+
+*

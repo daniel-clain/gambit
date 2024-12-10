@@ -1,29 +1,18 @@
 import { round } from "lodash"
+import gameConfiguration from "../../../game-settings/game-configuration"
 import {
   randomNumber,
   selectByProbability,
 } from "../../../helper-functions/helper-functions"
 import {
+  ActionName,
   AttackAction,
   AttackResponseAction,
 } from "../../../types/fighter/action-name"
-import FighterModelState from "../../../types/fighter/fighter-model-states"
-import { Sound } from "../../../types/fighter/sound"
 import { FighterAction } from "../../../types/game/ui-fighter-state"
 import Fighter from "../fighter"
 import AttackResponseProbability from "./attack-response-probability"
 import FighterFighting from "./fighter-fighting"
-
-type AttackTypeData = {
-  warmUp: number
-  preAttack: number
-  model: FighterModelState
-  sound: Sound
-  postHit: number
-  postMiss: number
-  cooldownHit: number
-  cooldownMiss: number
-}
 
 export default class FighterCombat {
   attackResponseProbability: AttackResponseProbability
@@ -52,118 +41,175 @@ export default class FighterCombat {
       fighting.addFighterAction(defendAction)
     }
   }
+
+  getSpeedAndLog = (
+    duration: number,
+    actionName: ActionName,
+    fighting: FighterFighting
+  ) => {
+    const {
+      fighter: { name },
+    } = fighting
+    const speed = fighting.speedModifier(duration)
+    if (["Strong", "Passive", "Fit", "Average"].includes(name)) {
+      console.log(
+        `logspeed ${name}, ${actionName}, ${speed}, lowEnergy: ${fighting.logistics.lowEnergy}`
+      )
+    }
+    return speed
+  }
+
   punch() {
     const { fighting } = this
-    const { fighter } = fighting
+    const { fighter, logistics, combat, actions, timers } = fighting
+    const { enemyIsBehind } = logistics
 
     const durations = {
-      warmUp: 20,
-      attack: 150,
-      postHit: 400,
-      postMiss: 500,
-      cooldownHit: 300,
-      cooldownMiss: 500,
+      warmUp: 100,
+      attack: 100,
+      postHit: 330,
+      cooldownHit: 440,
+      postMiss: 430,
+      cooldownMiss: 640,
     }
 
-    fighting.addFighterAction({
-      actionName: "punch warmup",
-      modelState: "Idle",
-      duration: fighting.speedModifier(durations.warmUp),
-      onResolve: () => {
-        fighting.addFighterAction({
-          actionName: "punch",
-          modelState: "Punching",
-          duration: fighting.speedModifier(durations.attack),
-          onResolve: () => {
-            const attackResult = this.doAttack("punch")
-            console.log(`punch result ${attackResult}(${fighter.name})`)
+    if (enemyIsBehind) {
+      fighting.addFighterAction(actions.turnAround(addAttackActions))
+    } else {
+      addAttackActions()
+    }
 
-            if (attackResult == "take hit") {
-              fighting.addFighterAction({
-                actionName: "post punch hit",
-                soundMade: "punch",
-                duration: fighting.speedModifier(durations.postHit),
-                onResolve: () => {
-                  fighting.addFighterAction({
-                    actionName: "punch cooldown",
-                    modelState: "Idle",
-                    duration: fighting.speedModifier(durations.cooldownHit),
-                  })
-                },
-              })
-            } else {
-              fighting.addFighterAction({
-                actionName: "post punch miss",
-                duration: fighting.speedModifier(durations.postMiss),
-                onResolve: () => {
-                  fighting.addFighterAction({
-                    actionName: "punch cooldown",
-                    modelState: "Idle",
-                    duration: fighting.speedModifier(durations.cooldownMiss),
-                  })
-                },
-              })
-            }
-          },
-        })
-      },
-    })
+    function addAttackActions() {
+      fighting.addFighterAction({
+        actionName: "punch warmup",
+        modelState: "Idle",
+        duration: combat.getSpeedAndLog(
+          durations.warmUp,
+          "punch warmup",
+          fighting
+        ),
+        onResolve: () => {
+          fighting.addFighterAction({
+            actionName: "punch",
+            modelState: "Punching",
+            duration: combat.getSpeedAndLog(
+              durations.attack,
+              "punch",
+              fighting
+            ),
+            onResolve: () => {
+              const attackResult = combat.doAttack("punch")
+              const makeMissSound = attackResult == "miss"
+              console.log(`punch result ${attackResult}(${fighter.name})`)
+
+              if (attackResult == "take hit") {
+                fighting.addFighterAction({
+                  actionName: "post punch hit",
+                  soundMade: "punch",
+                  duration: combat.getSpeedAndLog(
+                    durations.postHit,
+                    "post punch hit",
+                    fighting
+                  ),
+                  onResolve: () => {
+                    timers.start("just landed attack")
+                    fighting.addFighterAction({
+                      actionName: "punch cooldown",
+                      modelState: "Idle",
+                      duration: combat.getSpeedAndLog(
+                        durations.cooldownHit,
+                        "punch cooldown",
+                        fighting
+                      ),
+                    })
+                  },
+                })
+              } else {
+                fighting.addFighterAction({
+                  actionName: "post punch miss",
+                  soundMade: makeMissSound ? "dodge" : undefined,
+                  duration: fighting.speedModifier(durations.postMiss),
+                  onResolve: () => {
+                    fighting.addFighterAction({
+                      actionName: "punch cooldown",
+                      modelState: "Idle",
+                      duration: fighting.speedModifier(durations.cooldownMiss),
+                    })
+                  },
+                })
+              }
+            },
+          })
+        },
+      })
+    }
   }
   kick() {
     const { fighting } = this
-    const { fighter } = fighting
+    const { fighter, logistics, combat, actions, timers } = fighting
+    const { enemyIsBehind } = logistics
     const durations = {
-      warmUp: 50,
-      attack: 350,
-      postHit: 500,
-      postMiss: 600,
-      cooldownHit: 400,
-      cooldownMiss: 600,
+      warmUp: 200,
+      attack: 240,
+      postHit: 440,
+      cooldownHit: 530,
+      postMiss: 540,
+      cooldownMiss: 730,
+    }
+    if (enemyIsBehind) {
+      fighting.addFighterAction(actions.turnAround(addAttackActions))
+    } else {
+      addAttackActions()
     }
 
-    fighting.addFighterAction({
-      actionName: "kick warmup",
-      modelState: "Idle",
-      duration: fighting.speedModifier(durations.warmUp),
-      onResolve: () => {
-        fighting.addFighterAction({
-          actionName: "kick",
-          modelState: "Kicking",
-          duration: fighting.speedModifier(durations.attack),
-          onResolve: () => {
-            const attackResult = this.doAttack("kick")
-            console.log(`kick result ${attackResult}(${fighter.name})`)
+    function addAttackActions() {
+      fighting.addFighterAction({
+        actionName: "kick warmup",
+        modelState: "Idle",
+        duration: fighting.speedModifier(durations.warmUp),
+        onResolve: () => {
+          fighting.addFighterAction({
+            actionName: "kick",
+            modelState: "Kicking",
+            duration: fighting.speedModifier(durations.attack),
+            onResolve: () => {
+              const attackResult = combat.doAttack("kick")
+              const makeMissSound = attackResult == "miss"
+              console.log(`kick result ${attackResult}(${fighter.name})`)
 
-            if (attackResult == "take hit") {
-              fighting.addFighterAction({
-                actionName: "post kick hit",
-                soundMade: "kick",
-                duration: fighting.speedModifier(durations.postHit),
-                onResolve: () => {
-                  fighting.addFighterAction({
-                    actionName: "kick cooldown",
-                    modelState: "Idle",
-                    duration: fighting.speedModifier(durations.cooldownHit),
-                  })
-                },
-              })
-            } else {
-              fighting.addFighterAction({
-                actionName: "post kick miss",
-                duration: fighting.speedModifier(durations.postMiss),
-                onResolve: () => {
-                  fighting.addFighterAction({
-                    actionName: "kick cooldown",
-                    modelState: "Idle",
-                    duration: fighting.speedModifier(durations.cooldownMiss),
-                  })
-                },
-              })
-            }
-          },
-        })
-      },
-    })
+              if (attackResult == "take hit") {
+                fighting.addFighterAction({
+                  actionName: "post kick hit",
+                  soundMade: "kick",
+                  duration: fighting.speedModifier(durations.postHit),
+                  onResolve: () => {
+                    timers.start("just landed attack")
+                    fighting.addFighterAction({
+                      actionName: "kick cooldown",
+                      modelState: "Idle",
+                      duration: fighting.speedModifier(durations.cooldownHit),
+                    })
+                  },
+                })
+              } else {
+                fighting.addFighterAction({
+                  actionName: "post kick miss",
+                  soundMade: makeMissSound ? "dodge" : undefined,
+                  duration: fighting.speedModifier(durations.postMiss),
+                  onResolve: () => {
+                    fighting.addFighterAction({
+                      actionName: "kick cooldown",
+                      modelState: "Idle",
+                      duration: fighting.speedModifier(durations.cooldownMiss),
+                    })
+                  },
+                })
+              }
+            },
+          })
+        },
+      })
+    }
   }
 
   private doAttack(attackAction: AttackAction): AttackResponseAction | "miss" {
@@ -172,8 +218,10 @@ export default class FighterCombat {
 
     const enemy = logistics.closestRememberedEnemy!
 
-    this.fighting.enemyTargetedForAttack = enemy
-    this.fighting.energy -= { punch: 2, kick: 3 }[attackAction]
+    if (enemy.fighting.knockedOut) {
+      return "miss"
+    }
+    this.fighting.energy -= { punch: 3, kick: 4 }[attackAction]
 
     const stillInRange = proximity.enemyWithinStrikingRange(enemy)
     if (stillInRange) {
@@ -185,7 +233,7 @@ export default class FighterCombat {
         actions.nextDecisionFactors.justHitAttack = true
 
         if (attackAction == "kick") {
-          this.chanceToRampage()
+          this.chanceToRampage(enemy)
         }
       } else {
         actions.nextDecisionFactors.justMissedAttack = true
@@ -237,7 +285,7 @@ export default class FighterCombat {
               onResolve: () => {
                 fighting.addFighterAction({
                   modelState: "Idle",
-                  actionName: "block cooldown",
+                  actionName: "dodge cooldown",
                   duration: fighting.speedModifier(300),
                 })
               },
@@ -246,19 +294,20 @@ export default class FighterCombat {
             return {
               actionName: "take hit",
               modelState: "Taking Hit",
-              duration: fighting.speedModifier(600),
+              duration: fighting.speedModifier(500),
               onResolve: () => {
                 if (fighting.knockedOut) {
                   fighting.addFighterAction({
                     actionName: "knocked out",
                     duration: 0,
+                    commentary: `${fighter.name} has been knocked out by ${enemy.name}`,
                     modelState: "Knocked Out",
                   })
                 } else {
                   fighting.addFighterAction({
                     actionName: "take hit cooldown",
                     modelState: "Idle",
-                    duration: fighting.speedModifier(400),
+                    duration: fighting.speedModifier(500),
                   })
                 }
               },
@@ -277,6 +326,11 @@ export default class FighterCombat {
     const { fighting } = this
     const { proximity, timers, fighter, actions } = fighting
     const { strength } = enemy.fighting.stats
+    const { sick, injured } = fighter.state
+    const {
+      sick: { damageDealtReduction },
+      injured: { extraDamagePercentTaken },
+    } = gameConfiguration.afflictions
 
     timers.start("last combat action")
 
@@ -298,7 +352,7 @@ export default class FighterCombat {
         attackType
       )
     )
-    const result = selectByProbability(responseProbabilities)
+    const result = selectByProbability(responseProbabilities)!
 
     if (result == "block") {
       fighting.spirit++
@@ -315,19 +369,27 @@ export default class FighterCombat {
           (attackType == "kick" ? 1 + strength * 0.6 : 0.5 + strength * 0.3) *
             10
         ) / 10
+
+      if (sick) {
+        hitDamage *= 1 - damageDealtReduction / 100
+      }
+
+      const damageTaken = injured
+        ? hitDamage * (1 + extraDamagePercentTaken / 100)
+        : hitDamage
       const preHitStamina = fighting.stamina
 
-      fighting.stamina = round(fighting.stamina - hitDamage, 2)
+      fighting.stamina = round(fighting.stamina - damageTaken, 2)
+      console.log(
+        `${fighting.fighter.name} took ${damageTaken} from ${enemy.name}'s ${attackType} attack and went from ${preHitStamina} to ${this.fighting.stamina}`
+      )
       if (!fighting.stamina) {
         fighting.setKnockedOut()
       }
-      console.log(
-        `${fighting.fighter.name} took ${hitDamage} from ${enemy.name}'s ${attackType} attack and went from ${preHitStamina} to ${this.fighting.stamina}`
-      )
 
       if (!fighting.knockedOut) {
         fighting.spirit--
-        actions.nextDecisionFactors.justTookHit = true
+        timers.start("just took hit")
         this.chanceToRampage(enemy)
       }
     }
@@ -336,15 +398,25 @@ export default class FighterCombat {
   }
 
   private chanceToRampage(enemy?: Fighter) {
-    const { timers, energy, stats, spirit, stamina } = this.fighting
+    const { timers, energy, stats, spirit, stamina, logistics, fighter } =
+      this.fighting
+    const { injured } = fighter.state
+    const {
+      injured: { increasedChanceToRampageAfterAttack },
+      hallucinating: { extraChanceToRampage },
+    } = gameConfiguration.afflictions
     const randomNum = randomNumber({ to: 100 })
+    const rampageChance =
+      (stats.aggression * (spirit * 1.5) +
+        (logistics.justLandedAttack ? 10 : 0) +
+        (logistics.isHallucinating ? extraChanceToRampage : 0) +
+        (enemy?.fighting.knockedOut ? 15 : 0) -
+        (logistics.lowEnergy ? 5 : 0) -
+        (stats.maxStamina - stamina)) *
+      (injured ? 1 + increasedChanceToRampageAfterAttack / 100 : 1)
+    console.log(`${fighter.name} rampageChance`, rampageChance)
 
-    const goOnRampage =
-      randomNum <
-      stats.aggression * spirit +
-        (enemy?.fighting.knockedOut ? 10 : 0) -
-        (stats.maxEnergy - energy) -
-        (stats.maxStamina - stamina)
+    const goOnRampage = randomNum < rampageChance
     if (goOnRampage) {
       timers.start("on a rampage")
     }

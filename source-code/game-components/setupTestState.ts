@@ -1,4 +1,5 @@
 import gameConfiguration from "../game-settings/game-configuration"
+import { convertFighterInfoToKnownFighterInfo } from "../helper-functions/helper-functions"
 import { Employee, JobSeeker } from "../interfaces/front-end-state-interface"
 import Fighter from "./fighter/fighter"
 import { Game } from "./game"
@@ -11,7 +12,7 @@ export const setupTestState = (game: Game) => {
   //skipFight()
   //freezeOnFight()
   //longManagerOptions()
-  setup1()
+  //setup1()
   //testFighterStats()
   //managerHasLoan()
 
@@ -79,7 +80,7 @@ export const postStartTestState = (game: Game) => {
 
   //finalTournamentTest()
 
-  addPrivateAgentAndLawyer()
+  //addPrivateAgentAndLawyer()
 
   function addPrivateAgentAndLawyer() {
     game.has.managers[0].has.employees.push(new Employee("Private Agent", 3))
@@ -105,7 +106,9 @@ export const postStartTestState = (game: Game) => {
     game.has.weekController.jobSeekers.push(testJobSeeker)
 
     game.has.managers.forEach((manager) =>
-      manager.has.knownFighters.push(testFighter.getInfo())
+      manager.has.knownFighters.push(
+        convertFighterInfoToKnownFighterInfo(testFighter.getInfo())
+      )
     )
   }
 
@@ -113,7 +116,16 @@ export const postStartTestState = (game: Game) => {
     lotsOfMoney()
     gameConfiguration.stageDurations.maxFightDuration = 1
     gameConfiguration.stageDurations.extraTimePerFighter = 0
+    gameConfiguration.videos.find(
+      (v) => v.name == "Final Tournament"
+    )!.videos[0].duration = 3
+
+    gameConfiguration.videos.find(
+      (v) => v.name == "Domination Victory"
+    )!.videos[0].duration = 3
+
     game.has.weekController.weekNumber = 20
+
     const manager = game.has.managers[0]
     for (let i = 0; i < 8; i++) {
       const fighter = game.has.fighters[i]
@@ -217,7 +229,7 @@ export const postStartTestState = (game: Game) => {
   function showPostGameStats() {
     game.state.gameIsFinished = true
     game.state.playerHasVictory = {
-      name: game.has.managers[0].has.name,
+      sourceManager: game.has.managers[0].functions.getInfo(),
       victoryType: "Sinister Victory",
     }
   }

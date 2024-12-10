@@ -1,4 +1,5 @@
 ☐ post attack is always miss because it doesnt see the result stored by the do attack 
+☐ fight is draw if all fighters are dead, fight doesnt gen, goes straight to end
 ☐ stam and energy passive regen
 ☐ effect of low energy
 ☐ defend should consider how far they are away

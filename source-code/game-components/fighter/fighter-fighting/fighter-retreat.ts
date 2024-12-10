@@ -19,7 +19,7 @@ export function getRetreatDirection(
     const { persistDirection } = logistics
     const invalid = i.getIsDirectionIntoEdge(persistDirection)
     if (invalid) {
-      console.log("persist direction invalid")
+      console.error("persist direction invalid")
       timers.cancel("persist direction")
     } else {
       return persistDirection
@@ -47,7 +47,6 @@ export function getRetreatDirection(
           direction = directionBetweenFlankers
         } else {
           handleTrapped()
-          return
         }
       }
     } else {
@@ -93,7 +92,6 @@ export function getRetreatDirection(
           direction = corneredDirectionAlongEdgeAwayFromEnemy
         } else {
           handleTrapped()
-          return
         }
       } else {
         const directionAlongEdgeClosestToDirection =
@@ -122,7 +120,6 @@ export function getRetreatDirection(
             direction = directionToCornerFurthestFromEnemy
           } else {
             handleTrapped()
-            return
           }
         }
       }
@@ -150,6 +147,7 @@ export function getRetreatDirection(
   function handleTrapped() {
     console.log(`${fighter.name} trapped`)
     logistics.trapped = true
+    throw `${fighter.name} trapped`
   }
 }
 

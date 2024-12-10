@@ -1,10 +1,11 @@
 import { round } from "lodash"
+import { Closeness } from "../../../../types/fighter/closeness"
 import FighterFighting from "../fighter-fighting"
 import { isEnemyFacingAway } from "../proximity"
 
 export const getProbabilityToMoveToAttack = (
   fighting: FighterFighting,
-  generalAttackProbability: number
+  generalAttackProbability: number | null
 ): number => {
   const { aggression, intelligence } = fighting.stats
   const { proximity, logistics, fighter, spirit, actions, timers, movement } =
@@ -13,13 +14,14 @@ export const getProbabilityToMoveToAttack = (
   const { decideActionProbability } = actions
 
   const closestEnemy = logistics.closestRememberedEnemy
-  if (!closestEnemy) return 0
+  if (!closestEnemy || generalAttackProbability === null) return 0
   const enemyAction = closestEnemy.fighting.getCurrentAction()
 
   const invalid: boolean = proximity.enemyWithinStrikingRange(closestEnemy)
 
   if (invalid) return 0
 
+  const enemyCloseness = proximity.getEnemyCombatCloseness(closestEnemy)
   let probability = 5
   const instanceLog = decideActionProbability.logInstance("move to attack")
   const log = (...args: any[]) => {
@@ -48,11 +50,23 @@ export const getProbabilityToMoveToAttack = (
 
   log("hasFullSpirit", logistics.hasFullSpirit)
 
-  if (logistics.hasLowStamina) probability -= 5 + intelligence * 2
+  if (logistics.hasLowStamina) {
+    probability -= 5 + intelligence * 2
+    if (enemyCloseness >= Closeness["far"]) {
+      probability -= intelligence * 6
+    } else if (enemyCloseness == Closeness["nearby"]) {
+      probability -= intelligence * 4
+    }
+  }
 
-  log("hasLowStamina", logistics.hasLowStamina)
-
-  if (logistics.hasLowSpirit) probability -= 5 + intelligence * 2
+  if (logistics.hasLowSpirit) {
+    probability -= 5 + intelligence * 2
+    if (enemyCloseness >= Closeness["far"]) {
+      probability -= intelligence * 5
+    } else if (enemyCloseness == Closeness["nearby"]) {
+      probability -= intelligence * 3
+    }
+  }
 
   log("hasLowSpirit", logistics.hasLowSpirit)
 
@@ -93,5 +107,5 @@ export const getProbabilityToMoveToAttack = (
 
   if (probability < 0) probability = 0
 
-  return round(probability)
+  return round(probability, 2)
 }

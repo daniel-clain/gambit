@@ -4,12 +4,13 @@ import FighterFighting from "../fighter-fighting"
 
 export function getProbabilityToStrategicRetreat(
   fighting: FighterFighting,
-  generalRetreatProbability: number
+  generalRetreatProbability: number | null
 ) {
   const { intelligence } = fighting.stats
-  const { logistics, proximity, timers, movement } = fighting
+  const { logistics, proximity, timers, movement, spirit, stats } = fighting
+  const { maxSpirit } = stats
   const enemy = logistics.closestRememberedEnemy
-  if (!enemy) return 0
+  if (!enemy || generalRetreatProbability === null) return 0
   const enemyCloseness = proximity.getEnemyCombatCloseness(enemy)
   const enemyAttacking = logistics.isEnemyAttacking(enemy)
 
@@ -29,15 +30,22 @@ export function getProbabilityToStrategicRetreat(
     probability += movement.getExponentialMoveFactor(500)
   }
 
+  if (enemyCloseness < Closeness["close"]) {
+    probability -= intelligence * 2
+  }
+  if (enemyAttacking) {
+    probability -= intelligence * 2
+  }
+
   if (!logistics.hasFullStamina) probability += intelligence * 2
 
   if (logistics.hasLowStamina) probability += intelligence * 4
 
-  if (enemyAttacking) probability += intelligence * 4
+  if (logistics.hasLowSpirit) probability += maxSpirit - spirit * 2
 
-  if (logistics.flanked) probability += intelligence * 4
+  if (logistics.flanked) probability += intelligence * 8
 
   if (probability < 0) probability = 0
 
-  return round(probability)
+  return round(probability, 2)
 }

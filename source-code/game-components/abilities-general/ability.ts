@@ -2,6 +2,7 @@ import {
   Employee,
   FighterInfo,
   JobSeeker,
+  KnownFighterInfo,
 } from "../../interfaces/front-end-state-interface"
 import { Cost } from "../../interfaces/game/cost"
 import { Evidence } from "../../types/game/evidence.type"
@@ -34,7 +35,12 @@ export interface ClientAbility extends Ability {
   isValidTarget?(target: TargetTypes): boolean
 }
 
-export type TargetTypes = FighterInfo | KnownManager | JobSeeker
+export type TargetTypes =
+  | FighterInfo
+  | KnownManager
+  | KnownFighterInfo
+  | JobSeeker
+
 export type SourceTypes = ManagerInfo | Employee
 
 export type ListOption = TargetTypes | SourceTypes

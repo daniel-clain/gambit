@@ -73,10 +73,18 @@ export const poisonFighterServer: ServerAbility = {
         })
       }
       if (severityLevel == "sick") {
+        if (fighter.state.sick) {
+          sourceManager.functions.addToLog({
+            weekNumber,
+            message: `${fighter.name} was already sick when ${poisoner.name} went to poison them`,
+            type: "employee outcome",
+          })
+          return
+        }
         fighter.state.sick = true
         game.has.weekController.preFightNewsStage.newsItems.push({
           newsType: "fighter is sick",
-          headline: `${fighter.name} Poisoned!`,
+          headline: `${fighter.name} Sick!`,
           message: `${fighter.name} has been nauseous and is pale in complexion, there is reason to believe he has been poisoned`,
         })
         sourceManager.functions.addToLog({
@@ -87,10 +95,18 @@ export const poisonFighterServer: ServerAbility = {
       }
 
       if (severityLevel == "hallucinate") {
+        if (fighter.state.hallucinating) {
+          sourceManager.functions.addToLog({
+            weekNumber,
+            message: `${fighter.name} was already hallucinating when ${poisoner.name} went to poison them`,
+            type: "employee outcome",
+          })
+          return
+        }
         fighter.state.hallucinating = true
         game.has.weekController.preFightNewsStage.newsItems.push({
           newsType: "fighter is hallucinating",
-          headline: `${fighter.name} Poisoned!`,
+          headline: `${fighter.name} Hallucinating!`,
           message: `${fighter.name} has been acting delirious and highly erratic, he says he cant remember`,
         })
         sourceManager.functions.addToLog({

@@ -132,7 +132,7 @@ export class FinalTournament {
     const fightersManager = this.finalsMatchup.winner!.state.manager!
     this.game.state.finalTournament = null
     this.game.state.playerHasVictory = {
-      name: fightersManager.has.name,
+      sourceManager: fightersManager.functions.getInfo(),
       victoryType: "Domination Victory",
     }
   }
@@ -189,6 +189,10 @@ export class FinalTournament {
     return fightResolvedPromise
 
     function handleFightFinished() {
+      console.log(
+        "fight finished",
+        thisFight.result == "draw" ? "draw" : thisFight.result.winner.name
+      )
       thisFight.doTeardown()
       if (!thisFight?.result || thisFight.result == "draw") {
         console.warn("final tournament fight should have a winner")
@@ -202,6 +206,7 @@ export class FinalTournament {
     this.showingBoard = true
     this.updateTournamentBoard()
     this.game.functions.triggerUIUpdate()
+    console.log("show board wait")
     if (this.finalsMatchup?.winner) {
       await wait(5000)
       return
@@ -214,6 +219,7 @@ export class FinalTournament {
 
   private async showWinnerVideo() {
     this.game.state.isShowingVideo = {
+      sourceManager: this.game.state.playerHasVictory!.sourceManager,
       name: "Domination Victory",
       index: 0,
     }

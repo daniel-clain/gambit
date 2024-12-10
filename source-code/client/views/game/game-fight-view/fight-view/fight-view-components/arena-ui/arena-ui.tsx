@@ -16,7 +16,7 @@ export const ArenaUi = ({
     window.onresize = () => setArenaWidth(getArenaWidth())
 
     function getArenaWidth() {
-      return document.querySelector(".octagon")!.clientWidth
+      return document.querySelector(".octagon")?.clientWidth
     }
   })
 

@@ -1,15 +1,26 @@
 import { toJS } from "mobx"
-import { useEffect, useRef, useState } from "react"
-import { FightUIState } from "../../../../../types/game/ui-fighter-state"
-import "./fight.view.scss"
+import { useEffect, useMemo, useState } from "react"
+import { FightUiState } from "../../../../../types/game/ui-fighter-state"
 import { ArenaUi } from "./fight-view-components/arena-ui/arena-ui"
 import { FighterComponent } from "./fight-view-components/fighter/fighter.component"
 import { OverlayMessaging } from "./fight-view-components/overlay-messaging/overlay-messaging"
+import { useFightTimeHook } from "./fight-view-hooks/fight-time-hook"
+import "./fight.view.scss"
 type Props = {
-  fightUiState: FightUIState
+  fightUiState: FightUiState
+  isDisplay: boolean
   hideSoundToggle?: boolean
 }
-export const Fight_View = ({ fightUiState, hideSoundToggle }: Props) => {
+
+export const Fight_View = ({
+  fightUiState,
+  hideSoundToggle,
+  isDisplay,
+}: Props) => {
+  const [soundOn, setSoundOn] = useState(true)
+  const [arenaWidth, setArenaWidth] = useState<number>()
+
+  console.log(fightUiState)
   const {
     startTime,
     fightersSchedule,
@@ -18,76 +29,71 @@ export const Fight_View = ({ fightUiState, hideSoundToggle }: Props) => {
     maxFightDuration,
     result,
     lastTimeStep,
+    commentarySchedule,
   } = fightUiState
+
+  const {
+    countdownTime,
+    timeRemaining,
+    doStartAnimation,
+    fightIsOver,
+    fightIsRunning,
+    fightTimer,
+  } = useFightTimeHook({
+    startTime,
+    serverTimeStep,
+    lastTimeStep,
+    maxFightDuration,
+    paused,
+  })
+
+  /* 
+    - current step is always relative to time passed since start time
+    - fighter state updates are not based on polling, theyre based on timeouts since start time
+
+  
+  */
 
   useEffect(() => {
     console.log("fightUiState", toJS(fightUiState))
   }, [fightUiState])
 
-  const [workThroughSchedule, setWorkThroughSchedule] = useState(false)
-  const [soundOn, setSoundOn] = useState(true)
-  const [arenaWidth, setArenaWidth] = useState<number>()
-  const [startCountdown, setStartCountdown] = useState<number>(
-    new Date(startTime).getTime() - Date.now() / 1000
-  )
-  const [fightTimeStep, setFightTimeStep] = useState(serverTimeStep)
-
-  if (fightTimeStep % 100 == 0) {
-    console.log("fightTimeStep", fightTimeStep)
-  }
-
-  const timeStepInterval = useRef<NodeJS.Timeout>()
-  const countdownInterval = useRef<NodeJS.Timeout>()
-
-  const timeRemaining = Math.round(maxFightDuration - fightTimeStep / 1000)
-
-  useEffect(() => {
-    const timeUntilStart = new Date(startTime).getTime() - Date.now()
-
-    setStartCountdown(Math.ceil(timeUntilStart / 1000))
-    countdownInterval.current = setInterval(() => {
-      setStartCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval.current)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-
-    const fightStartTimeout = setTimeout(() => {
-      console.log("start interval")
-      timeStepInterval.current = setInterval(() => {
-        setFightTimeStep((current) => {
-          if (current >= lastTimeStep) {
-            clearInterval(timeStepInterval.current)
-          }
-          const nextTimeStep = current + 10
-          return nextTimeStep
-        })
-      }, 10)
-    }, timeUntilStart)
-
-    return () => {
-      clearInterval(countdownInterval.current)
-      clearTimeout(fightStartTimeout)
-      clearInterval(timeStepInterval.current)
-    }
-  }, [startTime, paused])
-
-  const doStartAnimation = startCountdown == 0
+  const fighters = useMemo(() => {
+    if (!arenaWidth) return ""
+    return fightersSchedule.map(({ fighterName, fighterTimeStamps }) => {
+      return (
+        <FighterComponent
+          key={fighterName}
+          {...{
+            fighterName,
+            fightIsRunning,
+            serverTimeStep,
+            fightTimer,
+            fighterTimeStamps,
+            arenaWidth,
+            soundOn,
+          }}
+        />
+      )
+    })
+  }, [fightIsRunning, arenaWidth])
 
   return (
     <div className={`fight-ui`}>
       <OverlayMessaging
         {...{
           timeRemaining,
-          startCountdown,
+          countdownTime,
           doStartAnimation,
           soundOn,
           setSoundOn,
-          result,
           hideSoundToggle,
+          fightIsOver,
+          result,
+          commentarySchedule,
+          isDisplay,
+          fightIsRunning,
+          fightTimer,
         }}
       />
 
@@ -97,23 +103,7 @@ export const Fight_View = ({ fightUiState, hideSoundToggle }: Props) => {
           setArenaWidth,
         }}
       >
-        {arenaWidth ? (
-          <div className="fighters">
-            {fightersSchedule.map((fighterSchedule) => (
-              <FighterComponent
-                key={fighterSchedule.fighterName}
-                {...{
-                  fighterSchedule,
-                  arenaWidth,
-                  soundOn,
-                  fightTimeStep,
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          ""
-        )}
+        {fighters}
       </ArenaUi>
     </div>
   )

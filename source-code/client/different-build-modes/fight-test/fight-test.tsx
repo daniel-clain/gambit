@@ -2,14 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Subscription } from "rxjs"
 import Fight from "../../../game-components/fight/fight"
 import Fighter from "../../../game-components/fighter/fighter"
-import { FightUIState } from "../../../types/game/ui-fighter-state"
+import { FightUiState } from "../../../types/game/ui-fighter-state"
 import "../../styles/global.scss"
 import { Fight_View } from "../../views/game/game-fight-view/fight-view/fight.view"
 import { ConfigureTestFighters } from "./configure-test-fighters"
 import { fightUiService } from "./fight-ui-service"
 
 export const FighterTest_C = () => {
-  const [fightUiState, setFightUiState] = useState<FightUIState>()
+  const [fightUiState, setFightUiState] = useState<FightUiState>()
   const [fight, setFight] = useState<Fight>()
   const [fightersList, setFightersList] = useState<Fighter[]>([])
 
@@ -18,7 +18,7 @@ export const FighterTest_C = () => {
   const startNewFight = useCallback(() => {
     fight?.doTeardown()
     setFight(fightUiService.newFight())
-  }, [])
+  }, [fight])
 
   useEffect(() => {
     if (fight) {
