@@ -66,7 +66,7 @@ jobs:
             npm -v;
 
             # Ensure the correct node version is used
-            nvm use 16;
+            nvm use 20.11.1;
 
             # Install dependencies
             cd ${{ secrets.SERVER_APP_DIR }};
@@ -74,12 +74,20 @@ jobs:
           "
 
       # Step 7: Restart or start the server using the `start-server` script
-      - name: Start server with npm script
+      - name: Restart server with PM2
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             export NVM_DIR=\$HOME/.nvm;
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
             nvm use 16;
             cd ${{ secrets.SERVER_APP_DIR }};
-            npm run start-server;
+            
+            # Install PM2 globally if not already installed
+            npm install -g pm2;
+
+            # Start or reload the PM2 process
+            pm2 startOrReload ecosystem.config.js --env production;
+
+            # Save PM2 process list to be resurrected on reboot
+            pm2 save;
           "
