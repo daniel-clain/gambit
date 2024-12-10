@@ -38,9 +38,17 @@ jobs:
       - name: Verify environment setup on server
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            # Ensure NVM is properly loaded by sourcing nvm.sh
             export NVM_DIR=\$HOME/.nvm;
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
-            echo 'PATH: \$PATH' && echo 'NVM_DIR: \$NVM_DIR' && which node && which npm && node -v && npm -v
+
+            # Check and log the environment
+            echo 'PATH: \$PATH';
+            echo 'NVM_DIR: \$NVM_DIR';
+            which node;
+            which npm;
+            node -v;
+            npm -v;
           "
 
       # Step 6: Install dependencies on the server
@@ -51,4 +59,9 @@ jobs:
       # Step 7: Restart or start the server
       - name: Restart server
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SERVER_APP_DIR }} && pm2 restart server.ts || pm2 start server.ts"  # Restart server using pm2
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            export NVM_DIR=\$HOME/.nvm;
+            [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
+            echo 'PATH: \$PATH' && echo 'NVM_DIR: \$NVM_DIR' && which node && which npm && node -v && npm -v;
+            cd ${{ secrets.SERVER_APP_DIR }} && pm2 restart server.ts || pm2 start server.ts
+          "
