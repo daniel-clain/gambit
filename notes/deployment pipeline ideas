@@ -1,0 +1,1 @@
+- transfers only backend code, and runs backend ts on server, fe build should be there
