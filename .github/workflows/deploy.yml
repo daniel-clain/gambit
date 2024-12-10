@@ -37,7 +37,11 @@ jobs:
       # Step 5: Log environment variables and verify correct setup
       - name: Verify environment setup on server
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'PATH: \$PATH' && echo 'NVM_DIR: \$NVM_DIR' && which node && which npm && node -v && npm -v"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            export NVM_DIR=\$HOME/.nvm;
+            [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
+            echo 'PATH: \$PATH' && echo 'NVM_DIR: \$NVM_DIR' && which node && which npm && node -v && npm -v
+          "
 
       # Step 6: Install dependencies on the server
       - name: Install dependencies on the server
