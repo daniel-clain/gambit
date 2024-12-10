@@ -35,9 +35,9 @@ jobs:
           scp -r * ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
       # Step 5: Install dependencies on the server
-      - name: Install dependencies on the server
-        run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SERVER_APP_DIR }} && npm install"  # Installs dependencies remotely
+      - name: Install dependencies on the server- name: 
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "export PATH=$PATH:/usr/local/bin && cd ${{ secrets.SERVER_APP_DIR }} && npm install"
+
 
       # Step 6: Restart or start the server
       - name: Restart server
