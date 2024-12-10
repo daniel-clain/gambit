@@ -66,6 +66,7 @@ jobs:
             cd ${{ secrets.SERVER_APP_DIR }};
             npm ci --production;
           "
+
       # Step 7: Restart or start the server
       - name: Restart server
         run: |
