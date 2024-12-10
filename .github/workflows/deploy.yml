@@ -34,12 +34,17 @@ jobs:
         run: |
           scp -r * ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      # Step 5: Install dependencies on the server
+      # Step 5: Log environment variables and verify correct setup
+      - name: Verify environment setup on server
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo 'PATH: \$PATH' && echo 'NVM_DIR: \$NVM_DIR' && which node && which npm && node -v && npm -v"
+
+      # Step 6: Install dependencies on the server
       - name: Install dependencies on the server
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "export PATH=$PATH:/usr/local/bin && cd ${{ secrets.SERVER_APP_DIR }} && npm install"
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "export NVM_DIR=\$HOME/.nvm && [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh && nvm use 16 && cd ${{ secrets.SERVER_APP_DIR }} && npm ci --production"
 
-      # Step 6: Restart or start the server
+      # Step 7: Restart or start the server
       - name: Restart server
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd ${{ secrets.SERVER_APP_DIR }} && pm2 restart server.ts || pm2 start server.ts"  # Restart server using pm2
