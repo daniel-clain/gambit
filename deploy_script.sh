@@ -20,7 +20,8 @@ fi
 echo "Frontend build is ready. Starting server..."
 
 # Run TypeScript server using PM2
-pm2 start npm --name "gambit" -- run run-server-prod
+#pm2 start npm --name "gambit" -- run run-server-prod
 
+pm2 startOrReload ecosystem.config.js --env production
 # Save PM2 process list (to restart on server reboot)
 pm2 save
