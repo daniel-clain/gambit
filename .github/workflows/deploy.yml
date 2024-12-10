@@ -54,8 +54,18 @@ jobs:
       # Step 6: Install dependencies on the server
       - name: Install dependencies on the server
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "export NVM_DIR=\$HOME/.nvm && [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh && nvm use 16 && cd ${{ secrets.SERVER_APP_DIR }} && npm ci --production"
-
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            # Ensure that the NVM environment is loaded
+            export NVM_DIR=\$HOME/.nvm;
+            [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
+            
+            # Ensure the correct node version is used
+            nvm use 16;
+            
+            # Install dependencies
+            cd ${{ secrets.SERVER_APP_DIR }};
+            npm ci --production;
+          "
       # Step 7: Restart or start the server
       - name: Restart server
         run: |
