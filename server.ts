@@ -1,13 +1,18 @@
 import express, { RequestHandler } from "express"
+import fs from "fs"
+import https from "https"
 import { GameHost } from "./source-code/game-host/game-host"
 
 import { exec } from "child_process"
-import * as http from "http"
 import { Server } from "socket.io"
 
+const privateKey = fs.readFileSync(`${__dirname}/sslcert/server.key`, "utf8")
+const certificate = fs.readFileSync(`${__dirname}/sslcert/server.cert`, "utf8")
+const credentials = { key: privateKey, cert: certificate }
 const PORT = process.env.PORT || 9999
 const app = express()
-const httpServer = http.createServer(app)
+//const httpServer = http.createServer(app)
+var httpsServer = https.createServer(credentials, app)
 
 //let webSocketServer = new Server();
 const environment = process.env.NODE_ENV
@@ -30,7 +35,7 @@ if (environment == "development") {
   mainGameRequestHandler = express.static("host-packages/main-game-prod")
 }
 
-webSocketServer.listen(httpServer)
+webSocketServer.listen(httpsServer)
 
 gameHost = new GameHost(webSocketServer)
 
@@ -55,5 +60,5 @@ app.use(mainGameRequestHandler)
 app.get("/favicon.ico", (req, res) => {
   res.sendFile(`${__dirname}/favicon.ico`)
 })
-httpServer.listen(PORT, () => console.log(`Listening on ${PORT}`))
-console.log(httpServer)
+httpsServer.listen(PORT, () => console.log(`Listening on ${PORT}`))
+console.log(httpsServer)

@@ -12,9 +12,6 @@ export default class Fighter {
 
   constructor(public name: string) {
     this.fighting = new FighterFighting(this)
-
-    console.log("stam", this.fighting.stamina)
-
     this.determineSkin()
   }
 
