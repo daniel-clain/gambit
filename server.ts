@@ -61,4 +61,3 @@ app.get("/favicon.ico", (req, res) => {
   res.sendFile(`${__dirname}/favicon.ico`)
 })
 httpsServer.listen(PORT, () => console.log(`Listening on ${PORT}`))
-console.log(httpsServer)

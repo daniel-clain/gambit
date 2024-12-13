@@ -9,8 +9,8 @@ export default class ManagerOptionsStage implements IStage {
   name: WeekStage = "Manager Options"
   private endStage: (value: void | PromiseLike<void>) => void
   timeLeft: number | undefined
-  private timeLeftInterval: NodeJS.Timer
-  private timesUpTimer: NodeJS.Timer
+  private timeLeftInterval: NodeJS.Timeout
+  private timesUpTimer: NodeJS.Timeout
   private baseDuration: number
   paused: boolean
 

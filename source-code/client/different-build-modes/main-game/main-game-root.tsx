@@ -1,17 +1,15 @@
+import { createRoot } from "react-dom/client" // Change from 'react-dom'
+import { MainGame_C } from "./main-game"
 
+console.log("Start Main Game Client")
 
-import * as React from 'react';
-import { MainGame_C } from './main-game';
-import { render } from "react-dom";
+const container = document.createElement("react-container")
+document.body.appendChild(container)
 
-console.log('Start Main Game Client');
+const root = createRoot(container) // Create root using `createRoot`
+root.render(<MainGame_C />) // Use `render` on the root
 
-render(<MainGame_C />, 
-  document.body.appendChild(
-    document.createElement('react-container')
-  )
-)
-declare const module: any;
+declare const module: any
 if (module.hot) {
-  console.log('Hot module replacement active');
+  console.log("Hot module replacement active")
 }
