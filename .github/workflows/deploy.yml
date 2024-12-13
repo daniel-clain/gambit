@@ -79,11 +79,9 @@ jobs:
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             export NVM_DIR=\$HOME/.nvm;
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
-            nvm use 16;
             cd ${{ secrets.SERVER_APP_DIR }};
             
             # Install PM2 globally if not already installed
-            npm install -g pm2;
 
             # Start or reload the PM2 process
             pm2 startOrReload ecosystem.config.js --env production;
