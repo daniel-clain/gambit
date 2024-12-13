@@ -183,7 +183,7 @@ export const FighterComponent = ({
         style={fighterStyle}
       >
         <div className="fighter__container">
-          <FighterDebugUi {...{ isOn: true, currentTimeStamp, heightRatio }} />
+          <FighterDebugUi {...{ isOn: false, currentTimeStamp, heightRatio }} />
           <div className="fighter__above-text-container">
             <div className="fighter__name" style={fighterNameStyle}>
               {fighterName}
