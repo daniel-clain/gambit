@@ -70,7 +70,7 @@ jobs:
 
             # Install dependencies
             cd ${{ secrets.SERVER_APP_DIR }};
-            npm ci --production;
+            yarn install --frozen-lockfile --production;
           "
 
       # Step 7: Restart or start the server using the `start-server` script
