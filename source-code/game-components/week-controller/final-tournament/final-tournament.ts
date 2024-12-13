@@ -181,7 +181,7 @@ export class FinalTournament {
     const thisFight = this.activeFight
     thisFight.start()
 
-    thisFight.fightUiDataSubject.subscribe((fightUiDataUpdate) => {
+    thisFight.fightUiDataSubject.subscribe(() => {
       this.game.functions.triggerUIUpdate()
     })
     thisFight.fightFinishedSubject.subscribe(handleFightFinished)
