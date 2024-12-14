@@ -31,26 +31,24 @@ jobs:
 
       - name: SSH into server and run deployment (Install dependencies and build)
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-            # Source the appropriate files to load nvm, yarn, and other environment settings
-            source ~/.bashrc  # or use source ~/.bash_profile if that's where nvm is initialized
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            # Ensure NVM is loaded and available
+            source ~/.bashrc  # or ~/.bash_profile if using a different shell
 
-            # Ensure NVM is loaded and Node.js version is correct
+            # Use the correct Node.js version with NVM
             export NVM_DIR=\$HOME/.nvm
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh
-            
-            # Use the correct Node.js version
             nvm use 20.11.1
 
-            # Ensure yarn is available (no need to install if already set up)
+            # Verify yarn is installed and working
             yarn --version
 
             # Navigate to the app directory
             cd ${{ secrets.SERVER_APP_DIR }}
-            
+
             # Install production dependencies
             yarn install --frozen-lockfile --production
-          EOF
+          "
 
       - name: Build frontend
         run: |
@@ -74,11 +72,14 @@ jobs:
 
       - name: SSH into server and reload the app
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'                        
-            # Source the appropriate files to load nvm, yarn, and other environment settings
-            source ~/.bashrc  # or source ~/.bash_profile
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            # Ensure environment is loaded for pm2
+            source ~/.bashrc  # or ~/.bash_profile if using a different shell
             
-            # Start or reload the app with PM2 (should already be installed)
+            # Verify pm2 is available
+            pm2 -v
+
+            # Start or reload the app with PM2
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save
-          EOF
+          "
