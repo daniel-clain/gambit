@@ -52,17 +52,18 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
+
       - name: Build frontend
         run: |
           yarn build-prod
 
-      - name: Build backend
-        run: |
-          yarn build-prod-server
-
       - name: Transfer frontend build to server
         run: |
           scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
+
+      - name: Build backend
+        run: |
+          yarn build-prod-server
 
       - name: Transfer backend build to server
         run: |
