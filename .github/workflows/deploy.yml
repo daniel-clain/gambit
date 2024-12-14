@@ -35,8 +35,7 @@ jobs:
 
       - name: Transfer backend build to server
         run: |
-          cd ${{ github.workspace }}
-          scp -r ./server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
+          scp -r server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
 
       - name: Transfer package.json, yarn.lock, favicon.ico to server
         run: |
