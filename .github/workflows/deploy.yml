@@ -25,30 +25,26 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Transfer package.json  yarn.lock favicon.ico to server
+      - name: Transfer package.json, yarn.lock, favicon.ico to server
         run: |
           scp package.json yarn.lock favicon.ico ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      - name: SSH into the server and install dependencies
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          port: 22
-          script: |
+      - name: SSH into server and run deployment
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             # Ensure NVM is loaded and Node.js version is correct
             export NVM_DIR=\$HOME/.nvm;
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
-
+            
             # Use the correct Node.js version
             nvm use 20.11.1;
-
+            
             # Navigate to the app directory
             cd ${{ secrets.SERVER_APP_DIR }}
-
+            
             # Install production dependencies
-            yarn install --frozen-lockfile --production  &
+            yarn install --frozen-lockfile --production
+          EOF
 
       - name: Install dependencies
         run: |
@@ -58,16 +54,13 @@ jobs:
         run: |
           yarn build-prod
 
-      - name: Verify frontend build output
-        run: ls -al host-packages/main-game-prod
+      - name: Build backend
+        run: |
+          yarn build-prod-server
 
       - name: Transfer frontend build to server
         run: |
           scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
-
-      - name: Build backend
-        run: |
-          yarn build-prod-server
 
       - name: Transfer backend build to server
         run: |
@@ -77,14 +70,10 @@ jobs:
         run: |
           scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
 
-      - name: SSH into the server and deploy
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
+      - name: SSH into server and run deployment
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'                        
             # Start or reload the app with PM2
-            pm2 startOrReload ecosystem.config.js --env production
+            pm2 startOrReload ecosystem.config.js --env production;
             pm2 save;
+          EOF
