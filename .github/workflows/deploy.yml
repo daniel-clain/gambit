@@ -33,9 +33,22 @@ jobs:
         run: |
           yarn build-prod-server
 
+      - name: Debug server build directory
+        run: |
+          echo "Working Directory: $(pwd)"
+          ls -l ./server-build-prod
+
       - name: Transfer backend build to server
         run: |
-          scp -r server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
+          scp -r ./server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
+
+      - name: Build frontend
+        run: |
+          yarn build-prod
+
+      - name: Transfer frontend build to server
+        run: |
+          scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
 
       - name: Transfer package.json, yarn.lock, favicon.ico to server
         run: |
@@ -61,14 +74,6 @@ jobs:
             # Install production dependencies
             yarn install --frozen-lockfile --production &
           "
-
-      - name: Build frontend
-        run: |
-          yarn build-prod
-
-      - name: Transfer frontend build to server
-        run: |
-          scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
 
       - name: Transfer SSL certificates to server
         run: |
