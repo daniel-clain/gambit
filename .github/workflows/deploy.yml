@@ -25,9 +25,9 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Transfer package.json, yarn.lock, favicon.ico to server
+      - name: Transfer package.json, yarn.lock, favicon.ico manifest.json to server
         run: |
-          scp package.json yarn.lock favicon.ico ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
+          scp package.json yarn.lock favicon.ico manifest.json ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
       - name: SSH into server and reload the app
         run: |
