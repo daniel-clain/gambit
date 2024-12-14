@@ -1,7 +1,7 @@
 import { Subject } from "rxjs"
 import { Socket } from "socket.io"
-import { FromClientToGame } from "../client/front-end-service/front-end-service-types"
 import { ServerGameUIState } from "../interfaces/front-end-state-interface"
+import { FromClientToGame } from "../types/game/front-end-service-types"
 import { Game } from "./game"
 import { Manager } from "./manager"
 

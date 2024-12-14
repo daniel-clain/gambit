@@ -7,9 +7,9 @@ import {
   ServerPreGameUIState,
 } from "../../interfaces/front-end-state-interface"
 import { Bet } from "../../interfaces/game/bet"
+import { DropPlayerObj } from "../../types/game/front-end-service-types"
 import { frontEndState } from "../front-end-state/front-end-state"
 import { connectToGameHost } from "./front-end-service"
-import { DropPlayerObj } from "./front-end-service-types"
 
 let socket: SocketIOClient.Socket
 

@@ -1,10 +1,10 @@
 import { round } from "lodash"
 import { CSSProperties } from "react"
+import { defaultSkinModelImages } from "../../../../../../../../game-settings/default-skin-model-images"
+import { fastSkinModelImages } from "../../../../../../../../game-settings/fast-skin-model-images"
+import { muscleSkinModelImages } from "../../../../../../../../game-settings/muscle-skin-model-images"
 import FighterModelImage from "../../../../../../../../interfaces/game/fighter/fighter-model-image"
 import { FighterUiTimeStamp } from "../../../../../../../../types/game/ui-fighter-state"
-import { defaultSkinModelImages } from "../../../../../../../images/fight-view/fighter/default-skin/default-skin-model-images"
-import { fastSkinModelImages } from "../../../../../../../images/fight-view/fighter/fast-skin/fast-skin-model-images"
-import { muscleSkinModelImages } from "../../../../../../../images/fight-view/fighter/muscle-skin/muscle-skin-model-images"
 import "./fighter-debug-ui.scss"
 
 type Props = {
