@@ -19,6 +19,7 @@ interface Props {
   fightTimer: number
   commentarySchedule: CommentarySchedule[]
   fightIsRunning: boolean
+  startTime: string
 }
 
 export const OverlayMessaging = ({
@@ -34,14 +35,27 @@ export const OverlayMessaging = ({
   commentarySchedule,
   fightIsRunning,
   fightTimer,
+  startTime,
 }: Props) => {
   const [currentComment, setCurrentComment] = useState<
     CommentarySchedule | undefined
   >()
 
   const commentaryTimeouts = useRef<NodeJS.Timeout[]>([])
+  const currentTimeTimeInterval = useRef<NodeJS.Timeout>()
+  const [startedTime, setStartedTime] = useState<string | undefined>()
+  const [currentTime, setCurrentTime] = useState<string | undefined>()
 
   useEffect(() => {
+    currentTimeTimeInterval.current = setInterval(() => {
+      setCurrentTime(new Date().toISOString())
+    }, 1000)
+    return () => {
+      clearInterval(currentTimeTimeInterval.current)
+    }
+  }, [])
+  useEffect(() => {
+    setStartedTime(new Date().toISOString())
     if (!isDisplay) return
     console.log("fightIsRunning", fightIsRunning)
 
@@ -79,9 +93,23 @@ export const OverlayMessaging = ({
     sayCommentary(currentComment?.commentary)
     setCurrentComment(undefined)
   }
+  console.log("startedTime", startedTime)
 
   return (
     <>
+      <div
+        style={{ position: "absolute", zIndex: 100, backgroundColor: "white" }}
+      >
+        <div>start time: {new Date(startTime).toISOString()}</div>
+        <div>
+          started time:{" "}
+          {!startedTime ? "--" : new Date(startedTime).toISOString()}
+        </div>
+        <div>
+          current time:{" "}
+          {!currentTime ? "--" : new Date(currentTime).toISOString()}
+        </div>
+      </div>
       {doStartAnimation && (
         <FightStartAnimation {...{ doStartAnimation, soundOn }} />
       )}

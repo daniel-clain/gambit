@@ -99,8 +99,10 @@ export function useFightTimeHook({
   function doCountdown(): Promise<void> {
     return new Promise((resolve) => {
       const initialTimeUntilStart = getTimeUntilStart()
+      console.log("initialTimeUntilStart", initialTimeUntilStart)
 
       const remainderTime = initialTimeUntilStart % 1000
+      console.log("remainderTime", remainderTime)
 
       setCountdownTime(round(initialTimeUntilStart / 1000))
 
@@ -114,7 +116,7 @@ export function useFightTimeHook({
               resolve()
               return undefined
             } else {
-              if (currentCountdownTime == 0) {
+              if (currentCountdownTime == 1) {
                 clearInterval(countdownTimeInterval.current)
                 resolve()
                 return undefined

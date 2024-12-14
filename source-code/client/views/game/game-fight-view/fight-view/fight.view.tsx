@@ -20,7 +20,6 @@ export const Fight_View = ({
   const [soundOn, setSoundOn] = useState(true)
   const [arenaWidth, setArenaWidth] = useState<number>()
 
-  console.log(fightUiState)
   const {
     startTime,
     fightersSchedule,
@@ -82,6 +81,7 @@ export const Fight_View = ({
     <div className={`fight-ui`}>
       <OverlayMessaging
         {...{
+          startTime,
           timeRemaining,
           countdownTime,
           doStartAnimation,
