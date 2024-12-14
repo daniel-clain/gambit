@@ -26,50 +26,29 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile
 
       - name: Build the server
-        run: |
-          echo "Building server..."
-          tsc -p tsconfig.server.json  # Build server with TypeScript
-          echo "Build complete. Listing files:"
-          ls -l ./server-build-prod  # List the files in the build directory
+        run: tsc -p tsconfig.server.json
 
       - name: Wait for server build directory to exist
         run: |
           until [ -d "./server-build-prod" ]; do
-            echo "Waiting for server build to complete..."
             sleep 5
           done
 
-      - name: Log working directory and files after build
+      - name: Create backend directory on the server
         run: |
-          echo "Current working directory: $(pwd)"  # This will log the current directory
-          ls -l  # List files in the current directory to confirm if 'server-build-prod' exists
-          ls -l ./server-build-prod  # List files inside the 'server-build-prod' folder
-
-      - name: Log working directory before SCP
-        run: |
-          echo "Current directory before SCP: $(pwd)"
-          ls -l ./server-build-prod
-
-      - name: Wait for build directory
-        run: |
-          echo "Waiting for build directory..."
-          until [ -d "./server-build-prod" ]; do
-            sleep 2
-            echo "Still waiting for build directory..."
-          done
-          echo "Build directory found, proceeding with SCP"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            mkdir -p ${SERVER_APP_DIR}/server-build-prod
+          "
 
       - name: Transfer backend build to server
         run: |
           scp -r ./server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
 
       - name: Build frontend
-        run: |
-          yarn build-prod
+        run: yarn build-prod
 
       - name: Transfer frontend build to server
         run: |
@@ -82,22 +61,13 @@ jobs:
       - name: SSH into server and run deployment (Install dependencies and build)
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            # Ensure NVM is loaded and available
             source ~/.bashrc  # or ~/.bash_profile if using a different shell
-
-            # Use the correct Node.js version with NVM
             export NVM_DIR=\$HOME/.nvm
             [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh
             nvm use 20.11.1
-
-            # Verify yarn is installed and working
             yarn --version
-
-            # Navigate to the app directory
             cd ${{ secrets.SERVER_APP_DIR }}
-
-            # Install production dependencies
-            yarn install --frozen-lockfile --production &
+            yarn install --frozen-lockfile --production
           "
 
       - name: Transfer SSL certificates to server
@@ -107,13 +77,8 @@ jobs:
       - name: SSH into server and reload the app
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            # Ensure environment is loaded for pm2
-            source ~/.bashrc  # or ~/.bash_profile if using a different shell
-            
-            # Verify pm2 is available
+            source ~/.bashrc
             pm2 -v
-
-            # Start or reload the app with PM2
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save
           "
