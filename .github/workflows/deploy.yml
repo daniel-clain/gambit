@@ -29,12 +29,12 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Build server
+      - name: Build the server
         run: |
-          echo "Building the server..."
-          tsc -p tsconfig.server.json
+          echo "Building server..."
+          tsc -p tsconfig.server.json  # Build server with TypeScript
           echo "Build complete. Listing files:"
-          ls -l ./server-build-prod
+          ls -l ./server-build-prod  # List the files in the build directory
 
       - name: Wait for server build directory to exist
         run: |
@@ -42,6 +42,26 @@ jobs:
             echo "Waiting for server build to complete..."
             sleep 5
           done
+
+      - name: Log working directory and files after build
+        run: |
+          echo "Current working directory: $(pwd)"  # This will log the current directory
+          ls -l  # List files in the current directory to confirm if 'server-build-prod' exists
+          ls -l ./server-build-prod  # List files inside the 'server-build-prod' folder
+
+      - name: Log working directory before SCP
+        run: |
+          echo "Current directory before SCP: $(pwd)"
+          ls -l ./server-build-prod
+
+      - name: Wait for build directory
+        run: |
+          echo "Waiting for build directory..."
+          until [ -d "./server-build-prod" ]; do
+            sleep 2
+            echo "Still waiting for build directory..."
+          done
+          echo "Build directory found, proceeding with SCP"
 
       - name: Transfer backend build to server
         run: |
