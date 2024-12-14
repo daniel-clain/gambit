@@ -1,4 +1,3 @@
-import { VideoName } from "../client/videos/videos"
 import {
   AbilityData,
   AbilityName,
@@ -15,6 +14,7 @@ import SkillLevel from "../types/game/skill-level.type"
 import { FightDayState, FightUiState } from "../types/game/ui-fighter-state"
 import { PlayerInfo, Winner } from "../types/game/victory-and-loss"
 import { VictoryType } from "../types/game/victory-type"
+import { VideoName } from "../types/game/video-names"
 import { WeekStage } from "../types/game/week-stage.type"
 import ChatMessage from "./chat-message.interface"
 import { Bet } from "./game/bet"

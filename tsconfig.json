@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es6", "dom"],
+    "outDir": "host-packages/main-game-prod",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,

@@ -1,5 +1,4 @@
 import { round } from "lodash"
-import { VideoName } from "../client/videos/videos"
 import gameConfiguration from "../game-settings/game-configuration"
 import {
   numberLoop,
@@ -16,6 +15,7 @@ import {
 import { Profession } from "../types/game/profession"
 import SkillLevel from "../types/game/skill-level.type"
 import { FightDayState } from "../types/game/ui-fighter-state"
+import { VideoName } from "../types/game/video-names"
 import Fighter from "./fighter/fighter"
 import { Game } from "./game"
 import { Manager } from "./manager"

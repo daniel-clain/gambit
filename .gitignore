@@ -1,4 +1,5 @@
 host-packages
+server-build-prod
 compiled-code
 dist
 node_modules

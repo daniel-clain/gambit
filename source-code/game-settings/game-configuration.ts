@@ -1,4 +1,4 @@
-import { VideoData } from "../client/videos/videos"
+import { VideoData } from "../types/game/video-names"
 
 const gameConfiguration = {
   startingWeekNumber: 1,

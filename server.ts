@@ -4,10 +4,17 @@ import https from "https"
 import { GameHost } from "./source-code/game-host/game-host"
 
 import { exec } from "child_process"
+import path from "path"
 import { Server } from "socket.io"
-
-const privateKey = fs.readFileSync(`${__dirname}/sslcert/server.key`, "utf8")
-const certificate = fs.readFileSync(`${__dirname}/sslcert/server.cert`, "utf8")
+console.log("process.env.NODE_ENV", process.env.NODE_ENV)
+const certPath =
+  process.env.NODE_ENV === "production"
+    ? path.resolve(__dirname, "../sslcert") // If in production, go one directory up
+    : path.resolve(__dirname, "sslcert") // For dev, use current directory
+console.log("certPath", certPath)
+// Read the certificate files
+const privateKey = fs.readFileSync(path.join(certPath, "server.key"), "utf8")
+const certificate = fs.readFileSync(path.join(certPath, "server.cert"), "utf8")
 const credentials = { key: privateKey, cert: certificate }
 const PORT = process.env.PORT || 9999
 const app = express()

@@ -9,24 +9,7 @@ import finalTournament from "url:./final-tournament.mp4"
 
 import defaultVictoryVideo from "url:./default-victory.mp4"
 import gameConfiguration from "../../game-settings/game-configuration"
-
-export type VideoName =
-  | "Sinister Victory"
-  | "Sinister Victory Fail"
-  | "Wealth Victory"
-  | "Domination Victory"
-  | "Wealth Victory Fail"
-  | "Final Tournament"
-  | "Default Victory"
-
-type VideoInfo = {
-  source: string
-  duration: number
-}
-export type VideoData = {
-  name: VideoName
-  videos: VideoInfo[]
-}
+import { VideoData } from "../../types/game/video-names"
 
 export const getVideos = (): VideoData[] => [
   {
