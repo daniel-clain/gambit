@@ -71,14 +71,17 @@ jobs:
       - name: SSH into server and reload the app
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            # Ensure NVM is available and load the environment variables
-            source ~/.bashrc
+            # Ensure we're using the root profile where node, yarn, and nvm are set up
+            sudo -i -u root bash << 'EOF'
+            source ~/.bashrc  # Load the root user's environment
+
+            # Ensure NVM is loaded
             [ -s \$NVM_DIR/nvm.sh ] && \. \$NVM_DIR/nvm.sh
 
             # Use the correct Node.js version (adjust version if necessary)
             nvm use 20.11.1
 
-            # Verify yarn and node are installed and working
+            # Verify yarn and node are available
             node -v
             yarn -v
 
@@ -91,4 +94,5 @@ jobs:
             # Start or reload the app with PM2
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save
+            EOF
           "
