@@ -25,35 +25,11 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
-
-      - name: Build frontend
-        run: |
-          yarn build-prod
-
-      - name: Build backend
-        run: |
-          yarn build-prod-server
-
       - name: Transfer package.json  yarn.lock favicon.ico to server
         run: |
           scp package.json yarn.lock favicon.ico ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      - name: Transfer frontend build to server
-        run: |
-          scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
-
-      - name: Transfer backend build to server
-        run: |
-          scp -r server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
-
-      - name: Transfer SSL certificates to server
-        run: |
-          scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
-
-      - name: SSH into the server and deploy
+      - name: SSH into the server and install dependencies
         uses: appleboy/ssh-action@v0.1.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -72,8 +48,43 @@ jobs:
             cd ${{ secrets.SERVER_APP_DIR }}
 
             # Install production dependencies
-            yarn install --frozen-lockfile --production
+            yarn install --frozen-lockfile --production  &
 
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: Build frontend
+        run: |
+          yarn build-prod
+
+      - name: Verify frontend build output
+        run: ls -al host-packages/main-game-prod
+
+      - name: Transfer frontend build to server
+        run: |
+          scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
+
+      - name: Build backend
+        run: |
+          yarn build-prod-server
+
+      - name: Transfer backend build to server
+        run: |
+          scp -r server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
+
+      - name: Transfer SSL certificates to server
+        run: |
+          scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
+
+      - name: SSH into the server and deploy
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
             # Start or reload the app with PM2
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save;
