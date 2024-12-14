@@ -1,18 +1,18 @@
-@use '../../../../styles/variables' as *;
-@import './manager-view-variables';
-@import './manager-view-blocks';
+@use "../../../../styles/variables" as gvars;
+@use "./manager-view-variables" as mvars;
+@use "./manager-view-blocks" as *;
 
-$images: '../../../../images/manager-view';
+$images: "../../../../images/manager-view";
 
-.manager-ui{
+.manager-ui {
   height: 100%;
   max-width: 1000px;
   display: flex;
   flex-direction: column;
   margin: auto;
 
-  &__content{
-    margin:auto;
+  &__content {
+    margin: auto;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -20,22 +20,22 @@ $images: '../../../../images/manager-view';
     width: 100%;
     max-height: 100%;
 
-    .headbar{
+    .headbar {
       height: 32px;
       position: absolute;
       width: 100%;
       top: 0;
       z-index: 1;
-    } 
+    }
 
-    .main-content{
+    .main-content {
       position: relative;
       margin-top: 32px;
       display: flex;
       flex-direction: column;
       padding: 8px;
       box-sizing: border-box;
-      background-image: url('#{$images}/bg.jpg');
+      background-image: url("#{$images}/bg.jpg");
       background-size: cover;
       background-position: right center;
       overflow-y: auto;
@@ -43,11 +43,11 @@ $images: '../../../../images/manager-view';
       flex: 1;
       max-height: calc(100vh - 32px);
 
-      .next-fight{
+      .next-fight {
         margin-bottom: 8px;
       }
-      
-      .two-columns{
+
+      .two-columns {
         min-height: 320px;
         display: flex;
         flex: 1;
@@ -60,28 +60,31 @@ $images: '../../../../images/manager-view';
           flex-direction: column;
           > * {
             margin-bottom: 8px;
-            &:last-child{
+            &:last-child {
               margin-bottom: 0;
             }
-          }  
+          }
         }
-        .your-fighters, .employees, .job-seekers, .activity-logs{
+        .your-fighters,
+        .employees,
+        .job-seekers,
+        .activity-logs {
           flex: 1 0;
           min-height: 100px;
           min-height: 130px;
         }
-        .known-fighters{
+        .known-fighters {
           flex: 2;
           min-height: 100px;
         }
-        .activity-log{
+        .activity-log {
           flex: 2;
         }
       }
     }
   }
 
-  .turn-phone-message{
+  .turn-phone-message {
     display: none;
   }
 
@@ -94,9 +97,8 @@ $images: '../../../../images/manager-view';
     }
   } */
 
-  @media (min-width: $layoutChangeBreakpoint){
-    
-    .main-content{
+  @media (min-width: gvars.$layoutChangeBreakpoint) {
+    .main-content {
       flex-direction: row;
 
       .next-fight {
@@ -105,9 +107,7 @@ $images: '../../../../images/manager-view';
         width: 270px;
         overflow-y: scroll;
         margin-right: 20px;
-
       }
     }
-
   }
 }

@@ -1,4 +1,4 @@
-@import '../../../manager-view-style/manager-view-variables';
+@use "../../../manager-view-style/manager-view-variables" as *;
 .headbar {
   background-color: $blue-background;
   color: white;
@@ -16,17 +16,16 @@
     margin-left: 5px;
   }
 
-  .player-ready{
+  .player-ready {
     border-radius: 100%;
-    width: .4rem;
-    height: .4rem;
+    width: 0.4rem;
+    height: 0.4rem;
     border: 1px solid black;
-    &--true{
-      background-color:  lime;
+    &--true {
+      background-color: lime;
     }
-    &--false{
-      background-color:  #ff8d8d;
-
+    &--false {
+      background-color: #ff8d8d;
     }
   }
 

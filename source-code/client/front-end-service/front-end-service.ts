@@ -88,7 +88,7 @@ export function showFighter(fighterName: string) {
 export function showJobSeeker(jobSeeker: JobSeeker) {
   setActiveModal("Job Seeker", jobSeeker)
 }
-export function showAbility(abilityData: AbilityData) {
+export function showAbility(abilityData: Partial<AbilityData>) {
   setActiveModal("Ability", abilityData)
 }
 

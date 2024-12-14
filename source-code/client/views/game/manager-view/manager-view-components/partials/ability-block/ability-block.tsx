@@ -38,7 +38,7 @@ export const AbilityBlock = observer(
         ability-block__image 
         ${
           "ability-block__image__" +
-          abilityData.name.toLocaleLowerCase().split(" ").join("-")
+          abilityData.name!.toLocaleLowerCase().split(" ").join("-")
         }`}
         ></div>
       </div>

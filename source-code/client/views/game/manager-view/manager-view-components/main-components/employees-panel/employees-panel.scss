@@ -1,4 +1,4 @@
-@import '../../../manager-view-style/manager-view-variables';
+@use "../../../manager-view-style/manager-view-variables" as *;
 
 .has-action-points {
   background-color: $blue-light;

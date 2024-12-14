@@ -47,7 +47,7 @@ export function getAppropriateSource(
 
 export function canOnlyBeTargetedOnceConflict(
   ability: ClientAbility,
-  abilityData: AbilityData,
+  abilityData: Partial<AbilityData>,
   delayedExecutionAbilities: AbilityData[],
   managerInfo: ManagerInfo
 ): boolean {
@@ -205,7 +205,7 @@ export function validateAbilityConfirm(
 }
 
 export function isPossibleToPerformAbility(
-  abilityData: AbilityData,
+  abilityData: Partial<AbilityData>,
   managerInfo: ManagerInfo,
   delayedExecutionAbilities: AbilityData[],
   currentWeek: number,

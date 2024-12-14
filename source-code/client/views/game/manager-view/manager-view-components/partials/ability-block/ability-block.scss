@@ -1,94 +1,93 @@
-@import '../../../manager-view-style/_manager-view-variables';
+@use "../../../manager-view-style/_manager-view-variables" as *;
 
-.ability-block{
+.ability-block {
   position: relative;
   text-align: center;
   width: 60px;
   margin: 4px;
 
-  &--disabled{
+  &--disabled {
     filter: grayscale(1);
   }
 
-  &__name{
+  &__name {
     padding: 5px;
     background-color: $blue-border;
     color: white;
     font-size: 0.8rem;
   }
-  &__short-description{
+  &__short-description {
     margin-bottom: 5px;
     visibility: hidden;
     position: absolute;
   }
-  &__button{
+  &__button {
     display: none;
   }
-  &__image{    
+  &__image {
     flex: 1;
     background-size: contain;
     min-height: 45px;
     background-repeat: no-repeat;
     background-position: top center;
 
-    $abilities: '../../../../../../images/manager-view/abilities';
-    &__dope-fighter{
-      background-image: url('#{$abilities}/dope-fighter.png');
+    $abilities: "../../../../../../images/manager-view/abilities";
+    &__dope-fighter {
+      background-image: url("#{$abilities}/dope-fighter.png");
     }
-    &__assault-fighter{
-      background-image: url('#{$abilities}/assault-fighter.jpg');
+    &__assault-fighter {
+      background-image: url("#{$abilities}/assault-fighter.jpg");
     }
-    &__research-fighter{
-      background-image: url('#{$abilities}/research-fighter.png');
+    &__research-fighter {
+      background-image: url("#{$abilities}/research-fighter.png");
     }
-    &__do-surveillance{
-      background-image: url('#{$abilities}/do-surveillance.jpg');
+    &__do-surveillance {
+      background-image: url("#{$abilities}/do-surveillance.jpg");
     }
-    &__train-fighter{
-      background-image: url('#{$abilities}/train-fighter.png');
+    &__train-fighter {
+      background-image: url("#{$abilities}/train-fighter.png");
     }
-    &__promote-fighter{
-      background-image: url('#{$abilities}/promote-fighter.png');
+    &__promote-fighter {
+      background-image: url("#{$abilities}/promote-fighter.png");
     }
-    &__murder-fighter{
-      background-image: url('#{$abilities}/murder-fighter.jpg');
+    &__murder-fighter {
+      background-image: url("#{$abilities}/murder-fighter.jpg");
     }
-    &__offer-contract{
-      background-image: url('#{$abilities}/offer-contract.png');
+    &__offer-contract {
+      background-image: url("#{$abilities}/offer-contract.png");
     }
-    &__guard-fighter{
-      background-image: url('#{$abilities}/guard-fighter.jpg');
+    &__guard-fighter {
+      background-image: url("#{$abilities}/guard-fighter.jpg");
     }
-    &__poison-fighter{
-      background-image: url('#{$abilities}/poison-fighter.jpg');
+    &__poison-fighter {
+      background-image: url("#{$abilities}/poison-fighter.jpg");
     }
-    &__take-a-dive{
-      background-image: url('#{$abilities}/take-a-dive.jpg');
+    &__take-a-dive {
+      background-image: url("#{$abilities}/take-a-dive.jpg");
     }
-    &__prosecute-manager{
-      background-image: url('#{$abilities}/sue-manager.jpg');
+    &__prosecute-manager {
+      background-image: url("#{$abilities}/sue-manager.jpg");
     }
-    &__gather-evidence{
-      background-image: url('#{$abilities}/gather-evidence.png');
+    &__gather-evidence {
+      background-image: url("#{$abilities}/gather-evidence.png");
     }
-    &__sell-drugs{
-      background-image: url('#{$abilities}/sell-drugs.jpg');
+    &__sell-drugs {
+      background-image: url("#{$abilities}/sell-drugs.jpg");
     }
-    &__investigate-manager{
-      background-image: url('#{$abilities}/investigate-manager.jpg');
+    &__investigate-manager {
+      background-image: url("#{$abilities}/investigate-manager.jpg");
     }
-    &__domination-victory{
-      background-image: url('#{$abilities}/domination-victory.jpg');
+    &__domination-victory {
+      background-image: url("#{$abilities}/domination-victory.jpg");
     }
-    &__sinister-victory{
-      background-image: url('#{$abilities}/sinister-victory.jpg');
+    &__sinister-victory {
+      background-image: url("#{$abilities}/sinister-victory.jpg");
     }
-    &__wealth-victory{
-      background-image: url('#{$abilities}/wealth-victory.jpg');
+    &__wealth-victory {
+      background-image: url("#{$abilities}/wealth-victory.jpg");
     }
-    &__give-up{
-      background-image: url('#{$abilities}/give-up.jpg');
+    &__give-up {
+      background-image: url("#{$abilities}/give-up.jpg");
     }
-    
   }
 }
