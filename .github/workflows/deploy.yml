@@ -25,6 +25,10 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+
       - name: Build backend
         run: |
           yarn build-prod-server
@@ -57,9 +61,6 @@ jobs:
             # Install production dependencies
             yarn install --frozen-lockfile --production &
           "
-      - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
 
       - name: Build frontend
         run: |
