@@ -29,26 +29,28 @@ jobs:
         run: |
           scp package.json yarn.lock favicon.ico ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      - name: SSH into server and run deployment
+      - name: SSH into server and run deployment (Install dependencies and build)
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            # Source the appropriate files to load nvm, yarn, and other environment settings
+            source ~/.bashrc  # or use source ~/.bash_profile if that's where nvm is initialized
+
             # Ensure NVM is loaded and Node.js version is correct
-            export NVM_DIR=\$HOME/.nvm;
-            [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh;
+            export NVM_DIR=\$HOME/.nvm
+            [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh
             
             # Use the correct Node.js version
-            nvm use 20.11.1;
-            
+            nvm use 20.11.1
+
+            # Ensure yarn is available (no need to install if already set up)
+            yarn --version
+
             # Navigate to the app directory
             cd ${{ secrets.SERVER_APP_DIR }}
             
             # Install production dependencies
             yarn install --frozen-lockfile --production
           EOF
-
-      - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile
 
       - name: Build frontend
         run: |
@@ -70,10 +72,13 @@ jobs:
         run: |
           scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
 
-      - name: SSH into server and run deployment
+      - name: SSH into server and reload the app
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'                        
-            # Start or reload the app with PM2
-            pm2 startOrReload ecosystem.config.js --env production;
-            pm2 save;
+            # Source the appropriate files to load nvm, yarn, and other environment settings
+            source ~/.bashrc  # or source ~/.bash_profile
+            
+            # Start or reload the app with PM2 (should already be installed)
+            pm2 startOrReload ecosystem.config.js --env production
+            pm2 save
           EOF
