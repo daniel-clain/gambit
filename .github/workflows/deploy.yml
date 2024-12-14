@@ -31,16 +31,10 @@ jobs:
       - name: Build the server
         run: tsc -p tsconfig.server.json
 
-      - name: Wait for server build directory to exist
-        run: |
-          until [ -d "./server-build-prod" ]; do
-            sleep 5
-          done
-
       - name: Create backend directory on the server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            mkdir -p ${SERVER_APP_DIR}/server-build-prod
+            mkdir -p ${{ secrets.SERVER_APP_DIR }}/server-build-prod
           "
 
       - name: Transfer backend build to server
@@ -58,16 +52,10 @@ jobs:
         run: |
           scp package.json yarn.lock favicon.ico ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      - name: SSH into server and run deployment (Install dependencies and build)
+      - name: Create SSL certificates directory on the server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            source ~/.bashrc  # or ~/.bash_profile if using a different shell
-            export NVM_DIR=\$HOME/.nvm
-            [ -s \$NVM_DIR/nvm.sh ] && . \$NVM_DIR/nvm.sh
-            nvm use 20.11.1
-            yarn --version
-            cd ${{ secrets.SERVER_APP_DIR }}
-            yarn install --frozen-lockfile --production
+            mkdir -p ${{ secrets.SERVER_APP_DIR }}/sslcert
           "
 
       - name: Transfer SSL certificates to server
@@ -78,7 +66,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             source ~/.bashrc
-            pm2 -v
+            cd ${{ secrets.SERVER_APP_DIR }}
+            yarn install --frozen-lockfile --production
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save
           "
