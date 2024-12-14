@@ -29,14 +29,19 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Build backend
+      - name: Build server
         run: |
-          yarn build-prod-server
-
-      - name: Debug server build directory
-        run: |
-          echo "Working Directory: $(pwd)"
+          echo "Building the server..."
+          tsc -p tsconfig.server.json
+          echo "Build complete. Listing files:"
           ls -l ./server-build-prod
+
+      - name: Wait for server build directory to exist
+        run: |
+          until [ -d "./server-build-prod" ]; do
+            echo "Waiting for server build to complete..."
+            sleep 5
+          done
 
       - name: Transfer backend build to server
         run: |
