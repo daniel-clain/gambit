@@ -62,12 +62,33 @@ jobs:
         run: |
           scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
 
+      - name: SSH into server and run deployment (Install dependencies and build)
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            source ~/.bashrc 
+          "
+
       - name: SSH into server and reload the app
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            # Ensure NVM is available and load the environment variables
             source ~/.bashrc
-            cd ${{ secrets.SERVER_APP_DIR }}
+            [ -s \$NVM_DIR/nvm.sh ] && \. \$NVM_DIR/nvm.sh
+
+            # Use the correct Node.js version (adjust version if necessary)
+            nvm use 20.11.1
+
+            # Verify yarn and node are installed and working
+            node -v
+            yarn -v
+
+            # Navigate to the app directory
+            cd ${SERVER_APP_DIR}
+
+            # Install production dependencies
             yarn install --frozen-lockfile --production
+
+            # Start or reload the app with PM2
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save
           "
