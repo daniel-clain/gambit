@@ -37,40 +37,22 @@ jobs:
         run: |
           yarn build-prod-server
 
-      # Step to transfer package.json and yarn.lock to the server
-      - name: Transfer package.json and yarn.lock to server
+      - name: Transfer package.json  yarn.lock favicon.ico to server
         run: |
           scp package.json yarn.lock favicon.ico ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
-
-      # Ensure SSL cert directory exists on server
-      - name: Ensure SSL cert directory exists on server
-        run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ${{ secrets.SERVER_APP_DIR }}/sslcert/"
-
-      # Transfer SSL cert to server
-      - name: Transfer SSL cert to server
-        run: |
-          scp -r sslcert/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert/
-
-      - name: Ensure frontend directory exists on server
-        run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/"
 
       - name: Transfer frontend build to server
         run: |
           scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
 
-      # Ensure backend directory exists on server
-      - name: Ensure backend directory exists on server
-        run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ${{ secrets.SERVER_APP_DIR }}/server-build-prod/"
-
-      # Step to transfer backend build to server
       - name: Transfer backend build to server
         run: |
           scp -r server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
 
-      # SSH into the server, install dependencies, and deploy
+      - name: Transfer SSL certificates to server
+        run: |
+          scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
+
       - name: SSH into the server and deploy
         uses: appleboy/ssh-action@v0.1.0
         with:
@@ -92,5 +74,6 @@ jobs:
             # Install production dependencies
             yarn install --frozen-lockfile --production
 
+            # Start or reload the app with PM2
             pm2 startOrReload ecosystem.config.js --env production
             pm2 save;
