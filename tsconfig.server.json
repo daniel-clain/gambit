@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "CommonJS",
-    "outDir": "./server-build-prod",
+    "outDir": "server-build-prod",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
