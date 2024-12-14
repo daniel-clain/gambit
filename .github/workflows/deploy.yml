@@ -3,7 +3,7 @@ name: Deploy Frontend and Backend to Vultr
 on:
   push:
     branches:
-      - main # or the branch you want to deploy from (e.g., 'master', 'release')
+      - fight-update-rework # or the branch you want to deploy from (e.g., 'master', 'release')
 
 jobs:
   build-and-deploy:
