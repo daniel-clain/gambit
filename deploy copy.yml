@@ -1,4 +1,4 @@
-name: Deploy to Vultr Server
+name: Deploy to Vultr Server old
 
 on:
   push:

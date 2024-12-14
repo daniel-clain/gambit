@@ -19,9 +19,5 @@
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["./source-code/"],
-  "exclude": [
-    "./source-code/**/--*",
-    "./source-code/**/backup*",
-    "./source-code/**/--*"
-  ]
+  "exclude": ["./source-code/**/backup*", "./source-code/**/--*"]
 }
