@@ -42,7 +42,10 @@ jobs:
         run: |
           scp package.json yarn.lock ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      # Step to transfer frontend build to server
+      - name: Ensure frontend directory exists on server
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p ${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/"
+
       - name: Transfer frontend build to server
         run: |
           scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
