@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev-testing-grounds": "parcel serve source-code/client/different-build-modes/testing-grounds/index.html --dist-dir host-packages/testing-grounds",
-    "dev": "rimraf host-packages/main-game && parcel watch source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game --no-content-hash",
-    "build-prod": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod",
-    "run-server": "cross-env NODE_ENV=development nodemon -q server.ts",
+    "dev": "parcel source-code/client/different-build-modes/main-game/index.html",
+    "server-dev": "nodemon",
+    "build-prod-fronend": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod",
     "build-prod-server": "tsc -p tsconfig.server.json",
-    "run-server-prod": "cross-env NODE_ENV=production node ./server-build-prod/server.js",
-    "dev-fightTest": "parcel serve source-code/client/different-build-modes/fight-test/index.html --dist-dir host-packages/fight-test"
+    "dev-fightTest": "parcel source-code/client/different-build-modes/fight-test/index.html --port 6969"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.6.0",

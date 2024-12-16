@@ -1,11 +1,14 @@
 import {
+  ClientNameAndID,
+  GameBeingCreated,
+} from "../backend/game-host/game-host.types"
+import {
   AbilityData,
   AbilityName,
 } from "../game-components/abilities-general/ability"
 import { ManagerInfo } from "../game-components/manager"
 import { getProfessionalsAbilities } from "../game-components/professionals"
 import { MatchupInfo } from "../game-components/week-controller/final-tournament/final-tournament"
-import { ClientNameAndID, GameBeingCreated } from "../game-host/game-host.types"
 import { randomNumberDigits } from "../helper-functions/helper-functions"
 import { ManagerImage } from "../types/game/manager-image"
 import { NewsItem } from "../types/game/news-item"
@@ -64,6 +67,7 @@ export interface ClientPreGameUIState {
 }
 
 export interface ClientUIState {
+  gameAssetsLoaded: boolean
   isConnectedToGameHost: boolean
   isConnectedToWebsocketServer: boolean
   clientGameUIState: ClientGameUIState

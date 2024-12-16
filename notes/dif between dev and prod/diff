@@ -1,0 +1,20 @@
+- dev and prod have nothing to do with the environment in which it is being run
+
+- prod is
+
+  - smallest minified bundle without anything it doesnt need
+
+- dev is
+
+  - best user experience for developer so they can easily work on the app
+
+- prod can be run in a local environment and dev can be run on the remote host.
+
+- the cicd pipeline should
+
+  - get the production version of the app onto the remote host and run it
+
+- factors to consider for remote host
+  - it costs money, based on size used, so node modules will take up a lot of space, and the source code will take up a lot of space(coppies of the image and video assets)
+
+cross-env SSL_KEY=./source-code/backend/sslcert/server.key SSL_CERT=./source-code/backend/sslcert/server.cert parcel --https source-code/client/different-build-modes/main-game/index.html --port 8888

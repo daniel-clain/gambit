@@ -1,3 +1,4 @@
+import { runInAction } from "mobx"
 import { observer } from "mobx-react"
 import { useEffect } from "react"
 import { initialSetup } from "../../front-end-service/front-end-service"
@@ -15,16 +16,20 @@ export const MainGame_C = observer(() => {
     if (window.scrollY === 0) {
       window.scrollTo(0, 1)
     }
+    runInAction(() => {
+      frontEndState.clientUIState.gameAssetsLoaded = true
+    })
   }, [])
   const {
     clientUIState: {
+      gameAssetsLoaded,
       isConnectedToGameHost,
       isConnectedToWebsocketServer,
       clientPreGameUIState: { hasGameData },
     },
   } = frontEndState
 
-  return hasGameData ? (
+  return gameAssetsLoaded && hasGameData ? (
     <Game_View />
   ) : isConnectedToWebsocketServer && isConnectedToGameHost ? (
     <Lobby_View />

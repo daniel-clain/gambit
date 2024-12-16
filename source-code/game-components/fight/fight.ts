@@ -1,4 +1,4 @@
-import { addSeconds, differenceInMilliseconds } from "date-fns"
+import { differenceInMilliseconds } from "date-fns"
 import { round } from "lodash"
 import { Subject } from "rxjs"
 import gameConfiguration from "../../game-settings/game-configuration"
@@ -44,7 +44,9 @@ export default class Fight {
   result: Result
   fightUiState: FightUiState
 
-  startTime: string
+  private fightStartDelayMs = 3000
+
+  startTime: number
   lastTimeStep: number
 
   constructor(
@@ -71,6 +73,8 @@ export default class Fight {
       return
     }
     await this.generateFight()
+
+    this.checkFightSize()
 
     this.startFightTimer()
     this.sendUiStateUpdate()
@@ -115,22 +119,27 @@ export default class Fight {
     }
   }
 
-  private async startFightTimer() {
+  private startFightTimer() {
     //this is to track the fight time serverside, purely relative to pause/unpause
-    this.startTime = addSeconds(new Date(), 3).toISOString()
-    await this.doCountdown()
-    console.log("this.lastTimeStep", this.lastTimeStep)
-    this.fightTimer = setInterval(() => {
-      // fight timer increment must be small so that when paused the time is acurate
-      this.fightTimeStep += 1000
+    this.startTime = Date.now() + this.fightStartDelayMs
+    console.log("fight start time: ", this.startTime)
+    new Promise<void>((resolve) => {
+      this.fightTimer = setTimeout(() => {
+        resolve()
+      }, this.fightStartDelayMs)
+    }).then(() => {
+      this.fightTimer = setInterval(() => {
+        // fight timer increment must be small so that when paused the time is acurate
+        this.fightTimeStep += 100
 
-      if (this.fightTimeStep % 1000 === 0) {
-        console.log("fight time step", this.fightTimeStep / 1000)
-      }
-      if (this.fightTimeStep >= this.lastTimeStep) {
-        this.fightTimeIsUp()
-      }
-    }, 1000)
+        if (this.fightTimeStep % 1000 === 0) {
+          console.log("fight time step", this.fightTimeStep / 1000)
+        }
+        if (this.fightTimeStep >= this.lastTimeStep) {
+          this.fightTimeIsUp()
+        }
+      }, 100)
+    })
   }
 
   private fightTimeIsUp() {
@@ -525,5 +534,14 @@ export default class Fight {
     }
 
     this.fightUiDataSubject.next(this.fightUiState)
+  }
+  checkFightSize() {
+    const fightDataJSON = JSON.stringify(this.fightersSchedule)
+    const fightSize = Buffer.byteLength(fightDataJSON, "utf8")
+    /* If the payload is under 100 KB, it’s generally fine for most mobile devices. If it's over 500 KB it might be worth optimizing or compressing.*/
+    console.log(`Fight JSON size: ${fightSize} bytes`)
+    if (fightSize > 500 * 1000) {
+      console.log(`Fight size too big`)
+    }
   }
 }

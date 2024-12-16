@@ -1,4 +1,4 @@
-import { ClientNameAndID } from "../../game-host/game-host.types"
+import { ClientNameAndID } from "../../backend/game-host/game-host.types"
 import { DisconnectedPlayerVote } from "../../interfaces/front-end-state-interface"
 
 export interface GameInfo {

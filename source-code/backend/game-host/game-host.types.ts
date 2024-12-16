@@ -1,6 +1,6 @@
 import { Socket } from "socket.io"
-import { Game } from "../game-components/game"
-import ChatMessage from "../interfaces/chat-message.interface"
+import { Game } from "../../game-components/game"
+import ChatMessage from "../../interfaces/chat-message.interface"
 
 export class ClientNameAndID {
   name: string

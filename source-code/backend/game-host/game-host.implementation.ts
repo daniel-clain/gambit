@@ -1,4 +1,4 @@
-import { ServerPreGameUIState } from "../interfaces/front-end-state-interface"
+import { ServerPreGameUIState } from "../../interfaces/front-end-state-interface"
 import {
   ConnectedClient,
   GameBeingCreated,

@@ -1,0 +1,13 @@
+todo:
+  ☐ get fight test to be able to start another fight without conflicts with previous
+  ☐ double check on reconnect that new instances arent being created
+  ☐ double that timers created are being canceled properly on unhappy case
+  
+
+chat gpt ques:
+==============
+  ☐  to test the game with simulated latency, waht is the best way to do this, can i use dev tool, should i need to use a vpn and put myself in inda to check or is this unnecessary
+  ☐ i dont see how server time is better than iso time
+  ☐  my schedule objects send a full state of each fighter for each state change, it seems like i should optimise it to only send what changes each step
+  ☐  you say to deal with 8000promises at once, use request animation frame instead of timouts, i dont see how this would be done
+  ☐ 

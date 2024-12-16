@@ -1,4 +1,7 @@
-import { ClientNameAndID, ConnectedClient } from "../game-host/game-host.types"
+import {
+  ClientNameAndID,
+  ConnectedClient,
+} from "../backend/game-host/game-host.types"
 import { DisconnectedPlayerVote } from "../interfaces/front-end-state-interface"
 import { Game } from "./game"
 

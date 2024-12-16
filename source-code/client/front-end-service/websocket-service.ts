@@ -1,7 +1,7 @@
 import { runInAction } from "mobx"
 import io from "socket.io-client"
+import { ClientNameAndID } from "../../backend/game-host/game-host.types"
 import { AbilityData } from "../../game-components/abilities-general/ability"
-import { ClientNameAndID } from "../../game-host/game-host.types"
 import {
   ServerGameUIState,
   ServerPreGameUIState,
@@ -51,7 +51,7 @@ export const websocketService = {
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
 
     if (env == "development") {
-      socket = io("http://localhost:6969", {
+      socket = io("https://localhost:9999", {
         transports: ["websocket"],
         secure: true,
         reconnection: true,
@@ -110,6 +110,7 @@ export const websocketService = {
     socket.on(
       "To Client From Server - Lobby Ui",
       (serverPreGameUIState: ServerPreGameUIState) => {
+        console.log("serverPreGameUIState", serverPreGameUIState)
         runInAction(() => {
           frontEndState.serverUIState.serverPreGameUIState =
             serverPreGameUIState

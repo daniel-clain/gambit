@@ -1,5 +1,5 @@
+import { ClientNameAndID } from "../../backend/game-host/game-host.types"
 import { AbilityData } from "../../game-components/abilities-general/ability"
-import { ClientNameAndID } from "../../game-host/game-host.types"
 import { Bet } from "../../interfaces/game/bet"
 
 export type FromClientToGame = {

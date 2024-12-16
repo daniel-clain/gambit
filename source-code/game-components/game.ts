@@ -1,5 +1,5 @@
-import { GameHost } from "../game-host/game-host"
-import { ConnectedClient } from "../game-host/game-host.types"
+import { GameHost } from "../backend/game-host/game-host"
+import { ConnectedClient } from "../backend/game-host/game-host.types"
 import gameConfiguration from "../game-settings/game-configuration"
 import { randomNumberDigits } from "../helper-functions/helper-functions"
 import {

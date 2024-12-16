@@ -1,11 +1,42 @@
-New:
-  ☐ money fall blocks winner name,
-    - doesnt reset
 
 Deal Breakers:
+  
+  ☐ initial load preloads images
+    - get rid of old way, new way source-code\client\views\pre-game\preloader.tsx
+  ☐ winning player listed first in end game stats  
+  ☐ research fighter not gettupd updated stats from training publicity, manager, etc
+  ☐ theif to take a percentage of manager money, balance for best manger with lots of money
+  ☐ end game results dont fit on mobile screen
+  ☐ final tournament, showing result before match
+  ☐ preload vids to play at same time
+  ☐ short knockout punch becaues after punch hit not waiting
+  ☐ show expiring fighter row as red to show you need to recontract
+  ☐ strong too fast
+  ☐ publicity rating needs cap, if a fighter is in a fight, they cant be in the next 2 fights
+  ☐ issue with reconnect, multiple code instances cause, news to show multiple times, and not property do raining money, manager options time runs out too quick, one news showed 5 times, look for what could cause multiple instances
+  ☐ look at time sync, its off by 1 second, there probaby a code cause 
+  ☐ verify preloader is effective
+  ☐ better prod experience
+    - quick change on local, can push and pipelien will auto deploy and start
+      - review resource hoarder game auto deploy
+    - if server goes down
+      - preserves logs
+      - auto restarts
+      - client ping to verify server crash/restart
+  ☐ draw timer should not go to -1, server and clien are 1 sec off
+  
+  ☐ doping can be done multiple times but what is the stacking effect,
+    - why can assult multiple times if no stacking effects
+  ☐ make sure loanshark damage is right
+  ☐ not necessarily only go from 2 to 3 to 4 fighters in a fight, late game still fun to have 1v1 or 3 man to keep it random. 
+    - also introduce 3 players sooner and make it random sooner to keep suspense
+    - make money relative to num fighters in the fight
+  ☐ lawsuit too op, but hard to get
+  ☐ 2 fights steps going at once, old fight in bg, may be relative to dc during fight
+  ☐ if websockets disconnects, change state
+  ☐ generate pre fights should now be based on actually generated fights
   ☐ make sure view takes up 100% and doesnt need to scroll for address bar height
   ☐ falling money bad react rendering performance, improve so not laggy
-  ☐ remove energy bar
   ☐ iphone
     - blue txt and border
     - coins not hidden after fall
@@ -20,11 +51,27 @@ Deal Breakers:
 
 Priority:
   ☐ deploy test fight to server instance
-  ☐ video for fail weath victory
   ☐ set up display for fight, news
   ☐ on player disconnect pause all stage (fight), pause in fight is buggy
   ☐ Lawyers skill level doesnt matter too much, make it relevant
   ☐ end game video, arrows point to vid characters with managers name
+  
+  ☐ show money a different way, so it more clear how much youve made relative to what you had
+  
+  ☐ audio to go with different state changes
+    - sound for afflictions, sound for recovery, 
+  ☐ explain the calculation for betting money made
+    - eg if you bet 0 on a fighter you still get base amount
+    - how much is each fighter promoted
+  ☐ add emphasis of features relative to how central it its to importance in the game
+  ☐ sell drugs make less if other drug dealers are selling
+  ☐ double check loan shark effects and explain them better the the player
+  ☐ prosecute manager info uses mechanic variables
+  ☐ make test fight 'start new fight' do a clean restart with no buggyness from last instance
+    - i think it puts the finish time off by 3 seconds and says winner before finished, test in game mode
+  ☐ think of what makes a dumb or intelligent fighter and put less/heavier  weightings on those key things
+  ☐ use layout effect for caluculating arena size
+  ☐ play the fight as its being generated so that debuggers can be put in
   
 QA:
   ☐ failed victory scenarios play out correctly
@@ -166,3 +213,77 @@ Big wins (to remember my achievements):
 ✔ easy to change name @done(22-10-28 16:42)
   - easy way to change between player and game dispaly, 
 
+✔ remove energy bar @done(24-12-15 00:15)
+
+✔ money fall blocks winner name, @done(24-12-15 00:16)
+  - doesnt reset
+
+✔ video for fail weath victory @done(24-12-15 00:16)
+✔ must face an opponent to attack them @done(24-11-15 16:17)
+  ✔ when a guy finishes taking hit animation, if theyre knocked out, dont finish on cooldown finish on knockout @done(24-11-12 10:35)
+  ✔ make attack and recover more based on closeness and stamina @done(24-11-15 15:39)
+  ✔ a fighter should never have 2 actions that resolve at the same time @done(24-11-08 14:37)
+  ✔ had issue with 'next' action and 'chain actions' where in attack, the result of the attack was lost. so the concept was droped. however its needed, because when adding victory pose, when added, it ads after punch hit, but when punch hit resolves, it adds punch cooldown after victory pose @done(24-11-15 16:18)
+  ✔ fight should declare winner at same time as last actions happen @done(24-11-15 16:19)
+  ✔ game should end after existing actions have finished, including knockout and victory pose, or draw idle @done(24-11-15 16:20)
+    - only logical case is an action added as a result of an attack, the non attack should be filtered out. any other should be flagged as an error
+  ✔ sounds should never be missed @done(24-11-15 16:20)
+
+  ✔ fighter component should @done(24-11-15 16:20)
+    - not loop through entire list of actions each time
+    - should not rerender on each time step
+  ✔ fight component should only rerender on new fight prop sent @done(24-11-15 16:21)
+    - overlay handles time left
+    - each fighter handles its action steps independently
+    
+  ✔ when updated fight obj sent to front end @done(24-11-15 16:21)
+    - rerun fight component properly, consider:
+    - pause, use memo callback, restart relative to start time
+  ✔ trapped logic @done(24-11-22 11:26)
+    - currently its set to trapped and then decide action runs next decide, and decides retreat even though trapped and then loops trapped
+    - when trapped should not have retreat option, should be only defend or attack
+    - each decide action, should check if un trapped first
+    
+  ✔ not go over boundaries @done(24-11-22 11:26)
+  ✔ make sure functions with usecallback are actually not rebuilding @done(24-11-22 11:27)
+  
+  ✔ game fight ui updates, old way it to get data, new way is to respond to event @done(24-11-24 19:28)
+    - current is in game: triggerUIUpdate -> sendUIUpdateToPlayers -> getGameUiState
+    - loops through each player, gets their manager, and builds an update object
+    
+  ✔ server fight time is 1 sec infront of client time, because client waits an extra second at 0 countdown @done(24-11-25 09:08)
+  
+  ✔ visually show if fighter is under influence of low energy @done(24-11-25 09:08)
+    - eg, attack cooldown longer if low energy
+  ✔ redo fighter timers, @done(24-11-25 09:09)
+    - needs concept of timer for thing like (last combat action, on a rampage, move action, memory of enemy behind)
+    - have an object for for timers that works with the fight time step where it resolves when the step gets to it
+  ✔ move speed relative to cautious retreat and desperate retreat @done(24-11-25 09:10)
+    - unused movement func moveSpeed()
+  ✔ show low energy state @done(24-11-25 09:10)
+  ✔ make sure code to reposition away from flank is in effect @done(24-11-25 11:31)
+    - dont walk between 2 to attack, go around behind one of them
+    
+  ✔ after putting in fix for flanked attack not between, bug is getting caught on memory behind, where they pass to get out of flanked, check on the pass @done(24-11-25 16:25)
+  ✔ test in game fight disconnect pause @done(24-11-25 19:38)
+  ✔ grey over screen as tho post fight money dump @done(24-11-25 19:58)
+  
+  ✔ fight currenly works off time relative to server time step, however if the browser refrehes stest what happens @done(24-11-25 19:59)
+  
+  ✔ intelligent should not do less recover with back to remembered enemy @done(24-11-25 19:59)
+  ✔ update game explanation for afflictions @done(24-12-06 13:21)
+  ✔ injured, sick, hallucinations, random things during the fight @done(24-12-06 13:21)
+
+  ✔ round number for everything, skill, contract weeks etc @done(24-12-09 11:02)
+  ✔ show if affected by poison, hallucination, assaulted @done(24-12-09 11:03)
+  ✔ too many new reports is a drag @done(24-12-15 00:14)
+  ✔ news report says multiple tiems if same target more than once @done(24-12-09 11:56)
+  ✔ refactor backend videos and final victory @done(24-12-15 00:13)
+    -  think fresh simple logic
+      ~ server doesnt want to look at video source
+      ~ client plays however long, but config stores duration
+      ~ can play videos before fight news, after domination victory
+      ~ if its a victory, break from promise chain and falls back to game over
+  
+  ✔ money vicory is simply it cost more than the others @done(24-12-15 00:14)
+    - 3 ways to win

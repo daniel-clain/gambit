@@ -28,7 +28,7 @@ button {
 
 #Gambit {
   position: relative;
-  height: 100%;
+  height: calc(100% - 60px);
   max-height: 850px;
   background-color: #03263b;
   overflow: hidden;

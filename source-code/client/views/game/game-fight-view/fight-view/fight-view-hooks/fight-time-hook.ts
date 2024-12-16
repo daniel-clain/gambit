@@ -1,27 +1,28 @@
-import { differenceInMilliseconds, isAfter } from "date-fns"
-import { floor, round } from "lodash"
+import { isAfter } from "date-fns"
+import { ceil, round } from "lodash"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 type Props = {
-  startTime: string
+  serverStartTime: number
   serverTimeStep: number
   lastTimeStep: number
   maxFightDuration: number
   paused: boolean
 }
 export function useFightTimeHook({
-  startTime,
+  serverStartTime,
   serverTimeStep,
   lastTimeStep,
   maxFightDuration,
   paused,
 }: Props) {
-  const [countdownTime, setCountdownTime] = useState<number>()
+  const [countdownTime, setCountdownTime] = useState<number | undefined>()
   const [fightIsRunning, setFightIsRunning] = useState(false)
   const [fightIsOver, setFightIsOver] = useState(false)
   const [fightTimer, setFightTimer] = useState<number>(0)
 
   const fightTimerInterval = useRef<NodeJS.Timeout>()
+  const timeUntilStartTimeout = useRef<NodeJS.Timeout>()
   const countdownTimeInterval = useRef<NodeJS.Timeout>()
 
   const doFightTimerInterval = useCallback(() => {
@@ -33,6 +34,15 @@ export function useFightTimeHook({
       })
     }, 1000)
   }, [serverTimeStep])
+
+  useEffect(() => {
+    return () => {
+      console.log("time hook clearing timeouts")
+      clearTimeout(fightTimerInterval.current)
+      clearTimeout(timeUntilStartTimeout.current)
+      clearTimeout(countdownTimeInterval.current)
+    }
+  }, [])
 
   useEffect(() => {
     const timeIsGreaterThanLastStep = fightTimer > lastTimeStep / 1000
@@ -57,18 +67,23 @@ export function useFightTimeHook({
     if (paused) {
       setFightIsRunning(false)
       clearTimeout(fightTimerInterval.current)
+      clearTimeout(timeUntilStartTimeout.current)
       clearTimeout(countdownTimeInterval.current)
     }
   }, [paused])
 
   useEffect(() => {
-    verifyStartTime()
-    setFightTimer(floor(serverTimeStep / 1000))
-    setFightIsRunning(false)
-    doCountdown().then(() => {
-      setFightIsRunning(true)
-    })
-  }, [startTime])
+    if (!startTimeInTheFuture()) {
+      startTheFight()
+    } else {
+      const msUntilFightStarts = serverStartTime - Date.now()
+      timeUntilStartTimeout.current = setTimeout(() => {
+        startTheFight()
+      }, msUntilFightStarts)
+
+      doCountdown()
+    }
+  }, [serverStartTime])
 
   const doStartAnimation = countdownTime === 0
 
@@ -84,52 +99,62 @@ export function useFightTimeHook({
     fightTimer,
   }
 
-  function verifyStartTime() {
-    const startTimeDate = new Date(startTime)
+  function startTheFight() {
+    console.log("fight started at", Date.now())
+    setFightIsRunning(true)
+  }
+
+  function startTimeInTheFuture() {
+    const startTimeDate = new Date(serverStartTime)
     const isInFuture = isAfter(startTimeDate, new Date())
     if (!isInFuture) {
       console.error(
-        "startTime should never not be in the future",
-        new Date(startTime),
-        new Date()
+        `startTime should never not be in the future \nstartTime: ${startTimeDate}\nverify time: ${new Date()}`
       )
+      return false
     }
+    return true
   }
 
-  function doCountdown(): Promise<void> {
-    return new Promise((resolve) => {
-      const initialTimeUntilStart = getTimeUntilStart()
-      console.log("initialTimeUntilStart", initialTimeUntilStart)
+  async function doCountdown() {
+    const msUntilFightStarts = serverStartTime - Date.now()
 
-      const remainderTime = initialTimeUntilStart % 1000
-      console.log("remainderTime", remainderTime)
+    const remainderTime = msUntilFightStarts % 1000
+    console.log("remainderTime", remainderTime)
+    const secondsAfterRemainder = msUntilFightStarts - remainderTime
+    console.log("secondsAfterRemainder", secondsAfterRemainder)
+    setCountdownTime(ceil(msUntilFightStarts / 1000))
+    // eg if 2500, coundown time should be 3
 
-      setCountdownTime(round(initialTimeUntilStart / 1000))
-
-      countdownTimeInterval.current = setTimeout(() => {
-        setCountdownTime(round(getTimeUntilStart() / 1000))
-
-        countdownTimeInterval.current = setInterval(() => {
-          setCountdownTime((currentCountdownTime) => {
-            if (currentCountdownTime === undefined) {
-              console.error("currentCountdownTime should not be undefined")
-              resolve()
+    if (remainderTime) {
+      await waitRemainderTime()
+    }
+    if (secondsAfterRemainder) {
+      countdownTimeInterval.current = setInterval(() => {
+        setCountdownTime((currentCountdownTime) => {
+          if (currentCountdownTime === undefined) {
+            console.error("currentCountdownTime should not be undefined")
+            return undefined
+          } else {
+            if (currentCountdownTime <= 0) {
+              clearInterval(countdownTimeInterval.current)
               return undefined
-            } else {
-              if (currentCountdownTime == 1) {
-                clearInterval(countdownTimeInterval.current)
-                resolve()
-                return undefined
-              }
-              return round(getTimeUntilStart() / 1000)
             }
-          })
-        }, 1000)
-      }, remainderTime)
+            return currentCountdownTime - 1
+          }
+        })
+      }, 1000)
+    }
 
-      function getTimeUntilStart() {
-        return differenceInMilliseconds(new Date(startTime), new Date())
-      }
-    })
+    function waitRemainderTime() {
+      return new Promise<void>((resolve) => {
+        countdownTimeInterval.current = setTimeout(() => {
+          const msUntilFightStarts = serverStartTime - Date.now()
+          console.log("after remainder time, time diff is", msUntilFightStarts)
+          setCountdownTime(round(msUntilFightStarts / 1000))
+          resolve()
+        }, remainderTime)
+      })
+    }
   }
 }

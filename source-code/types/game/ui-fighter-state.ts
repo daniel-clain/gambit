@@ -16,7 +16,7 @@ export type Result = "draw" | { winner: Fighter }
 export type ResultInfo = "draw" | { winner: FighterInfo }
 
 export type FightUiState = {
-  startTime: string
+  startTime: number //Unix timestamp
   paused: boolean
   fightTimeStep: number
   result: ResultInfo

@@ -58,8 +58,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build the server
-        run: tsc -p tsconfig.server.json
+      - name: Build the backend
+        run: build-prod-backend
 
       - name: Create backend directory on the server
         run: |

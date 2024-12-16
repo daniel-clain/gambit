@@ -21,7 +21,7 @@ export const Fight_View = ({
   const [arenaWidth, setArenaWidth] = useState<number>()
 
   const {
-    startTime,
+    startTime: serverStartTime,
     fightersSchedule,
     paused,
     fightTimeStep: serverTimeStep,
@@ -39,7 +39,7 @@ export const Fight_View = ({
     fightIsRunning,
     fightTimer,
   } = useFightTimeHook({
-    startTime,
+    serverStartTime,
     serverTimeStep,
     lastTimeStep,
     maxFightDuration,
@@ -81,7 +81,7 @@ export const Fight_View = ({
     <div className={`fight-ui`}>
       <OverlayMessaging
         {...{
-          startTime,
+          serverStartTime,
           timeRemaining,
           countdownTime,
           doStartAnimation,

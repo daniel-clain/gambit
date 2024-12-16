@@ -10,6 +10,7 @@ export function getInitialState(): FrontEndState {
       serverGameUIState: undefined,
     },
     clientUIState: {
+      gameAssetsLoaded: false,
       isConnectedToWebsocketServer: false,
       isConnectedToGameHost: false,
       clientPreGameUIState: {

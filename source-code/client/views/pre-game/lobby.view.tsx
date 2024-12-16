@@ -1,10 +1,9 @@
 import { observer } from "mobx-react"
-import * as React from "react"
 import { useState } from "react"
 import {
   GameBeingCreated,
   JoinedClient,
-} from "../../../game-host/game-host.types"
+} from "../../../backend/game-host/game-host.types"
 import ChatMessage from "../../../interfaces/chat-message.interface"
 import { GameInfo } from "../../../interfaces/game/game-info"
 import { backButtonClicked } from "../../front-end-service/front-end-service"

@@ -1,3 +1,4 @@
+import { format } from "date-fns"
 import { orderBy } from "lodash"
 import { useEffect, useRef, useState } from "react"
 import {
@@ -19,7 +20,7 @@ interface Props {
   fightTimer: number
   commentarySchedule: CommentarySchedule[]
   fightIsRunning: boolean
-  startTime: string
+  serverStartTime: number
 }
 
 export const OverlayMessaging = ({
@@ -35,7 +36,7 @@ export const OverlayMessaging = ({
   commentarySchedule,
   fightIsRunning,
   fightTimer,
-  startTime,
+  serverStartTime,
 }: Props) => {
   const [currentComment, setCurrentComment] = useState<
     CommentarySchedule | undefined
@@ -100,14 +101,15 @@ export const OverlayMessaging = ({
       <div
         style={{ position: "absolute", zIndex: 100, backgroundColor: "white" }}
       >
-        <div>start time: {new Date(startTime).toISOString()}</div>
         <div>
-          started time:{" "}
-          {!startedTime ? "--" : new Date(startedTime).toISOString()}
+          server start time:{" "}
+          {!serverStartTime
+            ? "--"
+            : format(new Date(serverStartTime), "HH:mm:ss.SSS")}
         </div>
         <div>
           current time:{" "}
-          {!currentTime ? "--" : new Date(currentTime).toISOString()}
+          {!currentTime ? "--" : format(new Date(currentTime), "HH:mm:ss.SSS")}
         </div>
       </div>
       {doStartAnimation && (

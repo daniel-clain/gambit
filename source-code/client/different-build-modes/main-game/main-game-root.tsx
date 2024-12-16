@@ -1,4 +1,4 @@
-import { createRoot } from "react-dom/client" // Change from 'react-dom'
+import { createRoot } from "react-dom/client"
 import { MainGame_C } from "./main-game"
 
 console.log("Start Main Game Client")
@@ -6,8 +6,8 @@ console.log("Start Main Game Client")
 const container = document.createElement("react-container")
 document.body.appendChild(container)
 
-const root = createRoot(container) // Create root using `createRoot`
-root.render(<MainGame_C />) // Use `render` on the root
+const root = createRoot(container)
+root.render(<MainGame_C />)
 
 declare const module: any
 if (module.hot) {

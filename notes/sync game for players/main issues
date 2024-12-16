@@ -1,0 +1,17 @@
+# issues
+
+- the logged time of each device is not the same
+- parths time starts in negative numbers
+- what if the fight tries to process the fight obj after the start time
+  ~ should not bug out, should still be able to calculate the current time from the start time and run the fight from there
+
+# requirements
+
+- prove all assets are preloaded so no lag in render
+- when a clients gets a package, react should rerender based on start time vs iso time
+- countdown time should only show if time is before start time, if its after, it should go from the current time
+
+discovered answers
+
+- iso time is unrelable cos its based on the client machine
+- Unix timestamp is perfectly reliable because its not related to the machine and give the same relative value regardless of location

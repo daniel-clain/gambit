@@ -1,17 +1,15 @@
+import { createRoot } from "react-dom/client"
+import { FighterTest_C } from "./fight-test"
 
-import 'regenerator-runtime/runtime'
-import * as React from 'react';
-import { render } from "react-dom";
-import { FighterTest_C } from './fight-test';
+console.log("Start Fight Test")
 
-const reactRenderingTag = document.createElement('react')
-document.body.appendChild(reactRenderingTag)
+const container = document.createElement("react-container")
+document.body.appendChild(container)
 
-console.log('Adding game to DOM');
+const root = createRoot(container)
+root.render(<FighterTest_C />)
 
-render(<FighterTest_C />, 
-  document.body.appendChild(
-    document.createElement('react-container')
-  )
-)
-
+declare const module: any
+if (module.hot) {
+  console.log("Hot module replacement active")
+}
