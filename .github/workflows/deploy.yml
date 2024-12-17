@@ -25,32 +25,20 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Transfer package.json, yarn.lock, favicon.ico manifest.json to server
+      - name: Transfer package.json, yarn.lock, favicon.ico manifest.json, ecosystem.config.js, to server
         run: |
-          scp package.json yarn.lock favicon.ico manifest.json ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
+          scp package.json yarn.lock favicon.ico manifest.json ecosystem.config.js ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
       - name: SSH into server and install prod dependencies
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            # Ensure we're using the correct user's profile where node, yarn, and nvm are set up
+
             sudo -i -u ${{ secrets.SERVER_USER }} bash -c \"
-              # Load the profile for the user
+              #specify profile that has node and pm2 installed
               source ~/.bash_profile
 
-              # Ensure NVM is loaded
-              [ -s \$NVM_DIR/nvm.sh ] && \. \$NVM_DIR/nvm.sh
-
-              # Use the correct Node.js version (adjust version if necessary)
-              nvm use 20.11.1
-
-              # Verify yarn and node are available
-              node -v
-              yarn -v
-
-              # Navigate to the app directory
               cd ${SERVER_APP_DIR}
 
-              # Install production dependencies
               yarn install --frozen-lockfile --production
             \"
           "
@@ -94,32 +82,10 @@ jobs:
         run: |
           scp -r sslcert ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/sslcert
 
-      - name: SSH into server and run deployment (Install dependencies and build)
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            source ~/.bashrc 
-          "
-
       - name: SSH into server and reload the app
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            # Ensure we're using the correct user's profile where node, yarn, and nvm are set up
-            sudo -i -u ${{ secrets.SERVER_USER }} bash -c \"
-              # Load the profile for the user
-              source ~/.bash_profile
-
-              # Ensure NVM is loaded
-              [ -s \$NVM_DIR/nvm.sh ] && \. \$NVM_DIR/nvm.sh
-
-              # Use the correct Node.js version (adjust version if necessary)
-              nvm use 20.11.1
-
-              # Verify yarn and node are available
-              node -v
-              yarn -v
-
-              # Start or reload the app with PM2
-              pm2 startOrReload ecosystem.config.js --env production
-              pm2 save
-            \"
+            
+            pm2 startOrReload ecosystem.config.js --env production
+            pm2 save
           "
