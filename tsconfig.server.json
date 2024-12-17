@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "CommonJS",
-    "outDir": "production-builds/backend",
+    "outDir": "production-builds",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

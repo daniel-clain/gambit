@@ -1,5 +1,6 @@
 
 Deal Breakers:
+  ☐ pipeline should clear prod builds folder, so that old stuff doesnt conflict with new
   ☐ pipeline is slower than it needs to be because it transfers unchanged media
   ☐ when moving to attack, all fighters now always try to go from behind if flanked
     - this is supposed to be an intelligent move
