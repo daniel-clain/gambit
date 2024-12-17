@@ -29,7 +29,7 @@ jobs:
         run: |
           scp package.json yarn.lock favicon.ico manifest.json ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}
 
-      - name: SSH into server and reload the app
+      - name: SSH into server and install prod dependencies
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             # Ensure we're using the correct user's profile where node, yarn, and nvm are set up
@@ -59,7 +59,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build the backend
-        run: build-prod-backend
+        run: yarn build-prod-backend
 
       - name: Create backend directory on the server
         run: |
