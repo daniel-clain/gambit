@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "ES6",
     "module": "CommonJS",
-    "outDir": "./server-build-prod",
-    "rootDir": "./source-code/backend",
+    "outDir": "production-builds/backend",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,6 +11,6 @@
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["server.ts"],
+  "include": ["source-code/backend/server.ts"],
   "exclude": ["source-code/client", "node_modules"]
 }

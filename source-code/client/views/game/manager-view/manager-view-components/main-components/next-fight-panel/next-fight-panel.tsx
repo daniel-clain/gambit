@@ -14,7 +14,7 @@ export const NextFightPanel = observer(() => {
 
   return (
     <div className="next-fight">
-      <div className="next-fight__heading">Next Fight Fighterz</div>
+      <div className="next-fight__heading">Next Fight Fighters</div>
       <div className="next-fight__fighters">
         {nextFightFighters.map((fighterName) => (
           <div

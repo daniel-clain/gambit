@@ -64,7 +64,7 @@ jobs:
       - name: Create backend directory on the server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            mkdir -p ${{ secrets.SERVER_APP_DIR }}/server-build-prod
+            mkdir -p ${{ secrets.SERVER_APP_DIR }}/production-builds/backend
           "
 
       - name: Transfer backend build to server
@@ -72,7 +72,7 @@ jobs:
           scp -r ./production-builds/backend/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/production-builds/backend
 
       - name: Build frontend
-        run: yarn build-prod
+        run: yarn build-prod-frontend
 
       - name: Transfer frontend build to server
         run: |
