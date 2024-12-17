@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev-fightTest": "parcel source-code/client/different-build-modes/fight-test/index.html --port 6969 --cache-dir .cache-fight-test --dist-dir .dist-fight-test",
-    "dev": "parcel source-code/client/different-build-modes/main-game/index.html  --cache-dir .cache-main-game --dist-dir .dist-main-game",
-    "server-dev": "nodemon",
-    "build-prod-fronend": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod",
-    "build-prod-server": "tsc -p tsconfig.server.json"
+    "run-dev-fight-test": "parcel source-code/client/different-build-modes/fight-test/index.html --port 6969 --cache-dir .cache-fight-test --dist-dir .dist-fight-test",
+    "run-dev-frontend": "parcel source-code/client/different-build-modes/main-game/index.html  --cache-dir .cache-main-game --dist-dir .dist-main-game",
+    "run-dev-backend": "nodemon",
+    "build-prod-frontend": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir production-builds/main-game",
+    "build-prod-backend": "tsc -p tsconfig.server.json",
+    "run-prod-backend": "cross-env NODE_ENV=production node ./production-builds/backend/server.js"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.6.0",

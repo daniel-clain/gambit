@@ -9,8 +9,8 @@ export function createHttpsServer(expressApp: Express): Server {
   // Setup HTTPS credentials
   const certPath =
     environment === "production"
-      ? path.resolve(__dirname, "../sslcert") // For production
-      : path.resolve(__dirname, "sslcert") // For development
+      ? path.resolve(__dirname, "../../sslcert") // For production
+      : path.resolve(__dirname, "../../sslcert") // For development
   const privateKey = fs.readFileSync(path.join(certPath, "server.key"), "utf8")
   const certificate = fs.readFileSync(
     path.join(certPath, "server.cert"),

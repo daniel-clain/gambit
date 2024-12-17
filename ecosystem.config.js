@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "gambit", // Name of your app
       script: "npm",
-      args: "run run-server-prod", // The npm script to run
+      args: "run run-prod-backend", // The npm script to run
       interpreter: "none", // Use the system shell to run the npm script
       env: {
         NODE_ENV: "development", // Environment variables for development

@@ -69,14 +69,14 @@ jobs:
 
       - name: Transfer backend build to server
         run: |
-          scp -r ./server-build-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/server-build-prod
+          scp -r ./production-builds/backend/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/production-builds/backend
 
       - name: Build frontend
         run: yarn build-prod
 
       - name: Transfer frontend build to server
         run: |
-          scp -r host-packages/main-game-prod/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/host-packages/main-game-prod/
+          scp -r production-builds/main-game/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/production-builds/main-game/
 
       - name: Create SSL certificates directory on the server
         run: |

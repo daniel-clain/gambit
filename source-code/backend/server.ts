@@ -26,7 +26,7 @@ if (environment === "production") {
   // Start the servers
 
   console.log("Serving static files from production build...")
-  expressApp.use(express.static("host-packages/main-game-prod"))
+  expressApp.use(express.static("production-builds/main-game"))
 } else {
   console.log("Development mode: Use Parcel dev server for frontend.")
 }

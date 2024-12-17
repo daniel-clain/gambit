@@ -18,6 +18,6 @@ export function setupRestartServerEndpoint(expressApp: Express) {
 
 export function serveFavicon(expressApp: Express) {
   expressApp.get("/favicon.ico", (req, res) => {
-    res.sendFile(path.join(__dirname, "favicon.ico"))
+    res.sendFile(path.join(__dirname, "../../favicon.ico"))
   })
 }
