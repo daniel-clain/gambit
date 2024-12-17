@@ -74,6 +74,12 @@ jobs:
       - name: Build frontend
         run: yarn build-prod-frontend
 
+      - name: Create frontend directory on the server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            mkdir -p ${{ secrets.SERVER_APP_DIR }}/production-builds/main-game/
+          "
+
       - name: Transfer frontend build to server
         run: |
           scp -r production-builds/main-game/* ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:${{ secrets.SERVER_APP_DIR }}/production-builds/main-game/
