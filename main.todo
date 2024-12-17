@@ -1,6 +1,10 @@
 
 Deal Breakers:
-  
+  ☐ pipeline is slower than it needs to be because it transfers unchanged media
+  ☐ when moving to attack, all fighters now always try to go from behind if flanked
+    - this is supposed to be an intelligent move
+    - if they are all always doing it then the ones in the middle just continuously cirlce around like a dance until they are at the edges
+    - there should be 2 different move to attack types, where a more dumb agressive fighter goes the most direct way, and a more intelligent fighter goes around
   ☐ initial load preloads images
     - get rid of old way, new way source-code\client\views\pre-game\preloader.tsx
   ☐ winning player listed first in end game stats  
@@ -47,6 +51,7 @@ Deal Breakers:
     - if difference isnt noticed when runnign local, must be server diff
     - maybe server has too many actions to run, review code for ways to make less functions run unnecessarily
     - test idea, make global server updates component that shows update count 
+  ☐ ui allow toggle fighter debug ui (energy, stam, flanked, direction)
 
 
 Priority:

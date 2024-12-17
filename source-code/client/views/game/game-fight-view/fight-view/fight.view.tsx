@@ -38,6 +38,7 @@ export const Fight_View = ({
     fightIsOver,
     fightIsRunning,
     fightTimer,
+    localTimeStep,
   } = useFightTimeHook({
     serverStartTime,
     serverTimeStep,
@@ -66,7 +67,7 @@ export const Fight_View = ({
           {...{
             fighterName,
             fightIsRunning,
-            serverTimeStep,
+            localTimeStep,
             fightTimer,
             fighterTimeStamps,
             arenaWidth,

@@ -104,7 +104,7 @@ export default class FighterFighting {
     )
     if (closestEnemyInFront) {
       console.log(
-        `closest that was infront was ${closestEnemyInFront.name}, their x ${closestEnemyInFront.fighting.movement.coords.x} this x ${this.movement.coords.x}`
+        `closest that was infront of ${this.fighter.name} was ${closestEnemyInFront.name}, their x ${closestEnemyInFront.fighting.movement.coords.x} this x ${this.movement.coords.x}, so ${this.fighter.name} now remembers ${closestEnemyInFront.name} is behind`
       )
     }
     this.rememberEnemyBehind(closestEnemyInFront || null)

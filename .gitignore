@@ -8,3 +8,5 @@ node_modules
 yarn-error.log
 package-lock.json
 .parcel-cache
+.cache-*
+.dist-*

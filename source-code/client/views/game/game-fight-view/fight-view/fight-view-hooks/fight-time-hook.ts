@@ -1,4 +1,4 @@
-import { isAfter } from "date-fns"
+import { format, isAfter } from "date-fns"
 import { ceil, round } from "lodash"
 import { useCallback, useEffect, useRef, useState } from "react"
 
@@ -19,20 +19,35 @@ export function useFightTimeHook({
   const [countdownTime, setCountdownTime] = useState<number | undefined>()
   const [fightIsRunning, setFightIsRunning] = useState(false)
   const [fightIsOver, setFightIsOver] = useState(false)
-  const [fightTimer, setFightTimer] = useState<number>(0)
+  const [fightTimer, setFightTimer] = useState<number>(serverTimeStep)
 
   const fightTimerInterval = useRef<NodeJS.Timeout>()
   const timeUntilStartTimeout = useRef<NodeJS.Timeout>()
   const countdownTimeInterval = useRef<NodeJS.Timeout>()
 
   const doFightTimerInterval = useCallback(() => {
-    clearInterval(fightTimerInterval.current)
-    fightTimerInterval.current = setInterval(() => {
-      setFightTimer((currentFightTimer) => {
-        console.log("currentFightTimer", currentFightTimer + 1)
-        return currentFightTimer + 1
+    const timeNow = Date.now()
+    const diff = timeNow - serverStartTime
+    const modulus1000Remainder = (diff + serverTimeStep) % 1000
+    const modified1SecTimout = 1000 - modulus1000Remainder
+
+    fightTimerInterval.current = setTimeout(() => {
+      setFightTimer(() => {
+        const timeNow = Date.now()
+        const formattedNow = format(new Date(timeNow), "HH:mm:ss.SSS")
+        console.log("formattedNow ", formattedNow)
+        const diff = timeNow - serverStartTime
+
+        const newTime = round(diff / 1000)
+        console.log("fight time step", newTime)
+        return newTime
       })
-    }, 1000)
+      doFightTimerInterval()
+    }, modified1SecTimout)
+  }, [serverTimeStep])
+
+  useEffect(() => {
+    setFightTimer(Math.floor(serverTimeStep))
   }, [serverTimeStep])
 
   useEffect(() => {
@@ -49,7 +64,7 @@ export function useFightTimeHook({
 
     if (timeIsGreaterThanLastStep) {
       setFightIsOver(true)
-      clearInterval(fightTimerInterval.current)
+      setFightIsRunning(false)
     } else {
       setFightIsOver(false)
     }
@@ -57,6 +72,7 @@ export function useFightTimeHook({
 
   /* set time remaining loop */
   useEffect(() => {
+    clearInterval(fightTimerInterval.current)
     if (fightIsRunning) {
       doFightTimerInterval()
     }
@@ -66,7 +82,6 @@ export function useFightTimeHook({
   useEffect(() => {
     if (paused) {
       setFightIsRunning(false)
-      clearTimeout(fightTimerInterval.current)
       clearTimeout(timeUntilStartTimeout.current)
       clearTimeout(countdownTimeInterval.current)
     }
@@ -97,10 +112,13 @@ export function useFightTimeHook({
     fightIsOver,
     fightIsRunning,
     fightTimer,
+    localTimeStep: fightTimer * 1000,
   }
 
   function startTheFight() {
-    console.log("fight started at", Date.now())
+    const startTime = Date.now()
+    const formattedStart = format(new Date(startTime), "HH:mm:ss.SSS")
+    console.log("start at ", startTime, formattedStart)
     setFightIsRunning(true)
   }
 

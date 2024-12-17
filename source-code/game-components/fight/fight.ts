@@ -1,5 +1,4 @@
-import { differenceInMilliseconds } from "date-fns"
-import { round } from "lodash"
+import { format } from "date-fns"
 import { Subject } from "rxjs"
 import gameConfiguration from "../../game-settings/game-configuration"
 import Coords from "../../interfaces/game/fighter/coords"
@@ -123,22 +122,38 @@ export default class Fight {
     //this is to track the fight time serverside, purely relative to pause/unpause
     this.startTime = Date.now() + this.fightStartDelayMs
     console.log("fight start time: ", this.startTime)
+    const formattedStart = format(new Date(this.startTime), "HH:mm:ss.SSS")
+    console.log("this.startTime at ", this.startTime, formattedStart)
     new Promise<void>((resolve) => {
       this.fightTimer = setTimeout(() => {
         resolve()
       }, this.fightStartDelayMs)
     }).then(() => {
-      this.fightTimer = setInterval(() => {
-        // fight timer increment must be small so that when paused the time is acurate
-        this.fightTimeStep += 100
+      const thisFight = this
+      doFightInterval()
+      function doFightInterval() {
+        const timeNow = Date.now()
+        const diff = timeNow - thisFight.startTime
+        const modulus100Remainder = (diff + thisFight.fightTimeStep) % 100
+        const modified100MsTimout = 100 - modulus100Remainder
 
-        if (this.fightTimeStep % 1000 === 0) {
-          console.log("fight time step", this.fightTimeStep / 1000)
-        }
-        if (this.fightTimeStep >= this.lastTimeStep) {
-          this.fightTimeIsUp()
-        }
-      }, 100)
+        thisFight.fightTimer = setTimeout(() => {
+          const timeNow = Date.now()
+          thisFight.fightTimeStep += 100
+
+          if (thisFight.fightTimeStep % 1000 === 0) {
+            const formattedNow = format(new Date(timeNow), "HH:mm:ss.SSS")
+            console.log("formattedNow ", formattedNow)
+            console.log("fight time step", thisFight.fightTimeStep / 1000)
+          }
+
+          if (thisFight.fightTimeStep >= thisFight.lastTimeStep) {
+            thisFight.fightTimeIsUp()
+          } else {
+            doFightInterval()
+          }
+        }, modified100MsTimout)
+      }
     })
   }
 
@@ -146,36 +161,6 @@ export default class Fight {
     console.log("fight time is up")
     this.fightFinishedSubject.next()
     clearInterval(this.fightTimer)
-  }
-
-  doCountdown(): Promise<void> {
-    const thisFight = this
-    return new Promise((resolve) => {
-      const initialTimeUntilStart = getTimeUntilStart()
-      const remainderTime = initialTimeUntilStart % 1000
-      this.countdownTime = round(initialTimeUntilStart / 1000)
-      console.log("remainderTime", remainderTime)
-      this.fightTimer = setTimeout(() => {
-        this.countdownTime = round(getTimeUntilStart() / 1000)
-
-        this.fightTimer = setInterval(() => {
-          console.log("this.countdownTime", this.countdownTime)
-          if (this.countdownTime == 0) {
-            clearInterval(this.fightTimer)
-            thisFight.countdownTime = undefined
-            resolve()
-          } else {
-            this.countdownTime = round(getTimeUntilStart() / 1000)
-          }
-        }, 1000)
-      }, remainderTime)
-      function getTimeUntilStart() {
-        return differenceInMilliseconds(
-          new Date(thisFight.startTime),
-          new Date()
-        )
-      }
-    })
   }
 
   private async generateFight() {
@@ -443,24 +428,19 @@ export default class Fight {
     const {
       name,
       fighting: {
-        afflictions,
+        knockedOut,
         stamina,
         energy,
         facingDirection,
         movement: { coords, movingDirection },
-        logistics: {
-          onARampage,
-          highEnergy,
-          lowEnergy,
-          flanked,
-          currentAffliction,
-        },
+        logistics,
         spirit,
         modelState,
         stats: { maxEnergy, maxStamina },
       },
       skin,
     } = sourceFighter
+    const { onARampage, highEnergy, lowEnergy, currentAffliction } = logistics
 
     const uiTimeStamp: FighterUiTimeStamp = {
       startTimeStep: this.fightGenTimeStep,
@@ -481,7 +461,7 @@ export default class Fight {
           energy,
           maxEnergy,
           movingDirection,
-          flanked: !!flanked,
+          flanked: knockedOut ? false : !!logistics.flanked,
         },
       },
     }

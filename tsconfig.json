@@ -13,8 +13,8 @@
     "module": "CommonJS",
     "target": "es6",
     "jsx": "react-jsx",
-    "skipLibCheck": true,
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["./source-code/"],

@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "parcel source-code/client/different-build-modes/main-game/index.html",
+    "dev-fightTest": "parcel source-code/client/different-build-modes/fight-test/index.html --port 6969 --cache-dir .cache-fight-test --dist-dir .dist-fight-test",
+    "dev": "parcel source-code/client/different-build-modes/main-game/index.html  --cache-dir .cache-main-game --dist-dir .dist-main-game",
     "server-dev": "nodemon",
     "build-prod-fronend": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir host-packages/main-game-prod",
-    "build-prod-server": "tsc -p tsconfig.server.json",
-    "dev-fightTest": "parcel source-code/client/different-build-modes/fight-test/index.html --port 6969"
+    "build-prod-server": "tsc -p tsconfig.server.json"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.6.0",
     "cross-env": "^7.0.3",
-    "date-fns": "^4.1.0",
+    "date-fns": "2.30.0",
     "dotenv": "^16.4.7",
     "express": "^4.18.1",
     "lodash": "^4.17.21",

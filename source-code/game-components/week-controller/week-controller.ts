@@ -95,6 +95,7 @@ export class WeekController {
     this.game.state.gameIsFinished = true
     this.triggerUIUpdate()
     setTimeout(() => {
+      console.log("game is finished")
       this.game.functions.tearDownGame()
     }, 20000)
   }

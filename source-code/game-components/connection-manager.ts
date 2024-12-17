@@ -24,6 +24,9 @@ export default class ConnectionManager {
     addDisconnectedObjectToArray()
     removeDisconnectedPlayersVote()
     if (allPlayersArDisconnected()) {
+      console.log(
+        `all players are disconnected, starting ${thisClass.tearDownTime}sec tear down timer`
+      )
       startTearDownTimer()
     }
 
@@ -73,6 +76,8 @@ export default class ConnectionManager {
     const thisClass = this
 
     console.log(`${reconnectingPlayer.name} has reconnected to the game`)
+    console.log("cancel teardown timer")
+    clearTimeout(thisClass.tearDownTimeOut)
     reconnectPlayerSocket()
     removePlayerFromDisconnectedPlayerArray()
     if (otherPlayersAreDisconnected()) {

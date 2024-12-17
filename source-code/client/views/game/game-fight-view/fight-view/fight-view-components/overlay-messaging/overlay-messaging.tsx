@@ -44,7 +44,7 @@ export const OverlayMessaging = ({
 
   const commentaryTimeouts = useRef<NodeJS.Timeout[]>([])
   const currentTimeTimeInterval = useRef<NodeJS.Timeout>()
-  const [startedTime, setStartedTime] = useState<string | undefined>()
+  const [startedTime, setStartedTime] = useState<number | undefined>()
   const [currentTime, setCurrentTime] = useState<string | undefined>()
 
   useEffect(() => {
@@ -56,7 +56,9 @@ export const OverlayMessaging = ({
     }
   }, [])
   useEffect(() => {
-    setStartedTime(new Date().toISOString())
+    if (fightIsRunning) {
+      setStartedTime(Date.now())
+    }
     if (!isDisplay) return
     console.log("fightIsRunning", fightIsRunning)
 
@@ -94,18 +96,26 @@ export const OverlayMessaging = ({
     sayCommentary(currentComment?.commentary)
     setCurrentComment(undefined)
   }
-  console.log("startedTime", startedTime)
 
   return (
     <>
       <div
-        style={{ position: "absolute", zIndex: 100, backgroundColor: "white" }}
+        style={{
+          position: "absolute",
+          zIndex: 100,
+          backgroundColor: "white",
+          display: "none",
+        }}
       >
         <div>
           server start time:{" "}
           {!serverStartTime
             ? "--"
             : format(new Date(serverStartTime), "HH:mm:ss.SSS")}
+        </div>
+        <div>
+          server started time:{" "}
+          {!startedTime ? "--" : format(new Date(startedTime), "HH:mm:ss.SSS")}
         </div>
         <div>
           current time:{" "}

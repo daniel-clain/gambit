@@ -23,7 +23,7 @@ import "./fighter.scss"
 type Props = {
   fighterName: string
   fightIsRunning: boolean
-  serverTimeStep: number
+  localTimeStep: number
   fighterTimeStamps: FighterUiTimeStamp[]
   arenaWidth: number
   soundOn: boolean
@@ -32,7 +32,7 @@ type Props = {
 export const FighterComponent = ({
   fighterName,
   fightIsRunning,
-  serverTimeStep,
+  localTimeStep,
   fighterTimeStamps,
   arenaWidth,
   soundOn,
@@ -49,14 +49,14 @@ export const FighterComponent = ({
     )
 
     while (remainingTimeStamps.length > 0) {
-      if (remainingTimeStamps[0].startTimeStep <= serverTimeStep) {
+      if (remainingTimeStamps[0].startTimeStep <= localTimeStep) {
         currentTimeStamp = remainingTimeStamps.shift()!
       } else break
     }
 
     if (fightIsRunning) {
       timeStampTimeouts.current = remainingTimeStamps.map((stamp) => {
-        const timeout = stamp.startTimeStep - serverTimeStep
+        const timeout = stamp.startTimeStep - localTimeStep
         return setTimeout(() => {
           setCurrentTimeStamp(stamp)
         }, timeout)
@@ -90,15 +90,6 @@ export const FighterComponent = ({
     const isFlinching = affliction == "flinch"
     const isHallucinating = affliction == "hallucinations"
 
-    if (isHallucinating) {
-      console.log(fighterName, isHallucinating)
-    }
-    if (isFlinching) {
-      console.log(fighterName, isFlinching)
-    }
-    if (isBeingSick) {
-      console.log(fighterName, isBeingSick)
-    }
 
     const widthRatio = arenaWidth / originalWidth
     const heightRatio = (arenaWidth * widthHeightRatio) / originalHeight

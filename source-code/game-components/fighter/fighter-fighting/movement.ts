@@ -296,6 +296,9 @@ export default class Movement {
       if (facingDirection == movingLeftOrRight) {
         //if moving forward
         if (logistics.rememberedEnemyBehind) {
+          console.log(
+            `this x ${this.coords.x}, remembered(${logistics.rememberedEnemyBehind.name}) x ${logistics.rememberedEnemyBehind.fighting.movement.coords.x}, passed(${passedEnemy.name}) x ${passedEnemy.fighting.movement.coords.x}`
+          )
           const rememberedDistance = getDistanceOfEnemyStrikingCenter(
             logistics.rememberedEnemyBehind,
             fighter
@@ -304,6 +307,11 @@ export default class Movement {
             passedEnemy,
             fighter
           )
+
+          console.log(
+            `remembered(${logistics.rememberedEnemyBehind.name}) distance ${rememberedDistance}, passed(${passedEnemy.name}) distance ${passedDistance}`
+          )
+
           if (passedDistance < rememberedDistance) {
             console.log(
               `${fighter.name}'s memory of behind is now ${passedEnemy.name}`
@@ -360,8 +368,9 @@ export default class Movement {
         )
         if (thisDistance < rememberedDistance) {
           passedEnemy.fighting.rememberEnemyBehind(fighter)
+
           console.log(
-            `${fighter.name} is closer than remembered enemy behind (${passedRememberedEnemyBehind.name}), so new enemy behind is now ${fighter.name}`
+            `${fighter.name} is closer behind ${passedEnemy.name} than ${passedEnemy.name}'s original remembered enemy behind (${passedRememberedEnemyBehind.name}), so new enemy behind ${passedEnemy.name} is now ${fighter.name}`
           )
         }
       } else {

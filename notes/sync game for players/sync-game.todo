@@ -1,7 +1,21 @@
+make each second based on elapsed time since start time
+  - eg if start time is 1000, and the current timeout finishes at 5021, then it doesnt do anohter 1000 sec, it does 
+
+  - at game start, the timeout runs for 1000, but when the code in the timeout run, and the elapsed time is not exactly 1000, then the time for the next second cant be exactly 1000 each time cos it will drift and eventually be way off what the actual time since start is
+
+- cant do idea where it just loops every 1 sec and calculates time since start cos that doesnt stop the drift and eventually the time will either do the same time twice in 2 seconds, or skip one time second because of the interval drift
+
+- so its better to do a calculated time out each time so that the timout itself cant drift
+
+
+
 todo:
   ☐ get fight test to be able to start another fight without conflicts with previous
   ☐ double check on reconnect that new instances arent being created
   ☐ double that timers created are being canceled properly on unhappy case
+  ☐ if pause(disconnect) occurs in fight stage but not during fight
+    - if during countdown timer, or manager winnings
+  
   
 
 chat gpt ques:
