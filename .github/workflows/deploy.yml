@@ -87,6 +87,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
             
             sudo -i -u ${{ secrets.SERVER_USER }} bash -c \"
+              #specify profile that has node and pm2 installed
+              source ~/.bash_profile
               pm2 startOrReload ecosystem.config.js --env production
               pm2 save
             \"

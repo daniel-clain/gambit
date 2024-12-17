@@ -1,5 +1,12 @@
 
 Deal Breakers:
+  ☐ something causes gamefightview and fightview to rerender, when they shouldnt be
+  ☐ manager options countdown seems to have 2 timers counting it down, like some sort of reload created a second instance of the timer
+  ☐ even tho the time sync is fixed, there are still issues
+    - player with bad connection takes ages to load, if they reconnect, they shouldnt have to reload assets.loading blocks the ui from loading, and they are registeres as reconnected and the fight resumes before they get to the fight ui
+    - the fighter state promises should be based on time elapsed since start time, not when the component runs it. when starting the promise, the resolve time should be relative to start time, local step
+    - timing between client is still off by about half a sec. phone is consistantly ahead of browser
+    - still buggyness with 
   ☐ pipeline should clear prod builds folder, so that old stuff doesnt conflict with new
   ☐ pipeline is slower than it needs to be because it transfers unchanged media
   ☐ when moving to attack, all fighters now always try to go from behind if flanked
