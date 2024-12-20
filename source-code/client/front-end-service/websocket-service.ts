@@ -20,12 +20,13 @@ const clientToHostFunctions = {
   },
   create: () => socket.emit("create"),
   testConnection: () => socket.emit("testConnection"),
-  cancel: (gameId: number) => socket.emit("cancel", gameId),
-  start: (gameId: number) => socket.emit("start", gameId),
-  join: (gameId: number) => socket.emit("join", gameId),
-  readyToStart: (gameId: number) => socket.emit("readyToStart", gameId),
-  leave: (gameId: number) => socket.emit("leave", gameId),
-  reJoin: (gameId: number) => socket.emit("reJoin", gameId),
+  cancel: (gameId: string) => socket.emit("cancel", gameId),
+  start: (gameId: string) => socket.emit("start", gameId),
+  join: (gameId: string) => socket.emit("join", gameId),
+  readyToStart: ({ gameId, ready }: { gameId: string; ready: boolean }) =>
+    socket.emit("readyToStart", { gameId, ready }),
+  leave: (gameId: string) => socket.emit("leave", gameId),
+  reJoin: (gameId: string) => socket.emit("reJoin", gameId),
   submitGlobalChat: (message: string) =>
     socket.emit("submitGlobalChat", message),
   reset: ({ name, id }: Partial<ClientNameAndID>) => {

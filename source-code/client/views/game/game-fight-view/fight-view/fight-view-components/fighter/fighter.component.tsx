@@ -109,16 +109,44 @@ export const FighterComponent = ({
     if (soundOn && soundMade) {
       switch (soundMade) {
         case "punch":
-          punchSound.play()
+          punchSound
+            .play()
+            .then(() => {
+              punchSound.muted = false
+            })
+            .catch((err) => {
+              console.error("Error playing punch:", err)
+            })
           break
         case "kick":
-          kickSound.play()
+          kickSound
+            .play()
+            .then(() => {
+              punchSound.muted = false
+            })
+            .catch((err) => {
+              console.error("Error playing kick:", err)
+            })
           break
         case "dodge":
-          dodgeSound.play()
+          dodgeSound
+            .play()
+            .then(() => {
+              punchSound.muted = false
+            })
+            .catch((err) => {
+              console.error("Error playing dodge:", err)
+            })
           break
         case "block":
-          blockSound.play()
+          blockSound
+            .play()
+            .then(() => {
+              punchSound.muted = false
+            })
+            .catch((err) => {
+              console.error("Error playing block:", err)
+            })
           break
       }
     }

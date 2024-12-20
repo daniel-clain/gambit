@@ -89,7 +89,7 @@ export const Lobby_View = observer(() => {
                   {game.disconnectedPlayerVotes.some(
                     (d) => d.disconnectedPlayer.id == clientId
                   ) ? (
-                    <button onClick={() => reJoin(game.id.toString())}>
+                    <button onClick={() => reJoin(game.id)}>
                       Re-Join Game
                     </button>
                   ) : (
