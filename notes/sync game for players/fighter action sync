@@ -1,0 +1,50 @@
+- fight will have start time and local time step based on servr time step
+
+- shouldnt need to be based on local time, should only need start time relative to time that it goes to make the pormises
+
+- when fighter component loads
+
+  - if server timestep is 0
+    ~ get start unix time and compare to unix time when component runs code
+    ~ eg if server unix start time is 500, and component is 600 when the component loads (100 late), then
+
+    - all time stamamps before 100 are disregarded,
+    - active timestamp is the last timestamp that has already started,
+    - if the next timestamp starts at 150, then start a timeout for 50ms
+    - same for all other timestamps after,
+
+    ~ start is 500
+    ~ current is 600
+    ~ steps: [
+    1: 10,
+    2: 30,
+    3: 35,
+    4: 80,
+    5: 85,
+    6: 110,
+    7: 150,
+    8: 220
+    ]
+    ~ 1,2,3,4 are discarded because they are all finished
+    ~ 5 is active because it finishes at 110
+    ~ 6 has a timeout of current - start (= 100) - 6 start (10)
+    ~ 7 has timout of current - start - 7 start = 50
+
+  - if server timestep is 1000
+    ~ and start time is 500
+    ~ and component loads at 700 (200 late)
+    ~ active step at fighter component load time is 1200
+    ~ eg steps [
+    1: 10,
+    2: 900,
+    3: 1100
+    4: 1150
+    5: 1210,
+    6: 1300
+    ]
+    ~ 1,2,3 are discarded
+    ~ 4 is active
+    ~ 5 has 10 timout till start
+    ~ 6 has 100 till start
+
+* for each time step, log unix time when it starts, and its step number

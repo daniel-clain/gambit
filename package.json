@@ -8,7 +8,8 @@
     "run-dev-backend": "nodemon",
     "build-prod-frontend": "cross-env NODE_ENV=production parcel build source-code/client/different-build-modes/main-game/index.html --dist-dir production-builds/main-game",
     "build-prod-backend": "tsc -p tsconfig.server.json",
-    "run-prod-backend": "cross-env NODE_ENV=production node ./production-builds/backend/server.js"
+    "run-prod-backend": "cross-env NODE_ENV=production node ./production-builds/backend/server.js",
+    "test": "jest"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.6.0",
@@ -48,6 +49,7 @@
     "process": "^0.11.10",
     "random": "^5.1.1",
     "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0"
   }

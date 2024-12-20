@@ -1,4 +1,3 @@
-import { orderBy } from "lodash"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { defaultSkinModelImages } from "../../../../../../../game-settings/default-skin-model-images"
 import { fastSkinModelImages } from "../../../../../../../game-settings/fast-skin-model-images"
@@ -18,12 +17,14 @@ import {
   punchSound,
 } from "../../../../../../sound-effects/sound-effects"
 import { FighterDebugUi } from "./fighter-debug-ui/fighter-debug-ui"
+import { getCurrentAndRemainingTimeStamps } from "./fighter.component.service"
 import "./fighter.scss"
 
 type Props = {
   fighterName: string
   fightIsRunning: boolean
-  localTimeStep: number
+  serverTimeStep: number
+  serverStartTime: number //unix timestamp
   fighterTimeStamps: FighterUiTimeStamp[]
   arenaWidth: number
   soundOn: boolean
@@ -32,7 +33,8 @@ type Props = {
 export const FighterComponent = ({
   fighterName,
   fightIsRunning,
-  localTimeStep,
+  serverTimeStep,
+  serverStartTime,
   fighterTimeStamps,
   arenaWidth,
   soundOn,
@@ -42,21 +44,20 @@ export const FighterComponent = ({
   const timeStampTimeouts = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
-    let [currentTimeStamp, ...remainingTimeStamps] = orderBy(
-      fighterTimeStamps,
-      ["startTimeStep"],
-      ["asc"]
-    )
+    const { currentTimeStamp, remainingTimeStamps } =
+      getCurrentAndRemainingTimeStamps(
+        fighterTimeStamps,
+        serverStartTime,
+        serverTimeStep
+      )
 
-    while (remainingTimeStamps.length > 0) {
-      if (remainingTimeStamps[0].startTimeStep <= localTimeStep) {
-        currentTimeStamp = remainingTimeStamps.shift()!
-      } else break
-    }
+    const unixNow = Date.now()
+    const startTimeDiff = unixNow - serverStartTime
+    const nowTimeStep = serverTimeStep + startTimeDiff
 
     if (fightIsRunning) {
       timeStampTimeouts.current = remainingTimeStamps.map((stamp) => {
-        const timeout = stamp.startTimeStep - localTimeStep
+        const timeout = stamp.startTimeStep - nowTimeStep
         return setTimeout(() => {
           setCurrentTimeStamp(stamp)
         }, timeout)
@@ -89,7 +90,6 @@ export const FighterComponent = ({
     const isBeingSick = affliction == "be sick"
     const isFlinching = affliction == "flinch"
     const isHallucinating = affliction == "hallucinations"
-
 
     const widthRatio = arenaWidth / originalWidth
     const heightRatio = (arenaWidth * widthHeightRatio) / originalHeight

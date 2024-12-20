@@ -50,8 +50,6 @@ export const Fight_View = ({
   /* 
     - current step is always relative to time passed since start time
     - fighter state updates are not based on polling, theyre based on timeouts since start time
-
-  
   */
 
   useEffect(() => {
@@ -67,8 +65,8 @@ export const Fight_View = ({
           {...{
             fighterName,
             fightIsRunning,
-            localTimeStep,
-            fightTimer,
+            serverTimeStep,
+            serverStartTime,
             fighterTimeStamps,
             arenaWidth,
             soundOn,
