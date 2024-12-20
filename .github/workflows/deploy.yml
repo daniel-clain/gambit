@@ -89,7 +89,11 @@ jobs:
             sudo -i -u ${{ secrets.SERVER_USER }} bash -c \"
               #specify profile that has node and pm2 installed
               source ~/.bash_profile
-              pm2 startOrReload ecosystem.config.js --env production
+              if pm2 describe gambit > /dev/null; then
+                pm2 restart gambit
+              else
+                pm2 start npm --name gambit -- run run-prod-backend
+              fi
               pm2 save
             \"
           "
