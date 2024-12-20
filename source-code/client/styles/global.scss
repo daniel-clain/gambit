@@ -10,11 +10,14 @@ html {
   font-family: "Nunito", sans-serif;
 }
 body {
-  margin: 0;
-  height: 100vh;
   background-image: linear-gradient(#03151f, #012a3f);
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
 button {
   font-size: 1rem;
 }
@@ -28,8 +31,8 @@ button {
 
 #Gambit {
   position: relative;
-  height: calc(100% - 60px);
   max-height: 850px;
+  height: 100%;
   background-color: #03263b;
   overflow: hidden;
 

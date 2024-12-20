@@ -51,9 +51,8 @@ export const websocketService = {
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
 
     if (env == "development") {
-      socket = io("https://localhost:9999", {
+      socket = io("http://192.168.86.236:9999", {
         transports: ["websocket"],
-        secure: true,
         reconnection: true,
         rejectUnauthorized: false,
       })

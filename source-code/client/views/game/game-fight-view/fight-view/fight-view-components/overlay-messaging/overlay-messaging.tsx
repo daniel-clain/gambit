@@ -45,16 +45,19 @@ export const OverlayMessaging = ({
   const commentaryTimeouts = useRef<NodeJS.Timeout[]>([])
   const currentTimeTimeInterval = useRef<NodeJS.Timeout>()
   const [startedTime, setStartedTime] = useState<number | undefined>()
-  const [currentTime, setCurrentTime] = useState<string | undefined>()
+  const [currentTime, setCurrentTime] = useState<number | undefined>()
 
   useEffect(() => {
-    currentTimeTimeInterval.current = setInterval(() => {
-      setCurrentTime(new Date().toISOString())
-    }, 1000)
+    if (fightIsRunning) {
+      currentTimeTimeInterval.current = setInterval(() => {
+        setCurrentTime(Date.now())
+      }, 100)
+    }
     return () => {
       clearInterval(currentTimeTimeInterval.current)
     }
-  }, [])
+  }, [fightIsRunning])
+
   useEffect(() => {
     if (fightIsRunning) {
       setStartedTime(Date.now())

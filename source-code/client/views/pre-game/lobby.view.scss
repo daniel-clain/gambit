@@ -1,9 +1,8 @@
-@use '../../styles/variables' as *;
+@use "../../styles/variables" as *;
 
-
-.game-host{
-  background-image: url('../../images/pre-game/pre-game-bg.jpg');
-  height: 100%;
+.game-host {
+  background-image: url("../../images/pre-game/pre-game-bg.jpg");
+  height: 100vh;
   background-size: cover;
   background-position-x: center;
   padding: 20px;
@@ -13,18 +12,17 @@
   display: flex;
   flex-direction: column;
 
-  
   .main-container {
     margin: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
+    justify-content: space-between;
     width: 100%;
     flex: 1;
   }
 
-  .create-game-button{
-    background-image: url('../../images/pre-game/create-button.png');
+  .create-game-button {
+    background-image: url("../../images/pre-game/create-button.png");
     color: white;
     font-size: 1.5rem;
     font-weight: bold;
@@ -38,24 +36,22 @@
     flex-shrink: 0;
   }
 
-  .lists{
+  .lists {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     flex: 1;
   }
-  
 
-  .list{
+  .list {
     margin: 0 auto 20px;
-    &__items{
-      
+    &__items {
       max-height: 120px;
       overflow-y: auto;
     }
   }
 
-  .box{
+  .box {
     background-color: rgba(0, 0, 0, 0.3);
     padding: 10px;
     width: 150px;
@@ -63,7 +59,7 @@
     color: white;
     justify-content: flex-start;
 
-    &__heading{
+    &__heading {
       font-size: 1.3rem;
       font-weight: bold;
       margin-bottom: 10px;
@@ -71,8 +67,8 @@
     }
   }
 
-  button.back-panel{
-    background-image: url('../../images/pre-game/back-panel.png');
+  button.back-panel {
+    background-image: url("../../images/pre-game/back-panel.png");
     width: 150px;
     height: 72px;
     background-repeat: no-repeat;
@@ -86,27 +82,26 @@
     padding: 0 10px 5px 0;
   }
 
-
   .global-chat {
     min-height: 120px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 
-    &.box{
+    &.box {
       width: initial;
     }
-    input{
+    input {
       height: 16px;
       margin-top: 10px;
     }
-    &__messages{      
+    &__messages {
       overflow-y: auto;
       max-height: 120px;
     }
   }
 
-  .modal-blackout{
+  .modal-blackout {
     position: absolute;
     left: 0;
     top: 0;
@@ -121,32 +116,25 @@
       padding: 10px 20px;
       border: 1px solid black;
 
-      &__heading{
+      &__heading {
         font-weight: bold;
         font-size: 1.3rem;
         margin-bottom: 10px;
       }
 
-      .bottom-buttons{
+      .bottom-buttons {
         display: flex;
         justify-content: space-between;
       }
     }
-
   }
 
-
-
-
-  @media (min-width: $layoutChangeBreakpoint){
-    .lists{        
+  @media (min-width: $layoutChangeBreakpoint) {
+    .lists {
       display: flex;
       justify-content: space-between;
       flex-direction: row;
       align-items: flex-start;
     }
   }
-
-
 }
-
