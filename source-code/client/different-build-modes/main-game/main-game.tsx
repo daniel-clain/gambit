@@ -15,7 +15,6 @@ export const MainGame_C = observer(() => {
 
   const {
     clientUIState: {
-      gameAssetsLoaded,
       isConnectedToGameHost,
       isConnectedToWebsocketServer,
       clientPreGameUIState: { hasGameData },
@@ -35,7 +34,7 @@ export const MainGame_C = observer(() => {
       {showFullScreenButton() && (
         <button onClick={requestFullscreen}>Enter Fullscreen</button>
       )}
-      {gameAssetsLoaded && hasGameData ? (
+      {hasGameData ? (
         <Game_View />
       ) : isConnectedToWebsocketServer && isConnectedToGameHost ? (
         <Lobby_View />

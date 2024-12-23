@@ -67,7 +67,6 @@ export interface ClientPreGameUIState {
 }
 
 export interface ClientUIState {
-  gameAssetsLoaded: boolean
   isConnectedToGameHost: boolean
   isConnectedToWebsocketServer: boolean
   clientGameUIState: ClientGameUIState
