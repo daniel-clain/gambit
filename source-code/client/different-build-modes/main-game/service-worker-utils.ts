@@ -1,7 +1,7 @@
 export function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
-      .register(new URL("/service-worker.js", import.meta.url))
+      .register(new URL("./service-worker.ts", import.meta.url))
       .then((registration) => {
         console.log("Service Worker registered successfully:", registration)
       })
