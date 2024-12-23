@@ -44,18 +44,6 @@ export const FighterComponent = ({
   const timeStampTimeouts = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
-    console.log("rerender", fighterName)
-  }, [
-    fighterName,
-    fightIsRunning,
-    serverTimeStep,
-    serverStartTime,
-    fighterTimeStamps,
-    arenaWidth,
-    soundOn,
-  ])
-
-  useEffect(() => {
     const { currentTimeStamp, remainingTimeStamps } =
       getCurrentAndRemainingTimeStamps(
         fighterTimeStamps,

@@ -20,3 +20,4 @@ declare namespace JSX {
 interface HTMLElement {
   webkitRequestFullscreen?: () => Promise<void>
 }
+declare module "public/service-worker.js"

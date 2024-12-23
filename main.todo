@@ -1,18 +1,18 @@
 
-Deal Breakers:
+Inconsistant Bugs:
   ☐ something causes gamefightview and fightview to rerender, when they shouldnt be
   ☐ manager options countdown seems to have 2 timers counting it down, like some sort of reload created a second instance of the timer
+
+
+
+Deal Breakers:
+  ☐ reconnecting player has their time start from betting, shows winner
+  ☐ investigate causes bug
   ☐ even tho the time sync is fixed, there are still issues
     - player with bad connection takes ages to load, if they reconnect, they shouldnt have to reload assets.loading blocks the ui from loading, and they are registeres as reconnected and the fight resumes before they get to the fight ui
     - the fighter state promises should be based on time elapsed since start time, not when the component runs it. when starting the promise, the resolve time should be relative to start time, local step
     - timing between client is still off by about half a sec. phone is consistantly ahead of browser
     - still buggyness with 
-  ☐ pipeline should clear prod builds folder, so that old stuff doesnt conflict with new
-  ☐ pipeline is slower than it needs to be because it transfers unchanged media
-  ☐ when moving to attack, all fighters now always try to go from behind if flanked
-    - this is supposed to be an intelligent move
-    - if they are all always doing it then the ones in the middle just continuously cirlce around like a dance until they are at the edges
-    - there should be 2 different move to attack types, where a more dumb agressive fighter goes the most direct way, and a more intelligent fighter goes around
   ☐ initial load preloads images
     - get rid of old way, new way source-code\client\views\pre-game\preloader.tsx
   ☐ winning player listed first in end game stats  
@@ -63,6 +63,16 @@ Deal Breakers:
 
 
 Priority:
+  ☐ when moving to attack, all fighters now always try to go from behind if flanked
+    - this is supposed to be an intelligent move
+    - if they are all always doing it then the ones in the middle just continuously cirlce around like a dance until they are at the edges
+    - there should be 2 different move to attack types, where a more dumb agressive fighter goes the most direct way, and a more intelligent fighter goes around
+  ☐ fighter shouldnt start fight on rampage
+  ☐ increase base winnings amount
+  ☐ talent scout reveals more stats
+  ☐ activate sounds on iphone by making create or join button count as a user action to enable the sounds
+  ☐ pipeline is slower than it needs to be because it transfers unchanged media
+  ☐ pipeline should clear prod builds folder, so that old stuff doesnt conflict with new
   ☐ deploy test fight to server instance
   ☐ set up display for fight, news
   ☐ on player disconnect pause all stage (fight), pause in fight is buggy
@@ -233,70 +243,78 @@ Big wins (to remember my achievements):
 
 ✔ video for fail weath victory @done(24-12-15 00:16)
 ✔ must face an opponent to attack them @done(24-11-15 16:17)
-  ✔ when a guy finishes taking hit animation, if theyre knocked out, dont finish on cooldown finish on knockout @done(24-11-12 10:35)
-  ✔ make attack and recover more based on closeness and stamina @done(24-11-15 15:39)
-  ✔ a fighter should never have 2 actions that resolve at the same time @done(24-11-08 14:37)
-  ✔ had issue with 'next' action and 'chain actions' where in attack, the result of the attack was lost. so the concept was droped. however its needed, because when adding victory pose, when added, it ads after punch hit, but when punch hit resolves, it adds punch cooldown after victory pose @done(24-11-15 16:18)
-  ✔ fight should declare winner at same time as last actions happen @done(24-11-15 16:19)
-  ✔ game should end after existing actions have finished, including knockout and victory pose, or draw idle @done(24-11-15 16:20)
-    - only logical case is an action added as a result of an attack, the non attack should be filtered out. any other should be flagged as an error
-  ✔ sounds should never be missed @done(24-11-15 16:20)
+✔ when a guy finishes taking hit animation, if theyre knocked out, dont finish on cooldown finish on knockout @done(24-11-12 10:35)
+✔ make attack and recover more based on closeness and stamina @done(24-11-15 15:39)
+✔ a fighter should never have 2 actions that resolve at the same time @done(24-11-08 14:37)
+✔ had issue with 'next' action and 'chain actions' where in attack, the result of the attack was lost. so the concept was droped. however its needed, because when adding victory pose, when added, it ads after punch hit, but when punch hit resolves, it adds punch cooldown after victory pose @done(24-11-15 16:18)
+✔ fight should declare winner at same time as last actions happen @done(24-11-15 16:19)
+✔ game should end after existing actions have finished, including knockout and victory pose, or draw idle @done(24-11-15 16:20)
+  - only logical case is an action added as a result of an attack, the non attack should be filtered out. any other should be flagged as an error
+✔ sounds should never be missed @done(24-11-15 16:20)
 
-  ✔ fighter component should @done(24-11-15 16:20)
-    - not loop through entire list of actions each time
-    - should not rerender on each time step
-  ✔ fight component should only rerender on new fight prop sent @done(24-11-15 16:21)
-    - overlay handles time left
-    - each fighter handles its action steps independently
-    
-  ✔ when updated fight obj sent to front end @done(24-11-15 16:21)
-    - rerun fight component properly, consider:
-    - pause, use memo callback, restart relative to start time
-  ✔ trapped logic @done(24-11-22 11:26)
-    - currently its set to trapped and then decide action runs next decide, and decides retreat even though trapped and then loops trapped
-    - when trapped should not have retreat option, should be only defend or attack
-    - each decide action, should check if un trapped first
-    
-  ✔ not go over boundaries @done(24-11-22 11:26)
-  ✔ make sure functions with usecallback are actually not rebuilding @done(24-11-22 11:27)
+✔ fighter component should @done(24-11-15 16:20)
+  - not loop through entire list of actions each time
+  - should not rerender on each time step
+✔ fight component should only rerender on new fight prop sent @done(24-11-15 16:21)
+  - overlay handles time left
+  - each fighter handles its action steps independently
   
-  ✔ game fight ui updates, old way it to get data, new way is to respond to event @done(24-11-24 19:28)
-    - current is in game: triggerUIUpdate -> sendUIUpdateToPlayers -> getGameUiState
-    - loops through each player, gets their manager, and builds an update object
-    
-  ✔ server fight time is 1 sec infront of client time, because client waits an extra second at 0 countdown @done(24-11-25 09:08)
+✔ when updated fight obj sent to front end @done(24-11-15 16:21)
+  - rerun fight component properly, consider:
+  - pause, use memo callback, restart relative to start time
+✔ trapped logic @done(24-11-22 11:26)
+  - currently its set to trapped and then decide action runs next decide, and decides retreat even though trapped and then loops trapped
+  - when trapped should not have retreat option, should be only defend or attack
+  - each decide action, should check if un trapped first
   
-  ✔ visually show if fighter is under influence of low energy @done(24-11-25 09:08)
-    - eg, attack cooldown longer if low energy
-  ✔ redo fighter timers, @done(24-11-25 09:09)
-    - needs concept of timer for thing like (last combat action, on a rampage, move action, memory of enemy behind)
-    - have an object for for timers that works with the fight time step where it resolves when the step gets to it
-  ✔ move speed relative to cautious retreat and desperate retreat @done(24-11-25 09:10)
-    - unused movement func moveSpeed()
-  ✔ show low energy state @done(24-11-25 09:10)
-  ✔ make sure code to reposition away from flank is in effect @done(24-11-25 11:31)
-    - dont walk between 2 to attack, go around behind one of them
-    
-  ✔ after putting in fix for flanked attack not between, bug is getting caught on memory behind, where they pass to get out of flanked, check on the pass @done(24-11-25 16:25)
-  ✔ test in game fight disconnect pause @done(24-11-25 19:38)
-  ✔ grey over screen as tho post fight money dump @done(24-11-25 19:58)
-  
-  ✔ fight currenly works off time relative to server time step, however if the browser refrehes stest what happens @done(24-11-25 19:59)
-  
-  ✔ intelligent should not do less recover with back to remembered enemy @done(24-11-25 19:59)
-  ✔ update game explanation for afflictions @done(24-12-06 13:21)
-  ✔ injured, sick, hallucinations, random things during the fight @done(24-12-06 13:21)
+✔ not go over boundaries @done(24-11-22 11:26)
+✔ make sure functions with usecallback are actually not rebuilding @done(24-11-22 11:27)
 
-  ✔ round number for everything, skill, contract weeks etc @done(24-12-09 11:02)
-  ✔ show if affected by poison, hallucination, assaulted @done(24-12-09 11:03)
-  ✔ too many new reports is a drag @done(24-12-15 00:14)
-  ✔ news report says multiple tiems if same target more than once @done(24-12-09 11:56)
-  ✔ refactor backend videos and final victory @done(24-12-15 00:13)
-    -  think fresh simple logic
-      ~ server doesnt want to look at video source
-      ~ client plays however long, but config stores duration
-      ~ can play videos before fight news, after domination victory
-      ~ if its a victory, break from promise chain and falls back to game over
+✔ game fight ui updates, old way it to get data, new way is to respond to event @done(24-11-24 19:28)
+  - current is in game: triggerUIUpdate -> sendUIUpdateToPlayers -> getGameUiState
+  - loops through each player, gets their manager, and builds an update object
   
-  ✔ money vicory is simply it cost more than the others @done(24-12-15 00:14)
-    - 3 ways to win
+✔ server fight time is 1 sec infront of client time, because client waits an extra second at 0 countdown @done(24-11-25 09:08)
+
+✔ visually show if fighter is under influence of low energy @done(24-11-25 09:08)
+  - eg, attack cooldown longer if low energy
+✔ redo fighter timers, @done(24-11-25 09:09)
+  - needs concept of timer for thing like (last combat action, on a rampage, move action, memory of enemy behind)
+  - have an object for for timers that works with the fight time step where it resolves when the step gets to it
+✔ move speed relative to cautious retreat and desperate retreat @done(24-11-25 09:10)
+  - unused movement func moveSpeed()
+✔ show low energy state @done(24-11-25 09:10)
+✔ make sure code to reposition away from flank is in effect @done(24-11-25 11:31)
+  - dont walk between 2 to attack, go around behind one of them
+  
+✔ after putting in fix for flanked attack not between, bug is getting caught on memory behind, where they pass to get out of flanked, check on the pass @done(24-11-25 16:25)
+✔ test in game fight disconnect pause @done(24-11-25 19:38)
+✔ grey over screen as tho post fight money dump @done(24-11-25 19:58)
+
+✔ fight currenly works off time relative to server time step, however if the browser refrehes stest what happens @done(24-11-25 19:59)
+
+✔ intelligent should not do less recover with back to remembered enemy @done(24-11-25 19:59)
+✔ update game explanation for afflictions @done(24-12-06 13:21)
+✔ injured, sick, hallucinations, random things during the fight @done(24-12-06 13:21)
+
+✔ round number for everything, skill, contract weeks etc @done(24-12-09 11:02)
+✔ show if affected by poison, hallucination, assaulted @done(24-12-09 11:03)
+✔ too many new reports is a drag @done(24-12-15 00:14)
+✔ news report says multiple tiems if same target more than once @done(24-12-09 11:56)
+✔ refactor backend videos and final victory @done(24-12-15 00:13)
+  -  think fresh simple logic
+    ~ server doesnt want to look at video source
+    ~ client plays however long, but config stores duration
+    ~ can play videos before fight news, after domination victory
+    ~ if its a victory, break from promise chain and falls back to game over
+
+✔ money vicory is simply it cost more than the others @done(24-12-15 00:14)
+  - 3 ways to win
+✔ post attack is always miss because it doesnt see the result stored by the do attack @done(24-12-21 09:47)
+✔ fight is draw if all fighters are dead, fight doesnt gen, goes straight to end @done(24-12-21 09:47)
+✔ stam and energy passive regen @done(24-12-21 09:47)
+✔ effect of low energy @done(24-12-21 09:47)
+✔ defend should consider how far they are away @done(24-12-21 09:47)
+✔ ive remove effect sick has on speed, make sure sick hallucinating and injured do something, with visual states so its obvious @done(24-12-21 09:47)
+✔ make sure all time stepactions are being played @done(24-12-21 09:47)
+✔ make sure actions are properly interupted, i have an account of a post critical strike miss at the same time as a taking a hit, and post kick miss wasnt interupted, so it did knockout then kick cooldown model @done(24-12-21 09:47)

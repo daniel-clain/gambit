@@ -74,7 +74,7 @@ export const Fight_View = ({
         />
       )
     })
-  }, [fightIsRunning, arenaWidth])
+  }, [fightIsRunning, arenaWidth, soundOn])
 
   return (
     <div className={`fight-ui`}>

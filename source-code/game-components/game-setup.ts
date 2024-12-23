@@ -275,7 +275,6 @@ export class Game_Implementation {
           return vidName
         })()
 
-    console.log("name", name)
     const videos = gameConfiguration.videos.find(
       (v) => v.name == videoName
     )!.videos

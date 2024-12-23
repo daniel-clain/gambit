@@ -25,6 +25,12 @@ export class GameHost {
           this.handleEventsFromClient(connectedClient)
           this.updateConnectedClients()
         }
+        const c = this.state.connectedClients
+        console.log(
+          "connected:",
+          c.length,
+          c.map((x) => x.name)
+        )
       })
     })
 
@@ -184,6 +190,7 @@ export class GameHost {
 
     Object.keys(messagesFromClientToHost).forEach((functionName) => {
       client.socket!.on(functionName, (data) => {
+        console.log("functionName", functionName)
         messagesFromClientToHost[functionName as FromClientToHostName](data)
         this.updateConnectedClients()
       })

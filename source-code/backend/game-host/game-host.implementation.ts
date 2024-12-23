@@ -16,13 +16,17 @@ export class GameHost_Implementation {
     if (name == undefined) throw "connecting client name undefined"
     if (id == undefined) throw "connecting client id undefined"
 
-    if (
-      this.gameHostState.connectedClients?.some(
-        (client: ConnectedClient) => client.id == id
-      )
-    ) {
+    const existingClient = this.gameHostState.connectedClients?.find(
+      (client: ConnectedClient) => client.id == id
+    )
+    if (!!existingClient) {
       console.log("error: connecting player id already exists")
-      return
+      existingClient.socket?.disconnect()
+      this.gameHostState.connectedClients =
+        this.gameHostState.connectedClients?.filter(
+          (client: ConnectedClient) => client.id != id
+        )
+      return true
     }
     return true
   }

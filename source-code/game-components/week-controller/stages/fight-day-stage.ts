@@ -157,22 +157,25 @@ export default class FightDayStage implements IStage {
             0
           ) * totalPublicityMultiplier
 
+        playersFighterWinnings = !managersFighter
+          ? 0
+          : playersFighterWinBase +
+            playersFighterWinBase * managersFighter.state.publicityRating
+
+        winnings += playersFighterWinnings
+
         if (managersBetAmount) {
           if (managerWonBet) {
             const multiplierBasedOnFighters =
               1 +
-              (numFightersPercentMultiplier / 100) * activeFight.fighters.length
+              (numFightersPercentMultiplier / 10) * activeFight.fighters.length
 
             winnings += Math.round(
-              betWinningsBase +
+              (betWinningsBase +
                 bonusFromPublicityRating +
-                managersBetAmount * (1 + betPercentageIncreased / 100) +
-                (!managersFighter
-                  ? 0
-                  : playersFighterWinBase *
-                    managersFighter.state.publicityRating) *
-                  multiplierBasedOnFighters *
-                  (isMainEvent ? mainEventMultiplier : 1)
+                managersBetAmount * (1 + betPercentageIncreased / 100)) *
+                multiplierBasedOnFighters *
+                (isMainEvent ? mainEventMultiplier : 1)
             )
           }
         }
@@ -199,13 +202,17 @@ export default class FightDayStage implements IStage {
             type: "betting",
           })
         }
-        if (managersBet && !managerWonBet && managersFighter) {
+        if (
+          managersBet &&
+          !managerWonBet &&
+          managersFighter &&
+          playersFighterWinnings
+        ) {
           manager.functions.addToLog({
             weekNumber,
-            message: `
-          Unfortunately ${
-            managersBet.fighterName
-          } did not win the fight. However your sponsored fighter ${
+            message: `Unfortunately ${
+              managersBet.fighterName
+            } did not win the fight. However your sponsored fighter ${
               winner.name
             } did win earning you ${
               playersFighterWinnings
@@ -216,7 +223,7 @@ export default class FightDayStage implements IStage {
             type: "betting",
           })
         }
-        if (!managersBet && managersFighter) {
+        if (!managersBet && managersFighter && playersFighterWinnings) {
           manager.functions.addToLog({
             weekNumber,
             message: `

@@ -1,6 +1,11 @@
 {
   "extends": "@parcel/config-default",
   "transformers": {
-    "*.mp3": ["@parcel/transformer-raw"]
-  }
+    "*.mp3": [
+      "@parcel/transformer-raw"
+    ]
+  },
+  "reporters": [
+    "parcel-reporter-bundle-manifest"
+  ]
 }

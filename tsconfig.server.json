@@ -7,10 +7,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
+    "allowJs": false,
+    "checkJs": false,
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["source-code/backend/server.ts"],
-  "exclude": ["source-code/client", "node_modules"]
+  "exclude": ["source-code/client", "node_modules", "public/**/*"]
 }

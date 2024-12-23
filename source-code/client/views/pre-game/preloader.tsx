@@ -3,18 +3,20 @@ import { useEffect, useState } from "react"
 interface Asset {
   url: string
   type: "image" | "video"
-  hash: string
 }
 
 const assets: Asset[] = [
-  { url: "../game", type: "image", hash: "v1" },
-  { url: "/images/manager-view/bg.jpg", type: "image", hash: "v1" },
   {
-    url: "/images/manager-view/abilities/assault-fighter.jpg",
+    url: "./../../images/manager-view/abilities/assault-fighter.jpg",
     type: "image",
-    hash: "v1",
   },
-  { url: "/images/fight-view/fight.mp4", type: "video", hash: "v1" },
+  { url: "./../../images/pre-fight/pre-fight-news-bg.jpg", type: "image" },
+  {
+    url: "./../../images/fight-view/arena/fight-arena-behind.png",
+    type: "image",
+  },
+  { url: "./../../images/end-game-assets/tournament-board.jpg", type: "image" },
+  { url: "./../../video/swealth-victory.mp4", type: "video" },
   // Add more assets here
 ]
 
@@ -29,7 +31,7 @@ export function Preloader({ onComplete }: Props): JSX.Element {
   function preloadImage(asset: Asset): Promise<void> {
     return new Promise((resolve, reject) => {
       const img = new Image()
-      img.src = `${asset.url}?hash=${asset.hash}`
+      img.src = `${asset.url}`
       img.onload = () => resolve()
       img.onerror = () => reject()
     })
@@ -38,7 +40,7 @@ export function Preloader({ onComplete }: Props): JSX.Element {
   function preloadVideo(asset: Asset): Promise<void> {
     return new Promise((resolve, reject) => {
       const video = document.createElement("video")
-      video.src = `${asset.url}?hash=${asset.hash}`
+      video.src = `${asset.url}`
       video.onloadeddata = () => resolve()
       video.onerror = () => reject()
     })
