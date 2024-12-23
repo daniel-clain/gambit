@@ -9,24 +9,37 @@ export function getCurrentAndRemainingTimeStamps(
   remainingTimeStamps: FighterUiTimeStamp[]
 } {
   const unixNow = Date.now()
-  const startTimeDiff = unixNow - serverStartTime
-  console.log("startTimeDiff", startTimeDiff)
+  const nowTimeIsAfterStartTime = unixNow > serverStartTime
 
-  const nowTimeStep = serverTimeStep + startTimeDiff
+  let nowTimeStep: number
 
-  const lastTimeStep = fighterTimeStamps[fighterTimeStamps.length - 1]
+  if (nowTimeIsAfterStartTime) {
+    const startTimeDiff = unixNow - serverStartTime
+    nowTimeStep = startTimeDiff + serverTimeStep
+  } else {
+    nowTimeStep = serverTimeStep
+  }
+
+  const lastStampIndex = fighterTimeStamps.length - 1
+
+  const lastTimeStep = fighterTimeStamps[lastStampIndex]
 
   const remainingTimeStamps = fighterTimeStamps.filter(
     (s) => s.startTimeStep > nowTimeStep
   )
+  // assumes stamps are in order of start time
   const currentTimeStamp =
     nowTimeStep > lastTimeStep.startTimeStep
       ? lastTimeStep
       : fighterTimeStamps.find(
-          (s, i) =>
-            i < fighterTimeStamps.length - 1 &&
-            fighterTimeStamps[i + 1].startTimeStep > nowTimeStep
+          (loopStamp, loopStampIndex) =>
+            loopStampIndex != lastStampIndex &&
+            nextStamp(loopStampIndex).startTimeStep > nowTimeStep
         )!
 
   return { currentTimeStamp, remainingTimeStamps }
+
+  function nextStamp(stampIndex: number) {
+    return fighterTimeStamps[stampIndex + 1]
+  }
 }

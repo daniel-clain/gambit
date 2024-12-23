@@ -47,6 +47,7 @@ export const Fight_View = ({
     paused,
   })
 
+
   /* 
     - current step is always relative to time passed since start time
     - fighter state updates are not based on polling, theyre based on timeouts since start time
@@ -70,6 +71,7 @@ export const Fight_View = ({
             fighterTimeStamps,
             arenaWidth,
             soundOn,
+            paused,
           }}
         />
       )

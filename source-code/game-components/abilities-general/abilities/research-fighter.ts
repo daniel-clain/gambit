@@ -32,7 +32,7 @@ export const researchFighterServer: ServerAbility = {
       source!.characterType == "Manager"
         ? 4
         : source!.profession == "Talent Scout"
-        ? 2 + source!.skillLevel
+        ? 3 + source!.skillLevel
         : source!.profession == "Private Agent"
         ? 5 + source!.skillLevel
         : 4

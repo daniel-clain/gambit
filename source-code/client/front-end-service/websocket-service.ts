@@ -132,4 +132,8 @@ export const websocketService = {
     )
   },
   sendUpdate: { ...clientToHostFunctions, ...clientToGameFunctions },
+  disconnect() {
+    socket.disconnect()
+    this.init()
+  },
 }

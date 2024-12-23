@@ -28,6 +28,7 @@ type Props = {
   fighterTimeStamps: FighterUiTimeStamp[]
   arenaWidth: number
   soundOn: boolean
+  paused: boolean
 }
 
 export const FighterComponent = ({
@@ -38,36 +39,43 @@ export const FighterComponent = ({
   fighterTimeStamps,
   arenaWidth,
   soundOn,
+  paused,
 }: Props) => {
   const [currentTimeStamp, setCurrentTimeStamp] = useState<FighterUiTimeStamp>()
 
   const timeStampTimeouts = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
-    const { currentTimeStamp, remainingTimeStamps } =
-      getCurrentAndRemainingTimeStamps(
-        fighterTimeStamps,
-        serverStartTime,
-        serverTimeStep
-      )
-
-    const unixNow = Date.now()
-    const startTimeDiff = unixNow - serverStartTime
-    const nowTimeStep = serverTimeStep + startTimeDiff
-
-    if (fightIsRunning) {
-      timeStampTimeouts.current = remainingTimeStamps.map((stamp) => {
-        const timeout = stamp.startTimeStep - nowTimeStep
-        return setTimeout(() => {
-          setCurrentTimeStamp(stamp)
-        }, timeout)
-      })
-    } else {
+    if (paused) {
       timeStampTimeouts.current.forEach((timeout) => clearTimeout(timeout))
       timeStampTimeouts.current = []
+    } else {
+      const { currentTimeStamp, remainingTimeStamps } =
+        getCurrentAndRemainingTimeStamps(
+          fighterTimeStamps,
+          serverStartTime,
+          serverTimeStep
+        )
+
+      console.log(
+        `${fighterName} current time stamp ${currentTimeStamp.startTimeStep}, ${currentTimeStamp.actionName}`,
+        currentTimeStamp
+      )
+      setCurrentTimeStamp(currentTimeStamp)
+
+      if (fightIsRunning) {
+        const unixNow = Date.now()
+        const startTimeDiff = unixNow - serverStartTime
+        const nowTimeStep = serverTimeStep + startTimeDiff
+        timeStampTimeouts.current = remainingTimeStamps.map((stamp) => {
+          const timeout = stamp.startTimeStep - nowTimeStep
+          return setTimeout(() => {
+            setCurrentTimeStamp(stamp)
+          }, timeout)
+        })
+      }
     }
-    setCurrentTimeStamp(currentTimeStamp)
-  }, [fightIsRunning])
+  }, [fightIsRunning, paused])
 
   const fighterJsx = useMemo(() => {
     if (!currentTimeStamp) return <></>

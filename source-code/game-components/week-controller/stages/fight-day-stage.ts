@@ -42,6 +42,7 @@ export default class FightDayStage implements IStage {
       activeFight.start()
 
       activeFight.fightUiDataSubject.subscribe(() => {
+        console.log("fight data trigger update")
         weekController.triggerUIUpdate()
       })
 
@@ -107,7 +108,7 @@ export default class FightDayStage implements IStage {
         manager.has.money -= managersBetAmount
         manager.functions.addToLog({
           weekNumber,
-          message: `You spent ${managersBetAmount} on a ${managersBet.size} bet on ${managersBet.fighterName}`,
+          message: `You spent $${managersBetAmount} on a ${managersBet.size} bet on ${managersBet.fighterName}`,
           type: "betting",
         })
       }
@@ -168,15 +169,37 @@ export default class FightDayStage implements IStage {
           if (managerWonBet) {
             const multiplierBasedOnFighters =
               1 +
-              (numFightersPercentMultiplier / 10) * activeFight.fighters.length
+              (numFightersPercentMultiplier / 100) * activeFight.fighters.length
 
-            winnings += Math.round(
-              (betWinningsBase +
-                bonusFromPublicityRating +
-                managersBetAmount * (1 + betPercentageIncreased / 100)) *
-                multiplierBasedOnFighters *
-                (isMainEvent ? mainEventMultiplier : 1)
+            console.log("multiplierBasedOnFighters", multiplierBasedOnFighters)
+
+            console.log("betWinningsBase", betWinningsBase)
+            console.log("bonusFromPublicityRating", bonusFromPublicityRating)
+            console.log("managersBetAmount", managersBetAmount)
+            const managersBetMultiplier = 1 + betPercentageIncreased / 100
+
+            const baseWinnings =
+              betWinningsBase +
+              bonusFromPublicityRating +
+              managersBetAmount * managersBetMultiplier
+            console.log("baseWinnings", baseWinnings)
+
+            const winningsAfterFightersMultiplier =
+              baseWinnings * multiplierBasedOnFighters
+
+            console.log(
+              "winningsAfterFightersMultiplier",
+              winningsAfterFightersMultiplier
             )
+
+            if (isMainEvent) {
+              const winningsAfterMainEventMultiplier =
+                winningsAfterFightersMultiplier * mainEventMultiplier
+
+              winnings += Math.round(winningsAfterMainEventMultiplier)
+            } else {
+              winnings += Math.round(winningsAfterFightersMultiplier)
+            }
           }
         }
 

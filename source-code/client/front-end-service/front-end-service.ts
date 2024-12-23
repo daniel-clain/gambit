@@ -129,7 +129,7 @@ export function resetClient() {
 
 export function backButtonClicked() {
   localStorage.removeItem("clientName")
-  localStorage.removeItem("clientId")
+  websocketService.disconnect()
   const { clientId, clientName } =
     frontEndState.clientUIState.clientPreGameUIState
   websocketService.sendUpdate.reset({ name: clientName, id: clientId })

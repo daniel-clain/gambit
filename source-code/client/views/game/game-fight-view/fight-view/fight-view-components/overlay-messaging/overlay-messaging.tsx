@@ -107,6 +107,8 @@ export const OverlayMessaging = ({
           position: "absolute",
           zIndex: 100,
           backgroundColor: "white",
+          right: 0,
+          bottom: 0,
         }}
       >
         <div>

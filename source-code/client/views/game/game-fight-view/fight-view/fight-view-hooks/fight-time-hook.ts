@@ -1,6 +1,6 @@
 import { format, isAfter } from "date-fns"
 import { ceil, round } from "lodash"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 type Props = {
   serverStartTime: number
@@ -16,10 +16,31 @@ export function useFightTimeHook({
   maxFightDuration,
   paused,
 }: Props) {
+  const initialFightTimer = useMemo(() => {
+    console.log("serverTimeStep", serverTimeStep)
+    console.log("serverStartTime", serverStartTime)
+    const timeNow = Date.now()
+    let localTime: number
+    if (timeNow > serverStartTime) {
+      const msSinceStart = timeNow - serverStartTime
+
+      localTime = serverTimeStep + msSinceStart
+    } else {
+      localTime = serverTimeStep
+    }
+    console.log("localTime", localTime)
+    const modulus1000Remainder = localTime % 1000
+    const localTime1000msPassed = localTime - modulus1000Remainder
+    const localTimeSecondsPassed = localTime1000msPassed / 1000
+    console.log("localTimeSecondsPassed", localTimeSecondsPassed)
+    return localTimeSecondsPassed
+  }, [serverTimeStep, serverStartTime])
+
   const [countdownTime, setCountdownTime] = useState<number | undefined>()
   const [fightIsRunning, setFightIsRunning] = useState(false)
   const [fightIsOver, setFightIsOver] = useState(false)
-  const [fightTimer, setFightTimer] = useState<number>(serverTimeStep)
+  const [fightTimer, setFightTimer] = useState<number>(initialFightTimer)
+
 
   const fightTimerInterval = useRef<NodeJS.Timeout>()
   const timeUntilStartTimeout = useRef<NodeJS.Timeout>()
@@ -27,28 +48,19 @@ export function useFightTimeHook({
 
   const doFightTimerInterval = useCallback(() => {
     const timeNow = Date.now()
-    const diff = timeNow - serverStartTime
-    const modulus1000Remainder = (diff + serverTimeStep) % 1000
+    const msSinceStart = timeNow - serverStartTime
+    const localTime = serverTimeStep + msSinceStart
+    const modulus1000Remainder = localTime % 1000
+    const localTime1000msPassed = localTime - modulus1000Remainder
+    const localTimeSecondsPassed = localTime1000msPassed / 1000
+    setFightTimer(localTimeSecondsPassed)
+
     const modified1SecTimout = 1000 - modulus1000Remainder
 
     fightTimerInterval.current = setTimeout(() => {
-      setFightTimer(() => {
-        const timeNow = Date.now()
-        const formattedNow = format(new Date(timeNow), "HH:mm:ss.SSS")
-        console.log("formattedNow ", formattedNow)
-        const diff = timeNow - serverStartTime
-
-        const newTime = round(diff / 1000)
-        console.log("fight time step", newTime)
-        return newTime
-      })
       doFightTimerInterval()
     }, modified1SecTimout)
-  }, [serverTimeStep])
-
-  useEffect(() => {
-    setFightTimer(Math.floor(serverTimeStep))
-  }, [serverTimeStep])
+  }, [serverTimeStep, serverStartTime])
 
   useEffect(() => {
     return () => {

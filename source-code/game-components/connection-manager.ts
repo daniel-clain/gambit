@@ -9,6 +9,7 @@ export default class ConnectionManager {
   disconnectedPlayerVotes: DisconnectedPlayerVote[]
   tearDownTimeOut: NodeJS.Timeout
   tearDownTime = 30
+  tearDownTimerActive = false
   constructor(public game: Game) {
     this.disconnectedPlayerVotes = []
   }
@@ -64,19 +65,71 @@ export default class ConnectionManager {
     }
 
     function startTearDownTimer() {
+      thisClass.tearDownTimerActive = true
       thisClass.tearDownTimeOut = setTimeout(() => {
         thisClass.game.functions.tearDownGame()
       }, thisClass.tearDownTime * 1000)
     }
   }
 
-  gameDisplayReconnected(reconnectingDisplay: ConnectedClient) {}
+  gameDisplayReconnected(reconnectingDisplay: ConnectedClient) {
+    const thisClass = this
+
+    console.log(`${reconnectingDisplay.name} has reconnected to the game`)
+
+    thisClass.tearDownTimerActive = false
+    clearTimeout(thisClass.tearDownTimeOut)
+    reconnectDisplaySocket()
+    removePlayerFromDisconnectedPlayerArray()
+    if (otherPlayersAreDisconnected()) {
+      addReconnectedPlayerVoteObj()
+    } else {
+      this.game.functions.unPause()
+      this.game.functions.triggerUIUpdate()
+    }
+    this.game.functions.triggerUIUpdate()
+
+    /* implementation */
+
+    function reconnectDisplaySocket() {
+      const display = thisClass.game.has.gameDisplays!.find(
+        (p) => p.id == reconnectingDisplay.id
+      )!
+      display.socket = reconnectingDisplay.socket!
+    }
+
+    function removePlayerFromDisconnectedPlayerArray() {
+      const index = thisClass.disconnectedPlayerVotes.findIndex(
+        (d) => d.disconnectedPlayer.id == reconnectingDisplay.id
+      )
+      thisClass.disconnectedPlayerVotes.splice(index, 1)
+    }
+
+    function otherPlayersAreDisconnected() {
+      return thisClass.disconnectedPlayerVotes.length
+    }
+
+    function addReconnectedPlayerVoteObj() {
+      thisClass.disconnectedPlayerVotes.forEach((d) => {
+        d.playerVotesToDrop.push({
+          drop: false,
+          votingPlayer: {
+            name: reconnectingDisplay.name,
+            id: reconnectingDisplay.id,
+          },
+        })
+      })
+    }
+    this.game.functions.triggerUIUpdate()
+  }
 
   playerReconnected(reconnectingPlayer: ConnectedClient) {
     const thisClass = this
 
     console.log(`${reconnectingPlayer.name} has reconnected to the game`)
-    console.log("cancel teardown timer")
+    if (thisClass.tearDownTimerActive) {
+      console.log("cancel teardown timer")
+    }
     clearTimeout(thisClass.tearDownTimeOut)
     reconnectPlayerSocket()
     removePlayerFromDisconnectedPlayerArray()
