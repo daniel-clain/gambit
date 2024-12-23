@@ -45,7 +45,7 @@ export const Login_View = observer(() => {
       ) : (
         <div className="not-connected-to-websockets-message">
           Not connected to websocket server
-          <button onClick={handleRestart}>Restart Server</button>
+          {/* <button onClick={handleRestart}>Restart Server</button> */}
         </div>
       )}
     </div>

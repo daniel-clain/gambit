@@ -52,7 +52,7 @@ export const websocketService = {
     console.log(`websocket service node env: ${process.env.NODE_ENV}`)
 
     if (env == "development") {
-      socket = io("http://192.168.86.236:9999", {
+      socket = io("http://192.168.0.11:9999", {
         transports: ["websocket"],
         reconnection: true,
         rejectUnauthorized: false,
@@ -73,7 +73,7 @@ export const websocketService = {
     } else {
       try {
         socket = io({
-          secure: true,
+          transports: ["websocket"],
           reconnection: true,
           rejectUnauthorized: false,
         })

@@ -4,8 +4,5 @@
     "*.mp3": [
       "@parcel/transformer-raw"
     ]
-  },
-  "reporters": [
-    "parcel-reporter-bundle-manifest"
-  ]
+  }
 }

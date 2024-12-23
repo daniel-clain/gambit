@@ -3,7 +3,6 @@ import http from "http"
 import { Server } from "socket.io"
 import { serveFavicon, setupRestartServerEndpoint } from "./express-middleware"
 import { GameHost } from "./game-host/game-host"
-import { createHttpsServer } from "./https-server-setup"
 
 const serverPort = 9999
 const environment = process.env.NODE_ENV
@@ -16,20 +15,24 @@ let server
 
 // Serve frontend files based on environment
 if (environment === "production") {
-  // Endpoint to restart the game server
-  const httpsServer = createHttpsServer(expressApp)
+  setupRestartServerEndpoint(expressApp)
+
+  serveFavicon(expressApp)
+
+  console.log("Serving static files from production build...")
+
+  expressApp.use(express.static("production-builds/main-game"))
+
+  /* const httpsServer = createHttpsServer(expressApp)
   server = httpsServer
   httpsServer.listen(serverPort, () =>
     console.log(`HTTPS server listening on port ${serverPort}`)
+  ) */
+
+  server = http.createServer(expressApp)
+  server.listen(serverPort, () =>
+    console.log(`HTTP server listening on port ${serverPort}`)
   )
-  setupRestartServerEndpoint(expressApp)
-
-  // Handle favicon
-  serveFavicon(expressApp)
-  // Start the servers
-
-  console.log("Serving static files from production build...")
-  expressApp.use(express.static("production-builds/main-game"))
 } else {
   server = http.createServer()
   server.listen(serverPort, () =>
