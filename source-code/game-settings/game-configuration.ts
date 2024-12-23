@@ -138,10 +138,10 @@ const gameConfiguration = {
     large: 50,
   },
   fightWinnings: {
-    betWinningsBase: 250,
+    betWinningsBase: 350,
     numFightersPercentMultiplier: 20,
     betPercentageIncreased: 20,
-    playersFighterWinBase: 200,
+    playersFighterWinBase: 400,
     totalPublicityMultiplier: 10,
     mainEventMultiplier: 2,
   },

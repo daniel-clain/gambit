@@ -37,7 +37,7 @@ export const researchFighterClient: ClientAbility = {
   longDescription:
     "find out more stats about fighter, amount of stats is relative to skill level and profession",
   isValidTarget(target: TargetTypes) {
-    return target.characterType == "Fighter"
+    return target.characterType == "Fighter" && !fighterOwnedByManager(target)
   },
 }
 
@@ -66,9 +66,7 @@ export const doSurveillanceClient: ClientAbility = {
     "Find out what is happening with target manager or fighter. If the manager does anything or if anything happens to the fighter while they are being watched, the private agent will collect evidence.",
   isValidTarget(target: TargetTypes) {
     return (
-      (target.characterType == "Fighter" &&
-        fighterInNextFight(target) &&
-        !fighterOwnedByManager(target)) ||
+      (target.characterType == "Fighter" && fighterInNextFight(target)) ||
       (target.characterType == "Known Manager" && !isThisManager(target))
     )
   },
@@ -180,8 +178,15 @@ export const poisonFighterClient: ClientAbility = {
 }
 
 export const prosecuteManagerClient: ClientAbility = {
-  longDescription:
-    "Prosecute an opponent manager for illegal activity, amount sued for is relative to the severity of each account manager is found guilty of. +100 cost for each accusation, 20% chance of success without evidence",
+  longDescription: `Prosecute an opponent manager for illegal activity, amount sued for is relative to the severity of each account manager is found guilty of. The fine amount and jail duration is based on the number of offences, severity of each offence, and a diminishing percentage increase for each additional offence. eg 1 account of administering drugs takes = 24% of their total money, and 9 accounts = 68% of their total money.
+    
+    Chance to be found guilty is 50% + your lawyer skill * 30% - their lawyer skill * 30%
+    
+    Prosecuting manager makes money equal to the fine amount
+    
+    When in jail, you have 0 action points, and you lose your sinister employees
+    `,
+
   ...prosecuteManager,
   isValidTarget(target: TargetTypes) {
     return target.characterType == "Known Manager" && !isThisManager(target)

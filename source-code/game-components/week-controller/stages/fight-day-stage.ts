@@ -161,7 +161,7 @@ export default class FightDayStage implements IStage {
         playersFighterWinnings = !managersFighter
           ? 0
           : playersFighterWinBase +
-            playersFighterWinBase * managersFighter.state.publicityRating
+            playersFighterWinBase * (managersFighter.state.publicityRating / 2)
 
         winnings += playersFighterWinnings
 

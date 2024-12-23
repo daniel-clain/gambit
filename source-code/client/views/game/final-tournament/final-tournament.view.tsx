@@ -1,5 +1,6 @@
 import { toCamelCase } from "../../../../helper-functions/helper-functions"
 import { TournamentState } from "../../../../interfaces/front-end-state-interface"
+import { FighterStates } from "../game-fight-view/fight-view/fight-view-components/fighter-states/fighter-states"
 import { Fight_View } from "../game-fight-view/fight-view/fight.view"
 import "./final-tournament.scss"
 
@@ -10,7 +11,8 @@ export const FinalTournament_View = ({
   finalTournamentState: TournamentState
   isDisplay: boolean
 }) => {
-  const { finalTournamentBoard, fightUiState } = finalTournamentState
+  const { finalTournamentBoard, fightUiState, knownFighterStateData } =
+    finalTournamentState
   const { finals, semiFinals, quarterFinals, showTournamentBoard } =
     finalTournamentBoard
   return (
@@ -73,8 +75,15 @@ export const FinalTournament_View = ({
           </div>
         </div>
       )}
-      {!showTournamentBoard && fightUiState && (
-        <Fight_View {...{ fightUiState, isDisplay }} />
+      {!showTournamentBoard && (
+        <div
+          className={`
+      final-tournament-fight-ui
+    `}
+        >
+          {fightUiState && <Fight_View {...{ fightUiState, isDisplay }} />}
+          <FighterStates fighterStates={knownFighterStateData!} />
+        </div>
       )}
     </div>
   )

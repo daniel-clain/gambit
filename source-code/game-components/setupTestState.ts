@@ -78,7 +78,7 @@ export const postStartTestState = (game: Game) => {
 
   //showPostGameStats()
 
-  //finalTournamentTest()
+  finalTournamentTest()
 
   //addPrivateAgentAndLawyer()
 
@@ -114,8 +114,8 @@ export const postStartTestState = (game: Game) => {
 
   function finalTournamentTest() {
     lotsOfMoney()
-    gameConfiguration.stageDurations.maxFightDuration = 1
-    gameConfiguration.stageDurations.extraTimePerFighter = 0
+    //gameConfiguration.stageDurations.maxFightDuration = 1
+    //gameConfiguration.stageDurations.extraTimePerFighter = 0
     gameConfiguration.videos.find(
       (v) => v.name == "Final Tournament"
     )!.videos[0].duration = 3
@@ -129,6 +129,7 @@ export const postStartTestState = (game: Game) => {
     const manager = game.has.managers[0]
     for (let i = 0; i < 8; i++) {
       const fighter = game.has.fighters[i]
+      fighter.state.publicityRating = 5
       fighter.state.activeContract = { weeklyCost: 0, weeksRemaining: 10 }
       manager.has.fighters.push(fighter)
       fighter.state.manager = manager

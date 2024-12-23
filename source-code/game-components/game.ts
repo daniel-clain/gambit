@@ -99,6 +99,7 @@ class GameFunctions {
   startGame() {
     const game = this.game
     setTimeout(() => {
+      console.log("env game", process.env.NODE_ENV)
       if (process.env.NODE_ENV == "development") {
         setupTestState(game)
       }
@@ -233,6 +234,12 @@ class GameFunctions {
         : {
             finalTournamentBoard: finalTournament.finalTournamentBoard,
             fightUiState: finalTournament.activeFight?.fightUiState,
+            knownFighterStateData:
+              manager && finalTournament.activeFight
+                ? manager.functions.getKnownFigherInfoForFighters(
+                    finalTournament.activeFight.fighters
+                  )
+                : undefined,
           },
       preFightNewsUIState: {
         newsItem: preFightNewsStage.activeNewsItem,

@@ -44,10 +44,11 @@ export const FighterCard = observer(() => {
   let isYourFighter: boolean = false
   let infoBoxList: InfoBoxListItem[]
   let fightExperience: ReactNode
-
+  console.log(`${fighter.name} manager is ${fighter.stats.manager}`)
   if (fighter.stats.manager == thisPlayersName) {
     // is your fighter
     const myFighter = fighter as FighterInfo
+    isYourFighter = true
     const {
       strength,
       fitness,

@@ -15,7 +15,7 @@ export const prosecuteManager: Ability = {
 
 type Verdict = {
   weeksInJail: number
-  fine: number
+  finePercent: number
 }
 
 export const prosecuteManagerServer: ServerAbility = {
@@ -33,11 +33,12 @@ export const prosecuteManagerServer: ServerAbility = {
     console.log("verdict :>> ", verdict)
 
     const moneyTakenOffPlayer = takeMoneyOffManager()
-    giveHalfToProsecutingManager()
+    giveMoneyToProsecutingManager()
     concedeEvidence()
+    const roundedWeeksInJail = Math.round(verdict.weeksInJail)
     let lostEmployees: Employee[]
-    if (verdict.weeksInJail > 1) {
-      getPutInJail()
+    if (roundedWeeksInJail > 0) {
+      getPutInJail(roundedWeeksInJail)
       lostEmployees = prosecutedManager.has.employees.filter((e) =>
         ["Drug Dealer", "Hitman", "Thug"].includes(e.profession)
       )
@@ -71,13 +72,11 @@ export const prosecuteManagerServer: ServerAbility = {
 
 You have been sentenced to ${
         verdict.weeksInJail
-      } weeks in jail with a fine of $${
-        verdict.fine
-      }. While in jail, your manager has 0 action points.
+      } weeks in jail with a fine of $${moneyTakenOffPlayer}. While in jail, your manager has 0 action points.
 
 ${
   lostEmployees?.length
-    ? `The following employees have left you:${lostEmployees.reduce(
+    ? `You have lost the following employees:${lostEmployees.reduce(
         (string, e) => (string += `\n\t - ${e.name} (${e.profession})`),
         ""
       )}`
@@ -91,8 +90,8 @@ ${
       })
     }
 
-    function giveHalfToProsecutingManager() {
-      const amount = moneyTakenOffPlayer / 2
+    function giveMoneyToProsecutingManager() {
+      const amount = moneyTakenOffPlayer
       prosecutingManager.has.money += amount
       prosecutingManager.functions.addToLog({
         weekNumber,
@@ -102,14 +101,17 @@ ${
     }
 
     function takeMoneyOffManager(): number {
-      prosecutedManager.has.money -= verdict.fine
-      return verdict.fine
+      const moneyTakenOff = Math.round(
+        prosecutedManager.has.money * verdict.finePercent
+      )
+      prosecutedManager.has.money -= moneyTakenOff
+      return moneyTakenOff
     }
 
-    function getPutInJail() {
+    function getPutInJail(roundedWeeksInJail: number) {
       prosecutedManager.state.inJail = {
-        weeksRemaining: verdict.weeksInJail,
-        weeksTotal: verdict.weeksInJail,
+        weeksRemaining: roundedWeeksInJail,
+        weeksTotal: roundedWeeksInJail,
         lawsuit,
       }
     }
@@ -155,39 +157,46 @@ ${
       const yourLawyerLevel = getTotalLawyerSkill(prosecutingManager)
       const opponentLawyerLevel = getTotalLawyerSkill(prosecutedManager)
 
+      const baseFinePercentage = 0.15
+      const baseWeeksInJail = 0.4
+      let totalAccounts = 0
+
       const verdict = lawsuit.accounts.reduce(
         (verdict, account): Verdict => {
           console.log(account.name)
           switch (account.name) {
             case "administering performance enhancing drugs":
               {
+                const severityModifier = 0.8
                 account.evidence.forEach((e) => {
                   const guilty = getGuiltyChance()
                   if (guilty) {
-                    verdict.weeksInJail += 0.3
-                    verdict.fine += 600
+                    addOffenceWeeksInJailAndFine(severityModifier)
+                    console.log("guilty of doping", verdict)
                   }
                 })
               }
               break
             case "administering with intent to harm":
               {
+                const severityModifier = 1.2
                 account.evidence.forEach((e) => {
                   const guilty = getGuiltyChance()
                   if (guilty) {
-                    verdict.weeksInJail += account.evidence.length * 0.4
-                    verdict.fine += account.evidence.length * 600
+                    addOffenceWeeksInJailAndFine(severityModifier)
+                    console.log("guilty of poisoning", verdict)
                   }
                 })
               }
               break
             case "solicitation to commit homicide":
               {
+                const severityModifier = 1.5
                 account.evidence.forEach((e) => {
                   const guilty = getGuiltyChance()
                   if (guilty) {
-                    verdict.weeksInJail += account.evidence.length * 3
-                    verdict.fine += account.evidence.length * 7000
+                    addOffenceWeeksInJailAndFine(severityModifier)
+                    console.log("guilty of murder", verdict)
                   }
                 })
               }
@@ -195,29 +204,42 @@ ${
             case "solicited assault":
               {
                 account.evidence.forEach((e) => {
+                  const severityModifier = 1
                   const guilty = getGuiltyChance()
                   if (guilty) {
-                    verdict.weeksInJail += account.evidence.length * 0.5
-                    verdict.fine += account.evidence.length * 500
+                    addOffenceWeeksInJailAndFine(severityModifier)
+                    console.log("guilty of assault", verdict)
                   }
                 })
               }
               break
             case "supplying illegal substances":
               {
+                const severityModifier = 1
                 account.evidence.forEach((e) => {
                   const guilty = getGuiltyChance()
                   if (guilty) {
-                    verdict.weeksInJail += 1 + account.evidence.length * 0.6
-                    verdict.fine += account.evidence.length * 2000
+                    addOffenceWeeksInJailAndFine(severityModifier)
+                    console.log("guilty of selling drugs", verdict)
                   }
                 })
               }
               break
           }
           return verdict
+
+          function addOffenceWeeksInJailAndFine(severityModifier: number) {
+            const offenceFine = baseFinePercentage * severityModifier
+            const adjustedFine = offenceFine / (1 + totalAccounts)
+            const offenceWeeksInJail =
+              (baseWeeksInJail * severityModifier) / (1 + totalAccounts / 2)
+            const adjustedWeeksInJail = offenceWeeksInJail
+            verdict.weeksInJail += adjustedWeeksInJail
+            verdict.finePercent += adjustedFine
+            totalAccounts++
+          }
         },
-        { weeksInJail: 0, fine: 0 } as Verdict
+        { weeksInJail: 0, finePercent: 0 } as Verdict
       )
 
       return {
@@ -237,7 +259,7 @@ ${
       function getGuiltyChance() {
         const guiltyChance = randomNumber({ to: 100 })
         const guilty =
-          guiltyChance < 50 + yourLawyerLevel * 30 - opponentLawyerLevel * 25
+          guiltyChance < 50 + yourLawyerLevel * 30 - opponentLawyerLevel * 30
         return guilty
       }
     }

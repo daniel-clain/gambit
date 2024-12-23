@@ -6,7 +6,6 @@ Inconsistant Bugs:
 
 
 Deal Breakers:
-  ☐ reconnecting player has their time start from betting, shows winner
   ☐ investigate causes bug
   ☐ even tho the time sync is fixed, there are still issues
     - player with bad connection takes ages to load, if they reconnect, they shouldnt have to reload assets.loading blocks the ui from loading, and they are registeres as reconnected and the fight resumes before they get to the fight ui
@@ -318,3 +317,5 @@ Big wins (to remember my achievements):
 ✔ ive remove effect sick has on speed, make sure sick hallucinating and injured do something, with visual states so its obvious @done(24-12-21 09:47)
 ✔ make sure all time stepactions are being played @done(24-12-21 09:47)
 ✔ make sure actions are properly interupted, i have an account of a post critical strike miss at the same time as a taking a hit, and post kick miss wasnt interupted, so it did knockout then kick cooldown model @done(24-12-21 09:47)
+
+✔ reconnecting player has their time start from betting, shows winner @started(24-12-23 20:06) @done(24-12-23 20:06) @lasted(52s)

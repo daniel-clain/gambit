@@ -103,6 +103,7 @@ export type VictoryData = { name: string; victoryType: VictoryType }
 export type TournamentState = {
   finalTournamentBoard: FinalTournamentBoard
   fightUiState?: FightUiState
+  knownFighterStateData?: FighterStateData[]
 }
 
 export type SelectedVideo = {
