@@ -118,7 +118,7 @@ export const OverlayMessaging = ({
             : format(new Date(serverStartTime), "HH:mm:ss.SSS")}
         </div>
         <div>
-          server started time:{" "}
+          local started time:{" "}
           {!startedTime ? "--" : format(new Date(startedTime), "HH:mm:ss.SSS")}
         </div>
         <div>

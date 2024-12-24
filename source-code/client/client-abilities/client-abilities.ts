@@ -97,12 +97,7 @@ export const guardFighterClient: ClientAbility = {
   longDescription:
     "The more skilled the guard is the higher the chance to block an attempt. Can block attempts to assault, poison or murder a fighter",
   isValidTarget(target: TargetTypes) {
-    let isValid = false
-    ifTargetIsFighter(
-      target,
-      (fighter) => (isValid = fighterOwnedByManager(fighter))
-    )
-    return isValid
+    return target.characterType == "Fighter"
   },
 }
 

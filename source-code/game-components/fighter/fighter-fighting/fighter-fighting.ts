@@ -95,6 +95,7 @@ export default class FighterFighting {
     this.otherFightersInFight = []
     this.logistics.rememberedEnemyBehind = undefined
     this.actions.decidedActionLog = []
+    this.timers.cancelAllTimers()
   }
 
   set facingDirection(direction: FacingDirection) {

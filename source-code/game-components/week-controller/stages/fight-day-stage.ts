@@ -117,14 +117,14 @@ export default class FightDayStage implements IStage {
         if (managersBet) {
           manager.functions.addToLog({
             weekNumber,
-            message: `The fight was a draw, all managers will get back half of their bet money. You get back ${Math.round(
-              managersBetAmount! / 2
+            message: `The fight was a draw, all managers will get back 90% of their bet money. You get back ${Math.round(
+              managersBetAmount! * 0.9
             )} of the ${managersBetAmount} you bet on ${
               managersBet.fighterName
             }`,
             type: "betting",
           })
-          manager.has.money -= Math.round(managersBetAmount! / 2)
+          manager.has.money -= Math.round(managersBetAmount! * 0.9)
         } else {
           manager.functions.addToLog({
             weekNumber,

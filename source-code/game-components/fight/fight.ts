@@ -353,8 +353,9 @@ export default class Fight {
       }
 
       function getFighterWithTheMostStaminaLeft() {
-        return remainingFighters.reduce(
+        const mostStamFighter = remainingFighters.reduce(
           (fighterWithMostStaminaLeft, fighter) => {
+            console.log(`${fighter.name} stamina ${fighter.fighting.stamina}`)
             if (!fighterWithMostStaminaLeft) return fighter
             if (
               fighter.fighting.stamina >
@@ -365,6 +366,8 @@ export default class Fight {
           },
           null as Fighter | null
         )!
+        console.log(`${mostStamFighter.name} had the most as is the winner`)
+        return mostStamFighter
       }
     }
     function getLastActionTimeStep() {

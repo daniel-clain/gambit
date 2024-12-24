@@ -41,7 +41,6 @@ export function useFightTimeHook({
   const [fightIsOver, setFightIsOver] = useState(false)
   const [fightTimer, setFightTimer] = useState<number>(initialFightTimer)
 
-
   const fightTimerInterval = useRef<NodeJS.Timeout>()
   const timeUntilStartTimeout = useRef<NodeJS.Timeout>()
   const countdownTimeInterval = useRef<NodeJS.Timeout>()
@@ -74,7 +73,11 @@ export function useFightTimeHook({
   useEffect(() => {
     const timeIsGreaterThanLastStep = fightTimer > lastTimeStep / 1000
 
+    console.log("fightTimer", fightTimer)
+    console.log("lastTimeStep / 1000", lastTimeStep / 1000)
+
     if (timeIsGreaterThanLastStep) {
+      console.log("fight is over")
       setFightIsOver(true)
       setFightIsRunning(false)
     } else {

@@ -23,7 +23,7 @@
   .list__row {
     position: relative;
 
-    .is-expiring {
+    &.is-expiring {
       background-color: rgb(255, 234, 234);
     }
 

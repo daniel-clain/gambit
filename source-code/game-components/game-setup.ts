@@ -71,7 +71,7 @@ export class Game_Implementation {
     return newFighters
 
     function generateFighterHistory() {
-      const numberOfFights = newFighters.length * 5
+      const numberOfFights = newFighters.length * 3
 
       for (let fight = 0; fight < numberOfFights; fight++) {
         const randomNumberOfFightersInTheFight = round(

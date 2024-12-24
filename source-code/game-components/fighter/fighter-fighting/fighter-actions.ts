@@ -107,8 +107,7 @@ export default class FighterActions {
     if (!decidedAction) {
       console.error(
         `${fighter.name} had no decided action, wait 1/10 a sec then decide again`,
-        responseProbabilities,
-        this.fighting
+        responseProbabilities
       )
       this.doNothing()
     } else {

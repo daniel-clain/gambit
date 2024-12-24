@@ -1,5 +1,4 @@
 import { observer } from "mobx-react"
-import * as React from "react"
 import { showFighter } from "../../../../../../front-end-service/front-end-service"
 import { frontEndState } from "../../../../../../front-end-state/front-end-state"
 import "../fighters-list.scss"
@@ -15,15 +14,19 @@ export const YourFightersPanel = observer(() => {
       <div className="heading">Your Fighters</div>
       <div className="list fighter-list">
         {fighters.map((fighter) => {
+          const isExpiringThisWeek = fighter.activeContract!.weeksRemaining == 0
           const hasRecontracted =
-            fighter.activeContract.weeksRemaining == 0 &&
-            frontEndState.serverUIState.serverGameUIState.playerManagerUIState.delayedExecutionAbilities.find(
-              (a) => a.name == "Offer Contract" && a.target.name == fighter.name
+            isExpiringThisWeek &&
+            frontEndState.serverUIState.serverGameUIState!.playerManagerUIState?.delayedExecutionAbilities.find(
+              (a) =>
+                a.name == "Offer Contract" && a.target!.name == fighter.name
             )
           return (
             <div
               className={`
-            list__row ${hasRecontracted ? "is-expiring" : ""}
+            list__row ${
+              isExpiringThisWeek && !hasRecontracted ? "is-expiring" : ""
+            }
             `}
               key={fighter.name}
               onClick={() => showFighter(fighter.name)}

@@ -82,7 +82,7 @@ export const assaultFighterServer: ServerAbility = {
       })
     } else if (guardBlocked) {
       game.has.weekController.preFightNewsStage.newsItems.push({
-        newsType: "guards protect fighter from being assaulted",
+        newsType: "guarded from assault",
         headline: `${assaultedFighter.name} Guarded from Assailant!`,
         message: `Guards have protected ${assaultedFighter.name} from an attempted assault`,
       })

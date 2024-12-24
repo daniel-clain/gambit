@@ -1,3 +1,4 @@
+import { orderBy } from "lodash"
 import { wait } from "../../../helper-functions/helper-functions"
 import {
   FighterInfo,
@@ -33,7 +34,7 @@ export class FinalTournament {
   private semiFinalsMatchups: Matchup[]
   private finalsMatchup: Matchup
   private showingBoard: boolean
-  activeFight: Fight | null
+  activeFight: Fight | undefined
   finalTournamentBoard: FinalTournamentBoard
 
   constructor(private game: Game) {
@@ -68,17 +69,31 @@ export class FinalTournament {
     ]
 
     function getTop8Fighters(thisClass: FinalTournament) {
-      return thisClass.game.has.fighters
-        .filter((f) => f.state.manager)
-        .sort((compareFighter1, compareFighter2) => {
-          return (
-            compareFighter1.state.numberOfWins /
-              compareFighter1.state.numberOfFights -
-            compareFighter2.state.numberOfWins /
-              compareFighter2.state.numberOfFights
-          )
-        })
-        .slice(0, 8)
+      const sortedFighters = orderBy(
+        thisClass.game.has.fighters.filter((f) => f.state.manager),
+        (fighter) => fighter.state.numberOfWins / fighter.state.numberOfFights,
+        "desc" // Sort in descending order to place the best win ratios at the top
+      )
+
+      console.log(
+        "sortedFighters",
+        sortedFighters.map((f) => ({
+          name: f.name,
+          fights: f.state.numberOfFights,
+          wins: f.state.numberOfWins,
+        }))
+      )
+
+      const top8 = sortedFighters.slice(0, 8)
+      console.log(
+        "top8",
+        top8.map((f) => ({
+          name: f.name,
+          fights: f.state.numberOfFights,
+          wins: f.state.numberOfWins,
+        }))
+      )
+      return top8
     }
   }
 
@@ -178,28 +193,40 @@ export class FinalTournament {
       false,
       true
     )
-    const thisFight = this.activeFight
-    thisFight.start()
 
-    thisFight.fightUiDataSubject.subscribe(() => {
-      this.game.functions.triggerUIUpdate()
-    })
-    thisFight.fightFinishedSubject.subscribe(handleFightFinished)
+    this.activeFight.start()
 
-    return fightResolvedPromise
-
-    function handleFightFinished() {
+    const handleFightFinished = () => {
       console.log(
         "fight finished",
-        thisFight.result == "draw" ? "draw" : thisFight.result.winner.name
+        this.activeFight!.result == "draw"
+          ? "draw"
+          : this.activeFight!.result.winner.name
       )
-      thisFight.doTeardown()
-      if (!thisFight?.result || thisFight.result == "draw") {
+      if (!this.activeFight!.result || this.activeFight!.result == "draw") {
         console.warn("final tournament fight should have a winner")
-      } else {
-        resolveFight(thisFight.result.winner)
       }
+
+      const winner: Fighter =
+        (this.activeFight!.result as { winner: Fighter }).winner ||
+        this.activeFight!.fighters[0]
+
+      setTimeout(() => {
+        this.activeFight!.doTeardown()
+        this.activeFight = undefined
+        this.game.functions.triggerUIUpdate()
+        resolveFight(winner)
+      }, 2000)
     }
+
+    this.activeFight.fightUiDataSubject.subscribe(() => {
+      this.game.functions.triggerUIUpdate()
+    })
+    this.activeFight.fightFinishedSubject.subscribe(() => {
+      handleFightFinished()
+    })
+
+    return fightResolvedPromise
   }
 
   private async showTournamentBoard() {

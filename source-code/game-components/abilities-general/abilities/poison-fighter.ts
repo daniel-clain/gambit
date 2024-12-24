@@ -57,7 +57,7 @@ export const poisonFighterServer: ServerAbility = {
       const randomNum = randomNumber({ to: 100 })
 
       const severityLevel =
-        randomNum < 10 ? "death" : randomNum < 40 ? "hallucinate" : "sick"
+        randomNum < 5 ? "death" : randomNum < 40 ? "hallucinate" : "sick"
 
       if (severityLevel == "death") {
         game.functions.removeFighterFromTheGame(fighter.name, game)
@@ -117,7 +117,7 @@ export const poisonFighterServer: ServerAbility = {
       }
     } else if (guardBlocked) {
       game.has.weekController.preFightNewsStage.newsItems.push({
-        newsType: "guards protect fighter from being poisoned",
+        newsType: "guarded from poison",
         headline: `${fighter.name} Guarded from Assailant!`,
         message: `Guards have stopped a suspicious man trying to poison ${fighter.name}`,
       })

@@ -95,6 +95,7 @@ export function doEndOfWeekUpdates(game: Game) {
       fighter.state.doping = false
       fighter.state.sick = false
       fighter.state.hallucinating = false
+      fighter.state.takingADive = false
       fighter.state.underSurveillance = undefined
     })
   }

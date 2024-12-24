@@ -39,7 +39,7 @@ export default class Fighter {
     const weeklyCost = randomRange
 
     this.state.goalContract = {
-      numberOfWeeks: round(randomNumber({ to: 1 })) ? 5 : 6,
+      numberOfWeeks: round(randomNumber({ to: 1 })) ? 7 : 8,
       weeklyCost,
     }
   }
